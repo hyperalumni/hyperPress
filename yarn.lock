@@ -4262,7 +4262,7 @@ __metadata:
     gulp-zip: "npm:^4.0.0"
     jquery: "npm:~3.7.1"
     js-yaml: "npm:^3.13.0"
-    motion-ui: "npm:latest"
+    motion-ui: "npm:^2.0.8"
     panini: "npm:^1.6.3"
     rimraf: "npm:^2.4.3"
     sass-embedded: "npm:^1.97.1"
@@ -7230,7 +7230,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-ui@npm:latest":
+"motion-ui@npm:^2.0.8":
   version: 2.0.8
   resolution: "motion-ui@npm:2.0.8"
   dependencies:
