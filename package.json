@@ -10,6 +10,7 @@
     "start": "gulp",
     "dev": "gulp build --dev",
     "build": "gulp build --production",
+    "outdated": "yarn upgrade-interactive; yarn dedupe",
     "package": "gulp package --production",
     "phpcs": "gulp phpcs",
     "phpcbf": "gulp phpcbf"
