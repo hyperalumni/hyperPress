@@ -696,13 +696,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array-unique@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "array-unique@npm:0.2.1"
-  checksum: 10c0/e72f4c45a432b44f9785b24bb5742648ed68f074a74f7bcf65b3f47630cd6aea05e532ab921f1a5f57266512a02183440b42f683dab95636bb81c8d6e2758641
-  languageName: node
-  linkType: hard
-
 "array-unique@npm:^0.3.2":
   version: 0.3.2
   resolution: "array-unique@npm:0.3.2"
@@ -3869,7 +3862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fancy-log@npm:^1.0.0, fancy-log@npm:^1.1.0, fancy-log@npm:^1.2.0, fancy-log@npm:^1.3.2":
+"fancy-log@npm:^1.0.0, fancy-log@npm:^1.1.0, fancy-log@npm:^1.3.2":
   version: 1.3.3
   resolution: "fancy-log@npm:1.3.3"
   dependencies:
@@ -3878,6 +3871,15 @@ __metadata:
     parse-node-version: "npm:^1.0.0"
     time-stamp: "npm:^1.0.0"
   checksum: 10c0/2fd9070191c8671065fbe3523d283b4a4eb240e37121e99b3b3260b2ea2934961b166cf48dcadeb6cdce877039e27499f1403808b455bd29b1b66060a03eb041
+  languageName: node
+  linkType: hard
+
+"fancy-log@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "fancy-log@npm:2.0.0"
+  dependencies:
+    color-support: "npm:^1.1.3"
+  checksum: 10c0/a6e116f3346756a7363eea343b551c1375d2cd2afc2a92d224feb78589b6b3cff85db9dc5d5df89792a0f7c1e17f731f52cb3d2807302f0516422be6269b95a8
   languageName: node
   linkType: hard
 
@@ -4124,6 +4126,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"findup-sync@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "findup-sync@npm:5.0.0"
+  dependencies:
+    detect-file: "npm:^1.0.0"
+    is-glob: "npm:^4.0.3"
+    micromatch: "npm:^4.0.4"
+    resolve-dir: "npm:^1.0.1"
+  checksum: 10c0/bbdb8af8c86a0bde4445e2f738003b92e4cd2a4539a5b45199d0252f2f504aeaf19aeca1fac776c3632c60657b2659151e72c8ead29a79617459a57419a0920b
+  languageName: node
+  linkType: hard
+
 "fined@npm:^1.0.1":
   version: 1.2.0
   resolution: "fined@npm:1.2.0"
@@ -4238,7 +4252,7 @@ __metadata:
     gulp-extname: "npm:^0.2.0"
     gulp-if: "npm:^2.0.0"
     gulp-imagemin: "npm:^5.0.3"
-    gulp-load-plugins: "npm:^1.1.0"
+    gulp-load-plugins: "npm:^2.0.7"
     gulp-phpcbf: "npm:^0.1.2"
     gulp-phpcs: "npm:^2.1.0"
     gulp-rev: "npm:^8.0.0"
@@ -4683,6 +4697,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"glogg@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "glogg@npm:2.2.0"
+  dependencies:
+    sparkles: "npm:^2.1.0"
+  checksum: 10c0/d5484bee0eb3ad766fbc7fe7511078d3c50707705a53a36a0d93dd8e9d5339b154b072070a25540a860758110a832d354dbf255a583a0bff5cbc3f2b83fcad4a
+  languageName: node
+  linkType: hard
+
 "gopd@npm:^1.0.1, gopd@npm:^1.2.0":
   version: 1.2.0
   resolution: "gopd@npm:1.2.0"
@@ -4873,18 +4896,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gulp-load-plugins@npm:^1.1.0":
-  version: 1.6.0
-  resolution: "gulp-load-plugins@npm:1.6.0"
+"gulp-load-plugins@npm:^2.0.7":
+  version: 2.0.8
+  resolution: "gulp-load-plugins@npm:2.0.8"
   dependencies:
-    array-unique: "npm:^0.2.1"
-    fancy-log: "npm:^1.2.0"
-    findup-sync: "npm:^3.0.0"
-    gulplog: "npm:^1.0.0"
-    has-gulplog: "npm:^0.1.0"
-    micromatch: "npm:^3.1.10"
-    resolve: "npm:^1.1.7"
-  checksum: 10c0/86ca9259196534d59607bcdc9231ab63747c4a1a61abaa43b1308b99008c538e3fe74d67d531f1a67394f9544f6207b953ce3fce148428253a133c728ae391d2
+    array-unique: "npm:^0.3.2"
+    fancy-log: "npm:^2.0.0"
+    findup-sync: "npm:^5.0.0"
+    gulplog: "npm:^2.0.0"
+    has-gulplog: "npm:^1.0.0"
+    micromatch: "npm:^4.0.2"
+    resolve: "npm:^1.17.0"
+  checksum: 10c0/0db991ac2a1b08aa73c98edc0c480925a925b0120194c5d34ea9293318069415736edee4cacd45e9b720804f3193ad82c39a61a118187b1d93a70e18760bcc6e
   languageName: node
   linkType: hard
 
@@ -5047,6 +5070,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gulplog@npm:^2.0.0":
+  version: 2.2.0
+  resolution: "gulplog@npm:2.2.0"
+  dependencies:
+    glogg: "npm:^2.2.0"
+  checksum: 10c0/e19fc5a28f37568cccb667bcfa593aff223937c29b9e72871b82816d6c14537fe174e70de782ed01562da86a8cfb0dfb598285fe29603478376969c2da7b6a45
+  languageName: node
+  linkType: hard
+
 "handlebars@npm:^4.0.2, handlebars@npm:^4.0.5":
   version: 4.7.8
   resolution: "handlebars@npm:4.7.8"
@@ -5115,6 +5147,15 @@ __metadata:
   dependencies:
     sparkles: "npm:^1.0.0"
   checksum: 10c0/2ee77268f492d3e7fd0340f7cf9d1452c4721f1ebb72f8cb8f9cb27a3449476c1e83d3958e5131dd1e1f52a84599aa9a72f658e62583c0e716ecd48d29b1a123
+  languageName: node
+  linkType: hard
+
+"has-gulplog@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "has-gulplog@npm:1.0.0"
+  dependencies:
+    sparkles: "npm:^2.0.0"
+  checksum: 10c0/576e307d74cad8bba23576f1f46249969819bfc0bde12f2c87574395e972f019e258a53c6e12b306541dcdab0d4cff29ab69d5af83c5f4c8a4d75ff2b626bb97
   languageName: node
   linkType: hard
 
@@ -6971,7 +7012,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.2, micromatch@npm:^4.0.5":
+"micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5":
   version: 4.0.8
   resolution: "micromatch@npm:4.0.8"
   dependencies:
@@ -8821,7 +8862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.6, resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.4.0":
+"resolve@npm:^1.1.6, resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.17.0, resolve@npm:^1.4.0":
   version: 1.22.11
   resolution: "resolve@npm:1.22.11"
   dependencies:
@@ -8834,7 +8875,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.1.6#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.4.0#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.1.6#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.17.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.4.0#optional!builtin<compat/resolve>":
   version: 1.22.11
   resolution: "resolve@patch:resolve@npm%3A1.22.11#optional!builtin<compat/resolve>::version=1.22.11&hash=c3c19d"
   dependencies:
@@ -9729,6 +9770,13 @@ __metadata:
   version: 1.0.1
   resolution: "sparkles@npm:1.0.1"
   checksum: 10c0/2327c06d259f1cf3c56e627f22119f89230479fb1007711c971cb6d9c4ed53850a8533d0d7bfca94e120340ba610bd255f0976779717413c6fc147cc0fc1ae6e
+  languageName: node
+  linkType: hard
+
+"sparkles@npm:^2.0.0, sparkles@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "sparkles@npm:2.1.0"
+  checksum: 10c0/c431692f4559c4fbae78598678340d4b72074f1cec022d616958d35a17f6b1bd4783ff24a9005fe87143bc820444c04544a8230c6b0b68f18d5bca3f4db1dc3c
   languageName: node
   linkType: hard
 
