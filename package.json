@@ -60,6 +60,7 @@
     "panini": "^1.6.3",
     "rimraf": "^2.4.3",
     "sass": "~1.65.1",
+    "sass-embedded": "^1.97.1",
     "style-sherpa": "^1.0.0",
     "vinyl-named": "^1.1.0",
     "webpack": "^3.10.0",
