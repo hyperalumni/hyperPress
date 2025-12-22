@@ -1,9 +1,13 @@
+@use 'foundation-sites/scss/foundation';
+
+@include foundation.foundation-button;
+
 /*
 Frontend styles for gutenberg blocks
 */
 
 /** === Base Color Palatte === */
-@each $color, $code in $foundation-palette {
+@each $color, $code in foundation.$foundation-palette {
 
   .has-#{$color}-background-color {
       background-color: $code;
@@ -20,7 +24,7 @@ Frontend styles for gutenberg blocks
 	// add general foundation button styling
 	.wp-block-button__link {
 		@extend .button;
-    @each $color, $code in $foundation-palette {
+    @each $color, $code in foundation.$foundation-palette {
 
       &.has-#{$color}-background-color {
           background-color: $code;
@@ -56,5 +60,5 @@ Frontend styles for gutenberg blocks
 
 /** === File === */
 .wp-block-file .wp-block-file__button{
-  @include button();
+  @include foundation.button();
 }

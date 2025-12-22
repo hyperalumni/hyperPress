@@ -1,3 +1,5 @@
+@use 'foundation-sites/scss/foundation';
+
 // Fix the issue where the WP admin-bar overlaps the mobile menu
 #wpadminbar {
   position: fixed !important;
@@ -8,15 +10,15 @@ body.admin-bar {
   // Offset sticky top bar
   &.f-topbar-fixed {
     .sticky.fixed {
-      margin-top: rem-calc(32);
+      margin-top: foundation.rem-calc(32);
     }
   }
   // Offset mobile off-canvas menu
   &.offcanvas {
     .off-canvas.is-open {
-      top: rem-calc(46);
-      @include breakpoint(783) {
-        top: rem-calc(32);
+      top: foundation.rem-calc(46);
+      @include foundation.breakpoint(783) {
+        top: foundation.rem-calc(32);
       }
     }
   }

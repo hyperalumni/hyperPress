@@ -1,14 +1,16 @@
+@use 'foundation-sites/scss/foundation';
+
 .featured-hero {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  height: rem-calc(100);
+  height: foundation.rem-calc(100);
 
-  @include breakpoint(medium) {
-    height: rem-calc(200);
+  @include foundation.breakpoint(medium) {
+    height:  foundation.rem-calc(200);
   }
 
-  @include breakpoint(xlarge) {
-    height: rem-calc(400);
+  @include foundation.breakpoint(xlarge) {
+    height:  foundation.rem-calc(400);
   }
 }

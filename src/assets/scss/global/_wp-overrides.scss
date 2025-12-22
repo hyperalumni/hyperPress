@@ -1,3 +1,5 @@
+@use 'foundation-sites/scss/foundation';
+
 .wp-caption > figcaption {
   max-width: 100%;
   font-size: 0.8rem;
@@ -30,28 +32,28 @@ p.wp-caption-text{
 }
 
 .gallery {
-  @include xy-grid;
-  @include xy-gutters($negative: true);
+  @include foundation.xy-grid;
+  @include foundation.xy-gutters($negative: true);
   @for $i from 1 through 9 {
     &.gallery-columns-#{$i} {
-      @include xy-grid-layout($n: 2, $selector: '.gallery-item', $output: (base size gutters));
+      @include foundation.xy-grid-layout($n: 2, $selector: '.gallery-item', $output: (base size gutters));
     }
-    @include breakpoint(medium){
+    @include foundation.breakpoint(medium){
       &.gallery-columns-#{$i} {
-        @include xy-grid-layout($n: 4, $selector: '.gallery-item', $gutters: (small: 30px), $output: (base size gutters));
+        @include foundation.xy-grid-layout($n: 4, $selector: '.gallery-item', $gutters: (small: 30px), $output: (base size gutters));
       }
     }
-    @include breakpoint(large) {
+    @include foundation.breakpoint(large) {
       &.gallery-columns-#{$i} {
-        @include xy-grid-layout($n: $i, $selector: '.gallery-item', $gutters: (small: 30px), $output: (base size gutters));
+        @include foundation.xy-grid-layout($n: $i, $selector: '.gallery-item', $gutters: (small: 30px), $output: (base size gutters));
       }
     }
   }
   .gallery-icon > a {
-    @include thumbnail;
-    @include thumbnail-link;
+    @include foundation.thumbnail;
+    @include foundation.thumbnail-link;
   }
   .gallery-icon > img {
-    @include thumbnail;
+    @include foundation.thumbnail;
   }
 }

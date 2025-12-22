@@ -1,25 +1,25 @@
+@charset "utf-8";
+
 /*!
  * Gutenberg Editor Styles
  */
 
 /** === Includes === */
 
-@charset 'utf-8';
+@use 'foundation-sites/scss/foundation';
+@use 'settings';
 
-@import 'settings';
-@import 'foundation';
-
-@include foundation-typography;
-@include foundation-button;
-@include foundation-table;
+@include foundation.foundation-typography;
+@include foundation.foundation-button;
+@include foundation.foundation-table;
 
 
 /** === Content Width === */
 .wp-block {
 	width: calc(100vw - (2px * 10));
-	@each $breakpoint, $size in $grid-margin-gutters {
+	@each $breakpoint, $size in settings.$grid-margin-gutters {
 
-		@include breakpoint($breakpoint) {
+		@include foundation.breakpoint($breakpoint) {
 			width: calc(100vw - ($size));
 		}
 
@@ -28,9 +28,9 @@
 
 /** === Base Typography === */
 body {
-	font-size: $global-font-size;
-	font-family: $body-font-family;
-	color: $body-font-color;
+	font-size: settings.$global-font-size;
+	font-family: settings.$body-font-family;
+	color: settings.$body-font-color;
 }
 
 /** === Post Title === */
@@ -67,12 +67,12 @@ body {
 
 /** === File === */
 .wp-block-file__button{
-	@include button();
+	@include foundation.button();
 }
 
 /** === Pullquote === */
 .wp-block-paragraph.has-background{
-	padding: rem-calc(20px 30px);
+	padding: foundation.rem-calc(20px 30px);
 }
 
 /** === Table === */
