@@ -83,10 +83,7 @@ function copy() {
 function sassBuild() {
   return gulp.src(['src/assets/scss/app.scss','src/assets/scss/editor.scss'])
     .pipe($.sourcemaps.init())
-    .pipe($.sass({
-      includePaths: PATHS.sass
-    })
-      .on('error', $.sass.logError))
+    .pipe($.sass({includePaths: PATHS.sass}).on('error', $.sass.logError))
     .pipe($.autoprefixer({
       browsers: COMPATIBILITY
     }))
