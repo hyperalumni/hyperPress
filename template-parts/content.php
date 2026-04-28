@@ -22,8 +22,11 @@
 		<?php foundationpress_entry_meta(); ?>
 	</header>
 	<div class="entry-content">
+		<?php if ( has_post_thumbnail() ) : ?>
+			<?php the_post_thumbnail( '', array('class' => 'thumbnail') ); ?>
+		<?php endif; ?>
 		<?php the_content(); ?>
-		<?php edit_post_link( __( '(Edit)', 'foundationpress' ), '<span class="edit-link">', '</span>' ); ?>
+		<?php get_template_part( 'template-parts/edit-link' ); ?>
 	</div>
 	<footer>
 		<?php

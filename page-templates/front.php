@@ -4,95 +4,78 @@ Template Name: Front
 */
 get_header(); ?>
 
-<header class="front-hero" role="banner">
-	<div class="marketing">
-		<div class="tagline">
-			<h1><?php bloginfo( 'name' ); ?></h1>
-			<h4 class="subheader"><?php bloginfo( 'description' ); ?></h4>
-			<a role="button" class="download large button sites-button hide-for-small-only" href="https://github.com/olefredrik/foundationpress">Download FoundationPress</a>
-		</div>
+<?php
+echo do_shortcode( "[rev_slider alias='homepage'][/rev_slider]" );
+?>
 
-		<div class="watch">
-			<span id="stargazers"><a href="https://github.com/olefredrik/foundationpress">1.5k stargazers</a></span>
-			<span id="twitter"><a href="https://twitter.com/olefredrik">@olefredrik</a></span>
-		</div>
-	</div>
-
-</header>
-
+<?php get_template_part( 'template-parts/banner' ); ?>
 <?php do_action( 'foundationpress_before_content' ); ?>
-<?php while ( have_posts() ) : the_post(); ?>
-<section class="intro" role="main">
-	<div class="fp-intro">
-
-		<div <?php post_class(); ?> id="post-<?php the_ID(); ?>">
-			<?php do_action( 'foundationpress_page_before_entry_content' ); ?>
-			<div class="entry-content">
-				<?php the_content(); ?>
-			</div>
-			<footer>
+	<div class="main-container">
+		<div class="main-grid">
+			<?php while ( have_posts() ) : the_post(); ?>
+				<div <?php post_class(); ?> id="post-<?php the_ID(); ?>">
+					<?php do_action( 'foundationpress_page_before_entry_content' ); ?>
+					<div class="entry-content">
+						<?php
+						foreach ( rwmb_meta( 'homepage_countdown' ) as $countdown_id ) :
+							echo do_shortcode( '[hyperpress_countdown id="' . $countdown_id . '" /]' );
+						endforeach;
+						?>
+						<?php the_content(); ?>
+					</div>
+					<?php do_action( 'foundationpress_page_after_entry_content' ); ?>
+				</div>
+			<?php endwhile; ?>
+			<main class="main-content">
 				<?php
-					wp_link_pages(
-						array(
-							'before' => '<nav id="page-nav"><p>' . __( 'Pages:', 'foundationpress' ),
-							'after'  => '</p></nav>',
-						)
-					);
+				// query posts by the categories selected in the customizer
+				$the_query = new WP_Query( array(
+					'category__in' => get_theme_mod( 'hyperpress_home_blog_categories' ),
+				) );
+
+				// also include any custom post types selected in the customizer
+				$custom_post_types_query = new WP_Query( array(
+					'post_type' => array_filter( get_theme_mod( 'hyperpress_home_blog_post_types' ), function ( $post_type ) {
+						// filter out 'post' type as that is covered by the query above
+						return ! empty( $post_type ) && $post_type != 'post';
+					} ),
+				) );
+				// combine the two query results
+				$combined_post_types = array_merge( $the_query->posts, $custom_post_types_query->posts );
+				// then sort them by date
+				usort( $combined_post_types, function ( $a, $b ) {
+					return strtotime( $b->post_date ) - strtotime( $a->post_date );
+				} );
+				// update the initial query with the combined results
+				$the_query->posts      = $combined_post_types;
+				$the_query->post_count = count( $the_query->posts );
 				?>
-				<p><?php the_tags(); ?></p>
-			</footer>
-			<?php do_action( 'foundationpress_page_before_comments' ); ?>
-			<?php comments_template(); ?>
-			<?php do_action( 'foundationpress_page_after_comments' ); ?>
+				<?php if ( $the_query->have_posts() ) : ?>
+				<?php while ( $the_query->have_posts() ) : $the_query->the_post(); ?>
+					<?php if ( ! empty( get_post_type() ) ) : ?>
+						<?php if ( get_post_type() != 'post' ) : ?>
+							<?php include apply_filters( 'content_template', $post ); ?>
+						<?php else : get_template_part( 'template-parts/content', get_post_type() ); ?>
+						<?php endif; ?>
+					<?php elseif ( has_post_format() )  : ?>
+						<?php get_template_part( 'template-parts/content', get_post_format() ); ?>
+					<?php else : ?>
+						<?php get_template_part( 'template-parts/content' ); ?>
+					<?php endif; ?>
+					<div class="section-divider">
+						<hr/>
+					</div>
+				<?php endwhile; ?>
+				<a class="button expanded large primary" href="<?php echo get_permalink( get_option( 'page_for_posts' ) ); ?>">Read
+					More</a>
+			</main>
+		<?php get_sidebar(); ?>
+
+
+		<?php else : ?>
+			<?php get_template_part( 'template-parts/content', 'none' ); ?>
+		<?php endif; ?>
 		</div>
-
 	</div>
-
-</section>
-<?php endwhile; ?>
 <?php do_action( 'foundationpress_after_content' ); ?>
-
-<div class="section-divider">
-	<hr />
-</div>
-
-
-<section class="benefits">
-	<header>
-		<h2>Build Foundation based sites, powered by WordPress</h2>
-		<h4>Foundation is the professional choice for designers, developers and teams. <br /> WordPress is by far, <a href="http://trends.builtwith.com/cms">the world's most popular CMS</a> (currently powering 38% of the web).</h4>
-	</header>
-
-	<div class="semantic">
-		<img src="<?php echo get_stylesheet_directory_uri(); ?>/dist/assets/images/demo/semantic.svg" alt="semantic">
-		<h3>Semantic</h3>
-		<p>Everything is semantic. You can have the cleanest markup without sacrificing the utility and speed of Foundation.</p>
-	</div>
-
-	<div class="responsive">
-		<img src="<?php echo get_stylesheet_directory_uri(); ?>/dist/assets/images/demo/responsive.svg" alt="responsive">
-		<h3>Responsive</h3>
-		<p>You can build for small devices first. Then, as devices get larger and larger, layer in more complexity for a complete responsive design.</p>
-
-	</div>
-
-	<div class="customizable">
-		<img src="<?php echo get_stylesheet_directory_uri(); ?>/dist/assets/images/demo/customizable.svg" alt="customizable">
-		<h3>Customizable</h3>
-		<p>You can customize your build to include or remove certain elements, as well as define the size of columns, colors, font size and more.</p>
-
-	</div>
-
-	<div class="professional">
-		<img src="<?php echo get_stylesheet_directory_uri(); ?>/dist/assets/images/demo/professional.svg" alt="professional">
-		<h3>Professional</h3>
-		<p>Millions of designers and developers depend on Foundation. We have business support, training and consulting to help grow your product or service.</p>
-	</div>
-
-	<div class="why-foundation">
-		<a href="/kitchen-sink">See what's in Foundation out of the box →</a>
-	</div>
-
-</section>
-
 <?php get_footer();

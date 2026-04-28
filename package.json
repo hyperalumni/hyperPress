@@ -1,10 +1,11 @@
 {
-  "name": "foundationpress",
-  "title": "FoundationPress",
+  "name": "hyperPress",
+  "title": "HYPER Press",
   "version": "2.11.1",
-  "description": "FoundationPress is a WordPress starter theme based on Foundation 6 by Zurb",
-  "homepage": "https://foundationpress.olefredrik.com",
+  "description": "hyperPress is a fork of FoundationPress (based on Foundation 6 by Zurb) for HYPER WordPress sites",
+  "homepage": "https://hyperpress.idesign.co",
   "license": "MIT",
+  "private": true,
   "main": "gulpfile.babel.js",
   "scripts": {
     "start": "gulp",
@@ -15,19 +16,9 @@
     "phpcs": "gulp phpcs",
     "phpcbf": "gulp phpcbf"
   },
-  "keywords": [
-    "FoundationPress",
-    "WordPress",
-    "starter theme",
-    "Foundation",
-    "semantic",
-    "mobile first",
-    "customizable",
-    "responsive"
-  ],
   "dependencies": {
     "foundation-sites": "~6.9.0",
-    "jquery": "~3.7.1",
+    "jquery": "~4.0.0",
     "motion-ui": "^2.0.8",
     "what-input": "^5.2.12"
   },
@@ -57,10 +48,10 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-uglify": "^1.5.4",
     "gulp-zip": "^4.2.0",
-    "js-yaml": "^3.14.2",
+    "js-yaml": "^4.1.1",
     "panini": "^1.7.2",
     "rimraf": "^2.7.1",
-    "sass-embedded": "^1.97.1",
+    "sass-embedded": "^1.99.0",
     "style-sherpa": "^1.0.2",
     "vinyl-named": "^1.1.0",
     "webpack": "^3.12.0",
@@ -70,10 +61,7 @@
   "packageManager": "yarn@4.12.0+sha512.f45ab632439a67f8bc759bf32ead036a1f413287b9042726b7cc4818b7b49e14e9423ba49b18f9e06ea4941c1ad062385b1d8760a8d5091a1a31e5f6219afca8",
   "repository": {
     "type": "git",
-    "url": "https://github.com/olefredrik/foundationpress.git"
-  },
-  "bugs": {
-    "url": "https://github.com/olefredrik/foundationpress/issues"
+    "url": "https://github.com/hyperalumni/hyperPress.git"
   },
   "babel": {
     "presets": [

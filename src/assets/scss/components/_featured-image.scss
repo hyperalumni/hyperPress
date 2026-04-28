@@ -5,10 +5,18 @@
   height: rem-calc(100);
 
   @include breakpoint(medium) {
-    height: rem-calc(200);
+    height:  rem-calc(200);
+  }
+
+  @include breakpoint(large) {
+    height:  rem-calc(300);
   }
 
   @include breakpoint(xlarge) {
-    height: rem-calc(400);
+    height:  rem-calc(400);
+  }
+
+  @include breakpoint(xxlarge) {
+    height:  rem-calc(600);
   }
 }

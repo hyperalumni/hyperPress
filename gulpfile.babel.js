@@ -1,18 +1,18 @@
 'use strict';
 
-import plugins       from 'gulp-load-plugins';
-import yargs         from 'yargs';
-import browser       from 'browser-sync';
-import gulp          from 'gulp';
-import rimraf        from 'rimraf';
-import yaml          from 'js-yaml';
-import fs            from 'fs';
-import dateFormat    from 'dateformat';
+import plugins from 'gulp-load-plugins';
+import yargs from 'yargs';
+import browser from 'browser-sync';
+import gulp from 'gulp';
+import rimraf from 'rimraf';
+import yaml from 'js-yaml';
+import fs from 'fs';
+import dateFormat from 'dateformat';
 import webpackStream from 'webpack-stream';
-import webpack2      from 'webpack';
-import named         from 'vinyl-named';
-import log           from 'fancy-log';
-import colors        from 'ansi-colors';
+import webpack2 from 'webpack';
+import named from 'vinyl-named';
+import log from 'fancy-log';
+import colors from 'ansi-colors';
 
 // Load all Gulp plugins into one variable
 const $ = plugins({
@@ -28,14 +28,14 @@ const PRODUCTION = !!(yargs.argv.production);
 const DEV = !!(yargs.argv.dev);
 
 // Load settings from settings.yml
-const { BROWSERSYNC, COMPATIBILITY, REVISIONING, PATHS } = loadConfig();
+const {BROWSERSYNC, COMPATIBILITY, REVISIONING, PATHS} = loadConfig();
 
 // Check if file exists synchronously
 function checkFileExists(filepath) {
   let flag = true;
   try {
     fs.accessSync(filepath, fs.F_OK);
-  } catch(e) {
+  } catch (e) {
     flag = false;
   }
   return flag;
@@ -51,7 +51,7 @@ function loadConfig() {
     let ymlFile = fs.readFileSync('config.yml', 'utf8');
     return yaml.load(ymlFile);
 
-  } else if(checkFileExists('config-default.yml')) {
+  } else if (checkFileExists('config-default.yml')) {
     // config-default.yml exists, load it
     log(colors.bold(colors.cyan('config.yml')), 'does not exist, loading', colors.bold(colors.cyan('config-default.yml')));
     let ymlFile = fs.readFileSync('config-default.yml', 'utf8');
@@ -81,20 +81,28 @@ function copy() {
 // Compile Sass into CSS
 // In production, the CSS is compressed
 function sassBuild() {
-  return gulp.src(['src/assets/scss/app.scss','src/assets/scss/editor.scss'])
+  return gulp.src(['src/assets/scss/app.scss', 'src/assets/scss/editor.scss'])
     .pipe($.sourcemaps.init())
-    .pipe($.sass({includePaths: PATHS.sass}).on('error', $.sass.logError))
+    .pipe($.sass({
+      includePaths: PATHS.sass,
+      silenceDeprecations: [
+        'legacy-js-api',
+        'import',
+        'if-function',
+        'global-builtin',
+      ]
+    }).on('error', $.sass.logError))
     .pipe($.autoprefixer({
       browsers: COMPATIBILITY
     }))
 
-    .pipe($.if(PRODUCTION, $.cleanCss({ compatibility: 'ie9' })))
+    .pipe($.if(PRODUCTION, $.cleanCss()))
     .pipe($.if(!PRODUCTION, $.sourcemaps.write()))
     .pipe($.if(REVISIONING && PRODUCTION || REVISIONING && DEV, $.rev()))
     .pipe(gulp.dest(PATHS.dist + '/assets/css'))
     .pipe($.if(REVISIONING && PRODUCTION || REVISIONING && DEV, $.rev.manifest()))
     .pipe(gulp.dest(PATHS.dist + '/assets/css'))
-    .pipe(browser.reload({ stream: true }));
+    .pipe(browser.reload({stream: true}));
 }
 
 // Combine JavaScript into one file
@@ -128,7 +136,9 @@ const webpack = {
       .pipe(named())
       .pipe(webpackStream(webpack.config, webpack2))
       .pipe($.if(PRODUCTION, $.uglify()
-        .on('error', e => { console.log(e); }),
+        .on('error', e => {
+          console.log(e);
+        }),
       ))
       .pipe($.if(REVISIONING && PRODUCTION || REVISIONING && DEV, $.rev()))
       .pipe(gulp.dest(PATHS.dist + '/assets/js'))
@@ -169,16 +179,16 @@ function images() {
       $.imagemin.optipng({
         optimizationLevel: 5,
       }),
-			$.imagemin.gifsicle({
+      $.imagemin.gifsicle({
         interlaced: true,
       }),
-			$.imagemin.svgo({
+      $.imagemin.svgo({
         plugins: [
           {cleanupAttrs: true},
           {removeComments: true},
         ]
       })
-		])))
+    ])))
     .pipe(gulp.dest(PATHS.dist + '/assets/images'));
 }
 
@@ -194,7 +204,7 @@ function archive() {
 }
 
 // PHP Code Sniffer task
-gulp.task('phpcs', function() {
+gulp.task('phpcs', function () {
   return gulp.src(PATHS.phpcs)
     .pipe($.phpcs({
       bin: 'wpcs/vendor/bin/phpcs',
@@ -207,13 +217,13 @@ gulp.task('phpcs', function() {
 // PHP Code Beautifier task
 gulp.task('phpcbf', function () {
   return gulp.src(PATHS.phpcs)
-  .pipe($.phpcbf({
-    bin: 'wpcs/vendor/bin/phpcbf',
-    standard: './codesniffer.ruleset.xml',
-    warningSeverity: 0
-  }))
-  .on('error', log)
-  .pipe(gulp.dest('.'));
+    .pipe($.phpcbf({
+      bin: 'wpcs/vendor/bin/phpcbf',
+      standard: './codesniffer.ruleset.xml',
+      warningSeverity: 0
+    }))
+    .on('error', log)
+    .pipe(gulp.dest('.'));
 });
 
 // Start BrowserSync to preview the site in

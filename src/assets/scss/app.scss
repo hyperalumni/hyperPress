@@ -1,9 +1,9 @@
-@charset 'utf-8';
+@charset "utf-8";
 
 
 @import 'settings';
-@import 'foundation';
-@import 'motion-ui';
+@import 'foundation-sites/scss/foundation';
+@import 'motion-ui/src/motion-ui';
 
 // Global styles
 @include foundation-global-styles;
@@ -72,7 +72,6 @@
   My custom styles:
   Add your scss files below to structure your project styles
 */
-
 // Global
 @import "global/accessibility";
 @import "global/colors";
@@ -85,13 +84,20 @@
 @import "modules/content";
 @import "modules/footer";
 @import "modules/editor-style";
+@import "modules/sticky";
 
 // Components
+@import "components/breadcrumbs";
 @import "components/buttons";
 @import "components/cards";
-@import "components/featured-image";
+@import "components/countdown";
+@import "components/entry";
 @import "components/dividers";
+@import "components/featured-image";
+@import "components/image";
 @import "components/links";
+@import "components/nggallery";
+@import "components/title-banner";
 
 // Templates
 @import "templates/front";

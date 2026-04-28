@@ -1,14 +1,17 @@
-/*
-Theme Name:         FoundationPress
-Theme URI:          http://foundationpress.olefredrik.com
-Github Theme URI:   https://github.com/olefredrik/FoundationPress
-Description:        FoundationPress is a WordPress starter theme based on Foundation 6 by Zurb
-Version:            2.11.1
-Author:             Ole Fredrik Lie
-Author URI:         http://olefredrik.com/
-
-License:            MIT License
-License URI:        http://www.opensource.org/licenses/mit-license.php
+/**
+ * Theme Name:         hyperPress
+ * Theme URI:          https://hyperalumni.org
+ * Github Theme URI:   https://github.com/hyperalumni/hyperPress
+ * Description:        hyperPress is a fork of FoundationPress (based on Foundation 6 by Zurb) for HYPER WordPress sites
+ * Version:            2026.0.0
+ * Author:             Chris McGroarty
+ * Author URI:         https://idesign.co
+ * Text Domain:        hyperpress
+ * Tested up to:       6.4
+ * Requires at least:  6.2
+ * Requires PHP:       7.4
+ * License:            MIT License
+ * License URI:        http://www.opensource.org/licenses/mit-license.php
 */
 
 /* ----------------------------------------------------------------------------
