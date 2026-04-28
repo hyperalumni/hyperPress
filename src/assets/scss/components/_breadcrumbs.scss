@@ -1,0 +1,18 @@
+.breadcrumbs {
+  display: flex;
+
+  li {
+    display: flex;
+
+    &.item:nth-last-child(1) {
+      font-weight: 600;
+
+      .breadcrumb {
+        pointer-events: none;
+        cursor: default;
+        text-decoration: none;
+        color: $body-font-color;
+      }
+    }
+  }
+}

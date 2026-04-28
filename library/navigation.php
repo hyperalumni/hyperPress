@@ -63,7 +63,7 @@ if ( ! function_exists( 'foundationpress_mobile_nav' ) ) {
  * 2) Click 'Screen Options' from the top panel and enable 'CSS CLasses' and 'Link Relationship (XFN)'
  * 3) On your menu item, type 'has-form' in the CSS-classes field. Type 'button' in the XFN field
  * 4) Save Menu. Your menu item will now appear as a button in your top-menu
-*/
+ */
 if ( ! function_exists( 'foundationpress_add_menuclass' ) ) {
 	function foundationpress_add_menuclass( $ulclass ) {
 		$find    = array( '/<a rel="button"/', '/<a title=".*?" rel="button"/' );
@@ -71,5 +71,16 @@ if ( ! function_exists( 'foundationpress_add_menuclass' ) ) {
 
 		return preg_replace( $find, $replace, $ulclass, 1 );
 	}
+
 	add_filter( 'wp_nav_menu', 'foundationpress_add_menuclass' );
 }
+
+if ( ! function_exists( 'hyperpress_customize_the_read_more_link' ) ) :
+	function hyperpress_customize_the_read_more_link() {
+		global $post;
+
+		return '<button class="hollow button medium-down-expanded more-link" href="' . get_permalink() . '#more-' . $post->ID . '">Continue Reading</button>';
+	}
+
+	add_filter( 'the_content_more_link', 'hyperpress_customize_the_read_more_link' );
+endif;

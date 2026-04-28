@@ -3,15 +3,153 @@
 .site-title-bar {
   @include hide-for(medium);
 }
-//
+
+.site-header {
+  background-color: $body-background;
+  z-index: 1000 !important;
+
+  &.is-stuck {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+    border-bottom: $light-gray solid 1px;
+  }
+}
+
+
+.site-navigation {
+  @include xy-grid-container;
+
+  @include breakpoint(medium down) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
 .desktop-menu,
 .site-navigation .top-bar-left {
   @include show-for(medium);
 }
 
+@mixin dropdown($color) {
+  $base-hue: scale-color($color, $lightness: -5%);
+  $darker-hue: scale-color($color, $lightness: -15%);
+  $lighter-hue: scale-color($color, $lightness: 10%);
+
+  & {
+    &.is-active a, a {
+      color: $color;
+    }
+
+    &:hover, &:focus, &.current-menu-item, &.current-menu-ancestor {
+      a {
+        color: $white;
+      }
+    }
+
+    &:hover, &:focus {
+      background-color: $base-hue;
+    }
+
+    &.current-menu-item, &.current-menu-ancestor {
+      background-color: $darker-hue;
+
+      &:hover, &:focus {
+        background-color: $base-hue;
+      }
+    }
+
+    .is-dropdown-submenu {
+      background-color: $base-hue;
+      border-color: $base-hue;
+
+      li {
+        &.current-menu-item {
+          background-color: $darker-hue;
+        }
+
+        &.is-active a, a {
+          color: $white;
+        }
+
+        &:hover, &:focus {
+          background-color: $lighter-hue;
+        }
+
+        a:after {
+          border: none;
+          content: "\00bb";
+          top: .75rem;
+          right: 1.5rem;
+          left: auto;
+        }
+      }
+    }
+
+
+  }
+}
+
+
+.dropdown.menu {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-family: $header-font-family;
+  font-size: 1rem;
+
+  .menu-item {
+    &:not(.is-submenu-item) {
+      padding: 0.5rem;
+      margin: 0 0.5rem;
+    }
+
+    &.is-dropdown-submenu-parent a {
+      &:after {
+        display: none;
+      }
+
+      padding-right: 1rem;
+    }
+  }
+
+  .is-dropdown-submenu {
+    font-size: 0.875rem;
+    font-weight: 400;
+    //box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  }
+
+  .grey, .gray {
+    @include dropdown($hyper-gear-grey);
+  }
+
+  .red {
+    @include dropdown($hyper-red);
+  }
+
+  .orange {
+    @include dropdown($hyper-orange);
+  }
+
+  .green {
+    @include dropdown($hyper-green);
+  }
+
+  .blue {
+    @include dropdown($hyper-blue);
+  }
+
+  .purple {
+    @include dropdown($hyper-purple);
+  }
+
+
+}
+
 // Site title
 .site-desktop-title a {
-  font-weight: bold;
+  font-weight: 600;
+
+  img {
+    max-height: 4rem;
+  }
 }
 
 // WP post navigation
@@ -20,9 +158,9 @@
 }
 
 .nav-previous {
-  float:left;
+  float: left;
 }
 
 .nav-next {
-  float:right;
+  float: right;
 }

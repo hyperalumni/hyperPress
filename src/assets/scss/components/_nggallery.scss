@@ -1,0 +1,13 @@
+.gallery-grid {
+  margin-bottom: 1rem;
+
+  .card {
+    background-color: $light-gray;
+    border: 1px $medium-gray solid;
+
+    &:hover {
+      box-shadow: 0 0 2px rgba(10, 10, 10, 0.5);
+    }
+  }
+}
+

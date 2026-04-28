@@ -22,6 +22,14 @@ if ( ! function_exists( 'foundationpress_theme_support' ) ) :
 			)
 		);
 
+		add_theme_support( 'custom-logo', array(
+			'flex-height'          => true,
+			'flex-width'           => true,
+			'header-text'          => array( 'site-title', 'site-description' ),
+			'unlink-homepage-logo' => false,
+		) );
+		add_theme_support( 'responsive-embeds' );
+
 		// Add menu support
 		add_theme_support( 'menus' );
 
@@ -35,7 +43,17 @@ if ( ! function_exists( 'foundationpress_theme_support' ) ) :
 		add_theme_support( 'automatic-feed-links' );
 
 		// Add post formats support: http://codex.wordpress.org/Post_Formats
-		add_theme_support( 'post-formats', array( 'aside', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio', 'chat' ) );
+		add_theme_support( 'post-formats', array(
+			'aside',
+			'gallery',
+			'link',
+			'image',
+			'quote',
+			'status',
+			'video',
+			'audio',
+			'chat'
+		) );
 
 		// Additional theme support for woocommerce 3.0.+
 		add_theme_support( 'wc-product-gallery-zoom' );

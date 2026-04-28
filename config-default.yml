@@ -23,7 +23,9 @@ PATHS:
     - "node_modules"
   # Paths to JavaScript entry points for webpack to bundle modules
   entries:
+    - "src/assets/js/foundation.js"
     - "src/assets/js/app.js"
+    - "src/assets/js/TimeCircles.js"
   # Paths for the package task to include/exclude in .zip archive
   package:
     - "**/*"

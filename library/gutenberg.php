@@ -8,27 +8,27 @@ if ( ! function_exists( 'foundationpress_gutenberg_support' ) ) :
         array(
             'name' => __( 'Primary Color', 'foundationpress' ),
             'slug' => 'primary',
-            'color' => '#1779ba',
+            'color' => '#0B67B2',
         ),
         array(
             'name' => __( 'Secondary Color', 'foundationpress' ),
             'slug' => 'secondary',
-            'color' => '#767676',
+            'color' => '#c0c0c0',
         ),
         array(
             'name' => __( 'Success Color', 'foundationpress' ),
             'slug' => 'success',
-            'color' => '#3adb76',
+            'color' => '#049655',
         ),
         array(
             'name' => __( 'Warning color', 'foundationpress' ),
             'slug' => 'warning',
-            'color' => '#ffae00',
+            'color' => '#F15623',
         ),
         array(
             'name' => __( 'Alert color', 'foundationpress' ),
             'slug' => 'alert',
-            'color' => '#cc4b37',
+            'color' => '#C52026',
         )
     ) );
 

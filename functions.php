@@ -25,6 +25,10 @@ require_once( 'library/class-foundationpress-comments.php' );
 
 /** Register all navigation menus */
 require_once( 'library/navigation.php' );
+require_once( 'library/breadcrumbs.php' );
+
+/** Add Banner */
+require_once( 'library/banner.php' );
 
 /** Add menu walkers for top-bar and off-canvas */
 require_once( 'library/class-foundationpress-top-bar-walker.php' );
@@ -54,5 +58,25 @@ require_once( 'library/responsive-images.php' );
 /** Gutenberg editor support */
 require_once( 'library/gutenberg.php' );
 
+/** TGMPA plugins */
+require_once( 'library/plugins.php' );
+
+/** WP Customize Options */
+require_once( 'library/customize.php' );
+
+/** Allow SVG Media */
+require_once( 'library/allow-svg.php' );
+
+/** HYPER Colors in wp-head */
+require_once( 'library/root-colors.php' );
+
+/** Add theme defined shortcodes */
+require_once( 'library/shortcodes.php' );
+
+/** Add theme metaboxes */
+require_once( 'library/metaboxes.php' );
+
 /** If your site requires protocol relative url's for theme assets, uncomment the line below */
 // require_once( 'library/class-foundationpress-protocol-relative-theme-assets.php' );
+
+

@@ -1,54 +1,121 @@
-.main-container {
+.grid-container, .main-container {
   @include xy-grid-container;
+
+  &.full-screen {
+    padding-right: 0;
+    padding-left: 0;
+
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .main-grid {
+    @include xy-grid();
+    width: 100%;
+  }
+
+  &:not(.full-screen) {
+    .main-grid {
+      margin-top: 1rem;
+
+      @include breakpoint(large) {
+        margin-top: 1.25rem;
+      }
+
+      @include breakpoint(xlarge) {
+        margin-top: 1.5rem;
+      }
+    }
+
+    &:not(.full-width) {
+      .main-grid {
+        &.sidebar-left {
+          // Place the sidebar below main content on small screens ...
+          @include breakpoint(small) {
+            .main-content {
+              order: 1;
+            }
+            .sidebar {
+              order: 2;
+            }
+          }
+
+          // ... and to the left on medium-up screens, when using the sidebar-left template
+          @include breakpoint(medium) {
+            .main-content {
+              order: 2;
+            }
+            .sidebar {
+              order: 1;
+            }
+          }
+        }
+
+        // Default template
+        .main-content {
+          @include breakpoint(small) {
+            @include xy-cell(12);
+          }
+
+          @include breakpoint(medium) {
+            @include xy-cell(9);
+          }
+        }
+
+        .sidebar {
+          @include breakpoint(small) {
+            @include xy-cell(12);
+          }
+
+          @include breakpoint(medium) {
+            @include xy-cell(3);
+            margin-top: 1rem;
+          }
+
+        }
+      }
+    }
+  }
+
+  &.full-screen {
+    max-width: 100%;
+    margin-top: 0;
+
+    .main-content {
+      @include xy-cell(12, $output: (base size));
+
+      .content {
+        @include xy-cell(12);
+        max-width: 100rem;
+        margin: 1rem auto 0;
+
+        @include breakpoint(large) {
+          margin-top: 1.25rem;
+        }
+
+        @include breakpoint(xlarge) {
+          margin-top: 1.5rem;
+        }
+      }
+    }
+  }
 }
 
-.main-grid {
-  @include xy-grid();
-  margin-top: 1rem;
+.section-divider {
+  flex: 1 1 100%;
 
-  @include breakpoint(medium) {
-    margin-top: 3rem;
-  }
+  @include xy-grid-container;
+  @include xy-grid;
 
-  &.sidebar-left {
-    // Place the sidebar below main content on small screens ...
-    @include breakpoint(small) {
-      .main-content { order: 1; }
-      .sidebar { order: 2; }
-    }
+  width: 100%;
 
-    // ... and to the left on medium-up screens, when using the sidebar-left template
-    @include breakpoint(medium) {
-      .main-content { order: 2; }
-      .sidebar { order: 1; }
-    }
-  }
-
-  // Full width template
-  .main-content-full-width {
+  hr {
     @include xy-cell(12);
+    @extend .dotted;
+    box-sizing: border-box;
   }
+}
 
-  // Default template
-  .main-content {
-    @include breakpoint(small) {
-      @include xy-cell(12);
-    }
-
-    @include breakpoint(medium) {
-      @include xy-cell(8);
-    }
-  }
-
-  .sidebar {
-    @include breakpoint(small) {
-      @include xy-cell(12);
-    }
-
-    @include breakpoint(medium) {
-      @include xy-cell(4);
-      margin-top: 1rem;
-    }
-
-  }
+.no-margin {
+  margin: 0;
 }

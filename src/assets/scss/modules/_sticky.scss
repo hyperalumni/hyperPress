@@ -1,0 +1,23 @@
+html,
+body,
+.off-canvas-content {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  max-width: 100vw;
+}
+
+.wrapper {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-container, .main-grid, .main-content {
+  display: flex;
+  width: 100%;
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+

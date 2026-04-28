@@ -1,0 +1,19 @@
+.entry-meta {
+  margin-bottom: 1.25rem;
+
+  .grid-x {
+    gap: 0.5rem;
+  }
+
+  .label {
+    font-weight: 600;
+
+    &:not(.neutral) {
+      a {
+        color: $white;
+      }
+    }
+  }
+
+
+}
