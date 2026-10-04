@@ -15,12 +15,12 @@ final class ExtractedMediaTest extends WP_UnitTestCase {
 		$this->assertFalse( has_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_nggallery' ) );
 	}
 
-	public function test_with_the_media_plugin_uploads_are_allowed(): void {
+	public function test_with_the_media_plugin_the_nextgen_integration_is_provided(): void {
 		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_EXTRACTED' ) ) {
 			$this->markTestSkipped( 'Needs the media plugin' );
 		}
-		$mimes = apply_filters( 'upload_mimes', array() );
-		$this->assertArrayHasKey( 'svg', $mimes );
-		$this->assertArrayHasKey( 'avif', $mimes );
+		$this->assertTrue( class_exists( 'HyperPress\Media\NextGen\Customizer' ) );
+		// SVG uploads come from the Safe SVG plugin and AVIF from WordPress core, not from the theme or hyperpress-media.
+		$this->assertArrayNotHasKey( 'svg', apply_filters( 'upload_mimes', array() ) );
 	}
 }
