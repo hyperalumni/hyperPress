@@ -5,8 +5,13 @@ use WP_UnitTestCase;
 
 final class SeasonCountTest extends WP_UnitTestCase {
 
+	/** @var callable|null */
+	private $previous = null;
+
 	public function set_up(): void {
 		parent::set_up();
+		global $shortcode_tags;
+		$this->previous = $shortcode_tags['hyper_date_distance'] ?? null;
 		add_shortcode(
 			'hyper_date_distance',
 			static function ( $atts ): string {
@@ -25,6 +30,9 @@ final class SeasonCountTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		remove_shortcode( 'hyper_date_distance' );
+		if ( null !== $this->previous ) {
+			add_shortcode( 'hyper_date_distance', $this->previous );
+		}
 		parent::tear_down();
 	}
 
