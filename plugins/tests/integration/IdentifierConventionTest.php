@@ -18,6 +18,11 @@ final class IdentifierConventionTest extends WP_UnitTestCase {
 		foreach ( $boxes as $box ) {
 			$this->assert_identifier( (string) ( $box['id'] ?? '' ), 'meta box id' );
 			foreach ( $box['fields'] ?? array() as $field ) {
+				// Presentational field types legitimately carry no id.
+				$no_id_types = array( 'heading', 'divider', 'custom_html', 'button' );
+				if ( ( ! isset( $field['id'] ) || '' === $field['id'] ) && in_array( $field['type'] ?? '', $no_id_types, true ) ) {
+					continue;
+				}
 				$this->assert_identifier( (string) ( $field['id'] ?? '' ), 'meta field id in ' . $box['id'] );
 			}
 			foreach ( (array) ( $box['post_types'] ?? array() ) as $post_type ) {
