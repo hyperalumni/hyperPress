@@ -23,7 +23,7 @@
 | Path | Responsibility |
 |---|---|
 | `Dockerfile` | PHP 8.5-cli image with mysqli, git, unzip, composer |
-| `docker-compose.yml` | `php` and `db` services, env for the DB |
+| `compose.yaml` | `php` and `db` services, env for the DB |
 | `composer.json` | Dev dependencies, scripts (`lint`, `test:unit`, `test:integration`), PSR-4 for `tests/src` |
 | `phpcs.xml.dist` | WPCS + PHPCompatibilityWP ruleset (non-gating until the migration plans finish) |
 | `phpunit.xml.dist` | `unit` and `integration` suites |
@@ -49,7 +49,7 @@
 ## Task 1: Docker, Composer and a passing smoke test
 
 **Files:**
-- Create: `Dockerfile`, `docker-compose.yml`, `composer.json`, `phpunit.xml.dist`, `tests/bootstrap-unit.php`, `tests/unit/SmokeTest.php`
+- Create: `Dockerfile`, `compose.yaml`, `composer.json`, `phpunit.xml.dist`, `tests/bootstrap-unit.php`, `tests/unit/SmokeTest.php`
 - Modify: `.gitignore`
 
 - [ ] **Step 1: Write `Dockerfile`**
@@ -67,7 +67,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 WORKDIR /app
 ```
 
-- [ ] **Step 2: Write `docker-compose.yml`**
+- [ ] **Step 2: Write `compose.yaml`**
 
 ```yaml
 services:
@@ -214,8 +214,8 @@ Expected: exit code 0, no output.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add Dockerfile docker-compose.yml composer.json composer.lock phpunit.xml.dist .gitignore tests/bootstrap-unit.php tests/unit/SmokeTest.php
-git commit -m "test: add Docker PHP 8.5 toolchain and smoke test" -- Dockerfile docker-compose.yml composer.json composer.lock phpunit.xml.dist .gitignore tests/bootstrap-unit.php tests/unit/SmokeTest.php
+git add Dockerfile compose.yaml composer.json composer.lock phpunit.xml.dist .gitignore tests/bootstrap-unit.php tests/unit/SmokeTest.php
+git commit -m "test: add Docker PHP 8.5 toolchain and smoke test" -- Dockerfile compose.yaml composer.json composer.lock phpunit.xml.dist .gitignore tests/bootstrap-unit.php tests/unit/SmokeTest.php
 ```
 
 ---

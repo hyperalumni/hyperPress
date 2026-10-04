@@ -22,7 +22,7 @@ Files at the `plugins/` root:
 | `composer.json` | Dev dependencies: `phpunit/phpunit`, `wp-phpunit/wp-phpunit`, `yoast/phpunit-polyfills`, `wp-coding-standards/wpcs`, `phpcompatibility/phpcompatibility-wp`, `dealerdirect/phpcodesniffer-composer-installer`. Also the shared PSR-4 map for tests. |
 | `phpcs.xml.dist` | WordPress ruleset plus PHPCompatibilityWP. Excludes the `class-*.php` file-naming sniff (Spec 1 uses PSR-4 names) and the vendored `TimeCircles.js` assets. |
 | `phpunit.xml.dist` | Two suites: `unit` (no WordPress) and `integration` (WordPress test library). |
-| `docker-compose.yml` | Services `php` (PHP CLI plus composer) and `db` (MariaDB for the integration suite). |
+| `compose.yaml` | Services `php` (PHP CLI plus composer) and `db` (MariaDB for the integration suite). |
 | `tests/bootstrap-unit.php`, `tests/bootstrap-integration.php` | Suite bootstraps. The integration bootstrap loads `hyperpress-utils` first, then the plugin under test. |
 
 Entry points, all run through compose so nothing is needed on the host:

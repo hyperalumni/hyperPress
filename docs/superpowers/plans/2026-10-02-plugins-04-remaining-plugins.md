@@ -428,7 +428,7 @@ Shortcode **tags do not change**: they are stored in post content. Behaviour doe
 
 - [ ] **Step 1: Let the test container see the theme (read-only)**
 
-Add to the `php` service `volumes` in `docker-compose.yml`: `- ../theme:/theme:ro`. Then `docker compose up -d --force-recreate php` is not needed (`run --rm` picks it up).
+Add to the `php` service `volumes` in `compose.yaml`: `- ../theme:/theme:ro`. Then `docker compose up -d --force-recreate php` is not needed (`run --rm` picks it up).
 
 - [ ] **Step 2: Read the five theme files** and write down every tag, attribute (with defaults) and output shape. Note any theme function or theme mod a shortcode depends on; a shortcode that depends on a theme function cannot move unchanged, so stop and ask before continuing.
 
@@ -504,8 +504,8 @@ Run: `docker compose run --rm -e HYPERPRESS_WRITE_SNAPSHOT=1 php composer test:i
 Expected: PASS and `tests/fixtures/legacy-shortcodes.json` written. If a theme file fatals because it needs another theme function, that is the Step 2 stop-and-ask case. Open the fixture: every output should look right (no PHP notices in the text). Fix the case list rather than editing the fixture.
 
 ```bash
-git add docker-compose.yml tests/src/Support/ShortcodeCases.php tests/integration/Shortcodes/CaptureLegacyShortcodesTest.php tests/fixtures/legacy-shortcodes.json
-git commit -m "test: capture legacy theme shortcode output" -- docker-compose.yml tests/src/Support/ShortcodeCases.php tests/integration/Shortcodes/CaptureLegacyShortcodesTest.php tests/fixtures/legacy-shortcodes.json
+git add compose.yaml tests/src/Support/ShortcodeCases.php tests/integration/Shortcodes/CaptureLegacyShortcodesTest.php tests/fixtures/legacy-shortcodes.json
+git commit -m "test: capture legacy theme shortcode output" -- compose.yaml tests/src/Support/ShortcodeCases.php tests/integration/Shortcodes/CaptureLegacyShortcodesTest.php tests/fixtures/legacy-shortcodes.json
 ```
 
 - [ ] **Step 6: Write the parity test `tests/integration/Shortcodes/ShortcodeParityTest.php`** (fails until the plugin exists)
