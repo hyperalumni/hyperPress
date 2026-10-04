@@ -11,14 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_sticky_posts' ) ) :
-	add_filter( 'post_class', 'hyperpress_sticky_posts' );
+add_filter( 'post_class', 'hyperpress_sticky_posts' );
 
-	function hyperpress_sticky_posts( $classes ) {
-		if ( in_array( 'sticky', $classes, true ) ) {
-			$classes   = array_diff( $classes, array( 'sticky' ) );
-			$classes[] = 'wp-sticky';
-		}
-		return $classes;
+function hyperpress_sticky_posts( $classes ) {
+	if ( in_array( 'sticky', $classes, true ) ) {
+		$classes   = array_diff( $classes, array( 'sticky' ) );
+		$classes[] = 'wp-sticky';
 	}
-endif;
+	return $classes;
+}
