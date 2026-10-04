@@ -1,5 +1,4 @@
 <?php
-use function HYPER_Press_Season\get_sorted_seasons;
 // Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
@@ -26,7 +25,7 @@ if ( ! function_exists( 'hyperpress_labels_post' ) ) :
 				'rel'     => 'author'
 			];
 			// Get the season information
-			$seasons = get_sorted_seasons();
+			$seasons = \HyperPress\Season\SortedSeasons::get();
 			if ( ! empty( $seasons ) ) {
 				$season = $seasons[0];
 				if ( ! empty( $season ) ) {
