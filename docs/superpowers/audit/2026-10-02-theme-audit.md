@@ -4,13 +4,13 @@ Date: 2026-10-04. Scope: the theme at branch `cleanup/convention-and-tests` afte
 
 ## Counts (reviewer-reported, after corrections)
 
-critical 0 | high 1 | medium 9 | low 25 | info 8 (43 findings, T1-T43). Severity corrections already applied by the reviewer: T2 (`.env` tracked) medium to info (one key, `NODE_OPTIONS`), T5 (colour theme mods) medium to low (all eight settings use `sanitize_hex_color`).
+critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43). Severity corrections already applied by the reviewer: T2 (`.env` tracked) medium to info (one key, `NODE_OPTIONS`), T5 (colour theme mods) medium to low (all eight settings use `sanitize_hex_color`).
 
 ## Priority list
 
 | # | ID | Sev | Where | Problem | Status |
 |---|---|---|---|---|---|
-| 1 | T1 | high | git history of `library/plugins.php` (`1b1e87c`, removed in `f8c4aed`) | a Meta Box download key was committed. Absent from the current tree. **The owner must rotate it with Meta Box.** | verified (history); rotation is external |
+| 1 | T1 | low | git history of `library/plugins.php` (commit `14566eb` on this local branch) | a Meta Box download key was committed in `14566eb` and removed from the tree later (`f7737e8`). It has never been pushed (no remote branch contains it), so it is not exposed. **Still present in local history**: drop it with a rebase before this branch is pushed. Rotation is optional unless the history was shared another way. | verified |
 | 2 | T3 | medium | `front-page.php:91` | `include apply_filters( 'content_template', $post )` passes a `WP_Post` as default; with no override the include fatals, and the string-typed plugin callbacks throw a TypeError. Pass `''` and guard the include. | verified |
 | 3 | T24 | medium | `library/banner/search.php:13`, `template-parts/banner.php:50` | the banner runs `do_shortcode()` on text containing the visitor's search query, so `/?s=[shortcode]` executes registered shortcodes unauthenticated. Escape brackets or do not shortcode-expand the subtitle for search. | verified |
 | 4 | T26 | medium | `comments.php` | approved comments are listed before `post_password_required()` is checked, exposing comments on password-protected posts. | verified |
@@ -24,7 +24,7 @@ critical 0 | high 1 | medium 9 | low 25 | info 8 (43 findings, T1-T43). Severity
 
 ## Decisions needed
 
-Proposed default: rotate the key (T1, owner), then fix T3, T24, T26, T27, T29 (test first), then T28, T30 and T4; defer the rest.
+Proposed default: rebase the key out of `14566eb` before pushing (T1, owner), then fix T3, T24, T26, T27, T29 (test first), then T28, T30 and T4; defer the rest.
 
 ## Appendix: reviewer report
 
@@ -63,7 +63,7 @@ critical 0 | high 1 | medium 5 | low 14 | info 3
 
 ## Findings
 
-### T1 (high) Meta Box download key in git history
+### T1 (low, downgraded) Meta Box download key in local git history
 - Evidence: `git log --oneline -S'api_key' -- library/plugins.php` returns `f8c4aed` (refactor: drop HYPER plugins and the committed download key from the TGM list) and `1b1e87c` (rework theme for hyper). Which of the two introduced the key was not determined. The key was removed from the tree in `f8c4aed`. The key value was not read or printed. The current tree was not re-grepped.
 - Impact: anyone with repo or clone access can recover a paid-plugin download credential from history. Not web-triggerable.
 - Fix: rotate or revoke the key with the vendor. Optionally rewrite history if the repo is or will be shared. Keep the key in a constant or env var outside the repo.
@@ -568,7 +568,7 @@ Counts verified with `git grep` (33+11+10+6+6+5+4+3+2+1+1+1+1 = 84).
 
 ### Final counts (whole theme report, after all updates)
 
-critical 0 | high 1 | medium 9 | low 25 | info 8 (43 findings, T1-T43).
+critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43).
 
 Severity changes applied through update notes: T2 medium to info, T5 medium to low, T19 low to info.
 
