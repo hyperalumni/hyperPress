@@ -13,6 +13,10 @@ final class PluginsListTest extends TestCase {
 		$this->assertDoesNotMatchRegularExpression( "/'slug'\s*=>\s*'hyperpress-/", self::source(), 'HYPER plugins declare their dependencies via Requires Plugins' );
 	}
 
+	public function test_plugin_sources_are_not_plain_http(): void {
+		$this->assertDoesNotMatchRegularExpression( "/'source'\s*=>\s*'http:\/\//", self::source(), 'plugin archives must be downloaded over https' );
+	}
+
 	public function test_no_api_key_is_committed(): void {
 		$this->assertDoesNotMatchRegularExpression( '/api_key\s*=/i', self::source() );
 		$this->assertDoesNotMatchRegularExpression( '/[?&](token|key|api_key|apikey)=[A-Za-z0-9]{16,}/i', self::source() );

@@ -69,7 +69,7 @@ function hyper_register_required_plugins(): void {
 		array(
 			'name'         => 'RunCache - Full Page Cache',
 			'slug'         => 'runcache',
-			'source'       => 'http://runcache.site/download/runcache-latest.zip',
+			'source'       => 'https://runcache.site/download/runcache-latest.zip',
 			'external_url' => 'https://runcache.site',
 			'required'     => false,
 		),
