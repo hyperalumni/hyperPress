@@ -1,6 +1,8 @@
 # Plugins 04: Migrate Countdown, Newsletter, Sponsor, Socials, Label, Student; Create Shortcodes and Media
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
+> **STATUS: COMPLETED** (2026-10-04). Commits 52e6ab6..d10d636 on branch cleanup/convention-and-tests. All 14 plugins are on the new structure; every unit and integration test passes (4 skipped by design).
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [x]`) syntax.
 
 **Goal:** Finish migrating the remaining six plugins, then create the two plugins extracted from the theme (`hyperpress-shortcodes`, `hyperpress-media`), one commit per plugin.
 
@@ -17,14 +19,14 @@
 
 **Target files:** `hyperpress-countdown.php`, `src/Plugin.php`, `src/Customizer.php`, `src/Assets.php`, `src/MetaBoxes.php`, `src/Shortcode.php`.
 
-- [ ] **Step 1: Read the legacy files and print the legacy registration** (values this plan does not list):
+- [x] **Step 1: Read the legacy files and print the legacy registration** (values this plan does not list):
 
 Run: `docker compose run --rm php php -r 'echo json_encode(json_decode(file_get_contents("tests/fixtures/legacy-registrations.json"),true)["post_types"]["countdown"], JSON_PRETTY_PRINT);'`
 Note `labels.singular_name`, `menu_position`, `menu_icon`, `has_archive`, `supports`.
 
-- [ ] **Step 2: R1 and R2** for `hyperpress-countdown.php`.
+- [x] **Step 2: R1 and R2** for `hyperpress-countdown.php`.
 
-- [ ] **Step 3: Write `src/Plugin.php`**: same shape as robot's, with `POST_TYPE = 'hyper_countdown'`, `CAPS_OPTION = 'hyperpress_countdown_caps_version'`, main file `hyperpress-countdown.php`, NO `Breadcrumbs::register` (non-public type), plus `Customizer::register()`, `Assets::register()`, `MetaBoxes::register()`, `Shortcode::register()` in `boot()`. Definition:
+- [x] **Step 3: Write `src/Plugin.php`**: same shape as robot's, with `POST_TYPE = 'hyper_countdown'`, `CAPS_OPTION = 'hyperpress_countdown_caps_version'`, main file `hyperpress-countdown.php`, NO `Breadcrumbs::register` (non-public type), plus `Customizer::register()`, `Assets::register()`, `MetaBoxes::register()`, `Shortcode::register()` in `boot()`. Definition:
 
 ```php
 	public static function definition(): array {
@@ -54,7 +56,7 @@ Note `labels.singular_name`, `menu_position`, `menu_icon`, `has_archive`, `suppo
 
 Values verified against legacy `lib/custom-post-type.php:47-75` (menu position 11, icon `dashicons-clock`, supports `title` plus the invalid `slug`, `label` 'Count Downs' but label strings 'Countdown(s)'). Step 1's printout should agree; if it does not, the snapshot wins. Legacy `capability_type => 'page'` is intentionally replaced by the shared specific capabilities, and the legacy `order => true` leftover is dropped.
 
-- [ ] **Step 4: Convert the concern files (R3) with these renames**
+- [x] **Step 4: Convert the concern files (R3) with these renames**
 
 | Legacy | New |
 |---|---|
@@ -68,9 +70,9 @@ Values verified against legacy `lib/custom-post-type.php:47-75` (menu position 1
 
 Keep the `hyperpress_countdown` shortcode tag. Keep `extract()` in the shortcode and all output code as is: they are plugins audit findings, not part of this plan. Legacy `lib/shortcodes.php` is a loader; it is replaced by `Shortcode::register()`.
 
-- [ ] **Step 5: Delete legacy `lib/` files, run R7** (`<name>`=countdown, `<old>`=countdown).
+- [x] **Step 5: Delete legacy `lib/` files, run R7** (`<name>`=countdown, `<old>`=countdown).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add hyperpress-countdown
@@ -85,11 +87,11 @@ git commit -m "refactor(countdown): migrate to hyper_countdown and the shared st
 
 **Target files:** `hyperpress-newsletter.php`, `src/Plugin.php`, `src/BannerFilter.php`, `src/Content.php`, `src/Customizer.php`, `src/Labels.php`, `src/MetaBoxes.php`, `src/Shortcodes.php`.
 
-- [ ] **Step 1: Read the legacy files** (notably `labels.php`, `content.php`, `shortcodes.php`, which this plan has not seen) and print the legacy rewrite flags: newsletter's legacy rewrite is `{with_front:false, slug:newsletter, hierarchical:true}`.
+- [x] **Step 1: Read the legacy files** (notably `labels.php`, `content.php`, `shortcodes.php`, which this plan has not seen) and print the legacy rewrite flags: newsletter's legacy rewrite is `{with_front:false, slug:newsletter, hierarchical:true}`.
 
-- [ ] **Step 2: R1 and R2** for `hyperpress-newsletter.php`. Header fixes: add `Plugin URI`, `License` and `License URI` (copy from `hyperpress-award`). **Before replacing the body**, read it: the legacy main file hooks the theme's `content_template` filter (`newsletter.php:43`, callback `hyperpress_add_newsletter_content_template`). That hook and callback move into `src/Content.php` (registered by `Plugin::boot()`), they are not deleted. The theme includes the path this filter returns, so the behaviour must survive.
+- [x] **Step 2: R1 and R2** for `hyperpress-newsletter.php`. Header fixes: add `Plugin URI`, `License` and `License URI` (copy from `hyperpress-award`). **Before replacing the body**, read it: the legacy main file hooks the theme's `content_template` filter (`newsletter.php:43`, callback `hyperpress_add_newsletter_content_template`). That hook and callback move into `src/Content.php` (registered by `Plugin::boot()`), they are not deleted. The theme includes the path this filter returns, so the behaviour must survive.
 
-- [ ] **Step 3: Write the regression test FIRST** `tests/integration/NewsletterBannerTest.php` (it documents current behaviour, including the colour quirk):
+- [x] **Step 3: Write the regression test FIRST** `tests/integration/NewsletterBannerTest.php` (it documents current behaviour, including the colour quirk):
 
 ```php
 <?php
@@ -144,7 +146,7 @@ final class NewsletterBannerTest extends WP_UnitTestCase {
 
 Run it: `docker compose run --rm php composer test:integration -- --filter NewsletterBannerTest`. Expected: FAIL (post type not registered yet).
 
-- [ ] **Step 3b: Add the content-template contract test** `tests/integration/NewsletterContentTemplateTest.php`:
+- [x] **Step 3b: Add the content-template contract test** `tests/integration/NewsletterContentTemplateTest.php`:
 
 ```php
 <?php
@@ -165,7 +167,7 @@ final class NewsletterContentTemplateTest extends WP_UnitTestCase {
 
 It fails until Step 6 is done. If the legacy callback only returns a path for a request shape other than a single (check `newsletter/lib/content.php`), change the request in this test to match, not the callback.
 
-- [ ] **Step 4: Write `src/Plugin.php`**: robot's shape, with `POST_TYPE = 'hyper_newsletter'`, `CAPS_OPTION = 'hyperpress_newsletter_caps_version'`, main file `hyperpress-newsletter.php`, plus in `boot()`: `BannerFilter::register()`, `Content::register()`, `Customizer::register()`, `Labels::register()`, `MetaBoxes::register()`, `Shortcodes::register()` (register only the concerns that exist after Step 1), and:
+- [x] **Step 4: Write `src/Plugin.php`**: robot's shape, with `POST_TYPE = 'hyper_newsletter'`, `CAPS_OPTION = 'hyperpress_newsletter_caps_version'`, main file `hyperpress-newsletter.php`, plus in `boot()`: `BannerFilter::register()`, `Content::register()`, `Customizer::register()`, `Labels::register()`, `MetaBoxes::register()`, `Shortcodes::register()` (register only the concerns that exist after Step 1), and:
 
 ```php
 		Banner::register(
@@ -201,7 +203,7 @@ It fails until Step 6 is done. If the legacy callback only returns a path for a 
 	}
 ```
 
-- [ ] **Step 5: Write `src/BannerFilter.php`** (moves the season-aware singular logic out of the shared code; behaviour copied from legacy `lib/banner.php`, including that the per-post colour overwrites the theme-mod colour even when empty):
+- [x] **Step 5: Write `src/BannerFilter.php`** (moves the season-aware singular logic out of the shared code; behaviour copied from legacy `lib/banner.php`, including that the per-post colour overwrites the theme-mod colour even when empty):
 
 ```php
 <?php
@@ -252,7 +254,7 @@ final class BannerFilter {
 }
 ```
 
-- [ ] **Step 6: Convert the remaining concern files (R3) with these renames**
+- [x] **Step 6: Convert the remaining concern files (R3) with these renames**
 
 | Legacy | New |
 |---|---|
@@ -265,12 +267,12 @@ final class BannerFilter {
 
 The legacy `lib/breadcrumbs.php` and `lib/banner.php` are deleted (replaced by the shared classes).
 
-- [ ] **Step 7: Delete legacy `lib/` files, run R7** (`<name>`=newsletter, `<old>`=newsletter) plus the regression test:
+- [x] **Step 7: Delete legacy `lib/` files, run R7** (`<name>`=newsletter, `<old>`=newsletter) plus the regression test:
 
 Run: `docker compose run --rm php composer test:integration -- --filter 'NewsletterBannerTest|RegistrationParityTest.*newsletter'`
 Expected: PASS.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add hyperpress-newsletter tests/integration/NewsletterBannerTest.php
@@ -285,9 +287,9 @@ git commit -m "refactor(newsletter): migrate to hyper_newsletter; banner specifi
 
 **Target files:** `hyperpress-sponsor.php`, `src/Plugin.php`, `src/Archive.php`, `src/Content.php`, `src/Customizer.php`, `src/Labels.php`, `src/MetaBoxes.php`, `src/Shortcodes.php`, `src/Widgets/DisplaySponsorsWidget.php`, `src/Widgets.php` (replaces `widgets/load.php`).
 
-- [ ] **Step 1: Read the legacy files** (`archive.php`, `content.php`, `labels.php`, `shortcodes.php`, `display-sponsors.php` are not yet seen).
-- [ ] **Step 2: R1 and R2** for `hyperpress-sponsor.php`. **Before replacing the body**, read it: it hooks the theme's `content_template` filter (`sponsor.php:52`, callback `hyperpress_add_sponsor_content_template`); that hook and callback move into `src/Content.php`. Add `tests/integration/SponsorContentTemplateTest.php` identical in shape to the newsletter one (post type `hyper_sponsor`, class `SponsorContentTemplateTest`), and make it pass in Step 5.
-- [ ] **Step 3: Write `src/Plugin.php`**: robot's shape with `POST_TYPE = 'hyper_sponsor'`, `TIER = 'hyper_tier'`, `CAPS_OPTION = 'hyperpress_sponsor_caps_version'`, main file `hyperpress-sponsor.php`, `register()` registering the post type and the tier taxonomy, and `boot()` additionally calling `Archive::register()`, `Content::register()`, `Customizer::register()`, `Labels::register()`, `MetaBoxes::register()`, `Shortcodes::register()`, `Widgets::register()` (only the concerns that exist after Step 1) and:
+- [x] **Step 1: Read the legacy files** (`archive.php`, `content.php`, `labels.php`, `shortcodes.php`, `display-sponsors.php` are not yet seen).
+- [x] **Step 2: R1 and R2** for `hyperpress-sponsor.php`. **Before replacing the body**, read it: it hooks the theme's `content_template` filter (`sponsor.php:52`, callback `hyperpress_add_sponsor_content_template`); that hook and callback move into `src/Content.php`. Add `tests/integration/SponsorContentTemplateTest.php` identical in shape to the newsletter one (post type `hyper_sponsor`, class `SponsorContentTemplateTest`), and make it pass in Step 5.
+- [x] **Step 3: Write `src/Plugin.php`**: robot's shape with `POST_TYPE = 'hyper_sponsor'`, `TIER = 'hyper_tier'`, `CAPS_OPTION = 'hyperpress_sponsor_caps_version'`, main file `hyperpress-sponsor.php`, `register()` registering the post type and the tier taxonomy, and `boot()` additionally calling `Archive::register()`, `Content::register()`, `Customizer::register()`, `Labels::register()`, `MetaBoxes::register()`, `Shortcodes::register()`, `Widgets::register()` (only the concerns that exist after Step 1) and:
 
 ```php
 		Banner::register(
@@ -340,7 +342,7 @@ Definitions:
 	}
 ```
 
-- [ ] **Step 4: Convert the concern files (R3) with these renames**
+- [x] **Step 4: Convert the concern files (R3) with these renames**
 
 | Legacy | New |
 |---|---|
@@ -356,12 +358,12 @@ Definitions:
 
 Do not change the `sponsor_description` sanitizing (`lib/meta-boxes.php:46-52`): it is a plugins audit finding. The legacy `banner.php`, `breadcrumbs.php`, `custom-post-type.php`, `custom-taxonomy.php` are replaced by the shared classes and Plugin.
 
-- [ ] **Step 5: Delete legacy `lib/` files, run R7** (`<name>`=sponsor, `<old>`=sponsor) and parity for the tier:
+- [x] **Step 5: Delete legacy `lib/` files, run R7** (`<name>`=sponsor, `<old>`=sponsor) and parity for the tier:
 
 Run: `docker compose run --rm php composer test:integration -- --filter 'RegistrationParityTest.*(sponsor|tier)'`
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add hyperpress-sponsor
@@ -376,9 +378,9 @@ git commit -m "refactor(sponsor): migrate to hyper_sponsor and hyper_tier and th
 
 **Target files:** `hyperpress-socials.php`, `src/Plugin.php`, `src/Customizer.php`, `src/Widgets.php`, `src/Widgets/DisplaySocialsWidget.php`.
 
-- [ ] **Step 1: Read the legacy files.**
-- [ ] **Step 2: R1 and R2** for `hyperpress-socials.php` (no `activate`, no Utils use; `Plugin::boot()` only registers `Customizer::register()` and `Widgets::register()`). Header: no `Requires Plugins` line at all.
-- [ ] **Step 3: Convert `Customizer` with these renames** (setting ids `hyperpress_socials_*` are already compliant and stay):
+- [x] **Step 1: Read the legacy files.**
+- [x] **Step 2: R1 and R2** for `hyperpress-socials.php` (no `activate`, no Utils use; `Plugin::boot()` only registers `Customizer::register()` and `Widgets::register()`). Header: no `Requires Plugins` line at all.
+- [x] **Step 3: Convert `Customizer` with these renames** (setting ids `hyperpress_socials_*` are already compliant and stay):
 
 | Legacy | New |
 |---|---|
@@ -386,9 +388,9 @@ git commit -m "refactor(sponsor): migrate to hyper_sponsor and hyper_tier and th
 | control ids `socials_firstinspires`, `_thebluealliance`, `_facebook`, `_instagram`, `_youtube`, `_twitter`, `_github`, `_snapchat`, `_tiktok`, `_discord`, `_contact`, `_add_calendar` | `hyperpress_socials_firstinspires`, `..._thebluealliance`, `..._facebook`, `..._instagram`, `..._youtube`, `..._twitter`, `..._github`, `..._snapchat`, `..._tiktok`, `..._discord`, `..._contact`, `..._add_calendar` (each equal to its setting id) |
 | each control's `section` value | `hyperpress_socials` |
 
-- [ ] **Step 4: Convert the widget**: class `HYPERpress_Display_Socials_Widget` becomes `HyperPress\Socials\Widgets\DisplaySocialsWidget`; `id_base` stays `hyperpress_socials`; `Widgets::register()` hooks `widgets_init` and calls `register_widget( DisplaySocialsWidget::class )`. Leave the widget's `$args['before_widget']` style echoes as they are (plugins audit item).
-- [ ] **Step 5: Delete legacy `lib/` files, run R7** (`<name>`=socials; no parity case).
-- [ ] **Step 6: Commit**
+- [x] **Step 4: Convert the widget**: class `HYPERpress_Display_Socials_Widget` becomes `HyperPress\Socials\Widgets\DisplaySocialsWidget`; `id_base` stays `hyperpress_socials`; `Widgets::register()` hooks `widgets_init` and calls `register_widget( DisplaySocialsWidget::class )`. Leave the widget's `$args['before_widget']` style echoes as they are (plugins audit item).
+- [x] **Step 5: Delete legacy `lib/` files, run R7** (`<name>`=socials; no parity case).
+- [x] **Step 6: Commit**
 
 ```bash
 git add hyperpress-socials
@@ -401,15 +403,15 @@ git commit -m "refactor(socials): migrate to the shared structure and hyperpress
 
 **Requires Plugins:** none for both. They have no behaviour and stay that way.
 
-- [ ] **Step 1: Read `hyperpress-label/label.php` and `hyperpress-student/student.php`.**
-- [ ] **Step 2: Label.** `git mv hyperpress-label/label.php hyperpress-label/hyperpress-label.php`. Apply R1 header edits (no `Requires Plugins`). Make the Description say it is a placeholder, for example `Placeholder for a future HYPERpress label feature. Does nothing yet.` Body after the header is only `defined( 'ABSPATH' ) || exit;`.
-- [ ] **Step 3: Student.** `git mv hyperpress-student/student.php hyperpress-student/hyperpress-student.php`. Apply the same header edits, and add the missing `Author` and `Author URI` (copy from another plugin). Description: `Placeholder for a future HYPERpress student feature. Does nothing yet.`
-- [ ] **Step 4: Verify**
+- [x] **Step 1: Read `hyperpress-label/label.php` and `hyperpress-student/student.php`.**
+- [x] **Step 2: Label.** `git mv hyperpress-label/label.php hyperpress-label/hyperpress-label.php`. Apply R1 header edits (no `Requires Plugins`). Make the Description say it is a placeholder, for example `Placeholder for a future HYPERpress label feature. Does nothing yet.` Body after the header is only `defined( 'ABSPATH' ) || exit;`.
+- [x] **Step 3: Student.** `git mv hyperpress-student/student.php hyperpress-student/hyperpress-student.php`. Apply the same header edits, and add the missing `Author` and `Author URI` (copy from another plugin). Description: `Placeholder for a future HYPERpress student feature. Does nothing yet.`
+- [x] **Step 4: Verify**
 
 Run: `docker compose run --rm php composer test:unit -- --filter 'PluginHeadersTest.*(label|student)'`
 Expected: PASS. Run `composer test:integration -- --filter BootTest`: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add hyperpress-label hyperpress-student
@@ -426,13 +428,13 @@ Shortcode **tags do not change**: they are stored in post content. Behaviour doe
 
 **Target files:** `hyperpress-shortcodes/hyperpress-shortcodes.php`, `src/Plugin.php`, `src/Shortcodes/TimeRestrict.php` (registers `time-restrict`, `time-restrict-repeat`, `time-restrict-repeat-1`, `-2`, `-3`), `src/Shortcodes/DateDistance.php` (`hyper_date_distance`), `src/Shortcodes/Raw.php` (`raw`), `src/Shortcodes/Emphasis.php` (`hyper_emphasis`), `src/Shortcodes/Banner.php` (`hyper_banner`).
 
-- [ ] **Step 1: Let the test container see the theme (read-only)**
+- [x] **Step 1: Let the test container see the theme (read-only)**
 
 Add to the `php` service `volumes` in `compose.yaml`: `- ../theme:/theme:ro`. Then `docker compose up -d --force-recreate php` is not needed (`run --rm` picks it up).
 
-- [ ] **Step 2: Read the five theme files** and write down every tag, attribute (with defaults) and output shape. Note any theme function or theme mod a shortcode depends on; a shortcode that depends on a theme function cannot move unchanged, so stop and ask before continuing.
+- [x] **Step 2: Read the five theme files** and write down every tag, attribute (with defaults) and output shape. Note any theme function or theme mod a shortcode depends on; a shortcode that depends on a theme function cannot move unchanged, so stop and ask before continuing.
 
-- [ ] **Step 3: Write the case list `tests/src/Support/ShortcodeCases.php`**
+- [x] **Step 3: Write the case list `tests/src/Support/ShortcodeCases.php`**
 
 ```php
 <?php
@@ -453,7 +455,7 @@ final class ShortcodeCases {
 
 Complete the array from Step 2 before continuing. The list above is the required shape and two known-valid examples; the real list has at least one case per tag and per attribute.
 
-- [ ] **Step 4: Write the capture test `tests/integration/Shortcodes/CaptureLegacyShortcodesTest.php`** (env-gated, like the snapshot from plugins-01-test-toolchain)
+- [x] **Step 4: Write the capture test `tests/integration/Shortcodes/CaptureLegacyShortcodesTest.php`** (env-gated, like the snapshot from plugins-01-test-toolchain)
 
 ```php
 <?php
@@ -498,7 +500,7 @@ final class CaptureLegacyShortcodesTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 5: Capture, inspect, commit the fixture**
+- [x] **Step 5: Capture, inspect, commit the fixture**
 
 Run: `docker compose run --rm -e HYPERPRESS_WRITE_SNAPSHOT=1 php composer test:integration -- --filter CaptureLegacyShortcodesTest`
 Expected: PASS and `tests/fixtures/legacy-shortcodes.json` written. If a theme file fatals because it needs another theme function, that is the Step 2 stop-and-ask case. Open the fixture: every output should look right (no PHP notices in the text). Fix the case list rather than editing the fixture.
@@ -508,7 +510,7 @@ git add compose.yaml tests/src/Support/ShortcodeCases.php tests/integration/Shor
 git commit -m "test: capture legacy theme shortcode output" -- compose.yaml tests/src/Support/ShortcodeCases.php tests/integration/Shortcodes/CaptureLegacyShortcodesTest.php tests/fixtures/legacy-shortcodes.json
 ```
 
-- [ ] **Step 6: Write the parity test `tests/integration/Shortcodes/ShortcodeParityTest.php`** (fails until the plugin exists)
+- [x] **Step 6: Write the parity test `tests/integration/Shortcodes/ShortcodeParityTest.php`** (fails until the plugin exists)
 
 ```php
 <?php
@@ -549,19 +551,19 @@ final class ShortcodeParityTest extends WP_UnitTestCase {
 
 Run it: `docker compose run --rm php composer test:integration -- --filter ShortcodeParityTest`. Expected: FAIL (tags not registered), unless the theme is active in the test environment, which it is not.
 
-- [ ] **Step 7: Create the plugin** with the rules from plugins-03-core-plugins (R1 to R5), with these specifics:
+- [x] **Step 7: Create the plugin** with the rules from plugins-03-core-plugins (R1 to R5), with these specifics:
   - `hyperpress-shortcodes.php`: header per R1 (`Plugin Name: hyperPress Shortcodes`, a real Description, Author, License and License URI copied from `hyperpress-award`, no `Requires Plugins`), R2 body without `activate`.
   - `src/Plugin.php`: `boot()` adds `add_action( 'init', array( self::class, 'register' ) )`; `register()` calls `Shortcodes\TimeRestrict::register()`, `DateDistance::register()`, `Raw::register()`, `Emphasis::register()`, `Banner::register()`.
   - Each shortcode class: `final class X { public static function register(): void { add_shortcode( '<tag>', array( self::class, 'render' ) ); } public static function render( $atts = array(), $content = null ) { /* body copied unchanged from the theme function */ } }`. Keep `extract()` and the output code exactly as in the theme (audit items). Rename nothing that is a tag or an attribute name.
   - If a theme function has a different signature or extra helper functions (for example in `show-hide-content.php`), move the helpers into the same class as `private static` methods.
 
-- [ ] **Step 8: Run**
+- [x] **Step 8: Run**
 
 Run: `docker compose run --rm php composer test:integration -- --filter ShortcodeParityTest`
 Expected: PASS for every case. plugins-01-test-toolchain mismatch means the move changed behaviour: fix the plugin, never the fixture.
 Run: `docker compose run --rm php composer test:unit -- --filter 'PluginHeadersTest.*shortcodes'` PASS; `composer lint:syntax` exit 0.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add hyperpress-shortcodes tests/integration/Shortcodes/ShortcodeParityTest.php
@@ -576,9 +578,9 @@ git commit -m "feat(shortcodes): add hyperpress-shortcodes (extracted from the t
 
 **Target files:** `hyperpress-media/hyperpress-media.php`, `src/Plugin.php`, `src/Uploads/Svg.php`, `src/Uploads/Avif.php`, `src/NextGen/Customizer.php`, `src/NextGen/Breadcrumbs.php`.
 
-- [ ] **Step 1: Read the four theme files** and list: the filters and priorities used; for the NextGen Customizer file the section id, setting id (`hyperpress_nggallery_photos_page`) and control id; and how the NextGen breadcrumb file detects NextGen (it imports `Imagely\NGG\DataMappers\Album` and `Gallery`).
+- [x] **Step 1: Read the four theme files** and list: the filters and priorities used; for the NextGen Customizer file the section id, setting id (`hyperpress_nggallery_photos_page`) and control id; and how the NextGen breadcrumb file detects NextGen (it imports `Imagely\NGG\DataMappers\Album` and `Gallery`).
 
-- [ ] **Step 2: Write the failing test `tests/integration/Media/MediaTest.php`**
+- [x] **Step 2: Write the failing test `tests/integration/Media/MediaTest.php`**
 
 ```php
 <?php
@@ -615,18 +617,18 @@ final class MediaTest extends WP_UnitTestCase {
 
 Run: `docker compose run --rm php composer test:integration -- --filter MediaTest`. Expected: FAIL.
 
-- [ ] **Step 3: Create the plugin** with the rules from plugins-03-core-plugins (R1 to R5):
+- [x] **Step 3: Create the plugin** with the rules from plugins-03-core-plugins (R1 to R5):
   - `hyperpress-media.php`: header per R1 (`Plugin Name: hyperPress Media`, real Description, no `Requires Plugins`), R2 body without `activate`.
   - `src/Plugin.php`: `boot()` calls `Uploads\Svg::register()`, `Uploads\Avif::register()`, `NextGen\Customizer::register()` and, only `if ( class_exists( 'Imagely\NGG\DataMappers\Album' ) )`, `NextGen\Breadcrumbs::register()`. The `class_exists` check stays because NextGen is a real optional third-party dependency.
   - `Uploads\Svg` and `Uploads\Avif`: the theme filters moved unchanged (hooks, priorities, bodies). The theme's SVG file contains a branch for WordPress 4.7.1 only; move it as is and record it as an audit item, do not delete it here.
   - `NextGen\Customizer`: setting id unchanged; the control id becomes the setting id; the section id becomes `hyperpress_media_nextgen` (update any control that referenced the old section).
   - `NextGen\Breadcrumbs`: `public static function add( $breadcrumbs )` hooked on `hyperpress_breadcrumbs_content` at priority 20, body unchanged; `register()` adds the filter.
 
-- [ ] **Step 4: Run**
+- [x] **Step 4: Run**
 
 Run: `docker compose run --rm php composer test:integration -- --filter MediaTest` PASS; `composer test:unit -- --filter 'PluginHeadersTest.*media'` PASS; `composer lint:syntax` exit 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add hyperpress-media tests/integration/Media/MediaTest.php
@@ -637,16 +639,16 @@ git commit -m "feat(media): add hyperpress-media (extracted from the theme)" -- 
 
 ## Task 8: Checkpoint: all contracts should now pass
 
-- [ ] **Step 1: Run both suites**
+- [x] **Step 1: Run both suites**
 
 Run: `docker compose run --rm php composer test:unit; docker compose run --rm php composer test:integration`
 Expected: everything PASSES, including `PluginHeadersTest`, `NoLegacyKeysTest`, `KeyConventionTest`, `PublicUrlTest`, `CapabilitiesTest`, `TaxonomyAttachmentTest`, `IdentifierConventionTest`, `RegistrationParityTest`. Skips are only the snapshot writer and non-public URL cases.
 
-- [ ] **Step 2: Fix stragglers**
+- [x] **Step 2: Fix stragglers**
 
 Any failure names the file and identifier. Fix the production code (never the test), re-run, and commit each fix separately with a pathspec. Typical leftovers: a widget `id_base` or Customizer control still differing from its setting id, a stray old key the grep did not catch, a header field.
 
-- [ ] **Step 3: Flip this plan's checkboxes, add the `STATUS: COMPLETED` banner, commit the plan**
+- [x] **Step 3: Flip this plan's checkboxes, add the `STATUS: COMPLETED` banner, commit the plan**
 
 ```bash
 git add docs/superpowers/plans/2026-10-02-plugins-04-remaining-plugins.md
@@ -655,4 +657,12 @@ git commit -m "docs(plans): complete plugins-04-remaining-plugins" -- docs/super
 
 ## Execution notes
 
-(Fill in during execution.)
+- Final state: unit 121 tests OK; integration 147 tests OK with 4 skipped (snapshot writers and non-public URL cases); `lint:syntax` exit 0. All contract tests (keys, URLs, capabilities, attachment, identifiers, headers, legacy-key scan) are green.
+- The theme's shortcodes and media code are mirrored in `hyperpress-shortcodes` (66 characterisation cases, fixture captured from the theme code) and `hyperpress-media`. The theme still loads its own copies: do not deploy both with NextGen active until theme-03 removes the theme files, or album/gallery breadcrumbs are appended twice.
+- The test image now has ext-intl (needed for the ordinal `suffix` path of `hyper_date_distance`); `composer.json` requires `ext-intl`.
+- `content_template` and `archive_template` hooks moved with their templates to `templates/` in newsletter and sponsor (the theme `include`s the returned path). Added `NewsletterContentTemplateTest` and `SponsorContentTemplateTest`.
+- Socials: the Customizer section and all 12 control ids now follow the convention. Media: the NextGen control used to point at a section that never existed (so it never displayed); it now has its own section `hyperpress_media_nextgen` and appears.
+- Sponsor labels now use `SortedSeasons::get`. The theme callers of `get_sorted_seasons` are handled in theme-02-renames-and-breadcrumbs.
+- New audit candidates: SVG upload sanitising and the dead WP 4.7.1 branch (media), unsanitised `$_SERVER['REQUEST_URI']` and unguarded array indexes in NextGen breadcrumbs, widget `update()` reading undefined keys (sponsor), `content_template` callbacks typed `string` while the theme passes a `WP_Post` on the front page (theme-05).
+- Test-isolation fix: `SeasonCountTest` removed the real `hyper_date_distance` shortcode in tear_down; it now restores it.
+- Deferred minors: weekly/monthly/annual `time-restrict-repeat` branches are date-dependent (parity only shows stable output); several thin tests (newsletter archive/colour fallback, media gating); existing data is not migrated (dev DB reset by design).
