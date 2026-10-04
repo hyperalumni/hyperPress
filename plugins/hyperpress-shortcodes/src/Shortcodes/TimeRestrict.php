@@ -29,14 +29,18 @@ final class TimeRestrict {
 	 * @return string The content to display
 	 */
 	public static function render( $atts, $content ): string {
-		extract( shortcode_atts(
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- plugins audit
+		extract(
+			shortcode_atts(
 				array(
 					'show' => '', // Retired in favor of 'on' for better consistency.
 					'hide' => '', // Retired in favor of 'off' for better consistency.
 					'on'   => '',
 					'off'  => '',
 					'else' => '',
-				), $atts )
+				),
+				$atts
+			)
 		);
 
 		$showit = 0; // Set some defaults.
@@ -50,10 +54,12 @@ final class TimeRestrict {
 			$off = $hide;
 		}
 
+		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
 		if ( empty( $on ) || strtotime( $on ) < current_time( 'timestamp' ) ) { // If on time isn't set, or has already passed, show the content.
 			$showit = 1;
 		}
 
+		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
 		if ( empty( $off ) || strtotime( $off ) > current_time( 'timestamp' ) ) {  // If off time isn't set, or is in the future, show the content.
 			$hideit = 0;
 		}
@@ -76,7 +82,9 @@ final class TimeRestrict {
 	 * @return string The content to display
 	 */
 	public static function render_repeat( $atts, $content ): string {
-		extract( shortcode_atts(
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- plugins audit
+		extract(
+			shortcode_atts(
 				array(
 					'type'     => '',
 					'ontime'   => '00:00:00',
@@ -88,11 +96,14 @@ final class TimeRestrict {
 					'onmonth'  => '',
 					'offmonth' => '',
 					'else'     => '',
-				), $atts )
+				),
+				$atts
+			)
 		);
 
 		$showit = 0; // Set some defaults.
 
+		// phpcs:disable WordPress.DateTime.RestrictedFunctions.date_date,WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
 		$onwday   = date( 'w', strtotime( ucfirst( $onday ) ) ); // Convert day to PHP numerical representation of day (w).
 		$offwday  = date( 'w', strtotime( ucfirst( $offday ) ) );
 		$onmonth  = date( 'n', strtotime( $onmonth ) ); // Make sure month is in numberical format.
@@ -102,6 +113,7 @@ final class TimeRestrict {
 		$todaysdate  = date( 'j', current_time( 'timestamp' ) );
 		$todaysmonth = date( 'n', current_time( 'timestamp' ) );
 		$currenttime = date( 'H:i:s', current_time( 'timestamp' ) );
+		// phpcs:enable WordPress.DateTime.RestrictedFunctions.date_date,WordPress.DateTime.CurrentTimeTimestamp.Requested
 
 		if ( 'annually' === $type && ( empty( $ondate ) || empty( $offdate ) || empty( $onmonth ) || empty( $offmonth ) ) ) { // Show content if not all required attributes set.
 			$showit = 1;

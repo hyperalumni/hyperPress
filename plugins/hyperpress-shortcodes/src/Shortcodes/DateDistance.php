@@ -9,14 +9,18 @@ final class DateDistance {
 		add_shortcode( 'hyper_date_distance', array( self::class, 'render' ) );
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- plugins audit
 	public static function render( $atts = array(), $content = null ): string {
-		$args = shortcode_atts( array(
-			'date'      => '',
-			'format'    => '%y',
-			'inclusive' => false,
-			'suffix'    => false,
-			'locale'    => 'en-US',
-		), $atts );
+		$args = shortcode_atts(
+			array(
+				'date'      => '',
+				'format'    => '%y',
+				'inclusive' => false,
+				'suffix'    => false,
+				'locale'    => 'en-US',
+			),
+			$atts
+		);
 
 		$date      = $args['date'];
 		$format    = $args['format'];
@@ -27,7 +31,7 @@ final class DateDistance {
 		$diff = date_create()->diff( date_create( $date ) )->format( $format );
 
 		if ( $inclusive ) {
-			$diff ++;
+			++$diff;
 		}
 
 		if ( $suffix ) {

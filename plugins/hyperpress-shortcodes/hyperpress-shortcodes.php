@@ -1,5 +1,7 @@
 <?php
 /**
+ * The hyperPress Shortcodes plugin.
+ *
  * @wordpress-plugin
  * Plugin Name:         hyperPress Shortcodes
  * Plugin URI:          https://hyperalumni.org

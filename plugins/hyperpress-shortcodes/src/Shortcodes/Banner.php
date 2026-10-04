@@ -9,8 +9,19 @@ final class Banner {
 		add_shortcode( 'hyper_banner', array( self::class, 'render' ) );
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- plugins audit
 	public static function render( $atts = array(), $content = null ): string {
-		extract( shortcode_atts( [ 'anchor' => '', 'title' => '', 'subtitle' => '' ], $atts ) );
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- plugins audit
+		extract(
+			shortcode_atts(
+				array(
+					'anchor'   => '',
+					'title'    => '',
+					'subtitle' => '',
+				),
+				$atts
+			)
+		);
 		if ( ! empty( $title ) || ! empty( $subtitle ) ) {
 			$output = '<header role="banner" class="banner">';
 			if ( ! empty( $anchor ) ) {
