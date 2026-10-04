@@ -77,6 +77,7 @@ final class NoStaleReferencesTest extends TestCase {
 			'old utils namespace'     => array( '/HYPER_Press_Utils/', 'Utils namespace is now HyperPress\\Utils' ),
 			'old control classes'     => array( '/HYPERpress_Dropdown_/', 'Controls are HyperPress\\Utils\\Controls\\*' ),
 			'theme breadcrumb helper' => array( '/hyperpress_breadcrumbs_custom_post_type/', 'Builder moved to HyperPress\\Utils\\Breadcrumbs' ),
+			'old season namespace'   => array( '/HYPER_Press_Season/', 'get_sorted_seasons is now \\HyperPress\\Season\\SortedSeasons::get' ),
 			'old countdown key'       => array( '/[\'"]countdown[\'"]\s*\]/', "Countdown post type key is now 'hyper_countdown'" ),
 		);
 	}
@@ -120,6 +121,8 @@ Change `'post_type' => [ 'countdown' ]` to `'post_type' => [ 'hyper_countdown' ]
 
 Delete lines 20 to 108 (the whole `if ( ! function_exists( 'hyperpress_breadcrumbs_custom_post_type' ) ) : ... endif;` block). The twelve `require_once` lines at the top stay (they are the core page-type trails and the router).
 
+- [ ] **Step 3b: Season helper callers.** The plugin consumer audit found two theme callers of the season plugin's helper: `library/labels/post.php` (line 2 `use HYPER_Press_Season\get_sorted_seasons;` and the call near line 29) and `library/breadcrumbs/post.php` (the call near line 13). Replace each import and call with `\HyperPress\Season\SortedSeasons::get(...)` (same arguments), guarded only if the season plugin is a real optional dependency of that template (it is required by the theme's plugins, so no `function_exists`/`class_exists` guard). Read both files first and keep the surrounding behaviour unchanged.
+
 - [ ] **Step 4: Run**
 
 Run: `docker compose run --rm php composer test:unit -- --filter NoStaleReferencesTest` — expected PASS.
@@ -129,8 +132,8 @@ Run: `docker compose run --rm php composer lint:syntax` — exit 0.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add library/customize/homepage.php library/metaboxes/homepage-customize.php library/breadcrumbs.php tests/unit/NoStaleReferencesTest.php
-git commit -m "refactor: use HyperPress\\Utils controls and hyper_countdown; drop the theme CPT breadcrumb builder" -- library/customize/homepage.php library/metaboxes/homepage-customize.php library/breadcrumbs.php tests/unit/NoStaleReferencesTest.php
+git add library/customize/homepage.php library/metaboxes/homepage-customize.php library/breadcrumbs.php library/labels/post.php library/breadcrumbs/post.php tests/unit/NoStaleReferencesTest.php
+git commit -m "refactor: use HyperPress\\Utils controls and hyper_countdown; drop the theme CPT breadcrumb builder" -- library/customize/homepage.php library/metaboxes/homepage-customize.php library/breadcrumbs.php library/labels/post.php library/breadcrumbs/post.php tests/unit/NoStaleReferencesTest.php
 ```
 
 ---
