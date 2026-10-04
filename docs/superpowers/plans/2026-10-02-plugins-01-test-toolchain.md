@@ -552,7 +552,7 @@ git commit -m "test: add header lint and shared Convention expectations (failing
 
 ```php
 <?php
-// Constants for the WordPress test suite. Values come from docker-compose env.
+// Constants for the WordPress test suite. Values come from the compose.yaml environment.
 define( 'ABSPATH', dirname( __DIR__ ) . '/vendor/wordpress/' );
 
 define( 'DB_NAME', getenv( 'WP_DB_NAME' ) ?: 'wordpress_test' );
