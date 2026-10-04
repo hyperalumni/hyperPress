@@ -315,9 +315,9 @@ function hyperpress_gallery($attr) {
 		}
 		$output .= "<{$item_tag} class='fp-gallery-item cell'>";
 		$output .= "
-	        <{$icon_tag} class='fp-gallery-icon {$orientation}'>
-	            $link
-	        </{$icon_tag}>";
+		        <{$icon_tag} class='fp-gallery-icon {$orientation}'>
+		            $link
+		        </{$icon_tag}>";
 
 		// Uncomment if you wish to display captions inline on gallery.
 		/*
