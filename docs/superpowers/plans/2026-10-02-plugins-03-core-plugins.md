@@ -1,6 +1,8 @@
 # Plugins 03: Migrate Season, Program, Robot, Award, Competition
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
+> **STATUS: COMPLETED** (2026-10-04). Commits bf57ac0..3e5f687 on branch cleanup/convention-and-tests. Season, program, robot, award, competition (with district and week) are migrated; remaining red tests are for countdown, newsletter, sponsor and tier (plugins-04).
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [x]`) syntax.
 
 **Goal:** Move five plugins onto the new structure, one commit per plugin, each driven by the registration-parity test and the plugins-01-test-toolchain contract tests.
 
@@ -58,7 +60,7 @@ Compares every new registration with the snapshot from plugins-01-test-toolchain
 **Files:**
 - Create: `tests/integration/RegistrationParityTest.php`
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 ```php
 <?php
@@ -160,12 +162,12 @@ final class RegistrationParityTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 2: Run and confirm FAIL**
+- [x] **Step 2: Run and confirm FAIL**
 
 Run: `docker compose run --rm php composer test:integration -- --filter RegistrationParityTest`
 Expected: every case FAILS with "hyper_* is not registered" (nothing migrated yet).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/integration/RegistrationParityTest.php
@@ -180,13 +182,13 @@ git commit -m "test: add registration parity test against the legacy snapshot" -
 
 **Target files:** `hyperpress-season.php`, `src/Plugin.php`, `src/Banner.php`, `src/Breadcrumbs.php`, `src/Customizer.php`, `src/MetaBoxes.php`, `src/Rewrite.php`, `src/SortedSeasons.php`, `src/Shortcodes/SeasonCount.php`.
 
-- [ ] **Step 1: Read every legacy file**
+- [x] **Step 1: Read every legacy file**
 
 Read each legacy file listed above so the conversion keeps hook names, priorities and behaviour. Also re-read the Task 0 consumer list from plugins-02-shared-utils for callers of `get_sorted_seasons`.
 
-- [ ] **Step 2: R1 and R2** for `hyperpress-season.php`.
+- [x] **Step 2: R1 and R2** for `hyperpress-season.php`.
 
-- [ ] **Step 3: Write `src/Plugin.php`**
+- [x] **Step 3: Write `src/Plugin.php`**
 
 ```php
 <?php
@@ -234,7 +236,7 @@ final class Plugin {
 
 The legacy function was named `hyperpress_register_season_taxonomoy` (typo). It is replaced, not renamed. Object types read the theme mod `hyperpress_season_post_types` with default `[]` (attached to nothing), matching legacy.
 
-- [ ] **Step 4: Convert the concern files (R3)** with these specific edits:
+- [x] **Step 4: Convert the concern files (R3)** with these specific edits:
   - `Banner`: `is_tax( 'season' )` becomes `is_tax( 'hyper_season' )`. Keep `$banner['type'] = 'season'` (theme-facing value) and the `hyperpress_gear_blue` / `hyperpress_season_banner_subtitle` theme mods unchanged.
   - `Breadcrumbs`: `is_tax( 'season' )` becomes `is_tax( 'hyper_season' )`. The rest is copied unchanged (the array-based breadcrumb logic is season-specific and stays here).
   - `SortedSeasons`: `get_sorted_seasons` becomes `SortedSeasons::get(...)` with the same parameters and body; `'season'` in `wp_get_post_terms` becomes `'hyper_season'`. Update every caller found in the plugins-02-shared-utils Task 0 list that lives in a plugin.
@@ -243,7 +245,7 @@ The legacy function was named `hyperpress_register_season_taxonomoy` (typo). It 
   - `Shortcodes\SeasonCount` (new, extracted from the theme): read `theme/library/shortcodes/season-count.php` (21 lines) and move the `hyper_season_count` shortcode here unchanged: same tag, same attributes (including the `season` attribute), same output. It calls `[hyper_date_distance]`, which lives in `hyperpress-shortcodes` (plugins-04-remaining-plugins Task 6); when that shortcode is not registered the tag renders unexpanded, which is accepted (season does not hard-depend on the shortcodes plugin). Register it from `Plugin::boot()` via `SeasonCount::register()` on `init`. Add `tests/integration/SeasonCountTest.php` asserting the tag is registered and that, with a stand-in `hyper_date_distance` shortcode registered in the test, the output equals what the theme code produces for the same attributes (capture the expected string by running the theme file once in a scratch test, as in plugins-04-remaining-plugins Task 6 Step 4).
   - `Rewrite` (needs real work, found during plugins-02 Task 5): the legacy rule is `^seasons/([^/]+)/([^/]+)?s$` -> `index.php?hyper_season=$matches[1]&post_type=$matches[2]`. It derives `post_type` from the archive slug by stripping the trailing `s` (`sponsors` becomes `sponsor`), which only equals the post type key for the legacy keys; with `hyper_sponsor` it would query a post type that does not exist. Replace it: `Rewrite::register()` hooks `init` at priority 20 (after the post types register at 10) and, for every public post type whose key starts with `hyper_` and whose `has_archive` is a string, adds `add_rewrite_rule( '^seasons/([^/]+)/' . preg_quote( $archive ) . '/?$', 'index.php?hyper_season=$matches[1]&post_type=' . $key, 'top' )`. This produces the same public URLs as before (`/seasons/2026/sponsors/`) and matches what `HyperPress\Utils\Breadcrumbs` links to. The season rewrite slug `seasons` must be read from `get_taxonomy( 'hyper_season' )->rewrite['slug']`, not hard-coded twice.
 
-- [ ] **Step 5: Add a test that the season rewrite rules resolve** `tests/integration/SeasonRewriteTest.php`
+- [x] **Step 5: Add a test that the season rewrite rules resolve** `tests/integration/SeasonRewriteTest.php`
 
 ```php
 <?php
@@ -278,12 +280,12 @@ final class SeasonRewriteTest extends WP_UnitTestCase {
 ```
 
 (The archive test uses `hyper_award`, which is migrated in Task 5 of this plan: implement Task 2 Step 5 after Task 5 passes, or run that one test only once award is migrated; the first test is meaningful immediately.) If `is_tax` is false on the archive request, read how WordPress resolves `hyper_season=2026&post_type=hyper_sponsor` (both query vars set) and adjust the assertions to what WordPress actually reports, keeping the `post_type` check: the requirement is that the URL resolves to sponsors of that season, not a 404.
-- [ ] **Step 6: Delete the legacy `lib/` files, then run R7 verification**, with `<name>`=season and `<old>`=season (taxonomy case):
+- [x] **Step 6: Delete the legacy `lib/` files, then run R7 verification**, with `<name>`=season and `<old>`=season (taxonomy case):
 
 Run: `docker compose run --rm php composer test:integration -- --filter 'RegistrationParityTest.*season|SeasonRewriteTest'`
 Expected: PASS. If parity fails on a value, fix the definition (the failure message names the property); do not edit the parity test.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add hyperpress-season tests/integration/SeasonRewriteTest.php
@@ -298,9 +300,9 @@ git commit -m "refactor(season): migrate to hyper_season and the shared structur
 
 **Target files:** `hyperpress-program.php`, `src/Plugin.php`, `src/Customizer.php`, `src/MetaBoxes.php`.
 
-- [ ] **Step 1: Read the legacy files.**
-- [ ] **Step 2: R1 and R2** for `hyperpress-program.php`.
-- [ ] **Step 3: Write `src/Plugin.php`**
+- [x] **Step 1: Read the legacy files.**
+- [x] **Step 2: R1 and R2** for `hyperpress-program.php`.
+- [x] **Step 3: Write `src/Plugin.php`**
 
 ```php
 <?php
@@ -343,9 +345,9 @@ final class Plugin {
 }
 ```
 
-- [ ] **Step 4: Convert `Customizer` and `MetaBoxes` (R3)**: control id `program_post_types` becomes `hyperpress_program_post_types`; use `\HyperPress\Utils\Controls\PostTypeDropdownControl`; section `hyperpress_program` and the panel id are unchanged.
-- [ ] **Step 5: Delete legacy files, run R7** (`<name>`=program, `<old>`=program).
-- [ ] **Step 6: Commit**
+- [x] **Step 4: Convert `Customizer` and `MetaBoxes` (R3)**: control id `program_post_types` becomes `hyperpress_program_post_types`; use `\HyperPress\Utils\Controls\PostTypeDropdownControl`; section `hyperpress_program` and the panel id are unchanged.
+- [x] **Step 5: Delete legacy files, run R7** (`<name>`=program, `<old>`=program).
+- [x] **Step 6: Commit**
 
 ```bash
 git add hyperpress-program
@@ -360,9 +362,9 @@ git commit -m "refactor(program): migrate to hyper_program and the shared struct
 
 **Target files:** `hyperpress-robot.php`, `src/Plugin.php`.
 
-- [ ] **Step 1: Read the legacy files.**
-- [ ] **Step 2: R1 and R2** for `hyperpress-robot.php`. The legacy description is wrong; set `Description: Adds the Robot custom post type for showcasing the robots Team HYPER has built.`
-- [ ] **Step 3: Write `src/Plugin.php`** (the shared `Breadcrumbs` replaces the local copy; robot has no banner)
+- [x] **Step 1: Read the legacy files.**
+- [x] **Step 2: R1 and R2** for `hyperpress-robot.php`. The legacy description is wrong; set `Description: Adds the Robot custom post type for showcasing the robots Team HYPER has built.`
+- [x] **Step 3: Write `src/Plugin.php`** (the shared `Breadcrumbs` replaces the local copy; robot has no banner)
 
 ```php
 <?php
@@ -420,8 +422,8 @@ final class Plugin {
 }
 ```
 
-- [ ] **Step 4: Delete legacy files, run R7** (`<name>`=robot, `<old>`=robot).
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Delete legacy files, run R7** (`<name>`=robot, `<old>`=robot).
+- [x] **Step 5: Commit**
 
 ```bash
 git add hyperpress-robot
@@ -436,13 +438,13 @@ git commit -m "refactor(robot): migrate to hyper_robot and the shared structure"
 
 **Target files:** `hyperpress-award.php`, `src/Plugin.php`.
 
-- [ ] **Step 1: Read the legacy files, then print the legacy registration** to get the values this plan does not list (rewrite hierarchical flag):
+- [x] **Step 1: Read the legacy files, then print the legacy registration** to get the values this plan does not list (rewrite hierarchical flag):
 
 Run: `docker compose run --rm php php -r 'echo json_encode(json_decode(file_get_contents("tests/fixtures/legacy-registrations.json"),true)["post_types"]["award"]["rewrite"]);'`
 Expected: shows `slug`, `with_front` and optionally `hierarchical`. Set `rewrite_hierarchical` below to match.
 
-- [ ] **Step 2: R1 and R2** for `hyperpress-award.php`.
-- [ ] **Step 3: Write `src/Plugin.php`**: identical structure to robot's `Plugin.php` in Task 4 with these differences only: namespace `HyperPress\Award`, `POST_TYPE = 'hyper_award'`, `CAPS_OPTION = 'hyperpress_award_caps_version'`, main file name `hyperpress-award.php`, and this definition:
+- [x] **Step 2: R1 and R2** for `hyperpress-award.php`.
+- [x] **Step 3: Write `src/Plugin.php`**: identical structure to robot's `Plugin.php` in Task 4 with these differences only: namespace `HyperPress\Award`, `POST_TYPE = 'hyper_award'`, `CAPS_OPTION = 'hyperpress_award_caps_version'`, main file name `hyperpress-award.php`, and this definition:
 
 ```php
 	public static function definition(): array {
@@ -464,8 +466,8 @@ Expected: shows `slug`, `with_front` and optionally `hierarchical`. Set `rewrite
 
 (Write out the full class, do not reference Task 4 at run time: copy its body with the differences above.)
 
-- [ ] **Step 4: Delete legacy files, run R7** (`<name>`=award, `<old>`=award).
-- [ ] **Step 5: Commit**
+- [x] **Step 4: Delete legacy files, run R7** (`<name>`=award, `<old>`=award).
+- [x] **Step 5: Commit**
 
 ```bash
 git add hyperpress-award
@@ -480,12 +482,12 @@ git commit -m "refactor(award): migrate to hyper_award and the shared structure"
 
 **Target files:** `hyperpress-competition.php`, `src/Plugin.php`, `src/MetaBoxes.php` (holds the merged `lib/meta-boxes.php` + `lib/metaboxes/information.php`).
 
-- [ ] **Step 1: Read the legacy files** and print the legacy rewrite flags:
+- [x] **Step 1: Read the legacy files** and print the legacy rewrite flags:
 
 Run: `docker compose run --rm php php -r 'echo json_encode(json_decode(file_get_contents("tests/fixtures/legacy-registrations.json"),true)["post_types"]["competition"]["rewrite"]);'`
 
-- [ ] **Step 2: R1 and R2** for `hyperpress-competition.php`.
-- [ ] **Step 3: Write `src/Plugin.php`**
+- [x] **Step 2: R1 and R2** for `hyperpress-competition.php`.
+- [x] **Step 3: Write `src/Plugin.php`**
 
 ```php
 <?php
@@ -596,7 +598,7 @@ final class Plugin {
 }
 ```
 
-- [ ] **Step 4: Convert the meta boxes into `src/MetaBoxes.php` (R3) with these renames**
+- [x] **Step 4: Convert the meta boxes into `src/MetaBoxes.php` (R3) with these renames**
 
 | Legacy | New |
 |---|---|
@@ -614,13 +616,13 @@ final class Plugin {
 
 Keep every field's other settings and the box's other settings exactly as legacy. Do not add `sanitize_callback` here (the missing sanitizers are audit findings for plugins-06-audit).
 
-- [ ] **Step 5: Delete legacy `lib/` files.**
-- [ ] **Step 6: Run R7** (`<name>`=competition) and the parity cases for all three keys:
+- [x] **Step 5: Delete legacy `lib/` files.**
+- [x] **Step 6: Run R7** (`<name>`=competition) and the parity cases for all three keys:
 
 Run: `docker compose run --rm php composer test:integration -- --filter 'RegistrationParityTest.*(competition|district|week)'`
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add hyperpress-competition
@@ -631,12 +633,12 @@ git commit -m "refactor(competition): migrate to hyper_competition and the share
 
 ## Task 7: Checkpoint for plugins-03-core-plugins
 
-- [ ] **Step 1: Run the whole suite and record what still fails**
+- [x] **Step 1: Run the whole suite and record what still fails**
 
 Run: `docker compose run --rm php composer test:unit; docker compose run --rm php composer test:integration`
 Expected: no fatals. Remaining failures are only for plugins not yet migrated (countdown, newsletter, sponsor, socials, label, student) and the contract tests that need all plugins (`KeyConventionTest`, `IdentifierConventionTest` and so on). List them in the notes below.
 
-- [ ] **Step 2: Flip this plan's checkboxes, add the `STATUS: COMPLETED` banner, commit the plan**
+- [x] **Step 2: Flip this plan's checkboxes, add the `STATUS: COMPLETED` banner, commit the plan**
 
 ```bash
 git add docs/superpowers/plans/2026-10-02-plugins-03-core-plugins.md
@@ -645,4 +647,11 @@ git commit -m "docs(plans): complete plugins-03-core-plugins" -- docs/superpower
 
 ## Execution notes
 
-(Fill in during execution.)
+- Checkpoint: unit 121 tests (32 errors, 9 failures: header lint for the 8 unmigrated plugins and `NoLegacyKeysTest`); integration 71 tests, 21 failures, 3 skipped. Failures are all for countdown, newsletter, sponsor, `hyper_tier` and the identifier tests that cover those plugins. `lint:syntax` exit 0.
+- Season: the legacy rewrite rule derived `post_type` from the archive slug by stripping a trailing `s`, which cannot work with `hyper_*` keys. `Rewrite` now adds one rule per public `hyper_*` archive at `init` priority 20, reading the season slug from the taxonomy. `SeasonRewriteTest` skips until a `hyper_*` archive exists and passed for real once award was migrated.
+- Season Customizer: the `class_exists` guard on the dropdown control was removed after review (utils is a required plugin).
+- Competition: the legacy post type is NOT hierarchical (snapshot); only its rewrite is hierarchical. The definition uses `hierarchical => false` with `rewrite_hierarchical => true`.
+- Robot's legacy header lacked `Domain Path` and `Update URI`; both were added to match the others.
+- Open cross-plugin items: `hyperpress-sponsor/lib/labels.php` and the theme (`library/labels/post.php`, `library/breadcrumbs/post.php`) still call `HYPER_Press_Season\get_sorted_seasons` (plugins-04 Task 3 and theme-02).
+- Audit candidates added to plugins-06-audit: hard-coded Google Maps `api_key` and `__( '' )` in the competition meta box.
+- Deferred minors: robot definition omits `hierarchical => false` (default); `version()` reads the main file on every request; `SeasonCountTest` expectations were derived by hand (reviewer verified the logic); a Customizer dropdown smoke test belongs in plugins-05.
