@@ -4,8 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-if ( ! function_exists( 'foundationpress_sidebar_widgets' ) ) :
-	add_action( 'widgets_init', 'foundationpress_sidebar_widgets' );
+if ( ! function_exists( 'hyperpress_sidebar_widgets' ) ) :
+	add_action( 'widgets_init', 'hyperpress_sidebar_widgets' );
 
 	/**
 	 * Register widget areas
@@ -13,7 +13,7 @@ if ( ! function_exists( 'foundationpress_sidebar_widgets' ) ) :
 	 * @package FoundationPress
 	 * @since FoundationPress 1.0.0
 	 */
-	function foundationpress_sidebar_widgets() {
+	function hyperpress_sidebar_widgets() {
 		register_sidebar(
 			array(
 				'id'            => 'sidebar-widgets',

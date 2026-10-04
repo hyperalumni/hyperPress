@@ -27,11 +27,11 @@ add_image_size( 'fp-medium', 1024 );
 add_image_size( 'fp-large', 1200 );
 add_image_size( 'fp-xlarge', 1920 );
 
-if ( ! function_exists( 'foundationpress_custom_sizes' ) ) :
-	add_filter( 'image_size_names_choose', 'foundationpress_custom_sizes' );
+if ( ! function_exists( 'hyperpress_custom_sizes' ) ) :
+	add_filter( 'image_size_names_choose', 'hyperpress_custom_sizes' );
 
 // Register the new image sizes for use in the add media modal in wp-admin
-	function foundationpress_custom_sizes( $sizes ) {
+	function hyperpress_custom_sizes( $sizes ) {
 		return array_merge(
 			$sizes, array(
 				'fp-small'  => __( 'FP Small' ),
@@ -44,11 +44,11 @@ if ( ! function_exists( 'foundationpress_custom_sizes' ) ) :
 endif;
 
 
-if ( ! function_exists( 'foundationpress_adjust_image_sizes_attr' ) ) :
-	add_filter( 'wp_calculate_image_sizes', 'foundationpress_adjust_image_sizes_attr', 10, 2 );
+if ( ! function_exists( 'hyperpress_adjust_image_sizes_attr' ) ) :
+	add_filter( 'wp_calculate_image_sizes', 'hyperpress_adjust_image_sizes_attr', 10, 2 );
 
 // Add custom image sizes attribute to enhance responsive image functionality for content images
-	function foundationpress_adjust_image_sizes_attr( $sizes, $size ) {
+	function hyperpress_adjust_image_sizes_attr( $sizes, $size ) {
 
 		// Actual width of image
 		$width = $size[0];

@@ -4,8 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-if ( ! function_exists( 'foundationpress_theme_support' ) ) :
-	add_action( 'after_setup_theme', 'foundationpress_theme_support' );
+if ( ! function_exists( 'hyperpress_theme_support' ) ) :
+	add_action( 'after_setup_theme', 'hyperpress_theme_support' );
 
 /**
 	 * Register theme support for languages, menus, post-thumbnails, post-formats etc.
@@ -13,7 +13,7 @@ if ( ! function_exists( 'foundationpress_theme_support' ) ) :
 	 * @package FoundationPress
 	 * @since FoundationPress 1.0.0
 	 */
-	function foundationpress_theme_support() {
+	function hyperpress_theme_support() {
 		// Add language support
 		load_theme_textdomain( 'foundationpress', get_template_directory() . '/languages' );
 

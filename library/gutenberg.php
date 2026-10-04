@@ -5,10 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-if ( ! function_exists( 'foundationpress_gutenberg_support' ) ) :
-	add_action( 'after_setup_theme', 'foundationpress_gutenberg_support' );
+if ( ! function_exists( 'hyperpress_gutenberg_support' ) ) :
+	add_action( 'after_setup_theme', 'hyperpress_gutenberg_support' );
 
-	function foundationpress_gutenberg_support(): void {
+	function hyperpress_gutenberg_support(): void {
 
     // Add foundation color palette to the editor
     add_theme_support( 'editor-color-palette', array(
