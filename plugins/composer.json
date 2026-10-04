@@ -1,0 +1,37 @@
+{
+  "name": "hyperpress/plugins",
+  "description": "Dev tooling for the HYPERpress plugins",
+  "type": "project",
+  "license": "GPL-2.0-or-later",
+  "require-dev": {
+    "phpunit/phpunit": "^9.6",
+    "yoast/phpunit-polyfills": "^2.0",
+    "wp-phpunit/wp-phpunit": "^6.9",
+    "johnpbloch/wordpress-core": "^6.9",
+    "wp-coding-standards/wpcs": "^3.1",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HyperPress\\Tests\\": "tests/src/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "johnpbloch/wordpress-core-installer": true
+    },
+    "sort-packages": true
+  },
+  "extra": {
+    "wordpress-install-dir": "vendor/wordpress"
+  },
+  "scripts": {
+    "lint:syntax": "find hyperpress-* tests -name '*.php' -print0 | xargs -0 -n1 php -d display_errors=stderr -l > /dev/null",
+    "lint:cs": "phpcs",
+    "lint": ["@lint:syntax", "@lint:cs"],
+    "test:unit": "phpunit --testsuite unit",
+    "test:integration": "phpunit --testsuite integration"
+  }
+}
