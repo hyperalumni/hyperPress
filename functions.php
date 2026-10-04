@@ -78,9 +78,6 @@ require_once( 'library/supports/avif.php' );
 /** HYPER Colors in wp-head */
 require_once( 'library/root-colors.php' );
 
-/** Add theme-defined shortcodes */
-require_once( 'library/shortcodes.php' );
-
 /** Add theme metaboxes */
 require_once( 'library/metaboxes.php' );
 
