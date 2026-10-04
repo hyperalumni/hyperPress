@@ -1,21 +1,20 @@
 <?php
+namespace HyperPress\Countdown;
 
-namespace HYPER_Press_Countdown;
+defined( 'ABSPATH' ) || exit;
 
-// Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+final class Shortcode {
 
-if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_add_countdown_shortcode' ) ) :
-	add_shortcode( 'hyperpress_countdown', '\HYPER_Press_Countdown\hyperpress_add_countdown_shortcode' );
+	public static function register(): void {
+		add_shortcode( 'hyperpress_countdown', array( self::class, 'add_countdown_shortcode' ) );
+	}
 
-	function hyperpress_add_countdown_shortcode( $atts ): string {
+	public static function add_countdown_shortcode( $atts ): string {
 		extract( shortcode_atts( [ 'id' => '', 'slug' => '', 'ignoreshowhide' => 'false' ], $atts ) );
 		if ( ! empty( $id ) || ! empty( $slug ) ) {
 			if ( empty( $id ) ) {
 				// if we don't have an id, use the slug
-				$countdown = get_page_by_path( $slug, OBJECT, 'countdown' );
+				$countdown = get_page_by_path( $slug, OBJECT, 'hyper_countdown' );
 			} else {
 				$countdown = get_post( $id );
 				$slug      = $countdown->post_name;
@@ -32,8 +31,8 @@ if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_add_countdown_shortco
 					$showit = 0;
 					$hideit = 1;
 					// retrieve the values from the countdown cpt
-					$on  = rwmb_meta( 'hide_before', '', $countdown->ID );
-					$off = rwmb_meta( 'hide_after', '', $countdown->ID );
+					$on  = rwmb_meta( 'hyperpress_countdown_hide_before', '', $countdown->ID );
+					$off = rwmb_meta( 'hyperpress_countdown_hide_after', '', $countdown->ID );
 
 
 					if ( empty( $on ) || strtotime( $on ) < current_time( 'timestamp' ) ) {
@@ -49,16 +48,16 @@ if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_add_countdown_shortco
 				}
 
 				if ( $displayCountdown ) {
-					$eventDate = rwmb_meta( 'event_date_time', '', $countdown->ID );
+					$eventDate = rwmb_meta( 'hyperpress_countdown_event_date_time', '', $countdown->ID );
 					if ( strtotime( $eventDate ) ) {
 						// only enqueue the TimeCircles js & css if we're displaying the countdown
-						wp_enqueue_script( 'timecircles' );
-						wp_enqueue_style( 'timecircles' );
+						wp_enqueue_script( 'hyperpress-countdown-timecircles' );
+						wp_enqueue_style( 'hyperpress-countdown-timecircles' );
 
-						$eventName     = rwmb_meta( 'event_name', '', $countdown->ID );
-						$eventLocation = rwmb_meta( 'event_location', '', $countdown->ID );
+						$eventName     = rwmb_meta( 'hyperpress_countdown_event_name', '', $countdown->ID );
+						$eventLocation = rwmb_meta( 'hyperpress_countdown_event_location', '', $countdown->ID );
 
-						$countPastZero = rwmb_meta( 'countdown_past_zero', '', $countdown->ID );
+						$countPastZero = rwmb_meta( 'hyperpress_countdown_past_zero', '', $countdown->ID );
 
 						$output = '<section class="grid-x countdown align-center">';
 						$output .= '<div class="cell xsmall-12 large-10">';
@@ -120,4 +119,4 @@ if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_add_countdown_shortco
 
 		return '';
 	}
-endif;
+}

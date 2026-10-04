@@ -1,25 +1,24 @@
 <?php
+namespace HyperPress\Countdown;
 
-namespace HYPER_Press_Countdown;
+defined( 'ABSPATH' ) || exit;
 
 use WP_Customize_Color_Control;
 
-// Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+final class Customizer {
 
-if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_customize_countdown_colors' ) ) :
-	add_action( 'customize_register', '\HYPER_Press_Countdown\hyperpress_customize_countdown_colors' );
+	public static function register(): void {
+		add_action( 'customize_register', array( self::class, 'customize_countdown_colors' ) );
+	}
 
-	function hyperpress_customize_countdown_colors( $wp_customize ): void {
+	public static function customize_countdown_colors( $wp_customize ): void {
 		// COUNTDOWN COLORS
 		$wp_customize->add_setting( 'hyperpress_countdown_days_color',
 			array(
 				'type'              => 'theme_mod',
 				'sanitize_callback' => 'sanitize_hex_color',
 			) );
-		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'countdown_days_color',
+		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'hyperpress_countdown_days_color',
 			array(
 				'label'    => __( 'Countdown Days Color', 'hyperpress' ),
 				'settings' => 'hyperpress_countdown_days_color',
@@ -31,7 +30,7 @@ if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_customize_countdown_c
 				'type'              => 'theme_mod',
 				'sanitize_callback' => 'sanitize_hex_color',
 			) );
-		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'countdown_hours_color',
+		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'hyperpress_countdown_hours_color',
 			array(
 				'label'    => __( 'Countdown Hours Color', 'hyperpress' ),
 				'settings' => 'hyperpress_countdown_hours_color',
@@ -44,7 +43,7 @@ if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_customize_countdown_c
 				'transport'         => 'refresh',
 				'sanitize_callback' => 'sanitize_hex_color',
 			) );
-		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'countdown_minutes_color',
+		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'hyperpress_countdown_minutes_color',
 			array(
 				'label'    => __( 'Countdown Minutes Color', 'hyperpress' ),
 				'settings' => 'hyperpress_countdown_minutes_color',
@@ -57,11 +56,11 @@ if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_customize_countdown_c
 				'transport'         => 'refresh',
 				'sanitize_callback' => 'sanitize_hex_color',
 			) );
-		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'countdown_seconds_color',
+		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'hyperpress_countdown_seconds_color',
 			array(
 				'label'    => __( 'Countdown Seconds Color', 'hyperpress' ),
 				'settings' => 'hyperpress_countdown_seconds_color',
 				'section'  => 'colors',
 			) ) );
 	}
-endif;
+}
