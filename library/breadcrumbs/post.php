@@ -13,18 +13,18 @@ function hyperpress_breadcrumbs_post( $breadcrumbs ) {
 		if ( ! empty( $seasons ) ) {
 			$season = $seasons[0];
 			if ( ! empty( $season ) ) {
-				$breadcrumbs[] = [
-					"title"   => $season->name,
+				$breadcrumbs[] = array(
+					'title'   => $season->name,
 					'url'     => get_category_link( $season->term_id ),
-					"classes" => [
-						'li'    => [
-							'item-' . $season->slug
-						],
-						'bread' => [
-							'bread-' . $season->slug
-						]
-					]
-				];
+					'classes' => array(
+						'li'    => array(
+							'item-' . $season->slug,
+						),
+						'bread' => array(
+							'bread-' . $season->slug,
+						),
+					),
+				);
 			}
 		}
 
@@ -32,34 +32,33 @@ function hyperpress_breadcrumbs_post( $breadcrumbs ) {
 		$categories = get_the_category();
 		if ( ! empty( $categories ) ) {
 			$category      = $categories[0];
-			$breadcrumbs[] = [
+			$breadcrumbs[] = array(
 				'title'   => $category->cat_name,
 				'url'     => get_category_link( $category->term_id ),
-				'classes' => [
-					'li'    => [
+				'classes' => array(
+					'li'    => array(
 						'item-cat',
 						'item-cat-' . $category->term_id,
-						'item-cat-' . $category->category_nicename
-					],
-					'bread' => [
+						'item-cat-' . $category->category_nicename,
+					),
+					'bread' => array(
 						'bread-cat',
 						'bread-cat-' . $category->term_id,
-						'bread-cat-' . $category->category_nicename
-					]
-				],
-			];
+						'bread-cat-' . $category->category_nicename,
+					),
+				),
+			);
 		}
 
-
 		// add current post
-		$breadcrumbs[] = [
-			"title"   => get_the_title(),
-			"url"     => get_permalink(),
-			"classes" => [
-				'li'    => [ 'item-post', 'item-post-' . get_the_ID() ],
-				'bread' => [ 'bread-post', 'bread-post-' . get_the_ID() ]
-			]
-		];
+		$breadcrumbs[] = array(
+			'title'   => get_the_title(),
+			'url'     => get_permalink(),
+			'classes' => array(
+				'li'    => array( 'item-post', 'item-post-' . get_the_ID() ),
+				'bread' => array( 'bread-post', 'bread-post-' . get_the_ID() ),
+			),
+		);
 	}
 
 	return $breadcrumbs;

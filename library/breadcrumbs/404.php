@@ -8,19 +8,19 @@ add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_404' );
 
 function hyperpress_breadcrumbs_404( $breadcrumbs ) {
 	if ( is_404() ) {
-		$breadcrumbs[] = [
-			"title"   => __( 'Error 404', 'hyperpress' ),
-			"classes" => [
-				'li'    => [
+		$breadcrumbs[] = array(
+			'title'   => __( 'Error 404', 'hyperpress' ),
+			'classes' => array(
+				'li'    => array(
 					'item-error',
-					'item-error-404'
-				],
-				'bread' => [
+					'item-error-404',
+				),
+				'bread' => array(
 					'bread-error',
-					'bread-error-404'
-				]
-			]
-		];
+					'bread-error-404',
+				),
+			),
+		);
 	}
 
 	return $breadcrumbs;

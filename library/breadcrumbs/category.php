@@ -11,28 +11,31 @@ function hyperpress_breadcrumbs_category( $breadcrumbs ) {
 		// Get the query & post information
 		$category = get_category( get_query_var( 'cat' ) );
 
-		$breadcrumbs[] = [
-			"title"   => __( 'Category', 'hyperpress' ),
-			"classes" => [ 'li' => [], 'bread' => [] ]
-		];
+		$breadcrumbs[] = array(
+			'title'   => __( 'Category', 'hyperpress' ),
+			'classes' => array(
+				'li'    => array(),
+				'bread' => array(),
+			),
+		);
 
 		// add category
-		$breadcrumbs[] = [
-			"title"   => $category->cat_name,
-			"url"     => get_category_link( $category ),
-			"classes" => [
-				'li'    => [
+		$breadcrumbs[] = array(
+			'title'   => $category->cat_name,
+			'url'     => get_category_link( $category ),
+			'classes' => array(
+				'li'    => array(
 					'item-category',
 					'item-category-' . $category->term_id,
-					'item-category-' . $category->category_nicename
-				],
-				'bread' => [
+					'item-category-' . $category->category_nicename,
+				),
+				'bread' => array(
 					'bread-category',
 					'bread-category-' . $category->term_id,
-					'bread-category-' . $category->category_nicename
-				]
-			]
-		];
+					'bread-category-' . $category->category_nicename,
+				),
+			),
+		);
 	}
 
 	return $breadcrumbs;

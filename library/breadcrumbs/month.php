@@ -8,43 +8,43 @@ add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_month' );
 
 function hyperpress_breadcrumbs_month( $breadcrumbs ) {
 	if ( is_month() ) {
-		$archivesText = __( 'Archives', 'hyperpress' );
+		$archives_text = __( 'Archives', 'hyperpress' );
 		// add year
 		$year          = get_the_time( 'Y' );
-		$breadcrumbs[] = [
-			"title"   => $year . ' ' . $archivesText,
-			"url"     => get_year_link( $year ),
-			"classes" => [
-				'li'    => [
+		$breadcrumbs[] = array(
+			'title'   => $year . ' ' . $archives_text,
+			'url'     => get_year_link( $year ),
+			'classes' => array(
+				'li'    => array(
 					'item-year',
-					'item-year-' . $year
-				],
-				'bread' => [
+					'item-year-' . $year,
+				),
+				'bread' => array(
 					'bread-year',
-					'bread-year-' . $year
-				]
-			]
-		];
+					'bread-year-' . $year,
+				),
+			),
+		);
 
 		// add month
-		$monthNumber   = get_the_time( 'm' );
-		$monthName     = get_the_time( 'M' );
-		$breadcrumbs[] = [
-			"title"   => $monthName . ' ' . $archivesText,
-			"url"     => get_month_link( $year, $monthNumber ),
-			"classes" => [
-				'li'    => [
+		$month_number  = get_the_time( 'm' );
+		$month_name    = get_the_time( 'M' );
+		$breadcrumbs[] = array(
+			'title'   => $month_name . ' ' . $archives_text,
+			'url'     => get_month_link( $year, $month_number ),
+			'classes' => array(
+				'li'    => array(
 					'item-month',
-					'item-month-' . $monthNumber,
-					'item-month-' . $monthName
-				],
-				'bread' => [
+					'item-month-' . $month_number,
+					'item-month-' . $month_name,
+				),
+				'bread' => array(
 					'bread-month',
-					'bread-month-' . $monthNumber,
-					'bread-month-' . $monthName
-				]
-			]
-		];
+					'bread-month-' . $month_number,
+					'bread-month-' . $month_name,
+				),
+			),
+		);
 	}
 
 	return $breadcrumbs;

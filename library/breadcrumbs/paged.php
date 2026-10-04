@@ -10,13 +10,13 @@ function hyperpress_breadcrumbs_paged( $breadcrumbs ) {
 	$paged = get_query_var( 'paged' );
 	if ( ! empty( $paged ) ) {
 
-		$breadcrumbs[] = [
-			"title"   => __( 'Page', 'hyperpress' ) . ' ' . $paged,
-			"classes" => [
-				'li'    => [ 'item-paged', 'item-paged-' . $paged ],
-				'bread' => [ 'bread-paged', 'bread-paged-' . $paged ]
-			]
-		];
+		$breadcrumbs[] = array(
+			'title'   => __( 'Page', 'hyperpress' ) . ' ' . $paged,
+			'classes' => array(
+				'li'    => array( 'item-paged', 'item-paged-' . $paged ),
+				'bread' => array( 'bread-paged', 'bread-paged-' . $paged ),
+			),
+		);
 	}
 
 	return $breadcrumbs;
