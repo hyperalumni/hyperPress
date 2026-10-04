@@ -25,8 +25,8 @@ register_nav_menus(
  *
  * @link http://codex.wordpress.org/Function_Reference/wp_nav_menu
  */
-if ( ! function_exists( 'foundationpress_top_bar_r' ) ) :
-	function foundationpress_top_bar_r(): void {
+if ( ! function_exists( 'hyperpress_top_bar_r' ) ) :
+	function hyperpress_top_bar_r(): void {
 		wp_nav_menu(
 			array(
 				'container'      => false,
@@ -35,7 +35,7 @@ if ( ! function_exists( 'foundationpress_top_bar_r' ) ) :
 				'theme_location' => 'top-bar-r',
 				'depth'          => 3,
 				'fallback_cb'    => false,
-				'walker'         => new Foundationpress_Top_Bar_Walker(),
+				'walker'         => new HyperPress_Theme_Top_Bar_Walker(),
 			)
 		);
 	}
@@ -45,8 +45,8 @@ endif;
 /**
  * Mobile navigation - topbar (default) or offcanvas
  */
-if ( ! function_exists( 'foundationpress_mobile_nav' ) ) :
-	function foundationpress_mobile_nav(): void {
+if ( ! function_exists( 'hyperpress_mobile_nav' ) ) :
+	function hyperpress_mobile_nav(): void {
 		wp_nav_menu(
 			array(
 				'container'      => false,                         // Remove nav container
@@ -55,7 +55,7 @@ if ( ! function_exists( 'foundationpress_mobile_nav' ) ) :
 				'theme_location' => 'mobile-nav',
 				'items_wrap'     => '<ul id="%1$s" class="%2$s" data-accordion-menu data-submenu-toggle="true">%3$s</ul>',
 				'fallback_cb'    => false,
-				'walker'         => new Foundationpress_Mobile_Walker(),
+				'walker'         => new HyperPress_Theme_Mobile_Walker(),
 			)
 		);
 	}
@@ -69,10 +69,10 @@ endif;
  * 3) On your menu item, type 'has-form' in the CSS-classes field. Type 'button' in the XFN field
  * 4) Save Menu. Your menu item will now appear as a button in your top-menu
  */
-if ( ! function_exists( 'foundationpress_add_menuclass' ) ) :
-	add_filter( 'wp_nav_menu', 'foundationpress_add_menuclass' );
+if ( ! function_exists( 'hyperpress_add_menuclass' ) ) :
+	add_filter( 'wp_nav_menu', 'hyperpress_add_menuclass' );
 
-	function foundationpress_add_menuclass( $ulclass ): array|string|null {
+	function hyperpress_add_menuclass( $ulclass ): array|string|null {
 		$find    = array( '/<a rel="button"/', '/<a title=".*?" rel="button"/' );
 		$replace = array( '<a rel="button" class="button"', '<a rel="button" class="button"' );
 

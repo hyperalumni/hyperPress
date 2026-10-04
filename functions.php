@@ -39,8 +39,8 @@ require_once( 'library/banner.php' );
 require_once( 'library/labels.php' );
 
 /** Add menu walkers for top-bar and off-canvas */
-require_once( 'library/class-foundationpress-top-bar-walker.php' );
-require_once( 'library/class-foundationpress-mobile-walker.php' );
+require_once( 'library/class-hyperpress-top-bar-walker.php' );
+require_once( 'library/class-hyperpress-mobile-walker.php' );
 
 /** Create widget areas in sidebar and footer */
 require_once( 'library/widget-areas.php' );

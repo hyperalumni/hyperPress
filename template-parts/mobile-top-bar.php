@@ -13,5 +13,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <nav class="mobile-menu vertical menu" role="navigation">
-	<?php foundationpress_mobile_nav(); ?>
+	<?php hyperpress_mobile_nav(); ?>
 </nav>
