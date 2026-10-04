@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<nav class="mobile-off-canvas-menu off-canvas position-left" id="<?php foundationpress_mobile_menu_id(); ?>" data-off-canvas data-auto-focus="false" role="navigation">
+<nav class="mobile-off-canvas-menu off-canvas position-left" id="<?php hyperpress_mobile_menu_id(); ?>" data-off-canvas data-auto-focus="false" role="navigation">
 	<?php foundationpress_mobile_nav(); ?>
 </nav>
 

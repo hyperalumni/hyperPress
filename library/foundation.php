@@ -11,8 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 // Pagination.
-if ( ! function_exists( 'foundationpress_pagination' ) ) :
-	function foundationpress_pagination() {
+if ( ! function_exists( 'hyperpress_pagination' ) ) :
+	function hyperpress_pagination() {
 		global $wp_query;
 
 		$big = 999999999; // This needs to be an unlikely integer
@@ -78,8 +78,8 @@ if ( ! function_exists( 'foundationpress_pagination' ) ) :
 endif;
 
 // Custom Comments Pagination.
-if ( ! function_exists( 'foundationpress_get_the_comments_pagination' ) ) :
-	function foundationpress_get_the_comments_pagination( $args = array() ) {
+if ( ! function_exists( 'hyperpress_get_the_comments_pagination' ) ) :
+	function hyperpress_get_the_comments_pagination( $args = array() ) {
 		$navigation = '';
 		$args = wp_parse_args( $args, array(
 			'prev_text'				=> __( '&laquo;', 'foundationpress' ),
@@ -131,9 +131,9 @@ if ( ! function_exists( 'foundationpress_get_the_comments_pagination' ) ) :
 endif;
 
 // Custom Comments Pagination.
-if ( ! function_exists( 'foundationpress_the_comments_pagination' ) ) :
-	function foundationpress_the_comments_pagination( $args = array() ) {
-		echo foundationpress_get_the_comments_pagination( $args );
+if ( ! function_exists( 'hyperpress_the_comments_pagination' ) ) :
+	function hyperpress_the_comments_pagination( $args = array() ) {
+		echo hyperpress_get_the_comments_pagination( $args );
 	}
 endif;
 
@@ -142,8 +142,8 @@ endif;
  * A fallback when no navigation is selected by default.
  */
 
-if ( ! function_exists( 'foundationpress_menu_fallback' ) ) :
-	function foundationpress_menu_fallback() {
+if ( ! function_exists( 'hyperpress_menu_fallback' ) ) :
+	function hyperpress_menu_fallback() {
 		echo '<div class="alert-box secondary">';
 		/* translators: %1$s: link to menus, %2$s: link to customize. */
 		printf(
@@ -164,10 +164,10 @@ if ( ! function_exists( 'foundationpress_menu_fallback' ) ) :
 endif;
 
 // Add Foundation 'is-active' class for the current menu item.
-if ( ! function_exists( 'foundationpress_active_nav_class' ) ) :
-	add_filter( 'nav_menu_css_class', 'foundationpress_active_nav_class', 10, 2 );
+if ( ! function_exists( 'hyperpress_active_nav_class' ) ) :
+	add_filter( 'nav_menu_css_class', 'hyperpress_active_nav_class', 10, 2 );
 
-	function foundationpress_active_nav_class( $classes, $item ) {
+	function hyperpress_active_nav_class( $classes, $item ) {
 		if ( $item->current == 1 || $item->current_item_ancestor == true ) {
 			$classes[] = 'is-active';
 		}
@@ -179,10 +179,10 @@ endif;
  * Use the is-active class of ZURB Foundation on wp_list_pages output.
  * From required+ Foundation http://themes.required.ch.
  */
-if ( ! function_exists( 'foundationpress_active_list_pages_class' ) ) :
-	add_filter( 'wp_list_pages', 'foundationpress_active_list_pages_class', 10, 2 );
+if ( ! function_exists( 'hyperpress_active_list_pages_class' ) ) :
+	add_filter( 'wp_list_pages', 'hyperpress_active_list_pages_class', 10, 2 );
 
-	function foundationpress_active_list_pages_class( $input ) {
+	function hyperpress_active_list_pages_class( $input ) {
 		$pattern = '/current_page_item/';
 		$replace = 'current_page_item is-active';
 
@@ -196,8 +196,8 @@ endif;
  * Get mobile menu ID
  */
 
-if ( ! function_exists( 'foundationpress_mobile_menu_id' ) ) :
-	function foundationpress_mobile_menu_id() {
+if ( ! function_exists( 'hyperpress_mobile_menu_id' ) ) :
+	function hyperpress_mobile_menu_id() {
 		if ( get_theme_mod( 'wpt_mobile_menu_layout' ) === 'offcanvas' ) {
 			echo 'off-canvas-menu';
 		} else {
@@ -210,8 +210,8 @@ endif;
  * Get title bar responsive toggle attribute
  */
 
-if ( ! function_exists( 'foundationpress_title_bar_responsive_toggle' ) ) :
-	function foundationpress_title_bar_responsive_toggle() {
+if ( ! function_exists( 'hyperpress_title_bar_responsive_toggle' ) ) :
+	function hyperpress_title_bar_responsive_toggle() {
 		if ( ! get_theme_mod( 'wpt_mobile_menu_layout' ) || get_theme_mod( 'wpt_mobile_menu_layout' ) === 'topbar' ) {
 			echo 'data-responsive-toggle="mobile-menu"';
 		}
@@ -221,10 +221,10 @@ endif;
 /**
  * Custom markup for Wordpress gallery
  */
-if ( ! function_exists( 'foundationpress_gallery' ) ) :
-	add_shortcode('gallery', 'foundationpress_gallery');
+if ( ! function_exists( 'hyperpress_gallery' ) ) :
+	add_shortcode('gallery', 'hyperpress_gallery');
 
-	function foundationpress_gallery($attr) {
+	function hyperpress_gallery($attr) {
 		$post = get_post();
 		static $instance = 0;
 		$instance++;

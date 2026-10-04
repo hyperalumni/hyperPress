@@ -26,8 +26,8 @@ get_header(); ?>
 
 				<?php /* Display navigation to next/previous pages when applicable */ ?>
 				<?php
-				if ( function_exists( 'foundationpress_pagination' ) ) :
-					foundationpress_pagination();
+				if ( function_exists( 'hyperpress_pagination' ) ) :
+					hyperpress_pagination();
 				elseif ( is_paged() ) :
 					?>
 					<nav id="post-nav">

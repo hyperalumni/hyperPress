@@ -41,7 +41,7 @@ if ( have_comments() ) :
 
 		?>
 		<?php
-			foundationpress_the_comments_pagination();
+			hyperpress_the_comments_pagination();
 	 	?>
 	</section>
 <?php
