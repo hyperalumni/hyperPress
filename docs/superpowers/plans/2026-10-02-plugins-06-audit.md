@@ -45,6 +45,9 @@
 | 13 | Dropped TODO: multiselect category control could extend `Walker_Category_Checklist` | `hyperpress-utils/src/Controls/CategoryDropdownControl.php` (improvement, not a defect) |
 | 14 | A Google Maps `api_key` is hard-coded in the map field (committed secret; the value must never be reproduced in notes or reports). Needs rotation/restriction by the owner and moving to a constant or option | `hyperpress-competition/src/MetaBoxes.php` (map field), `git log -S'api_key'` for history |
 | 15 | `__( '', 'hyperpress' )` on an empty string (gettext misuse) carried over from the legacy label description | `hyperpress-competition/src/MetaBoxes.php` |
+| 16 | ~60 inline `// phpcs:ignore ... -- plugins audit` suppressions. Security-class (27 `EscapeOutput.OutputNotEscaped`, 4 `_e`, 4 exception messages, 4 `extract()`, 1 unsanitised `$_SERVER['REQUEST_URI']`) must become real fixes; find all with `grep -rn 'plugins audit' hyperpress-*` | all plugins, notably `hyperpress-newsletter/templates/content.php`, both widgets |
+| 17 | Suppressed non-security quality items that need a decision: `__( '' )` returns the .po header in translated locales (competition and countdown MetaBoxes), dynamic `__( $var )` (SeasonBanner, sponsor widget), `strip_tags` in both widgets' `update()` (consider `wp_strip_all_tags`), `json_encode` (consider `wp_json_encode`), loose `==` in media `Avif.php`, `current_time('timestamp')` and `date()` in countdown/time-restrict (timezone behaviour) | see item 16 grep |
+| 18 | `SlowDBQuery` (`tax_query`, `meta_query`) in sponsor queries; phpcs exclusion comment for `FileComment.MissingPackageTag` says existing docblocks are still validated but that sniff is excluded | `hyperpress-sponsor`, `phpcs.xml.dist` |
 
 - [ ] **Step 3: Commit nothing** (read-only).
 
