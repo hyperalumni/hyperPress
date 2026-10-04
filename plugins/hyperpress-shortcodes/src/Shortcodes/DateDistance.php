@@ -28,15 +28,27 @@ final class DateDistance {
 		$suffix    = filter_var( $args['suffix'], FILTER_VALIDATE_BOOLEAN );
 		$locale    = $args['locale'];
 
-		$diff = date_create()->diff( date_create( $date ) )->format( $format );
+		$target = date_create( $date );
+		if ( false === $target ) {
+			return '';
+		}
+
+		$diff = date_create()->diff( $target )->format( $format );
 
 		if ( $inclusive ) {
 			++$diff;
 		}
 
 		if ( $suffix ) {
-			$nf   = new \NumberFormatter( $locale, \NumberFormatter::ORDINAL );
-			$diff = $nf->format( $diff );
+			try {
+				$nf        = new \NumberFormatter( $locale, \NumberFormatter::ORDINAL );
+				$formatted = $nf->format( $diff );
+			} catch ( \ValueError | \IntlException ) {
+				$formatted = false;
+			}
+			if ( false !== $formatted ) {
+				$diff = $formatted;
+			}
 		}
 
 		return $diff;
