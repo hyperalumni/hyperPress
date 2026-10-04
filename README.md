@@ -1,3 +1,39 @@
+# hyperPress theme
+
+A classic WordPress theme forked from FoundationPress (Foundation 6), for the Team HYPER sites. It is presentation-only: templates, the banner and breadcrumb routers, the Customizer colour and homepage settings, navigation and assets. The sections below headed FoundationPress are the upstream starter documentation and describe the front-end build.
+
+## Development (PHP)
+
+Tooling runs in Docker (PHP 8.5 image, MariaDB). Do not run Composer on the host.
+
+```bash
+docker compose run --rm php composer install
+docker compose run --rm php composer lint              # php -l and phpcs (codesniffer.ruleset.xml)
+docker compose run --rm php composer test:unit         # header lint, hook contract, static checks
+docker compose run --rm php composer test:integration  # boots WordPress with the theme and ../plugins
+HYPERPRESS_TEST_WITHOUT_EXTRACTED=1 ... composer test:integration   # same, without hyperpress-shortcodes and hyperpress-media
+```
+
+The integration suite mounts the theme at `/hp-themes/hyperpress` and `../plugins` at `/plugins`.
+
+## Plugins
+
+The theme expects the HYPER plugins in `../plugins` (`hyperpress-utils` and the content plugins). Content that uses the `time-restrict`, `hyper_emphasis`, `raw`, `hyper_banner` or `hyper_date_distance` shortcodes needs `hyperpress-shortcodes` active; SVG and AVIF uploads and NextGen gallery breadcrumbs come from `hyperpress-media`. Deploy the theme together with those plugins.
+
+## Hooks for plugins
+
+| Hook | Type | Purpose |
+|---|---|---|
+| `hyperpress_banner_content` | filter | Plugins adjust the banner array (`type`, `title`, `subtitle`, `backgroundColor`) |
+| `hyperpress_breadcrumbs_content` | filter | Plugins append breadcrumb arrays (`title`, `url`, `classes`) |
+| `content_template` | filter | A plugin returns the path of a template the theme `include`s for single and list views |
+| `hyperpress_labels_content` | filter | Plugins add labels below a post title |
+
+## Upgrading
+
+Post type and taxonomy keys are now `hyper_*` (see the plugins repo). Reset the local database, then re-select the homepage countdowns and blog post types in the Customizer.
+
+---
 # DEPRECATED
 This project will no longer be maintained. As Zurb Foundation is [no longer in active development ](https://github.com/foundation/foundation-sites/issues/11767), I would recommend that you base your front-end code on another framework, such as [Semantic UI](https://semantic-ui.com) or [Bootstrap](https://getbootstrap.com).
 

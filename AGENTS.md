@@ -2,7 +2,7 @@
 
 Classic (non-block) WordPress theme forked from FoundationPress (Foundation 6; jQuery is a global, not bundled).
 Requires PHP 8.3, WP 6.9, Node >=24 (`.nvmrc`), pnpm (enforced by `preinstall`; do not use npm/yarn).
-Text domain `hyperpress`. `README.md` is stale (Node 6, FoundationPress) and `.travis.yml` is dead (PHP 5.x-7.3). Ignore both.
+Text domain `hyperpress`. `README.md` keeps the upstream FoundationPress text below a short hyperPress section (Node 6 instructions there are stale); `.travis.yml` is dead (PHP 5.x-7.3). Ignore both.
 
 ## Commands
 - Node comes from nvm and is not on the default PATH. Load it first in each shell:
@@ -11,9 +11,7 @@ Text domain `hyperpress`. `README.md` is stale (Node 6, FoundationPress) and `.t
 - `pnpm dev` / `pnpm build`: gulp build `--dev` (sourcemaps) / `--production` (minify, optional revisioning)
 - `pnpm phpcs` / `pnpm phpcbf`: PHPCS via `codesniffer.ruleset.xml` (WordPress standard, many exclusions)
 - `pnpm package`: zip into `packaged/`
-- No test suite exists yet. `phpunit.xml.dist` points at a missing `tests/bootstrap.php`. The planned
-  Docker/PHPUnit toolchain is `docs/superpowers/plans/2026-10-02-theme-01-tooling-and-baseline.md`.
-  Until then verify PHP changes with `php -l <file>` and `pnpm phpcs`.
+- PHP tooling runs in Docker from this dir (never composer on the host): `docker compose run --rm php composer lint|test:unit|test:integration`. Set `HYPERPRESS_TEST_WITHOUT_EXTRACTED=1` to run the integration suite without hyperpress-shortcodes and hyperpress-media. `lint` is gating (0 violations); security findings carry `// phpcs:ignore ... -- theme audit` comments.
 
 ## Layout
 - `functions.php` requires modules from `library/`; register new modules there.
