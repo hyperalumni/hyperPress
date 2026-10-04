@@ -3,6 +3,7 @@
   "description": "FoundationPress is a WordPress starter theme based on Foundation 6 by Zurb",
   "type": "wordpress-theme",
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "license": "MIT",
   "authors": [
     {
@@ -17,12 +18,31 @@
   "require-dev": {
     "squizlabs/php_codesniffer": "*",
     "phpcompatibility/php-compatibility": "*",
-    "dealerdirect/phpcodesniffer-composer-installer": "^1.2.0"
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.2.0",
+    "phpunit/phpunit": "^9.6",
+    "yoast/phpunit-polyfills": "^2.0",
+    "wp-phpunit/wp-phpunit": "^6.9",
+    "johnpbloch/wordpress-core": "^6.9",
+    "wp-coding-standards/wpcs": "^3.1",
+    "phpcompatibility/phpcompatibility-wp": "^2.1"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HyperPress\\ThemeTests\\": "tests/src/"
+    }
   },
   "config": {
     "allow-plugins": {
       "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true
-    }
+    },
+    "sort-packages": true
+  },
+  "scripts": {
+    "lint:syntax": "find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -not -path './dist/*' -not -path './packaged/*' -print0 | xargs -0 -n1 php -d display_errors=stderr -l > /dev/null",
+    "lint:cs": "phpcs",
+    "lint": ["@lint:syntax", "@lint:cs"],
+    "test:unit": "phpunit --testsuite unit",
+    "test:integration": "phpunit --testsuite integration --bootstrap tests/bootstrap-integration.php"
   }
 }

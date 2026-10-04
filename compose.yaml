@@ -1,0 +1,31 @@
+services:
+  php:
+    build: .
+    working_dir: /app
+    volumes:
+      - .:/app
+      - .:/themes/hyperpress:ro
+      - ../plugins:/plugins:ro
+      - composer-cache:/root/.composer
+    environment:
+      WP_DB_HOST: db
+      WP_DB_NAME: wordpress_test
+      WP_DB_USER: root
+      WP_DB_PASSWORD: root
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: wordpress_test
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  composer-cache:
