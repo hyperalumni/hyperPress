@@ -1,5 +1,7 @@
 <?php
 /**
+ * The hyperPress Sponsor plugin.
+ *
  * @wordpress-plugin
  * Plugin Name:         hyperPress Sponsor
  * Plugin URI:          https://hyperalumni.org

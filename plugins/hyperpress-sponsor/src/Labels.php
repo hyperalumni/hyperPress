@@ -14,7 +14,7 @@ final class Labels {
 	public static function labels_sponsor( $labels ) {
 		$hyper_sponsor = Plugin::POST_TYPE;
 		if ( is_singular( $hyper_sponsor ) || is_post_type_archive( $hyper_sponsor ) || ( is_main_query() && get_post_type() === $hyper_sponsor ) ) {
-			// Get season information
+			// Get season information.
 			$seasons = SortedSeasons::get();
 			if ( ! empty( $seasons ) ) {
 				$season = $seasons[0];

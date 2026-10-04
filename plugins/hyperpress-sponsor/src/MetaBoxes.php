@@ -10,7 +10,7 @@ final class MetaBoxes {
 	}
 
 	public static function register_sponsor_meta_boxes( $meta_boxes ) {
-		// Sponsor Meta
+		// Sponsor Meta.
 		$meta_boxes[] = array(
 			'title'    => __( 'Sponsors', 'hyperpress' ),
 			'id'       => 'hyperpress_sponsor',
