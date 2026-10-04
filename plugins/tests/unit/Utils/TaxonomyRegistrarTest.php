@@ -95,8 +95,30 @@ final class TaxonomyRegistrarTest extends TestCase {
 		$this->assertSame( array( 'hyper_award' ), TaxonomyRegistrar::resolve_object_types( 'm', static fn() => 'hyper_award' ) );
 	}
 
+	/** @dataProvider empty_theme_mod_values */
+	public function test_empty_theme_mod_values_resolve_to_an_empty_list( $stored, array $expected ): void {
+		$this->assertSame( $expected, TaxonomyRegistrar::resolve_object_types( 'm', static fn() => $stored ) );
+	}
+
+	public static function empty_theme_mod_values(): array {
+		return array(
+			'empty string'        => array( '', array() ),
+			'false'               => array( false, array() ),
+			'null'                => array( null, array() ),
+			'zero'                => array( 0, array() ),
+			'array of empty'      => array( array( '' ), array() ),
+			'mixed with empty'    => array( array( 'hyper_award', '' ), array( 'hyper_award' ) ),
+			'sparse keys reindex' => array( array( 1 => 'hyper_award' ), array( 'hyper_award' ) ),
+		);
+	}
+
 	public function test_invalid_key_is_rejected(): void {
 		$this->expectException( InvalidArgumentException::class );
 		TaxonomyRegistrar::build( $this->definition( array( 'key' => 'district' ) ) );
+	}
+
+	public function test_key_with_trailing_newline_is_rejected(): void {
+		$this->expectException( InvalidArgumentException::class );
+		TaxonomyRegistrar::build( $this->definition( array( 'key' => "hyper_district\n" ) ) );
 	}
 }

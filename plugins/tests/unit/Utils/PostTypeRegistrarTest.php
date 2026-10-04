@@ -103,6 +103,7 @@ final class PostTypeRegistrarTest extends TestCase {
 			'space'       => array( 'hyper robot' ),
 			'too long'    => array( 'hyper_' . str_repeat( 'a', 15 ) ),
 			'empty'       => array( '' ),
+			'trailing newline' => array( "hyper_robot\n" ),
 		);
 	}
 

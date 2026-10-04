@@ -7,7 +7,7 @@ use InvalidArgumentException;
 
 final class PostTypeRegistrar {
 
-	public const KEY_PATTERN = '/^hyper_[a-z0-9_]{1,14}$/'; // 20 chars max including "hyper_".
+	public const KEY_PATTERN = '/^hyper_[a-z0-9_]{1,14}$/D'; // 20 chars max including "hyper_".
 
 	private const DEFAULTS = array(
 		'public'              => true,

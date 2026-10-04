@@ -44,7 +44,12 @@ final class TaxonomyRegistrar {
 			return $object_types;
 		}
 		if ( is_string( $object_types ) && '' !== $object_types ) {
-			return array_values( (array) $get_mod( $object_types, array() ) );
+			return array_values(
+				array_filter(
+					(array) $get_mod( $object_types, array() ),
+					static fn( $type ) => is_string( $type ) && '' !== $type
+				)
+			);
 		}
 		return array();
 	}
