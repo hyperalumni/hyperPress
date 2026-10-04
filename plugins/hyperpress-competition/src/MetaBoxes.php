@@ -25,7 +25,7 @@ final class MetaBoxes {
 					'id'                => 'hyperpress_competition_robot',
 					'name'              => __( 'Robot', 'hyperpress' ),
 					'desc'              => __( 'Select the robot for this competition', 'hyperpress' ),
-					'label_description' => __( '', 'hyperpress' ),
+					'label_description' => __( '', 'hyperpress' ), // phpcs:ignore WordPress.WP.I18n.NoEmptyStrings -- plugins audit
 					'placeholder'       => 'Select a Robot',
 					'field_type'        => 'select_advanced',
 					'post_type'         => array( 'hyper_robot' ),

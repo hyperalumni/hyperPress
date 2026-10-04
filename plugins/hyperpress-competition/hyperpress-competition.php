@@ -1,5 +1,7 @@
 <?php
 /**
+ * The hyperPress Competition plugin.
+ *
  * @wordpress-plugin
  * Plugin Name:         hyperPress Competition
  * Plugin URI:          https://hyperalumni.org
