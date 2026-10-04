@@ -7,7 +7,7 @@ namespace HyperPress\Tests\Support;
  * Time-dependent shortcodes use dates in 2000 and 2100 so the result cannot change as time passes.
  * The time-restrict-repeat cases for weekly, monthly and annually use the same text for the content
  * and the else attribute, so the branch taken (which depends on today's date) cannot change the output.
- * suffix and locale of hyperpress date distance are only given with suffix=false: the test image has no intl.
+ * The ordinal suffix of hyper_date_distance needs ext-intl (installed in the test image).
  */
 final class ShortcodeCases {
 
@@ -16,6 +16,8 @@ final class ShortcodeCases {
 		'raw_with_leading_markup'       => "[raw]</p>\n<br />Line[/raw]",
 		'raw_nested_shortcode'          => '[raw][hyper_emphasis]in raw[/hyper_emphasis][/raw]',
 		'raw_empty'                     => '[raw][/raw]',
+		'raw_leading_br'                => '[raw]<br />Line[/raw]',
+		'raw_trailing_p'                => '[raw]Line<p>[/raw]',
 
 		'emphasis'                      => '[hyper_emphasis]Hello[/hyper_emphasis]',
 		'emphasis_nested'               => '[hyper_emphasis]Hello [raw]inner[/raw][/hyper_emphasis]',
@@ -37,6 +39,15 @@ final class ShortcodeCases {
 		'date_distance_not_inclusive'   => '[hyper_date_distance date="2100-01-01" format="%R1" inclusive="false"]',
 		'date_distance_locale_no_suffix' => '[hyper_date_distance date="2100-01-01" format="%R1" suffix="false" locale="fr-FR"]',
 
+		'date_distance_suffix_default_locale' => '[hyper_date_distance date="2100-01-01" format="%R1" inclusive="true" suffix="true"]',
+		'date_distance_suffix_first'    => '[hyper_date_distance date="2100-01-01" format="%R1" suffix="true"]',
+		'date_distance_suffix_third'    => '[hyper_date_distance date="2100-01-01" format="%R3" suffix="true"]',
+		'date_distance_suffix_fourth'   => '[hyper_date_distance date="2100-01-01" format="%R3" inclusive="true" suffix="true"]',
+		'date_distance_suffix_past'     => '[hyper_date_distance date="2000-01-01" format="%R1" inclusive="true" suffix="true"]',
+		'date_distance_suffix_fr'       => '[hyper_date_distance date="2100-01-01" format="%R1" inclusive="true" suffix="true" locale="fr-FR"]',
+		'date_distance_suffix_de'       => '[hyper_date_distance date="2100-01-01" format="%R1" inclusive="true" suffix="true" locale="de-DE"]',
+		'date_distance_suffix_en_gb'    => '[hyper_date_distance date="2100-01-01" format="%R3" suffix="true" locale="en-GB"]',
+
 		'restrict_plain'                => '[time-restrict]Always[/time-restrict]',
 		'restrict_on_past'              => '[time-restrict on="2000-01-01"]Shown[/time-restrict]',
 		'restrict_on_future'            => '[time-restrict on="2100-01-01"]Hidden[/time-restrict]',
@@ -57,6 +68,9 @@ final class ShortcodeCases {
 		'repeat_no_type'                => '[time-restrict-repeat]Hidden[/time-restrict-repeat]',
 		'repeat_no_type_else'           => '[time-restrict-repeat else="No type"]Hidden[/time-restrict-repeat]',
 		'repeat_daily_never'            => '[time-restrict-repeat type="daily" ontime="12:00:00" offtime="12:00:00" else="Never"]Hidden[/time-restrict-repeat]',
+		'repeat_daily_empty_times'      => '[time-restrict-repeat type="daily" ontime="" offtime="" else="Hidden"]Daily empty[/time-restrict-repeat]',
+		'repeat_unknown_type'           => '[time-restrict-repeat type="hourly"]Hidden[/time-restrict-repeat]',
+		'repeat_unknown_type_else'      => '[time-restrict-repeat-2 type="hourly" else="Unknown type"]Hidden[/time-restrict-repeat-2]',
 		'repeat_daily_default_times'    => '[time-restrict-repeat-1 type="daily" ontime="00:00:00" offtime="23:59:59" else="Daily default"]Daily[/time-restrict-repeat-1]',
 		'repeat_daily_crossing_days'    => '[time-restrict-repeat-2 type="daily" ontime="00:00:01" offtime="00:00:00" else="Crossing"]Crossing[/time-restrict-repeat-2]',
 		'repeat_3_hidden_else'          => '[time-restrict-repeat-3 type="daily" ontime="09:00:00" offtime="09:00:00" else="Three"]Hidden[/time-restrict-repeat-3]',

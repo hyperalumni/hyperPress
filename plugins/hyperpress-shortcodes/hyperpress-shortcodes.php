@@ -32,5 +32,5 @@ spl_autoload_register(
 	}
 );
 
-// Boot after every plugin's main file is loaded, so Utils is always available.
+// Boot after every plugin file is loaded.
 add_action( 'plugins_loaded', array( \HyperPress\Shortcodes\Plugin::class, 'boot' ) );
