@@ -1,6 +1,8 @@
 # Plugins 02: Shared Code in `hyperpress-utils`
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
+> **STATUS: COMPLETED** (2026-10-04). Commits dd5b447..c495f85 on branch cleanup/convention-and-tests. All 44 Utils unit tests and 13 Utils integration tests pass; remaining red tests are the contract tests awaiting the plugin migrations.
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [x]`) syntax.
 
 **Goal:** Build the shared classes every plugin will use (`Labels`, `PostTypeRegistrar`, `TaxonomyRegistrar`, `Capabilities`, `Breadcrumbs`, `Banner`, two Customizer controls), test-first, and convert `hyperpress-utils` to the new structure.
 
@@ -32,21 +34,21 @@
 
 Renaming namespaces breaks any external caller. Find them before deleting anything.
 
-- [ ] **Step 1: Search for cross-plugin and theme callers**
+- [x] **Step 1: Search for cross-plugin and theme callers**
 
 Run (from `plugins/`): `grep -rnE "HYPER_Press_[A-Za-z]+|HYPERpress_Dropdown|get_sorted_seasons|hyperpress_(breadcrumbs|banner)_[a-z_]+" --include='*.php' ../theme . | grep -v '^./vendor' | grep -v "namespace HYPER_Press"`
 Expected: a list of every reference outside each plugin's own `namespace` line.
 
-- [ ] **Step 2: Classify each hit**
+- [x] **Step 2: Classify each hit**
 
 For each hit record: file, line, and whether it is (a) inside the same plugin (will be rewritten in B2), (b) another plugin (must be rewritten in that plugin's task), or (c) the theme (OUT OF SCOPE: add to the "theme checklist" at the bottom of this plan). Save the list in the "Execution notes" section at the end of this file.
 
-- [ ] **Step 3: Check how the theme reads banner `type`**
+- [x] **Step 3: Check how the theme reads banner `type`**
 
 Run: `grep -rn "\['type'\]\|\"type\"" ../theme/library ../theme/template-parts 2>/dev/null | head -30`
 Expected: shows how `type` is consumed. Banner `type` values (`newsletter`, `sponsor`, `competition`, `season`) are kept as the unprefixed slug in this plan. If the theme switches on them in a way that would break, record it in the theme checklist. No code change here.
 
-- [ ] **Step 4: Commit the notes only after Task 7**, together with the rest of this plan's execution notes.
+- [x] **Step 4: Commit the notes only after Task 7**, together with the rest of this plan's execution notes.
 
 ---
 
@@ -56,11 +58,11 @@ Expected: shows how `type` is consumed. Banner `type` values (`newsletter`, `spo
 - Rename: `hyperpress-utils/utils.php` to `hyperpress-utils/hyperpress-utils.php`
 - Modify: the renamed file (header and body)
 
-- [ ] **Step 1: Rename**
+- [x] **Step 1: Rename**
 
 Run: `git mv hyperpress-utils/utils.php hyperpress-utils/hyperpress-utils.php`
 
-- [ ] **Step 2: Replace the file contents**
+- [x] **Step 2: Replace the file contents**
 
 Keep the existing `Plugin Name`, `Plugin URI`, `Description`, `Version`, `Author`, `Author URI`, `License`, `License URI`, `Text Domain`, `Domain Path` values. Remove `GitHub Plugin URI`. Set `Requires at least: 6.9`, `Requires PHP: 8.3`. Add no `Requires Plugins` line (utils requires nothing; per the table). Body:
 
@@ -89,12 +91,12 @@ spl_autoload_register(
 
 Do NOT `require` the old `lib/controls/*` files any more.
 
-- [ ] **Step 3: Verify header lint for utils**
+- [x] **Step 3: Verify header lint for utils**
 
 Run: `docker compose run --rm php composer test:unit -- --filter 'PluginHeadersTest.*hyperpress-utils'`
 Expected: all five utils cases PASS. (If `Requires at least`/`Requires PHP` fail, fix the header values.)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add hyperpress-utils/hyperpress-utils.php
@@ -109,7 +111,7 @@ git commit -m "refactor(utils): rename main file, add PSR-4 autoloader, fix head
 - Create: `hyperpress-utils/src/Labels.php`, `hyperpress-utils/src/PostTypeRegistrar.php`, `tests/unit/Utils/PostTypeRegistrarTest.php`
 - Modify: `tests/bootstrap-unit.php`
 
-- [ ] **Step 1: Give the unit bootstrap a translation stub**
+- [x] **Step 1: Give the unit bootstrap a translation stub**
 
 Append to `tests/bootstrap-unit.php`:
 
@@ -137,7 +139,7 @@ spl_autoload_register(
 );
 ```
 
-- [ ] **Step 2: Write the failing test `tests/unit/Utils/PostTypeRegistrarTest.php`**
+- [x] **Step 2: Write the failing test `tests/unit/Utils/PostTypeRegistrarTest.php`**
 
 ```php
 <?php
@@ -263,12 +265,12 @@ final class PostTypeRegistrarTest extends TestCase {
 }
 ```
 
-- [ ] **Step 3: Run and confirm FAIL**
+- [x] **Step 3: Run and confirm FAIL**
 
 Run: `docker compose run --rm php composer test:unit -- --filter PostTypeRegistrarTest`
 Expected: errors "Class HyperPress\Utils\PostTypeRegistrar not found".
 
-- [ ] **Step 4: Write `hyperpress-utils/src/Labels.php`**
+- [x] **Step 4: Write `hyperpress-utils/src/Labels.php`**
 
 ```php
 <?php
@@ -389,7 +391,7 @@ final class Labels {
 
 Note on the guard line `defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );`: the unit bootstrap runs without WordPress and defines `HYPERPRESS_TESTING` (Step 1). Use the same guard line in every file under `hyperpress-utils/src/`. Class files only define classes and have no side effects, so this guard is defence in depth, not security.
 
-- [ ] **Step 5: Write `hyperpress-utils/src/PostTypeRegistrar.php`**
+- [x] **Step 5: Write `hyperpress-utils/src/PostTypeRegistrar.php`**
 
 ```php
 <?php
@@ -478,12 +480,12 @@ final class PostTypeRegistrar {
 }
 ```
 
-- [ ] **Step 6: Run and confirm PASS**
+- [x] **Step 6: Run and confirm PASS**
 
 Run: `docker compose run --rm php composer test:unit -- --filter PostTypeRegistrarTest`
 Expected: all tests PASS. If `test_invalid_keys_are_rejected` with `'too long'` fails, re-check that `hyper_` plus 15 chars is 21 characters and the pattern's `{1,14}` upper bound is 14.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add hyperpress-utils/src/Labels.php hyperpress-utils/src/PostTypeRegistrar.php tests/unit/Utils/PostTypeRegistrarTest.php tests/bootstrap-unit.php
@@ -497,7 +499,7 @@ git commit -m "feat(utils): add Labels and PostTypeRegistrar" -- hyperpress-util
 **Files:**
 - Create: `hyperpress-utils/src/TaxonomyRegistrar.php`, `tests/unit/Utils/TaxonomyRegistrarTest.php`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```php
 <?php
@@ -604,11 +606,11 @@ final class TaxonomyRegistrarTest extends TestCase {
 }
 ```
 
-- [ ] **Step 2: Run and confirm FAIL** (`Class ... TaxonomyRegistrar not found`)
+- [x] **Step 2: Run and confirm FAIL** (`Class ... TaxonomyRegistrar not found`)
 
 Run: `docker compose run --rm php composer test:unit -- --filter TaxonomyRegistrarTest`
 
-- [ ] **Step 3: Write `hyperpress-utils/src/TaxonomyRegistrar.php`**
+- [x] **Step 3: Write `hyperpress-utils/src/TaxonomyRegistrar.php`**
 
 The default `slug` behaviour: a missing `slug` key is an error; an explicit `null` disables rewrite.
 
@@ -719,12 +721,12 @@ final class TaxonomyRegistrar {
 }
 ```
 
-- [ ] **Step 4: Run and confirm PASS**
+- [x] **Step 4: Run and confirm PASS**
 
 Run: `docker compose run --rm php composer test:unit -- --filter TaxonomyRegistrarTest`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add hyperpress-utils/src/TaxonomyRegistrar.php tests/unit/Utils/TaxonomyRegistrarTest.php
@@ -740,7 +742,7 @@ The capability set is read from the registered post type object (`cap`), so it a
 **Files:**
 - Create: `hyperpress-utils/src/Capabilities.php`, `tests/unit/Utils/CapabilitiesTest.php`, `tests/integration/Utils/CapabilitiesGrantTest.php`
 
-- [ ] **Step 1: Write the failing unit test `tests/unit/Utils/CapabilitiesTest.php`**
+- [x] **Step 1: Write the failing unit test `tests/unit/Utils/CapabilitiesTest.php`**
 
 ```php
 <?php
@@ -775,7 +777,7 @@ final class CapabilitiesTest extends TestCase {
 }
 ```
 
-- [ ] **Step 2: Write the failing integration test `tests/integration/Utils/CapabilitiesGrantTest.php`**
+- [x] **Step 2: Write the failing integration test `tests/integration/Utils/CapabilitiesGrantTest.php`**
 
 ```php
 <?php
@@ -845,12 +847,12 @@ final class CapabilitiesGrantTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 3: Run and confirm FAIL**
+- [x] **Step 3: Run and confirm FAIL**
 
 Run: `docker compose run --rm php composer test:unit -- --filter CapabilitiesTest`
 Expected: class not found.
 
-- [ ] **Step 4: Write `hyperpress-utils/src/Capabilities.php`**
+- [x] **Step 4: Write `hyperpress-utils/src/Capabilities.php`**
 
 ```php
 <?php
@@ -918,14 +920,14 @@ final class Capabilities {
 }
 ```
 
-- [ ] **Step 5: Run unit and integration tests**
+- [x] **Step 5: Run unit and integration tests**
 
 Run: `docker compose run --rm php composer test:unit -- --filter CapabilitiesTest`
 Expected: PASS.
 Run: `docker compose run --rm php composer test:integration -- --filter CapabilitiesGrantTest`
 Expected: PASS (these use their own `hyper_gizmo` type, so they do not depend on any plugin migration).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add hyperpress-utils/src/Capabilities.php tests/unit/Utils/CapabilitiesTest.php tests/integration/Utils/CapabilitiesGrantTest.php
@@ -943,7 +945,7 @@ The crumb array shape (`title`, `url`, `classes.li`, `classes.bread`) and the CS
 **Files:**
 - Create: `hyperpress-utils/src/Breadcrumbs.php`, `tests/unit/Utils/BreadcrumbsTest.php`, `tests/integration/Utils/BreadcrumbsRequestTest.php`
 
-- [ ] **Step 1: Write the failing unit test `tests/unit/Utils/BreadcrumbsTest.php`**
+- [x] **Step 1: Write the failing unit test `tests/unit/Utils/BreadcrumbsTest.php`**
 
 ```php
 <?php
@@ -1028,12 +1030,12 @@ final class BreadcrumbsTest extends TestCase {
 }
 ```
 
-- [ ] **Step 2: Run and confirm FAIL**
+- [x] **Step 2: Run and confirm FAIL**
 
 Run: `docker compose run --rm php composer test:unit -- --filter 'Utils.BreadcrumbsTest'`
 Expected: class not found.
 
-- [ ] **Step 3: Write `hyperpress-utils/src/Breadcrumbs.php`**
+- [x] **Step 3: Write `hyperpress-utils/src/Breadcrumbs.php`**
 
 ```php
 <?php
@@ -1166,15 +1168,15 @@ final class Breadcrumbs {
 }
 ```
 
-- [ ] **Step 4: Run and confirm the unit test PASSES**
+- [x] **Step 4: Run and confirm the unit test PASSES**
 
 Run: `docker compose run --rm php composer test:unit -- --filter 'Utils.BreadcrumbsTest'`
 
-- [ ] **Step 5: Verify the season URL shape against the real rewrite rule**
+- [x] **Step 5: Verify the season URL shape against the real rewrite rule**
 
 The legacy theme code built the season crumb URL as `get_category_link( term_id ) . has_archive`, which is wrong for a custom taxonomy. The intended URL is the season term link followed by the post type's archive slug. Read the legacy season rule (`hyperpress-season/lib/rewrite.php`, or `src/Rewrite.php` once plugins-03-core-plugins Task 2 has run) and confirm that `{term link}{has_archive}/` matches its regex and maps to `hyper_season=<term>&post_type=<post type>`. If the rule's shape differs (for example it expects the post type key rather than the archive slug), change the URL expression in `context()` and the unit-test URLs to match, and record the difference in the notes. Do not leave the mismatch.
 
-- [ ] **Step 6: Write the integration test `tests/integration/Utils/BreadcrumbsRequestTest.php`**
+- [x] **Step 6: Write the integration test `tests/integration/Utils/BreadcrumbsRequestTest.php`**
 
 ```php
 <?php
@@ -1233,12 +1235,12 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 7: Run and confirm PASS**
+- [x] **Step 7: Run and confirm PASS**
 
 Run: `docker compose run --rm php composer test:integration -- --filter BreadcrumbsRequestTest`
 Expected: PASS. If `is_singular` or `is_post_type_archive` is false after `go_to`, confirm the permalink filter from plugins-01-test-toolchain Task 4 is active and `flush_rewrite_rules()` ran after registration.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add hyperpress-utils/src/Breadcrumbs.php tests/unit/Utils/BreadcrumbsTest.php tests/integration/Utils/BreadcrumbsRequestTest.php
@@ -1256,7 +1258,7 @@ Replaces the three near-identical `banner.php` copies (competition, newsletter, 
 **Files:**
 - Create: `hyperpress-utils/src/Banner.php`, `tests/unit/Utils/BannerTest.php`, `tests/integration/Utils/BannerRegisterTest.php`
 
-- [ ] **Step 1: Write the failing unit test**
+- [x] **Step 1: Write the failing unit test**
 
 ```php
 <?php
@@ -1338,11 +1340,11 @@ final class BannerTest extends TestCase {
 }
 ```
 
-- [ ] **Step 2: Run and confirm FAIL**
+- [x] **Step 2: Run and confirm FAIL**
 
 Run: `docker compose run --rm php composer test:unit -- --filter BannerTest`
 
-- [ ] **Step 3: Write `hyperpress-utils/src/Banner.php`**
+- [x] **Step 3: Write `hyperpress-utils/src/Banner.php`**
 
 ```php
 <?php
@@ -1419,11 +1421,11 @@ final class Banner {
 }
 ```
 
-- [ ] **Step 4: Run and confirm PASS**
+- [x] **Step 4: Run and confirm PASS**
 
 Run: `docker compose run --rm php composer test:unit -- --filter BannerTest`
 
-- [ ] **Step 5: Write the integration test `tests/integration/Utils/BannerRegisterTest.php`**
+- [x] **Step 5: Write the integration test `tests/integration/Utils/BannerRegisterTest.php`**
 
 ```php
 <?php
@@ -1490,7 +1492,7 @@ final class BannerRegisterTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 6: Run and confirm PASS**, then commit
+- [x] **Step 6: Run and confirm PASS**, then commit
 
 Run: `docker compose run --rm php composer test:integration -- --filter BannerRegisterTest`
 Expected: PASS. If `is_post_type_archive` is false after `go_to`, confirm the permalink filter from plugins-01-test-toolchain Task 4 is active and `flush_rewrite_rules()` ran after registration.
@@ -1510,7 +1512,7 @@ Loaded lazily by the autoloader on first reference, which only happens inside `c
 - Create: `hyperpress-utils/src/Controls/PostTypeDropdownControl.php`, `hyperpress-utils/src/Controls/CategoryDropdownControl.php`, `tests/integration/Utils/ControlsTest.php`
 - Delete: `hyperpress-utils/lib/controls/customize-post-type-control.php`, `hyperpress-utils/lib/controls/customize-category-control.php` (and `lib/` if empty)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```php
 <?php
@@ -1550,11 +1552,11 @@ final class ControlsTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 2: Run and confirm FAIL** (class not found)
+- [x] **Step 2: Run and confirm FAIL** (class not found)
 
 Run: `docker compose run --rm php composer test:integration -- --filter ControlsTest`
 
-- [ ] **Step 3: Move with history, then edit**
+- [x] **Step 3: Move with history, then edit**
 
 ```bash
 mkdir -p hyperpress-utils/src/Controls
@@ -1562,7 +1564,7 @@ git mv hyperpress-utils/lib/controls/customize-post-type-control.php hyperpress-
 git mv hyperpress-utils/lib/controls/customize-category-control.php hyperpress-utils/src/Controls/CategoryDropdownControl.php
 ```
 
-- [ ] **Step 4: Rewrite `PostTypeDropdownControl.php`**
+- [x] **Step 4: Rewrite `PostTypeDropdownControl.php`**
 
 Logic and markup are unchanged from the legacy file except where marked.
 
@@ -1628,7 +1630,7 @@ class PostTypeDropdownControl extends WP_Customize_Control {
 
 Known legacy defects deliberately NOT fixed here (a move only): `esc_attr( $this->id )` is called without `echo` (the `for`, `name`, `id` attributes are empty), and `selected( $this->value(), ... )` compares an array value to a string. Both go into the plugins audit.
 
-- [ ] **Step 5: Rewrite `CategoryDropdownControl.php`**
+- [x] **Step 5: Rewrite `CategoryDropdownControl.php`**
 
 ```php
 <?php
@@ -1695,7 +1697,7 @@ class CategoryDropdownControl extends WP_Customize_Control {
 
 The legacy `TODO: build a multiselect drop down by extending Walker_Category_Checklist?` comment is dropped per the no-TODO rule; note it in the plugins audit as a possible improvement if wanted.
 
-- [ ] **Step 6: Remove the empty legacy directory, run tests, commit**
+- [x] **Step 6: Remove the empty legacy directory, run tests, commit**
 
 ```bash
 rmdir hyperpress-utils/lib/controls hyperpress-utils/lib 2>/dev/null; ls hyperpress-utils
@@ -1716,19 +1718,19 @@ Note: the commit pathspec `hyperpress-utils` includes the `git mv` deletions of 
 
 ## Task 8: Full Utils verification
 
-- [ ] **Step 1: Run every Utils test and the syntax lint**
+- [x] **Step 1: Run every Utils test and the syntax lint**
 
 Run: `docker compose run --rm php composer test:unit -- --filter Utils`
 Run: `docker compose run --rm php composer test:integration -- --filter Utils`
 Run: `docker compose run --rm php composer lint:syntax`
 Expected: all PASS, lint exit 0.
 
-- [ ] **Step 2: Confirm the header lint for utils is green and the rest still fails as designed**
+- [x] **Step 2: Confirm the header lint for utils is green and the rest still fails as designed**
 
 Run: `docker compose run --rm php composer test:unit -- --filter PluginHeadersTest`
 Expected: all `hyperpress-utils` cases PASS; other plugins still fail (their migration is plugins-03 and plugins-04).
 
-- [ ] **Step 3: Flip this plan's checkboxes, add the `STATUS: COMPLETED` banner with the commit range, commit the plan**
+- [x] **Step 3: Flip this plan's checkboxes, add the `STATUS: COMPLETED` banner with the commit range, commit the plan**
 
 ```bash
 git add docs/superpowers/plans/2026-10-02-plugins-02-shared-utils.md
@@ -1739,10 +1741,14 @@ git commit -m "docs(plans): complete plugins-02-shared-utils" -- docs/superpower
 
 ## Execution notes
 
-(Fill in during execution: Task 0 consumer list, theme checklist, PHPUnit findings.)
+- Task 0 consumer audit (107 same-plugin, 8 cross-plugin, 17 theme references): cross-plugin callers are `hyperpress-sponsor/lib/labels.php` (calls `HYPER_Press_Season\get_sorted_seasons`) and the five plugin breadcrumb wrappers (call the theme function). Theme callers: `library/labels/post.php` and `library/breadcrumbs/post.php` (`get_sorted_seasons`), `library/customize/homepage.php` (control classes), `template-parts/banner.php` (banner `type`, read as an unprefixed slug, so kept unprefixed). The two `get_sorted_seasons` theme callers were added to theme-02-renames-and-breadcrumbs.
+- Found in Task 5: the legacy season rewrite rule derives `post_type` from the archive slug by stripping a trailing `s`, which breaks with `hyper_*` keys. plugins-03-core-plugins Task 2 now replaces it with one rule per `hyper_*` post type archive and a test.
+- Until plugins-03 migrates season and program, their "post types" Customizer dropdowns are silently absent (class_exists-guarded; old control classes no longer exist).
+- Baseline after this plan: unit 112 tests, 66 red (header lint for the 13 unmigrated plugins, NoLegacyKeysTest); integration 55 tests, 36 red (contract tests), 3 skipped; `lint:syntax` exit 0.
+- Deferred minors (to triage at the end): `KEY_PATTERN` allows a trailing newline (use `\z`); `resolve_object_types` returns `['']`/`[false]` for a stored falsy theme mod; `Capabilities::ensure` records the version even if no type was registered yet (callers must run it at `init` priority 20 after registration at 10); `BreadcrumbsRequestTest` leaks the `hyper_season` taxonomy until season is migrated; season crumb URL has no trailing slash; Banner builds its context before the early return and callers must pass pre-translated `archive_title`; several untested edge cases listed in the per-task reports.
 
-### Theme checklist (OUT OF SCOPE, for the separate theme pass)
+### Theme checklist (OUT OF SCOPE here, for the theme plans)
 - Plugin identifiers the theme must learn: post types `hyper_award`, `hyper_competition`, `hyper_countdown`, `hyper_newsletter`, `hyper_robot`, `hyper_sponsor`; taxonomies `hyper_season`, `hyper_program`, `hyper_district`, `hyper_week`, `hyper_tier`.
-- The theme's `hyperpress_breadcrumbs_custom_post_type()` is replaced by `HyperPress\Utils\Breadcrumbs` and becomes dead code. The theme plans remove it (see `theme/docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md`).
+- The theme's `hyperpress_breadcrumbs_custom_post_type()` is replaced by `HyperPress\Utils\Breadcrumbs` and becomes dead code; theme-02-renames-and-breadcrumbs removes it.
 - Undeclared plugin-to-theme dependency: banner colour theme mods `hyperpress_hyper_green`, `hyperpress_hyper_orange`, `hyperpress_hyper_red`, `hyperpress_gear_blue`, and the theme meta field `hyperpress_banner_background_color`.
 - Filters the theme fires: `hyperpress_breadcrumbs_content`, `hyperpress_banner_content`.
