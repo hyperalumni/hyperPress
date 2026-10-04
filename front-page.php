@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header(); ?>
 
 <?php
+// Slider Revolution plugin provides add_revslider(); it may not be active.
 if ( function_exists( 'add_revslider' ) ) {
 	add_revslider( 'homepage' );
 }

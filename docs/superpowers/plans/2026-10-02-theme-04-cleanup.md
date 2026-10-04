@@ -96,13 +96,13 @@ The theme defines its own functions once; guards are only needed for a documente
 
 **Files:** Many under `library/`.
 
-- [ ] **Step 1: Inventory**
+- [x] **Step 1: Inventory**
 
 Run: `grep -rnE "function_exists" --include='*.php' library functions.php template-parts *.php | grep -vE 'class-tgm-plugin-activation'`
 
 Classify each: (a) a redeclaration guard around the theme's own function or router (remove); (b) a check for a function from another plugin or WordPress feature that may be absent (keep, and add a comment naming the dependency); (c) a documented child-theme override (keep; list it in the notes).
 
-- [ ] **Step 2: Test first.** Create `tests/unit/NoRedeclarationGuardsTest.php`:
+- [x] **Step 2: Test first.** Create `tests/unit/NoRedeclarationGuardsTest.php`:
 
 ```php
 <?php
@@ -135,9 +135,9 @@ final class NoRedeclarationGuardsTest extends TestCase {
 
 Run; expected FAIL. (The regex matches the guard-then-same-named-function shape. If the theme writes guards in another shape, extend the regex until it finds all redeclaration guards from Step 1 class (a), then proceed.)
 
-- [ ] **Step 3: Remove the class (a) guards** one file at a time: delete the `if ( ! function_exists(...) ) :` opener and its `endif;` (or braces), keep the function body, re-indent. Run lint and both suites after each file.
+- [x] **Step 3: Remove the class (a) guards** one file at a time: delete the `if ( ! function_exists(...) ) :` opener and its `endif;` (or braces), keep the function body, re-indent. Run lint and both suites after each file.
 
-- [ ] **Step 4: Commit per group** with explicit pathspecs.
+- [x] **Step 4: Commit per group** with explicit pathspecs.
 
 ---
 

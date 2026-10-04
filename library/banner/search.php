@@ -4,16 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_banner_search' ) ) :
-	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_search' );
+add_filter( 'hyperpress_banner_content', 'hyperpress_banner_search' );
 
-	function hyperpress_banner_search( $banner ) {
-		if ( is_search() ) {
-			$banner['type']     = 'search';
-			$banner['title']    = __( 'Search', 'hyperpress' );
-			$banner['subtitle'] = __( 'Results for', 'hyperpress' ) . ' <span class="emphasis">"' . get_search_query() . '"</span>';
-		}
-
-		return $banner;
+function hyperpress_banner_search( $banner ) {
+	if ( is_search() ) {
+		$banner['type']     = 'search';
+		$banner['title']    = __( 'Search', 'hyperpress' );
+		$banner['subtitle'] = __( 'Results for', 'hyperpress' ) . ' <span class="emphasis">"' . get_search_query() . '"</span>';
 	}
-endif;
+
+	return $banner;
+}
