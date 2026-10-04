@@ -43,6 +43,8 @@
 | 11 | Every `// phpcs:ignore ... -- plugins audit` comment added in plugins-05-standards-and-smoke-test | `grep -rn 'plugins audit' hyperpress-*` |
 | 12 | `Count Downs` vs `Countdown(s)` label inconsistency in countdown | `hyperpress-countdown/src/Plugin.php` |
 | 13 | Dropped TODO: multiselect category control could extend `Walker_Category_Checklist` | `hyperpress-utils/src/Controls/CategoryDropdownControl.php` (improvement, not a defect) |
+| 14 | A Google Maps `api_key` is hard-coded in the map field (committed secret; the value must never be reproduced in notes or reports). Needs rotation/restriction by the owner and moving to a constant or option | `hyperpress-competition/src/MetaBoxes.php` (map field), `git log -S'api_key'` for history |
+| 15 | `__( '', 'hyperpress' )` on an empty string (gettext misuse) carried over from the legacy label description | `hyperpress-competition/src/MetaBoxes.php` |
 
 - [ ] **Step 3: Commit nothing** (read-only).
 

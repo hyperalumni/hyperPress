@@ -550,8 +550,8 @@ final class Plugin {
 			'menu_position' => 22,
 			'menu_icon'     => 'dashicons-calendar',
 			'supports'      => array( 'title', 'thumbnail', 'revisions' ),
-			'hierarchical'  => true,
-			// Add 'rewrite_hierarchical' => true here ONLY if Step 1 printed "hierarchical":true.
+			'hierarchical'  => false, // Legacy post type is NOT hierarchical (snapshot); only its rewrite is.
+			'rewrite_hierarchical' => true, // Snapshot: competition rewrite.hierarchical is true.
 		);
 	}
 
