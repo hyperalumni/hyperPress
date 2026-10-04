@@ -1,7 +1,10 @@
 <?php
-// Exit if accessed directly.
+
+namespace HYPER_Press_Countdown;
+
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
 require_once( __DIR__ . '/shortcodes/countdown.php' );

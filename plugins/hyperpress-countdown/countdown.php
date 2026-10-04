@@ -2,19 +2,27 @@
 /**
  * @wordpress-plugin
  * Plugin Name:         hyperPress Countdown
+ * Plugin URI:          https://hyperalumni.org
+ * GitHub Plugin URI:   https://github.com/hyperalumni/hyperPress
  * Description:         Custom Post Type and Shortcode for Countdowns for hyperPress
- * Version:             1.0.0
- * Requires at least:   5.2
- * Requires PHP:        7.2
+ * Version:             2026.0.0
+ * Requires at least:   6.9
+ * Requires PHP:        8.3
  * Author:              Chris McGroarty
  * Author URI:          https://idesign.co
+ * License:             MIT License
+ * License URI:         http://www.opensource.org/licenses/mit-license.php
  * Text Domain:         hyperpress
- * Requires Plugins: meta-box-aio
+ * Domain Path:         /languages
+ * Update URI:          false
+ * Requires Plugins:    meta-box-aio
  */
 
-// Exit if accessed directly.
+namespace HYPER_Press_Countdown;
+
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
 // require the definitions first

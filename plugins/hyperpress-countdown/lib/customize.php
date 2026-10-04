@@ -1,10 +1,17 @@
 <?php
-// Exit if accessed directly.
+
+namespace HYPER_Press_Countdown;
+
+use WP_Customize_Color_Control;
+
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_customize_countdown_colors' ) ) :
+if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_customize_countdown_colors' ) ) :
+	add_action( 'customize_register', '\HYPER_Press_Countdown\hyperpress_customize_countdown_colors' );
+
 	function hyperpress_customize_countdown_colors( $wp_customize ): void {
 		// COUNTDOWN COLORS
 		$wp_customize->add_setting( 'hyperpress_countdown_days_color',
@@ -57,6 +64,4 @@ if ( ! function_exists( 'hyperpress_customize_countdown_colors' ) ) :
 				'section'  => 'colors',
 			) ) );
 	}
-
-	add_action( 'customize_register', 'hyperpress_customize_countdown_colors' );
 endif;

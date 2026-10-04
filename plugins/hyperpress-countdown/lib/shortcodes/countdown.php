@@ -1,12 +1,16 @@
 <?php
-// Exit if accessed directly.
+
+namespace HYPER_Press_Countdown;
+
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_add_countdown_shortcode' ) ) :
-	function hyperpress_add_countdown_shortcode( $atts ): string {
+if ( ! function_exists( '\HYPER_Press_Countdown\hyperpress_add_countdown_shortcode' ) ) :
+	add_shortcode( 'hyperpress_countdown', '\HYPER_Press_Countdown\hyperpress_add_countdown_shortcode' );
 
+	function hyperpress_add_countdown_shortcode( $atts ): string {
 		extract( shortcode_atts( [ 'id' => '', 'slug' => '', 'ignoreshowhide' => 'false' ], $atts ) );
 		if ( ! empty( $id ) || ! empty( $slug ) ) {
 			if ( empty( $id ) ) {
@@ -56,19 +60,21 @@ if ( ! function_exists( 'hyperpress_add_countdown_shortcode' ) ) :
 
 						$countPastZero = rwmb_meta( 'countdown_past_zero', '', $countdown->ID );
 
-						$output = '<section class="grid-x countdown">';
+						$output = '<section class="grid-x countdown align-center">';
+						$output .= '<div class="cell xsmall-12 large-10">';
 						$output .= '<div id="' . $slug . '" class="cell" data-date="' . $eventDate . '" ></div>';
 
 						if ( ! empty( $eventName ) ) {
 							$output .= '<h2 class="cell align-center">' . $eventName . '</h2>';
 						}
 
-						$output .= '<h4 class="cell align-center"><time>' . date_format( new DateTime( $eventDate ), "l F d, Y @ h:iA" ) . '</time></h4>';
+						$output .= '<h4 class="cell align-center"><time>' . date_format( date_create( $eventDate ), "l F d, Y @ h:iA" ) . '</time></h4>';
 
 						if ( ! empty( $eventLocation ) ) {
 							$output .= '<h4 class="cell align-center">' . $eventLocation . '</h4>';
 						}
 
+						$output .= '</div>';
 						$output .= '</section>';
 						$output .= '<div class="section-divider"><hr/></div>';
 
@@ -114,6 +120,4 @@ if ( ! function_exists( 'hyperpress_add_countdown_shortcode' ) ) :
 
 		return '';
 	}
-
-	add_shortcode( 'hyperpress_countdown', 'hyperpress_add_countdown_shortcode' );
 endif;
