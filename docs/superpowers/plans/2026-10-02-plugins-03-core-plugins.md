@@ -269,15 +269,15 @@ final class SeasonRewriteTest extends WP_UnitTestCase {
 	public function test_season_archive_url_resolves_to_the_post_type_archive(): void {
 		$term_id = self::factory()->term->create( array( 'taxonomy' => 'hyper_season', 'name' => '2026', 'slug' => '2026' ) );
 		flush_rewrite_rules();
-		$this->go_to( home_url( '/seasons/2026/sponsors/' ) );
-		$this->assertTrue( is_post_type_archive( 'hyper_sponsor' ) );
+		$this->go_to( home_url( '/seasons/2026/awards/' ) );
+		$this->assertTrue( is_post_type_archive( 'hyper_award' ) );
 		$this->assertTrue( is_tax( 'hyper_season' ) );
 		$this->assertSame( $term_id, get_queried_object_id() );
 	}
 }
 ```
 
-If `is_tax` is false on the archive request, read how WordPress resolves `hyper_season=2026&post_type=hyper_sponsor` (both query vars set) and adjust the assertions to what WordPress actually reports, keeping the `post_type` check: the requirement is that the URL resolves to sponsors of that season, not a 404.
+(The archive test uses `hyper_award`, which is migrated in Task 5 of this plan: implement Task 2 Step 5 after Task 5 passes, or run that one test only once award is migrated; the first test is meaningful immediately.) If `is_tax` is false on the archive request, read how WordPress resolves `hyper_season=2026&post_type=hyper_sponsor` (both query vars set) and adjust the assertions to what WordPress actually reports, keeping the `post_type` check: the requirement is that the URL resolves to sponsors of that season, not a 404.
 - [ ] **Step 6: Delete the legacy `lib/` files, then run R7 verification**, with `<name>`=season and `<old>`=season (taxonomy case):
 
 Run: `docker compose run --rm php composer test:integration -- --filter 'RegistrationParityTest.*season|SeasonRewriteTest'`
