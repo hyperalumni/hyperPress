@@ -3,7 +3,6 @@
  * @wordpress-plugin
  * Plugin Name:         hyperPress Utils
  * Plugin URI:          https://hyperalumni.org
- * GitHub Plugin URI:   https://github.com/hyperalumni/hyperPress
  * Description:         Utilities for hyperPress
  * Version:             2026.0.0
  * Requires at least:   6.9
@@ -15,15 +14,20 @@
  * Text Domain:         hyperpress
  * Domain Path:         /languages
  * Update URI:          false
- * Requires Plugins:
  */
 
-namespace HYPER_Press_Utils;
-
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
-require_once( __DIR__ . '/lib/controls/customize-category-control.php' );
-require_once( __DIR__ . '/lib/controls/customize-post-type-control.php' );
+spl_autoload_register(
+	static function ( string $class_name ): void {
+		$prefix = 'HyperPress\\Utils\\';
+		if ( 0 !== strpos( $class_name, $prefix ) ) {
+			return;
+		}
+		$file = __DIR__ . '/src/' . str_replace( '\\', '/', substr( $class_name, strlen( $prefix ) ) ) . '.php';
+		if ( is_file( $file ) ) {
+			require_once $file;
+		}
+	}
+);
