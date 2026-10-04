@@ -1,5 +1,7 @@
 <?php
 /**
+ * The hyperPress Robot plugin.
+ *
  * @wordpress-plugin
  * Plugin Name:         hyperPress Robot
  * Plugin URI:          https://hyperalumni.org
