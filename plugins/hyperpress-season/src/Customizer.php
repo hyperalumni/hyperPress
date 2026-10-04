@@ -33,28 +33,26 @@ final class Customizer {
 			)
 		);
 
-		if ( class_exists( PostTypeDropdownControl::class ) ) {
-			$wp_customize->add_setting(
+		$wp_customize->add_setting(
+			'hyperpress_season_post_types',
+			array(
+				'type'              => 'theme_mod',
+				'default'           => array( 'post' ),
+				'sanitize_callback' => '',
+			)
+		);
+		$wp_customize->add_control(
+			new PostTypeDropdownControl(
+				$wp_customize,
 				'hyperpress_season_post_types',
 				array(
-					'type'              => 'theme_mod',
-					'default'           => array( 'post' ),
-					'sanitize_callback' => '',
+					'section'     => 'hyperpress_season',
+					'label'       => __( 'Seasons Post Types', 'hyperpress' ),
+					'description' => __( 'Select the Post Types that will use the Season Taxonomy', 'hyperpress' ),
+					'settings'    => 'hyperpress_season_post_types',
 				)
-			);
-			$wp_customize->add_control(
-				new PostTypeDropdownControl(
-					$wp_customize,
-					'hyperpress_season_post_types',
-					array(
-						'section'     => 'hyperpress_season',
-						'label'       => __( 'Seasons Post Types', 'hyperpress' ),
-						'description' => __( 'Select the Post Types that will use the Season Taxonomy', 'hyperpress' ),
-						'settings'    => 'hyperpress_season_post_types',
-					)
-				)
-			);
-		}
+			)
+		);
 
 		$wp_customize->add_setting(
 			'hyperpress_season_current',
