@@ -1,5 +1,7 @@
 <?php
 /**
+ * The hyperPress Label plugin.
+ *
  * @wordpress-plugin
  * Plugin Name:         hyperPress Label
  * Plugin URI:          https://hyperalumni.org
