@@ -10,7 +10,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header(); ?>
 
-<?php while ( have_posts() ) : the_post(); /* Start loop */ ?>
+<?php
+while ( have_posts() ) :
+the_post(); /* Start loop */
+?>
     <div class="main-container">
         <div class="main-grid">
             <header class="kitchen-sink-header">
@@ -20,7 +23,7 @@ get_header(); ?>
 
             <!-- Main wrapper for the components in the kitchen-sink -->
             <div id="components" class="kitchen-sink-components">
-                <article <?php post_class() ?> id="post-<?php the_ID(); ?>">
+                <article <?php post_class(); ?> id="post-<?php the_ID(); ?>">
                     <!-- Abide -->
                     <h2 id="abide" class="docs-heading" data-magellan-target="abide"><a href="abide"></a>Abide</h2>
 
@@ -983,4 +986,5 @@ get_header(); ?>
         </div><!-- Close main-grid -->
     </div><!-- Close main-container -->
 <?php endwhile; ?>
-<?php get_footer();
+<?php
+get_footer();
