@@ -40,7 +40,7 @@
   },
   "scripts": {
     "lint:syntax": "find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -not -path './dist/*' -not -path './packaged/*' -print0 | xargs -0 -n1 php -d display_errors=stderr -l > /dev/null",
-    "lint:cs": "phpcs",
+    "lint:cs": "phpcs --standard=codesniffer.ruleset.xml",
     "lint": ["@lint:syntax", "@lint:cs"],
     "test:unit": "phpunit --testsuite unit",
     "test:integration": "phpunit --testsuite integration --bootstrap tests/bootstrap-integration.php"
