@@ -1,5 +1,15 @@
 <?php
-if ( ! function_exists( 'hyperpress_customize_socials' ) ) :
+
+namespace HYPER_Press_Socials;
+
+use WP_Customize_Control;
+
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+if ( ! function_exists( '\HYPER_Press_Socials\hyperpress_customize_socials' ) ) :
 	function hyperpress_customize_socials( $wp_customize ): void {
 		$wp_customize->add_section( 'socials', array(
 			'title'    => 'Socials',
@@ -175,5 +185,5 @@ if ( ! function_exists( 'hyperpress_customize_socials' ) ) :
 			) ) );
 	}
 
-	add_action( 'customize_register', 'hyperpress_customize_socials' );
+	add_action( 'customize_register', '\HYPER_Press_Socials\hyperpress_customize_socials' );
 endif;
