@@ -121,54 +121,6 @@ if ( ! function_exists( 'hyper_register_required_plugins' ) ) :
 				'required' => false
 			),
 			array(
-				'name'     => 'hyperPress Utils',
-				'slug'     => 'hyperpress-utils',
-				'source'   => '#',
-				'required' => true
-			),
-			array(
-				'name'     => 'hyperPress Season',
-				'slug'     => 'hyperpress-season',
-				'source'   => '#',
-				'required' => true
-			),
-			array(
-				'name'     => 'hyperPress Award',
-				'slug'     => 'hyperpress-award',
-				'source'   => '#',
-				'required' => false
-			),
-			array(
-				'name'     => 'hyperPress Countdown',
-				'slug'     => 'hyperpress-countdown',
-				'source'   => '#',
-				'required' => true
-			),
-			array(
-				'name'     => 'hyperPress Newsletter',
-				'slug'     => 'hyperpress-newsletter',
-				'source'   => '#',
-				'required' => true
-			),
-			array(
-				'name'     => 'hyperPress Robot',
-				'slug'     => 'hyperpress-robot',
-				'source'   => '#',
-				'required' => false
-			),
-			array(
-				'name'     => 'hyperPress Socials',
-				'slug'     => 'hyperpress-socials',
-				'source'   => '#',
-				'required' => true
-			),
-			array(
-				'name'     => 'hyperPress Sponsor',
-				'slug'     => 'hyperpress-sponsor',
-				'source'   => '#',
-				'required' => true
-			),
-			array(
 				'name'     => 'Image Placeholders',
 				'slug'     => 'dominant-color-images',
 				'required' => true
