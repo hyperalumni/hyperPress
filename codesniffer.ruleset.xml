@@ -15,6 +15,8 @@
 	<exclude-pattern>*/packaged/*</exclude-pattern>
 	<exclude-pattern>*/src/assets/*</exclude-pattern>
 	<exclude-pattern>*/library/class-tgm-plugin-activation.php</exclude-pattern>
+	<!-- Untracked local scratch space for agent tooling; not theme source. -->
+	<exclude-pattern>*/.superpowers/*</exclude-pattern>
 
 	<arg name="extensions" value="php"/>
 
@@ -65,6 +67,22 @@
 
 		<exclude name="WordPress.WhiteSpace.ControlStructureSpacing.NoSpaceAfterOpenParenthesis" />
 		<exclude name="WordPress.WhiteSpace.ControlStructureSpacing.NoSpaceBeforeCloseParenthesis)" />
+
+		<!-- Mandatory docblock presence (file/class/function/variable) is documentation churn with no
+		     behavioural value across legacy template code. Existing docblocks are still validated. -->
+		<exclude name="Squiz.Commenting.FileComment.Missing" />
+		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag" />
+		<exclude name="Squiz.Commenting.VariableComment.Missing" />
+
+		<!-- Many theme files are CRLF. Rewriting every line ending would bury the real changes in
+		     whitespace churn across the whole repo, so line endings are left as they are. -->
+		<exclude name="Generic.Files.LineEndings.InvalidEOLChar" />
+
+		<!-- Class files are named after the class (PSR-4 style, e.g. PHPUnit test cases such as
+		     BootTest.php) rather than class-*.php, and renaming would break the autoload/test
+		     discovery that depends on those names. -->
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 
 	</rule>
 </ruleset>
