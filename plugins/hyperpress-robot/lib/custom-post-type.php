@@ -1,10 +1,14 @@
 <?php
-// Exit if accessed directly.
+
+namespace HYPER_Press_Robot;
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_register_robot_post_type' ) ) :
+if ( ! function_exists( '\HYPER_Press_Robot\hyperpress_register_robot_post_type' ) ) :
+	add_action( 'init', '\HYPER_Press_Robot\hyperpress_register_robot_post_type' );
+
 	function hyperpress_register_robot_post_type(): void {
 		$labels = [
 			'name'                     => esc_html__( 'Robots', 'hyperpress' ),
@@ -16,14 +20,14 @@ if ( ! function_exists( 'hyperpress_register_robot_post_type' ) ) :
 			'view_item'                => esc_html__( 'View Robot', 'hyperpress' ),
 			'view_items'               => esc_html__( 'View Robots', 'hyperpress' ),
 			'search_items'             => esc_html__( 'Search Robots', 'hyperpress' ),
-			'not_found'                => esc_html__( 'No robots found.', 'hyperpress' ),
-			'not_found_in_trash'       => esc_html__( 'No robots found in Trash.', 'hyperpress' ),
+			'not_found'                => esc_html__( 'No Robots found.', 'hyperpress' ),
+			'not_found_in_trash'       => esc_html__( 'No Robots found in Trash.', 'hyperpress' ),
 			'parent_item_colon'        => esc_html__( 'Parent Robot:', 'hyperpress' ),
 			'all_items'                => esc_html__( 'All Robots', 'hyperpress' ),
 			'archives'                 => esc_html__( 'Robot Archives', 'hyperpress' ),
 			'attributes'               => esc_html__( 'Robot Attributes', 'hyperpress' ),
-			'insert_into_item'         => esc_html__( 'Insert into robot', 'hyperpress' ),
-			'uploaded_to_this_item'    => esc_html__( 'Uploaded to this robot', 'hyperpress' ),
+			'insert_into_item'         => esc_html__( 'Insert into Robot', 'hyperpress' ),
+			'uploaded_to_this_item'    => esc_html__( 'Uploaded to this Robot', 'hyperpress' ),
 			'featured_image'           => esc_html__( 'Featured image', 'hyperpress' ),
 			'set_featured_image'       => esc_html__( 'Set featured image', 'hyperpress' ),
 			'remove_featured_image'    => esc_html__( 'Remove featured image', 'hyperpress' ),
@@ -41,8 +45,8 @@ if ( ! function_exists( 'hyperpress_register_robot_post_type' ) ) :
 		];
 		$args   = [
 			'label'               => esc_html__( 'Robots', 'hyperpress' ),
+			'description'         => esc_html__( 'Robots made by Team HYPER', 'hyperpress' ),
 			'labels'              => $labels,
-			'description'         => 'Robots made by Team HYPER',
 			'public'              => true,
 			'hierarchical'        => false,
 			'exclude_from_search' => false,
@@ -60,10 +64,10 @@ if ( ! function_exists( 'hyperpress_register_robot_post_type' ) ) :
 			'has_archive'         => 'robots',
 			'rest_base'           => '',
 			'show_in_menu'        => true,
-			'menu_position'       => 20,
+			'menu_position'       => 23,
 			'menu_icon'           => 'dashicons-superhero',
 			'capability_type'     => 'post',
-			'supports'            => [ 'title', 'editor', 'thumbnail' ],
+			'supports'            => [ 'title', 'editor', 'thumbnail', 'revisions' ],
 			'taxonomies'          => [],
 			'rewrite'             => [
 				'with_front' => false,
@@ -73,6 +77,4 @@ if ( ! function_exists( 'hyperpress_register_robot_post_type' ) ) :
 
 		register_post_type( 'robot', $args );
 	}
-
-	add_action( 'init', 'hyperpress_register_robot_post_type' );
 endif;
