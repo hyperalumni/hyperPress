@@ -19,7 +19,7 @@
 | Path | Responsibility |
 |---|---|
 | `Dockerfile` | PHP 8.5-cli + mysqli + composer (same as the plugins repo) |
-| `docker-compose.yml` | `php` and `db` services; mounts the theme at `/app` and `/themes/hyperpress`, and `../plugins` at `/plugins` |
+| `compose.yaml` | `php` and `db` services; mounts the theme at `/app` and `/themes/hyperpress`, and `../plugins` at `/plugins` |
 | `composer.json` | Add test dev-dependencies and scripts |
 | `phpunit.xml.dist` | Replace the empty single suite with `unit` and `integration` suites |
 | `tests/bootstrap-unit.php`, `tests/bootstrap-integration.php`, `tests/wp-tests-config.php` | Bootstraps |
@@ -32,7 +32,7 @@
 
 ## Task 1: Docker, Composer and a passing smoke test
 
-**Files:** Create `Dockerfile`, `docker-compose.yml`, `tests/bootstrap-unit.php`, `tests/unit/SmokeTest.php`; modify `composer.json`, `phpunit.xml.dist`, `.gitignore`.
+**Files:** Create `Dockerfile`, `compose.yaml`, `tests/bootstrap-unit.php`, `tests/unit/SmokeTest.php`; modify `composer.json`, `phpunit.xml.dist`, `.gitignore`.
 
 - [ ] **Step 1: `Dockerfile`** (identical to the plugins repo's)
 
@@ -51,7 +51,7 @@ WORKDIR /app
 
 (`intl` is added because the theme's composer.json requires `ext-intl`. If the image build fails installing intl, add `libicu-dev` to the `apt-get install` list.)
 
-- [ ] **Step 2: `docker-compose.yml`**
+- [ ] **Step 2: `compose.yaml`**
 
 ```yaml
 services:
@@ -162,8 +162,8 @@ Run: `docker compose run --rm php composer lint:syntax` — expected exit 0. If 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add Dockerfile docker-compose.yml composer.json composer.lock phpunit.xml.dist .gitignore tests/bootstrap-unit.php tests/unit/SmokeTest.php
-git commit -m "test: add Docker PHP 8.5 toolchain and smoke test" -- Dockerfile docker-compose.yml composer.json composer.lock phpunit.xml.dist .gitignore tests/bootstrap-unit.php tests/unit/SmokeTest.php
+git add Dockerfile compose.yaml composer.json composer.lock phpunit.xml.dist .gitignore tests/bootstrap-unit.php tests/unit/SmokeTest.php
+git commit -m "test: add Docker PHP 8.5 toolchain and smoke test" -- Dockerfile compose.yaml composer.json composer.lock phpunit.xml.dist .gitignore tests/bootstrap-unit.php tests/unit/SmokeTest.php
 ```
 
 ---
