@@ -16,9 +16,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 /*
 	Copyright 2011 Thomas Griffin (thomasgriffinmedia.com)
 
