@@ -34,7 +34,7 @@ $season       = ! empty( $seasons ) ? $seasons[0] : null;
 	<?php get_template_part( 'template-parts/labels' ); ?>
 </header>
 <div class="entry-content">
-	<?php $canva_url = get_post_custom_values( 'hyperpress_newsletter_canva_url', get_the_ID() )[0]; ?>
+	<?php $canva_url = get_post_custom_values( 'hyperpress_newsletter_canva_url', get_the_ID() )[0] ?? ''; ?>
 	<?php if ( ! empty( $canva_url ) ) : ?>
 		<div style="position: relative; width: 100%; height: 0; padding-top: 129.4118%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
 			<iframe loading="lazy"

@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 		<?php the_post_thumbnail( '', array( 'class' => 'thumbnail' ) ); ?>
 	<?php endif; ?>
 
-	<?php $sponsor_website = get_post_custom_values( 'hyperpress_sponsor_website', get_the_ID() )[0]; ?>
+	<?php $sponsor_website = get_post_custom_values( 'hyperpress_sponsor_website', get_the_ID() )[0] ?? ''; ?>
 
 	<?php if ( ! empty( $sponsor_website ) ) : ?>
 		<p><strong>Website:</strong> <a href="<?php echo esc_url( $sponsor_website ); ?>" target="_blank"
