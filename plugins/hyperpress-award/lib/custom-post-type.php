@@ -1,10 +1,15 @@
 <?php
-// Exit if accessed directly.
+
+namespace HYPER_Press_Award;
+
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_register_award_post_type' ) ) :
+if ( ! function_exists( '\HYPER_Press_Award\hyperpress_register_award_post_type' ) ) :
+	add_action( 'init', '\HYPER_Press_Award\hyperpress_register_award_post_type' );
+
 	function hyperpress_register_award_post_type(): void {
 		$labels = [
 			'name'                     => esc_html__( 'Awards', 'hyperpress' ),
@@ -16,14 +21,14 @@ if ( ! function_exists( 'hyperpress_register_award_post_type' ) ) :
 			'view_item'                => esc_html__( 'View Award', 'hyperpress' ),
 			'view_items'               => esc_html__( 'View Awards', 'hyperpress' ),
 			'search_items'             => esc_html__( 'Search Awards', 'hyperpress' ),
-			'not_found'                => esc_html__( 'No awards found.', 'hyperpress' ),
-			'not_found_in_trash'       => esc_html__( 'No awards found in Trash.', 'hyperpress' ),
+			'not_found'                => esc_html__( 'No Awards found.', 'hyperpress' ),
+			'not_found_in_trash'       => esc_html__( 'No Awards found in Trash.', 'hyperpress' ),
 			'parent_item_colon'        => esc_html__( 'Parent Award:', 'hyperpress' ),
 			'all_items'                => esc_html__( 'All Awards', 'hyperpress' ),
 			'archives'                 => esc_html__( 'Award Archives', 'hyperpress' ),
 			'attributes'               => esc_html__( 'Award Attributes', 'hyperpress' ),
-			'insert_into_item'         => esc_html__( 'Insert into award', 'hyperpress' ),
-			'uploaded_to_this_item'    => esc_html__( 'Uploaded to this award', 'hyperpress' ),
+			'insert_into_item'         => esc_html__( 'Insert into Award', 'hyperpress' ),
+			'uploaded_to_this_item'    => esc_html__( 'Uploaded to this Award', 'hyperpress' ),
 			'featured_image'           => esc_html__( 'Featured image', 'hyperpress' ),
 			'set_featured_image'       => esc_html__( 'Set featured image', 'hyperpress' ),
 			'remove_featured_image'    => esc_html__( 'Remove featured image', 'hyperpress' ),
@@ -41,8 +46,8 @@ if ( ! function_exists( 'hyperpress_register_award_post_type' ) ) :
 		];
 		$args   = [
 			'label'               => esc_html__( 'Awards', 'hyperpress' ),
+			'description'         => esc_html__( 'Awards won by Team HYPER', 'hyperpress' ),
 			'labels'              => $labels,
-			'description'         => 'Awards won by Team HYPER',
 			'public'              => true,
 			'hierarchical'        => false,
 			'exclude_from_search' => false,
@@ -60,10 +65,10 @@ if ( ! function_exists( 'hyperpress_register_award_post_type' ) ) :
 			'has_archive'         => 'awards',
 			'rest_base'           => '',
 			'show_in_menu'        => true,
-			'menu_position'       => 20,
+			'menu_position'       => 24,
 			'menu_icon'           => 'dashicons-awards',
 			'capability_type'     => 'post',
-			'supports'            => [ 'title', 'editor', 'thumbnail' ],
+			'supports'            => [ 'title', 'editor', 'thumbnail', 'revisions' ],
 			'taxonomies'          => [],
 			'rewrite'             => [
 				'with_front' => false,
@@ -73,6 +78,4 @@ if ( ! function_exists( 'hyperpress_register_award_post_type' ) ) :
 
 		register_post_type( 'award', $args );
 	}
-
-	add_action( 'init', 'hyperpress_register_award_post_type' );
 endif;
