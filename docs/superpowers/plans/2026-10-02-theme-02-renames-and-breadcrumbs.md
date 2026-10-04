@@ -1,6 +1,8 @@
 # Theme 02: Theme Updates for the Plugin Renames and the Moved Breadcrumb Builder
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
+> **STATUS: COMPLETED** (2026-10-04). Commits a4ec77f..ead2765. Integration 12 tests pass; the only red unit test is the GitHub header check (theme-04).
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [x]`) syntax.
 
 **Goal:** Make the theme consume the renamed plugin identifiers, stop depending on the removed `HYPER_Press_Utils` classes, and delete the theme's own copy of the CPT breadcrumb builder (now `HyperPress\Utils\Breadcrumbs`).
 
@@ -14,7 +16,7 @@
 
 ## Task 1: Find every stale reference (read-only)
 
-- [ ] **Step 1: Search the theme for identifiers that changed**
+- [x] **Step 1: Search the theme for identifiers that changed**
 
 Run (from `theme/`):
 
@@ -24,9 +26,9 @@ grep -rnE "HYPER_Press_|HYPERpress_Dropdown|hyperpress_breadcrumbs_custom_post_t
 
 Expected: at least these known hits, plus whatever else exists: `library/customize/homepage.php:8-9` (`use HYPER_Press_Utils\...`), `library/metaboxes/homepage-customize.php:69` (`'countdown'`), `library/breadcrumbs.php:21` (function definition, default `'season'`), `library/shortcodes/season-count.php` (the `'season'` attribute is a shortcode attribute name, not a taxonomy key: leave it; the file itself moves in theme-03-remove-extracted-code).
 
-- [ ] **Step 2: Classify each hit** as (a) a renamed registered key, fixed in this plan; (b) a shortcode attribute or label that merely contains the word (leave); (c) code that moves in theme-03-remove-extracted-code (leave). Write the list into the execution notes.
+- [x] **Step 2: Classify each hit** as (a) a renamed registered key, fixed in this plan; (b) a shortcode attribute or label that merely contains the word (leave); (c) code that moves in theme-03-remove-extracted-code (leave). Write the list into the execution notes.
 
-- [ ] **Step 3: Check the stored-data touch points**
+- [x] **Step 3: Check the stored-data touch points**
 
 Read `front-page.php` (lines 22 to 75) and `library/customize/homepage.php`, `library/metaboxes/homepage-customize.php`. List every theme mod and meta key that stores a plugin post type key or a post ID (`hyperpress_home_blog_post_types`, `hyperpress_homepage_customize_countdowns`). They are reset with the dev database, per the spec; no code change, but confirm `front-page.php` casts each countdown ID with `(int)` before building the `[hyperpress_countdown id="..." /]` shortcode (an audit item if not; just note it).
 
@@ -36,7 +38,7 @@ Read `front-page.php` (lines 22 to 75) and `library/customize/homepage.php`, `li
 
 **Files:** Create `tests/unit/NoStaleReferencesTest.php`.
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 ```php
 <?php
@@ -84,7 +86,7 @@ final class NoStaleReferencesTest extends TestCase {
 }
 ```
 
-- [ ] **Step 2: Run and confirm it FAILS** on the known hits
+- [x] **Step 2: Run and confirm it FAILS** on the known hits
 
 Run: `docker compose run --rm php composer test:unit -- --filter NoStaleReferencesTest`
 Expected: three or four cases fail, naming `library/customize/homepage.php`, `library/metaboxes/homepage-customize.php` and `library/breadcrumbs.php`.
@@ -95,7 +97,7 @@ Expected: three or four cases fail, naming `library/customize/homepage.php`, `li
 
 **Files:** Modify `library/customize/homepage.php`, `library/metaboxes/homepage-customize.php`; modify or delete `library/breadcrumbs.php` parts.
 
-- [ ] **Step 1: Homepage Customizer controls (`library/customize/homepage.php`)**
+- [x] **Step 1: Homepage Customizer controls (`library/customize/homepage.php`)**
 
 Replace the two imports
 
@@ -113,23 +115,23 @@ use HyperPress\Utils\Controls\PostTypeDropdownControl;
 
 and the two instantiations (around lines 27 to 28 and 41 to 42) to the new class names. Remove the surrounding `class_exists( ... )` guards: if the utils plugin is missing the section should fail loudly, not silently disappear. Leave the setting ids (`hyperpress_home_blog_categories`, `hyperpress_home_blog_post_types`) unchanged; their control ids must equal their setting ids (the plugin convention): if a control id differs, set it equal and update any `settings` reference.
 
-- [ ] **Step 2: Countdown meta box (`library/metaboxes/homepage-customize.php:69`)**
+- [x] **Step 2: Countdown meta box (`library/metaboxes/homepage-customize.php:69`)**
 
 Change `'post_type' => [ 'countdown' ]` to `'post_type' => [ 'hyper_countdown' ]`.
 
-- [ ] **Step 3: Remove the theme's CPT breadcrumb function (`library/breadcrumbs.php`)**
+- [x] **Step 3: Remove the theme's CPT breadcrumb function (`library/breadcrumbs.php`)**
 
 Delete lines 20 to 108 (the whole `if ( ! function_exists( 'hyperpress_breadcrumbs_custom_post_type' ) ) : ... endif;` block). The twelve `require_once` lines at the top stay (they are the core page-type trails and the router).
 
-- [ ] **Step 3b: Season helper callers.** The plugin consumer audit found two theme callers of the season plugin's helper: `library/labels/post.php` (line 2 `use HYPER_Press_Season\get_sorted_seasons;` and the call near line 29) and `library/breadcrumbs/post.php` (the call near line 13). Replace each import and call with `\HyperPress\Season\SortedSeasons::get(...)` (same arguments), guarded only if the season plugin is a real optional dependency of that template (it is required by the theme's plugins, so no `function_exists`/`class_exists` guard). Read both files first and keep the surrounding behaviour unchanged.
+- [x] **Step 3b: Season helper callers.** The plugin consumer audit found two theme callers of the season plugin's helper: `library/labels/post.php` (line 2 `use HYPER_Press_Season\get_sorted_seasons;` and the call near line 29) and `library/breadcrumbs/post.php` (the call near line 13). Replace each import and call with `\HyperPress\Season\SortedSeasons::get(...)` (same arguments), guarded only if the season plugin is a real optional dependency of that template (it is required by the theme's plugins, so no `function_exists`/`class_exists` guard). Read both files first and keep the surrounding behaviour unchanged.
 
-- [ ] **Step 4: Run**
+- [x] **Step 4: Run**
 
 Run: `docker compose run --rm php composer test:unit -- --filter NoStaleReferencesTest` — expected PASS.
 Run: `docker compose run --rm php composer test:integration` — expected all PASS (the CPT-single breadcrumb test now definitely exercises the plugin builder).
 Run: `docker compose run --rm php composer lint:syntax` — exit 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add library/customize/homepage.php library/metaboxes/homepage-customize.php library/breadcrumbs.php library/labels/post.php library/breadcrumbs/post.php tests/unit/NoStaleReferencesTest.php
@@ -144,7 +146,7 @@ The theme includes whatever path the `content_template` filter returns (`single.
 
 **Files:** Create `tests/integration/ContentTemplateTest.php`.
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 ```php
 <?php
@@ -181,12 +183,12 @@ final class ContentTemplateTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 2: Run**
+- [x] **Step 2: Run**
 
 Run: `docker compose run --rm php composer test:integration -- --filter ContentTemplateTest`
 Expected: PASS. If `test_plugin_supplies_...` fails because the plugin callback returns a path to a theme file or a different request shape, the plugin migration (plugins-04-remaining-plugins) lost the behaviour: fix the plugin, not this test. If the paths legitimately point elsewhere, record where in the notes and relax only the directory assertion with a comment.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/integration/ContentTemplateTest.php
@@ -197,9 +199,13 @@ git commit -m "test: pin the content_template plugin contract" -- tests/integrat
 
 ## Task 5: Close out theme-02-renames-and-breadcrumbs
 
-- [ ] **Step 1:** Run `composer test:unit` and `composer test:integration`; only `ThemeHeaderTest::test_no_github_updater_header` may fail.
-- [ ] **Step 2:** Flip checkboxes, add the `STATUS: COMPLETED` banner, fill in notes, commit the plan with an explicit pathspec.
+- [x] **Step 1:** Run `composer test:unit` and `composer test:integration`; only `ThemeHeaderTest::test_no_github_updater_header` may fail.
+- [x] **Step 2:** Flip checkboxes, add the `STATUS: COMPLETED` banner, fill in notes, commit the plan with an explicit pathspec.
 
 ## Execution notes
 
-(Fill in during execution: the stale-reference list from Task 1, and any `content_template` path differences.)
+- Renamed in the theme: homepage Customizer controls now use `HyperPress\Utils\Controls\{CategoryDropdownControl,PostTypeDropdownControl}` with control ids equal to setting ids and no `class_exists` guards (so `hyperpress_home_blog_post_types` is registered unconditionally); `get_sorted_seasons` callers (`library/labels/post.php`, `library/breadcrumbs/post.php`) use `HyperPress\Season\SortedSeasons::get()`; the homepage countdown picker queries `hyper_countdown`.
+- Removed the theme's `hyperpress_breadcrumbs_custom_post_type()` (it printed debug output and read `->term_id` from a taxonomy object). No caller remains in the theme or in the plugins.
+- `NoStaleReferencesTest` (5 cases) failed first and passes now; `RenderTest` and `CustomizerTest` are green; `ContentTemplateTest` pins that newsletter and sponsor supply a readable template inside `/plugins/` and that ordinary posts get none.
+- Edited files keep CRLF line endings (the working tree is CRLF, the index LF).
+- The `front-page.php` `(int)` cast on countdown ids stays an audit item (theme-05-audit, candidate 3).
