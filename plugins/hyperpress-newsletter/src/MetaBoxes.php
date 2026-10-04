@@ -10,7 +10,7 @@ final class MetaBoxes {
 	}
 
 	public static function register_newsletter_meta_boxes( $meta_boxes ) {
-		// Newsletter Meta
+		// Newsletter Meta.
 		$meta_boxes[] = array(
 			'title'    => __( 'Newsletters', 'hyperpress' ),
 			'id'       => 'hyperpress_newsletter',

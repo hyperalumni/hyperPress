@@ -10,6 +10,8 @@ final class BannerFilter {
 	}
 
 	/**
+	 * Adjust the banner arguments.
+	 *
 	 * @param array  $banner    Assembled banner.
 	 * @param string $post_type Post type the banner is for.
 	 * @param array  $ctx       Request context from HyperPress\Utils\Banner.

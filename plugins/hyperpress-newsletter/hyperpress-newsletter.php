@@ -1,5 +1,7 @@
 <?php
 /**
+ * The hyperPress Newsletter plugin.
+ *
  * @wordpress-plugin
  * Plugin Name:         hyperPress Newsletter
  * Plugin URI:          https://hyperalumni.org

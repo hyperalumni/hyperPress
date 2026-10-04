@@ -14,13 +14,14 @@ final class Labels {
 		$hyper_season     = 'hyper_season';
 		if ( is_singular( $hyper_newsletter ) || is_post_type_archive( $hyper_newsletter ) || ( is_main_query() && get_post_type() === $hyper_newsletter ) ) {
 			$labels[] = array(
+				/* translators: 1: post date, 2: post time. */
 				'label'   => sprintf( __( '%1$s @ %2$s', 'hyperpress' ), get_the_date(), get_the_time() ),
 				'title'   => 'Posted At',
 				'classes' => array( 'dark' ),
 				'url'     => '',
 				'rel'     => '',
 			);
-			// add author information
+			// Add author information.
 			$labels[] = array(
 				'label'   => get_the_author(),
 				'title'   => 'Posted By',
@@ -28,7 +29,7 @@ final class Labels {
 				'url'     => get_author_posts_url( get_the_author_meta( 'ID' ) ),
 				'rel'     => 'author',
 			);
-			// Get season information
+			// Get season information.
 			$seasons = wp_get_object_terms(
 				get_the_ID(),
 				$hyper_season,
@@ -49,7 +50,7 @@ final class Labels {
 				);
 			}
 			$labels[] = array(
-				'label'   => get_comments_number() . ( get_comments_number() == 1 ? ' comment' : ' comments' ),
+				'label'   => get_comments_number() . ( get_comments_number() == 1 ? ' comment' : ' comments' ), // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- plugins audit
 				'title'   => '',
 				'classes' => array( 'neutral' ),
 				'url'     => get_comments_link(),
