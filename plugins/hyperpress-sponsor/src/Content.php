@@ -12,9 +12,11 @@ final class Content {
 	/**
 	 * Supplies the path of the template the theme includes for a sponsor.
 	 *
-	 * @param string $content_template Template path chosen so far.
+	 * @param mixed $content_template Default chosen so far (the theme front page passes a WP_Post); returned unchanged when not handled.
+	 *
+	 * @return mixed
 	 */
-	public static function add_content_template( $content_template ): string {
+	public static function add_content_template( mixed $content_template ): mixed {
 		if ( get_post_type() === Plugin::POST_TYPE ) {
 			$custom_content_template = dirname( __DIR__ ) . '/templates/content.php';
 			if ( file_exists( $custom_content_template ) ) {

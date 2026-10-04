@@ -12,9 +12,11 @@ final class Archive {
 	/**
 	 * Supplies the archive template WordPress loads for the sponsor post type.
 	 *
-	 * @param string $archive_template Template path chosen so far.
+	 * @param mixed $archive_template Default chosen so far; returned unchanged when not handled.
+	 *
+	 * @return mixed
 	 */
-	public static function add_archive_template( $archive_template ): string {
+	public static function add_archive_template( mixed $archive_template ): mixed {
 		if ( get_post_type() === Plugin::POST_TYPE ) {
 			$archive_template = dirname( __DIR__ ) . '/templates/archive.php';
 		}
