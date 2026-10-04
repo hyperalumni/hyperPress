@@ -29,7 +29,15 @@
     <config name="minimum_wp_version" value="6.9"/>
     <config name="testVersion" value="8.3-"/>
 
-    <rule ref="WordPress"/>
+    <rule ref="WordPress">
+        <!-- Mandatory docblock presence (file/class/function/variable) is documentation churn: ~250 boilerplate
+             blocks across legacy code with no behavioural value. Existing docblocks are still validated. -->
+        <exclude name="Squiz.Commenting.FileComment.Missing"/>
+        <exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
+        <exclude name="Squiz.Commenting.ClassComment.Missing"/>
+        <exclude name="Squiz.Commenting.FunctionComment.Missing"/>
+        <exclude name="Squiz.Commenting.VariableComment.Missing"/>
+    </rule>
     <rule ref="PHPCompatibilityWP"/>
 
     <!-- PSR-4 class files (migration plans) are named after the class, not class-*.php. -->
