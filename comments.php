@@ -11,6 +11,19 @@
 
 // Don't load directly.
 defined( 'ABSPATH' ) || exit;
+
+// Do not list comments (or the form) on a post whose password has not been entered.
+if ( post_password_required() ) {
+	?>
+	<section id="comments">
+		<div class="notice">
+			<p class="bottom"><?php _e( 'This post is password protected. Enter the password to view comments.', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></p>
+		</div>
+	</section>
+	<?php
+	return;
+}
+
 if ( have_comments() ) :
 ?>
 	<section id="comments">
@@ -54,16 +67,6 @@ endif;
 
 	defined( 'ABSPATH' ) || die( __( 'Please do not load this page directly. Thanks!', 'hyperpress' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
 
-	if ( post_password_required() ) {
-    ?>
-	<section id="comments">
-		<div class="notice">
-			<p class="bottom"><?php _e( 'This post is password protected. Enter the password to view comments.', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></p>
-		</div>
-	</section>
-	<?php
-	return;
-}
 ?>
 
 <?php
