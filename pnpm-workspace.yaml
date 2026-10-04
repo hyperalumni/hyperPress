@@ -1,0 +1,34 @@
+supportedArchitectures:
+  os: [current]
+  cpu: [current]
+  libc: [current]
+preferOffline: false
+preferFrozenLockfile: false
+sideEffectsCache: true
+dedupePeerDependents: true
+dedupePeers: true
+minimumReleaseAgeStrict: true
+allowBuilds:
+  core-js: false
+  es5-ext: false
+  gifsicle: false
+  jpegtran-bin: false
+  mozjpeg: false
+  optipng-bin: false
+  uglifyjs-webpack-plugin: false
+minimumReleaseAgeExclude:
+  - pnpm
+  - '@pnpm/exe.android-arm64'
+  - '@pnpm/exe.android-x64'
+  - '@pnpm/exe.darwin-arm64'
+  - '@pnpm/exe.darwin-x64'
+  - '@pnpm/exe.freebsd-x64'
+  - '@pnpm/exe.linux-arm64-musl'
+  - '@pnpm/exe.linux-arm64'
+  - '@pnpm/exe.linux-ppc64'
+  - '@pnpm/exe.linux-riscv64'
+  - '@pnpm/exe.linux-s390x'
+  - '@pnpm/exe.linux-x64-musl'
+  - '@pnpm/exe.linux-x64'
+  - '@pnpm/exe.win32-arm64'
+  - '@pnpm/exe.win32-x64'

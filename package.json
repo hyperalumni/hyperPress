@@ -1,20 +1,25 @@
 {
-  "name": "hyperPress",
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@hyper/press",
   "title": "HYPER Press",
   "version": "2.11.1",
   "description": "hyperPress is a fork of FoundationPress (based on Foundation 6 by Zurb) for HYPER WordPress sites",
   "homepage": "https://hyperpress.idesign.co",
   "license": "MIT",
   "private": true,
-  "main": "gulpfile.babel.js",
+  "main": "gulpfile.mjs",
   "scripts": {
-    "start": "gulp",
-    "dev": "gulp build --dev",
+    "audit": "pnpm install --no-frozen-lockfile; pnpm audit --fix=override --interactive; pnpm install --no-frozen-lockfile; pnpm dedupe;",
     "build": "gulp build --production",
-    "outdated": "yarn upgrade-interactive; yarn dedupe",
+    "dev": "gulp build --dev",
+    "inup": "pnpm dlx inup",
+    "knip": "pnpm dlx knip",
+    "outdated": "pnpm inup; pnpm dedupe",
     "package": "gulp package --production",
     "phpcs": "gulp phpcs",
-    "phpcbf": "gulp phpcbf"
+    "phpcbf": "gulp phpcbf",
+    "preinstall": "npx only-allow pnpm",
+    "start": "gulp"
   },
   "dependencies": {
     "foundation-sites": "~6.9.0",
@@ -23,52 +28,65 @@
     "what-input": "^5.2.12"
   },
   "devDependencies": {
+    "@babel/core": "^8.0.6",
+    "@babel/preset-env": "^8.0.6",
     "ansi-colors": "^4.1.3",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-register": "^6.26.0",
+    "babel-loader": "^10.1.1",
     "browser-sync": "^3.0.4",
     "dateformat": "^5.0.3",
     "fancy-log": "^2.0.0",
-    "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^3.1.1",
-    "gulp-babel": "^6.1.3",
+    "gulp": "^5.0.1",
+    "gulp-autoprefixer": "^10.0.0",
     "gulp-clean-css": "^4.3.0",
-    "gulp-cli": "^2.3.0",
+    "gulp-cli": "^3.1.0",
     "gulp-concat": "^2.6.1",
     "gulp-extname": "^0.2.2",
-    "gulp-if": "^2.0.2",
-    "gulp-imagemin": "^5.0.3",
-    "gulp-load-plugins": "^2.0.8",
+    "gulp-if": "^3.0.0",
+    "gulp-imagemin": "^9.2.0",
     "gulp-phpcbf": "^0.1.2",
-    "gulp-phpcs": "^2.2.0",
-    "gulp-rev": "^8.1.1",
-    "gulp-sass": "^5.1.0",
+    "gulp-phpcs": "^3.1.0",
+    "gulp-rev": "^12.0.0",
+    "gulp-sass": "^6.0.1",
     "gulp-sourcemaps": "^3.0.0",
-    "gulp-uglify": "^1.5.4",
-    "gulp-zip": "^4.2.0",
-    "js-yaml": "^4.1.1",
+    "gulp-uglify": "^3.0.2",
+    "gulp-zip": "^6.1.0",
+    "imagemin-gifsicle": "^7.0.0",
+    "imagemin-jpegtran": "^8.0.0",
+    "imagemin-optipng": "^8.0.0",
+    "imagemin-svgo": "^12.0.0",
+    "js-yaml": "^5.4.2",
     "panini": "^1.7.2",
-    "rimraf": "^2.7.1",
-    "sass-embedded": "^1.99.0",
+    "rimraf": "^6.1.3",
+    "sass-embedded": "^1.105.1",
     "style-sherpa": "^1.0.2",
     "vinyl-named": "^1.1.0",
-    "webpack": "^3.12.0",
-    "webpack-stream": "^4.0.3",
-    "yargs": "^3.32.0"
+    "webpack": "^5.111.1",
+    "webpack-stream": "^7.0.0",
+    "yargs": "^18.2.0"
   },
-  "packageManager": "yarn@4.12.0+sha512.f45ab632439a67f8bc759bf32ead036a1f413287b9042726b7cc4818b7b49e14e9423ba49b18f9e06ea4941c1ad062385b1d8760a8d5091a1a31e5f6219afca8",
   "repository": {
     "type": "git",
     "url": "https://github.com/hyperalumni/hyperPress.git"
   },
   "babel": {
     "presets": [
-      "es2015"
-    ]
+      "@babel/preset-env"
+    ],
+    "compact": false
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.9.1",
+      "onFail": "download"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "26.10.0",
+      "onFail": "error"
+    }
   },
   "engines": {
-    "node": ">=18.0"
+    "node": "26.10.0"
   }
 }
