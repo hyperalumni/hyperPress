@@ -55,7 +55,7 @@ final class MetaBoxes {
 					'type'          => 'map',
 					'std'           => '42.25228605221164, -71.00051344845554,15',
 					'address_field' => 'hyperpress_competition_venue_address',
-					'api_key'       => '',
+					'api_key'       => Customizer::google_maps_api_key(),
 				),
 				array(
 					'name' => 'NE FIRST Event Page',

@@ -21,6 +21,7 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'ensure_capabilities' ), 20 );
 		Breadcrumbs::register( array( self::POST_TYPE ) );
 		add_action( 'init', array( self::class, 'register_banner' ) );
+		Customizer::register();
 		MetaBoxes::register();
 	}
 
