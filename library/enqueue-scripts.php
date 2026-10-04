@@ -10,9 +10,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 // Check to see if rev-manifest exists for CSS and JS static asset revisioning
 // https://github.com/sindresorhus/gulp-rev/blob/master/integration.md
 

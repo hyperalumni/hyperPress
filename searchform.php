@@ -7,9 +7,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 ?>
 
 <form role="search" method="get" id="searchform" action="<?php echo home_url( '/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>">

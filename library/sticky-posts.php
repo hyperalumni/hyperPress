@@ -7,9 +7,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 add_filter( 'post_class', 'hyperpress_sticky_posts' );
 

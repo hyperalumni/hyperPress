@@ -7,9 +7,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 ?>
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<div class="entry-content">

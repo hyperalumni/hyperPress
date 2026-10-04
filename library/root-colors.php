@@ -1,8 +1,6 @@
 <?php
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 add_action( 'wp_head', 'hyperpress_root_colors' );
 

@@ -14,9 +14,7 @@
  **/
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 use Imagely\NGG\Util\Router;
 

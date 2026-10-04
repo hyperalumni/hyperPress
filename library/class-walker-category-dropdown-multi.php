@@ -1,8 +1,6 @@
 <?php
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 class Walker_Category_Dropdown_Multi extends Walker_Category_Checklist {
 	// TODO: override Walker_Category_Checklist to create a multi-select dropdown
 

@@ -7,9 +7,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'HyperPress_Theme_Protocol_Relative_Theme_Assets' ) ) :
 	class HyperPress_Theme_Protocol_Relative_Theme_Assets {
 		/**

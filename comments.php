@@ -10,9 +10,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 if ( have_comments() ) :
 ?>
 	<section id="comments">

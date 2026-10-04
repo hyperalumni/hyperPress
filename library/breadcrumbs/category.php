@@ -1,8 +1,6 @@
 <?php
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_category' );
 

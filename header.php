@@ -9,9 +9,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?> <?php body_class(); ?> >

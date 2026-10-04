@@ -1,9 +1,7 @@
 <?php
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 use HyperPress\Utils\Controls\CategoryDropdownControl;
 use HyperPress\Utils\Controls\PostTypeDropdownControl;

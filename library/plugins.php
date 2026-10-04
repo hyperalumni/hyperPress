@@ -18,9 +18,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 /**
  * Include the TGM_Plugin_Activation class.
  *

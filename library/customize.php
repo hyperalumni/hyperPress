@@ -1,9 +1,7 @@
 <?php
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 require_once 'customize/hyperpress.php';
 require_once 'customize/gear-colors.php';
 require_once 'customize/hyper-colors.php';

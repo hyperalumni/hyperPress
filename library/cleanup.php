@@ -7,9 +7,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 add_action( 'after_setup_theme', 'hyperpress_start_cleanup' );
 

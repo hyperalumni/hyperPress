@@ -1,8 +1,6 @@
 <?php
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 $banner = apply_filters(
     'hyperpress_banner_content',

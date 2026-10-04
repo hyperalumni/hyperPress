@@ -1,7 +1,5 @@
 <?php
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 require_once 'labels/post.php';

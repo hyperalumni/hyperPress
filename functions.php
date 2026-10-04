@@ -15,9 +15,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 /** Various clean up functions */
 require_once 'library/cleanup.php';
 

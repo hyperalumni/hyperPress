@@ -1,8 +1,6 @@
 <?php
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 $labels = apply_filters( 'hyperpress_labels_content', array() );
 if ( ! empty( $labels ) ) :

@@ -7,9 +7,7 @@
  */
 
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 /**
  * Big thanks to Brett Mason (https://github.com/brettsmason) for the awesome walker
  */
