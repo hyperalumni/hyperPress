@@ -17,7 +17,7 @@ final class Avif {
 	}
 
 	public static function check_filetype_and_ext( $results, $mime, $type ) {
-		if ( $type == 'image' && $mime == 'image/avif' ) {
+		if ( 'image' == $type && 'image/avif' == $mime ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- plugins audit
 			$results['ext']             = 'avif';
 			$results['type']            = 'image/avif';
 			$results['proper_filename'] = true;

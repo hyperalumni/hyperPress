@@ -13,17 +13,17 @@ final class Svg {
 	public static function check_filetype_and_ext( $data, $file, $filename, $mimes ) {
 
 		global $wp_version;
-		if ( $wp_version !== '4.7.1' ) {
+		if ( '4.7.1' !== $wp_version ) {
 			return $data;
 		}
 
 		$filetype = wp_check_filetype( $filename, $mimes );
 
-		return [
+		return array(
 			'ext'             => $filetype['ext'],
 			'type'            => $filetype['type'],
-			'proper_filename' => $data['proper_filename']
-		];
+			'proper_filename' => $data['proper_filename'],
+		);
 	}
 
 	public static function upload_mimes( $mimes ) {
