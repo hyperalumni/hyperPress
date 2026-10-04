@@ -24,6 +24,8 @@ final class TaxonomyRegistrar {
 	/**
 	 * Register a taxonomy from a definition. `object_types` may be a list of post types, or the
 	 * name of a theme mod holding the list (default: attached to nothing).
+	 *
+	 * @param array $definition See build().
 	 */
 	public static function register( array $definition ): void {
 		$built = self::build( $definition );
@@ -35,8 +37,10 @@ final class TaxonomyRegistrar {
 	}
 
 	/**
+	 * Resolve the object types list from a list, a theme mod name, or nothing.
+	 *
 	 * @param array|string|null $object_types List, theme mod name, or null.
-	 * @param callable          $get_mod      function( string $name, $default ): mixed
+	 * @param callable          $get_mod      Callback: function( string $name, $default ): mixed.
 	 * @return string[]
 	 */
 	public static function resolve_object_types( $object_types, callable $get_mod ): array {
@@ -61,12 +65,14 @@ final class TaxonomyRegistrar {
 	 * Optional: description, public, publicly_queryable, hierarchical, show_tagcloud, show_in_quick_edit,
 	 * show_admin_column, meta_box_cb, args (overrides, win last).
 	 *
+	 * @param array $definition Taxonomy definition.
 	 * @return array{key:string,args:array}
+	 * @throws InvalidArgumentException When the definition is incomplete or the key is invalid.
 	 */
 	public static function build( array $definition ): array {
 		foreach ( array( 'key', 'singular', 'plural' ) as $required ) {
 			if ( empty( $definition[ $required ] ) ) {
-				throw new InvalidArgumentException( "Taxonomy definition is missing '$required'." );
+				throw new InvalidArgumentException( "Taxonomy definition is missing '$required'." ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plugins audit
 			}
 		}
 		if ( ! array_key_exists( 'slug', $definition ) ) {
@@ -74,7 +80,7 @@ final class TaxonomyRegistrar {
 		}
 		$key = (string) $definition['key'];
 		if ( ! preg_match( PostTypeRegistrar::KEY_PATTERN, $key ) ) {
-			throw new InvalidArgumentException( "Invalid taxonomy key '$key': use hyper_ + lowercase letters, digits, underscores, max 20 characters." );
+			throw new InvalidArgumentException( "Invalid taxonomy key '$key': use hyper_ + lowercase letters, digits, underscores, max 20 characters." ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plugins audit
 		}
 
 		$rewrite = null === $definition['slug']

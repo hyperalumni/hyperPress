@@ -73,6 +73,8 @@ final class Breadcrumbs {
 	/**
 	 * Read the request into a context array, or null when the request is not this post type's
 	 * singular or archive.
+	 *
+	 * @param string $post_type Post type key.
 	 */
 	private static function context( string $post_type ): ?array {
 		$is_singular = is_singular( $post_type );

@@ -41,17 +41,19 @@ final class PostTypeRegistrar {
 	 * Optional: description, archive (string|false), menu_position, menu_icon, supports,
 	 * hierarchical (bool), rewrite_hierarchical (bool), cap_plural (string), args (overrides, win last).
 	 *
+	 * @param array $definition Post type definition.
 	 * @return array{key:string,args:array}
+	 * @throws InvalidArgumentException When the definition is incomplete or the key is invalid.
 	 */
 	public static function build( array $definition ): array {
 		foreach ( array( 'key', 'singular', 'plural', 'slug' ) as $required ) {
 			if ( empty( $definition[ $required ] ) ) {
-				throw new InvalidArgumentException( "Post type definition is missing '$required'." );
+				throw new InvalidArgumentException( "Post type definition is missing '$required'." ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plugins audit
 			}
 		}
 		$key = (string) $definition['key'];
 		if ( ! preg_match( self::KEY_PATTERN, $key ) ) {
-			throw new InvalidArgumentException( "Invalid post type key '$key': use hyper_ + lowercase letters, digits, underscores, max 20 characters." );
+			throw new InvalidArgumentException( "Invalid post type key '$key': use hyper_ + lowercase letters, digits, underscores, max 20 characters." ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plugins audit
 		}
 
 		$rewrite = array(

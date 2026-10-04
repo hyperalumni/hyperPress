@@ -8,7 +8,11 @@ use WP_Customize_Control;
 class PostTypeDropdownControl extends WP_Customize_Control {
 	public $type = 'dropdown-post-types';
 
-	/** @var array<string,\WP_Post_Type> Declared (was a dynamic property, deprecated in PHP 8.2). */
+	/**
+	 * Declared (was a dynamic property, deprecated in PHP 8.2).
+	 *
+	 * @var array<string,\WP_Post_Type>
+	 */
 	protected array $post_types = array();
 
 	public function __construct( $manager, $id, $args = array(), $options = array() ) {

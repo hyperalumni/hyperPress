@@ -5,7 +5,13 @@ defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 final class Labels {
 
-	/** @return array<string,string> */
+	/**
+	 * Build the labels array.
+	 *
+	 * @param string $singular Singular name.
+	 * @param string $plural   Plural name.
+	 * @return array<string,string>
+	 */
 	public static function post_type( string $singular, string $plural ): array {
 		$s  = $singular;
 		$p  = $plural;
@@ -63,7 +69,13 @@ final class Labels {
 		);
 	}
 
-	/** @return array<string,string> */
+	/**
+	 * Build the labels array.
+	 *
+	 * @param string $singular Singular name.
+	 * @param string $plural   Plural name.
+	 * @return array<string,string>
+	 */
 	public static function taxonomy( string $singular, string $plural ): array {
 		$s  = $singular;
 		$p  = $plural;
