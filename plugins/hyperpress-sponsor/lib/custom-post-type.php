@@ -1,10 +1,14 @@
 <?php
-// Exit if accessed directly.
+
+namespace HYPER_Press_Sponsor;
+
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_register_sponsor_post_type' ) ) :
+if ( ! function_exists( '\HYPER_Press_Sponsor\hyperpress_register_sponsor_post_type' ) ) :
+	add_action( 'init', '\HYPER_Press_Sponsor\hyperpress_register_sponsor_post_type' );
 	function hyperpress_register_sponsor_post_type(): void {
 		$labels = [
 			'name'                     => esc_html__( 'Sponsors', 'hyperpress' ),
@@ -16,14 +20,14 @@ if ( ! function_exists( 'hyperpress_register_sponsor_post_type' ) ) :
 			'view_item'                => esc_html__( 'View Sponsor', 'hyperpress' ),
 			'view_items'               => esc_html__( 'View Sponsors', 'hyperpress' ),
 			'search_items'             => esc_html__( 'Search Sponsors', 'hyperpress' ),
-			'not_found'                => esc_html__( 'No sponsors found.', 'hyperpress' ),
-			'not_found_in_trash'       => esc_html__( 'No sponsors found in Trash.', 'hyperpress' ),
+			'not_found'                => esc_html__( 'No Sponsors found.', 'hyperpress' ),
+			'not_found_in_trash'       => esc_html__( 'No Sponsors found in Trash.', 'hyperpress' ),
 			'parent_item_colon'        => esc_html__( 'Parent Sponsor:', 'hyperpress' ),
 			'all_items'                => esc_html__( 'All Sponsors', 'hyperpress' ),
 			'archives'                 => esc_html__( 'Sponsor Archives', 'hyperpress' ),
 			'attributes'               => esc_html__( 'Sponsor Attributes', 'hyperpress' ),
-			'insert_into_item'         => esc_html__( 'Insert into sponsor', 'hyperpress' ),
-			'uploaded_to_this_item'    => esc_html__( 'Uploaded to this sponsor', 'hyperpress' ),
+			'insert_into_item'         => esc_html__( 'Insert into Sponsor', 'hyperpress' ),
+			'uploaded_to_this_item'    => esc_html__( 'Uploaded to this Sponsor', 'hyperpress' ),
 			'featured_image'           => esc_html__( 'Featured image', 'hyperpress' ),
 			'set_featured_image'       => esc_html__( 'Set featured image', 'hyperpress' ),
 			'remove_featured_image'    => esc_html__( 'Remove featured image', 'hyperpress' ),
@@ -60,18 +64,17 @@ if ( ! function_exists( 'hyperpress_register_sponsor_post_type' ) ) :
 			'has_archive'         => 'sponsors',
 			'rest_base'           => '',
 			'show_in_menu'        => true,
-			'menu_position'       => 20,
+			'menu_position'       => 12,
 			'menu_icon'           => 'dashicons-businessman',
 			'capability_type'     => 'post',
-			'supports'            => [ 'title', 'thumbnail' ],
+			'supports'            => [ 'title', 'thumbnail', 'page-attributes', 'revisions' ],
 			'taxonomies'          => [],
 			'rewrite'             => [
-				'with_front' => false,
-				'slug' => 'sponsor',
+				'with_front'   => false,
+				'hierarchical' => true,
+				'slug'         => 'sponsor',
 			],
 		];
 		register_post_type( 'sponsor', $args );
 	}
-
-	add_action( 'init', 'hyperpress_register_sponsor_post_type' );
 endif;
