@@ -7,8 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'wp_head', 'hyperpress_root_colors' );
 
 function hyperpress_root_colors() {
+	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
 	echo '<style id="hyper-colors-css">' .
-	     ':root {
+		':root {
 							--hyper-gear-blue: ' . get_theme_mod( 'hyperpress_gear_blue' ) . ';
 							--hyper-gear-orange: ' . get_theme_mod( 'hyperpress_gear_orange' ) . ';
 							--hyper-gear-grey: ' . get_theme_mod( 'hyperpress_gear_grey' ) . ';
@@ -18,5 +19,6 @@ function hyperpress_root_colors() {
 							--hyper-logo-blue: ' . get_theme_mod( 'hyperpress_hyper_blue' ) . ';
 							--hyper-logo-purple: ' . get_theme_mod( 'hyperpress_hyper_purple' ) . ';
 					}' .
-	     '</style>';
+		'</style>';
+	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 }

@@ -30,7 +30,6 @@ function hyperpress_start_cleanup(): void {
  * Clean up head.+
  * ----------------------------------------------------------------------------
  */
-
 function hyperpress_cleanup_head(): void {
 
 	// EditURI link.

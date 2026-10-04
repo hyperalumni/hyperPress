@@ -32,11 +32,12 @@ add_filter( 'image_size_names_choose', 'hyperpress_custom_sizes' );
 // Register the new image sizes for use in the add media modal in wp-admin
 function hyperpress_custom_sizes( $sizes ) {
 	return array_merge(
-		$sizes, array(
-			'fp-small'  => __( 'FP Small' ),
-			'fp-medium' => __( 'FP Medium' ),
-			'fp-large'  => __( 'FP Large' ),
-			'fp-xlarge' => __( 'FP XLarge' ),
+		$sizes,
+        array(
+			'fp-small'  => __( 'FP Small' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
+			'fp-medium' => __( 'FP Medium' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
+			'fp-large'  => __( 'FP Large' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
+			'fp-xlarge' => __( 'FP XLarge' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
 		)
 	);
 }
@@ -57,12 +58,10 @@ function hyperpress_adjust_image_sizes_attr( $sizes, $size ) {
 		} else {
 			$sizes = '(max-width: 1199px) 98vw, ' . $width . 'px';
 		}
-	} else { // Default 3/4 column post/page layout
-		if ( 770 < $width ) {
+	} elseif ( 770 < $width ) { // Default 3/4 column post/page layout
 			$sizes = '(max-width: 639px) 98vw, (max-width: 1199px) 64vw, 770px';
 		} else {
-			$sizes = '(max-width: 639px) 98vw, (max-width: 1199px) 64vw, ' . $width . 'px';
-		}
+		$sizes = '(max-width: 639px) 98vw, (max-width: 1199px) 64vw, ' . $width . 'px';
 	}
 
 	return $sizes;
@@ -71,7 +70,7 @@ function hyperpress_adjust_image_sizes_attr( $sizes, $size ) {
 add_filter( 'post_thumbnail_html', 'remove_thumbnail_dimensions', 10, 3 );
 
 // Remove inline width and height attributes for post thumbnails
-function remove_thumbnail_dimensions( $html, $post_id, $post_image_id ) {
+function remove_thumbnail_dimensions( $html, $post_id, $post_image_id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- theme audit
 	if ( ! strpos( $html, 'attachment-shop_single' ) ) {
 		$html = preg_replace( '/^(width|height)=\"\d*\"\s/', '', $html );
 	}

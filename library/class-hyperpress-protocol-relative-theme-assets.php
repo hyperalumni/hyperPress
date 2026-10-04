@@ -50,7 +50,7 @@ if ( ! class_exists( 'HyperPress_Theme_Protocol_Relative_Theme_Assets' ) ) :
 		 * @return  string
 		 * @since   1.0
 		 */
-		public function style_loader_src( $src, $handle ) {
+		public function style_loader_src( $src, $handle ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- theme audit
 			return $this->make_protocol_relative_url( $src );
 		}
 
@@ -61,7 +61,7 @@ if ( ! class_exists( 'HyperPress_Theme_Protocol_Relative_Theme_Assets' ) ) :
 		 * @return  string
 		 * @since   1.0
 		 */
-		public function script_loader_src( $src, $handle ) {
+		public function script_loader_src( $src, $handle ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- theme audit
 			return $this->make_protocol_relative_url( $src );
 		}
 
@@ -73,7 +73,7 @@ if ( ! class_exists( 'HyperPress_Theme_Protocol_Relative_Theme_Assets' ) ) :
 		 * @since   1.0
 		 * @link    http://codex.wordpress.org/Function_Reference/get_template_directory_uri
 		 */
-		public function template_directory_uri( $template_dir_uri, $template, $theme_root_uri ) {
+		public function template_directory_uri( $template_dir_uri, $template, $theme_root_uri ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- theme audit
 			return $this->make_protocol_relative_url( $template_dir_uri );
 		}
 
@@ -85,10 +85,10 @@ if ( ! class_exists( 'HyperPress_Theme_Protocol_Relative_Theme_Assets' ) ) :
 		 * @since   1.0
 		 * @link    http://codex.wordpress.org/Function_Reference/get_stylesheet_directory_uri
 		 */
-		public function stylesheet_directory_uri( $stylesheet_dir_uri, $stylesheet, $theme_root_uri ) {
+		public function stylesheet_directory_uri( $stylesheet_dir_uri, $stylesheet, $theme_root_uri ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- theme audit
 			return $this->make_protocol_relative_url( $stylesheet_dir_uri );
 		}
 	}
 
-	$hyperpress_protocol_relative_theme_assets = new HyperPress_Theme_Protocol_Relative_Theme_Assets;
+	$hyperpress_protocol_relative_theme_assets = new HyperPress_Theme_Protocol_Relative_Theme_Assets();
 endif;

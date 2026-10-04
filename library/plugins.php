@@ -66,161 +66,161 @@ function hyper_register_required_plugins(): void {
 			'name'         => 'Meta Box AIO',
 			'slug'         => 'meta-box-aio',
 			'external_url' => 'https://metabox.io/aio/',
-			'required'     => true
+			'required'     => true,
 		),
 		array(
 			'name'         => 'RunCache - Full Page Cache',
 			'slug'         => 'runcache',
 			'source'       => 'http://runcache.site/download/runcache-latest.zip',
 			'external_url' => 'https://runcache.site',
-			'required'     => false
+			'required'     => false,
 		),
 		array(
 			'name'         => 'RunCloud Hub',
 			'slug'         => 'runcloud-hub',
 			'source'       => 'https://runcloud-hub.s3.us-west-1.amazonaws.com/production/runcloud-hub-1.4.8.zip',
 			'external_url' => 'https://runcloud.io/docs/runcloud-hub',
-			'required'     => false
+			'required'     => false,
 		),
 		array(
-			'name' => 'Classic Editor',
-			'slug' => 'classic-editor',
-			'required' => true
+			'name'     => 'Classic Editor',
+			'slug'     => 'classic-editor',
+			'required' => true,
 		),
 		array(
-			'name' => 'Classic Widgets',
-			'slug' => 'classic-widgets',
-			'required' => true
+			'name'     => 'Classic Widgets',
+			'slug'     => 'classic-widgets',
+			'required' => true,
 		),
 		array(
 			'name'     => 'Embed Optimizer',
 			'slug'     => 'embed-optimizer',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Enhanced Responsive Images',
 			'slug'     => 'auto-sizes',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'         => 'Envato Market',
 			'slug'         => 'envato-market',
 			'source'       => 'https://envato.github.io/wp-envato-market/dist/envato-market.zip',
 			'external_url' => 'https://www.envato.com/lp/market-plugin/',
-			'required'     => false
+			'required'     => false,
 		),
 		array(
 			'name'     => 'Health Check & Troubleshooting',
 			'slug'     => 'health-check',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Heartbeat Control',
 			'slug'     => 'heartbeat-control',
-			'required' => false
+			'required' => false,
 		),
 		array(
 			'name'     => 'Image Placeholders',
 			'slug'     => 'dominant-color-images',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Image Prioritizer',
 			'slug'     => 'image-prioritizer',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Instant Back/Forward',
 			'slug'     => 'nocache-bfcache',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Jetpack',
 			'slug'     => 'jetpack',
-			'required' => false
+			'required' => false,
 		),
 		array(
 			'name'     => 'Modern Image Formats',
 			'slug'     => 'webp-uploads',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'NextGEN Gallery',
 			'slug'     => 'nextgen-gallery',
-			'required' => false
+			'required' => false,
 		),
 		array(
 			'name'     => 'Nginx Helper',
 			'slug'     => 'nginx-helper',
-			'required' => false
+			'required' => false,
 		),
 		array(
 			'name'     => 'Ninja Forms',
 			'slug'     => 'ninja-forms',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Optimization Detective',
 			'slug'     => 'optimization-detective',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Performance Lab',
 			'slug'     => 'performance-lab',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Permalink Manager Lite',
 			'slug'     => 'permalink-manager',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Post SMTP',
 			'slug'     => 'post-smtp',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'PublishPress Capabilities',
 			'slug'     => 'capability-manager-enhanced',
-			'required' => false
+			'required' => false,
 		),
 		array(
 			'name'     => 'PublishPress Revisions',
 			'slug'     => 'revisionary',
-			'required' => false
+			'required' => false,
 		),
 		array(
 			'name'     => 'Redirection',
 			'slug'     => 'redirection',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Simple CAPTCHA Alternative with Cloudflare Turnstile',
 			'slug'     => 'simple-cloudflare-turnstile',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'         => 'Slider Revolution',
 			'slug'         => 'revslider',
 			'external_url' => 'https://sliderrevolution.com',
 			'source'       => '#',
-			'required'     => true
+			'required'     => true,
 		),
 		array(
 			'name'     => 'Web Worker Offloading',
 			'slug'     => 'web-worker-offloading',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'Wordfence Security',
 			'slug'     => 'wordfence',
-			'required' => true
+			'required' => true,
 		),
 		array(
 			'name'     => 'WP-Optimize',
 			'slug'     => 'wp-optimize',
-			'required' => true
-		)
+			'required' => true,
+		),
 	);
 
 	/*
@@ -254,6 +254,7 @@ function hyper_register_required_plugins(): void {
 		'message'      => '',
 		// Message to output right before the plugins table.
 
+		// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- theme audit
 		/*
 		'strings'      => array(
 			'page_title'                      => __( 'Install Required Plugins', 'hyper' ),
@@ -304,7 +305,7 @@ function hyper_register_required_plugins(): void {
 				'Begin installing plugins',
 				'hyper'
 			),
-			'update_link' 					  => _n_noop(
+			'update_link'                     => _n_noop(
 				'Begin updating plugin',
 				'Begin updating plugins',
 				'hyper'

@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'after_switch_theme', 'hyper_set_initial_theme_mod_values' );
 
 function hyper_set_initial_theme_mod_values(): void {
-	$themeModNames = [
+	$theme_mod_names = array(
 		'hyperpress_gear_blue'               => '#092238',
 		'hyperpress_gear_orange'             => '#F15622',
 		'hyperpress_gear_grey'               => '#222222',
@@ -24,27 +24,28 @@ function hyper_set_initial_theme_mod_values(): void {
 		'hyperpress_home_banner_button_text' => 'Learn More',
 		'hyperpress_home_banner_title'       => 'HYPER',
 		'hyperpress_home_banner_subtitle'    => 'Dedicated to improving &amp; expanding the abilities of <span class="emphasis">Team HYPER</span>',
-	];
+	);
 
-	foreach ( $themeModNames as $themeModName => $themeModDefaultValue ) {
-		if ( empty( get_theme_mod( $themeModName ) ) ) {
-			set_theme_mod( $themeModName, $themeModDefaultValue );
+	foreach ( $theme_mod_names as $theme_mod_name => $theme_mod_default_value ) {
+		if ( empty( get_theme_mod( $theme_mod_name ) ) ) {
+			set_theme_mod( $theme_mod_name, $theme_mod_default_value );
 		}
 	}
 }
 
 
+// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- theme audit
 // add_action( 'switch_theme', 'hyper_clean_up_theme_mod_values' );
 
 function hyper_clean_up_theme_mod_values(): void {
-	$themeModNames = [
+	$theme_mod_names = array(
 		'hyperpress_countdown_days_color',
 		'hyperpress_countdown_hours_color',
 		'hyperpress_countdown_minutes_color',
-		'hyperpress_countdown_seconds_color'
-	];
+		'hyperpress_countdown_seconds_color',
+	);
 
-	foreach ( $themeModNames as $themeModName ) {
-		remove_theme_mod( $themeModName );
+	foreach ( $theme_mod_names as $theme_mod_name ) {
+		remove_theme_mod( $theme_mod_name );
 	}
 }

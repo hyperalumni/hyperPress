@@ -16,8 +16,8 @@ function hyperpress_sidebar_widgets() {
 	register_sidebar(
 		array(
 			'id'            => 'sidebar-widgets',
-			'name'          => __( 'Sidebar widgets', 'foundationpress' ),
-			'description'   => __( 'Drag widgets to this sidebar container.', 'foundationpress' ),
+			'name'          => __( 'Sidebar widgets', 'hyperpress' ),
+			'description'   => __( 'Drag widgets to this sidebar container.', 'hyperpress' ),
 			'before_widget' => '<section id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</section><hr />',
 			'before_title'  => '<h4>',
@@ -28,8 +28,8 @@ function hyperpress_sidebar_widgets() {
 	register_sidebar(
 		array(
 			'id'            => 'footer-widgets',
-			'name'          => __( 'Footer widgets', 'foundationpress' ),
-			'description'   => __( 'Drag widgets to this footer container', 'foundationpress' ),
+			'name'          => __( 'Footer widgets', 'hyperpress' ),
+			'description'   => __( 'Drag widgets to this footer container', 'hyperpress' ),
 			'before_widget' => '<section id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</section>',
 			'before_title'  => '<h6>',

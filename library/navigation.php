@@ -14,8 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 register_nav_menus(
 	array(
-		'top-bar-r'  => esc_html__( 'Right Top Bar', 'foundationpress' ),
-		'mobile-nav' => esc_html__( 'Mobile', 'foundationpress' ),
+		'top-bar-r'  => esc_html__( 'Right Top Bar', 'hyperpress' ),
+		'mobile-nav' => esc_html__( 'Mobile', 'hyperpress' ),
 	)
 );
 
@@ -47,7 +47,7 @@ function hyperpress_mobile_nav(): void {
 	wp_nav_menu(
 		array(
 			'container'      => false,                         // Remove nav container
-			'menu'           => __( 'mobile-nav', 'foundationpress' ),
+			'menu'           => __( 'mobile-nav', 'hyperpress' ),
 			'menu_class'     => 'vertical menu',
 			'theme_location' => 'mobile-nav',
 			'items_wrap'     => '<ul id="%1$s" class="%2$s" data-accordion-menu data-submenu-toggle="true">%3$s</ul>',
@@ -79,4 +79,3 @@ add_filter( 'the_content_more_link', 'hyperpress_customize_the_read_more_link' )
 function hyperpress_customize_the_read_more_link(): string {
 	return '<button class="hollow button medium-down-expanded more-link" href="' . get_permalink() . '#more-' . get_the_ID() . '">Continue Reading</button>';
 }
-

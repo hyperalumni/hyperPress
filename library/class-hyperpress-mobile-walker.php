@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'HyperPress_Theme_Mobile_Walker' ) ) :
 	class HyperPress_Theme_Mobile_Walker extends Walker_Nav_Menu {
-		function start_lvl( &$output, $depth = 0, $args = array() ) {
+		public function start_lvl( &$output, $depth = 0, $args = array() ) {
 			$indent  = str_repeat( "\t", $depth );
 			$output .= "\n$indent<ul class=\"vertical nested menu\">\n";
 		}
