@@ -11,7 +11,7 @@ the_post(); /* Start the Loop */
 		<?php if ( ! empty( get_post_type() ) ) : ?>
 			<?php
 			$content_template = apply_filters( 'content_template', '' );
-			if ( ! empty( $content_template ) ) {
+			if ( is_string( $content_template ) && '' !== $content_template && is_readable( $content_template ) ) {
 				include $content_template;
 			} else {
 				get_template_part( 'template-parts/content', get_post_type() );

@@ -28,9 +28,13 @@ the_post();
 						<?php do_action( 'foundationpress_page_before_entry_content' ); ?>
 						<div class="entry-content">
 							<?php
-							foreach ( get_theme_mod( 'hyperpress_homepage_customize_countdowns' ) as $countdown_id ) :
-								echo do_shortcode( '[hyperpress_countdown id="' . $countdown_id . '" /]' );
-							endforeach;
+		foreach ( (array) $countdowns as $countdown_id ) :
+				$countdown_id = absint( $countdown_id );
+				if ( 0 === $countdown_id ) {
+					continue;
+				}
+				echo do_shortcode( '[hyperpress_countdown id="' . $countdown_id . '" /]' );
+			endforeach;
 							?>
 						</div>
 						<?php do_action( 'foundationpress_page_after_entry_content' ); ?>
@@ -86,8 +90,15 @@ the_post();
 						?>
 						<?php if ( ! empty( get_post_type() ) ) : ?>
 						<?php if ( get_post_type() != 'post' ) : // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- theme audit ?>
-							<?php include apply_filters( 'content_template', $post ); ?>
 						<?php
+						$content_template = apply_filters( 'content_template', '' );
+						if ( is_string( $content_template ) && '' !== $content_template && is_readable( $content_template ) ) {
+							include $content_template;
+						} else {
+							get_template_part( 'template-parts/content', get_post_type() );
+						}
+						?>
+			<?php
                         else :
 get_template_part( 'template-parts/content', get_post_type() );
 ?>

@@ -11,7 +11,7 @@ critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43). Severity
 | # | ID | Sev | Where | Problem | Status |
 |---|---|---|---|---|---|
 | 1 | T1 | low | git history of `library/plugins.php` (commit `14566eb` on this local branch) | a Meta Box download key was committed in `14566eb` and removed from the tree later (`f7737e8`). It has never been pushed (no remote branch contains it), so it is not exposed. **Still present in local history**: drop it with a rebase before this branch is pushed. Rotation is optional unless the history was shared another way. | verified |
-| 2 | T3 | medium | `front-page.php:91` | `include apply_filters( 'content_template', $post )` passes a `WP_Post` as default; with no override the include fatals, and the string-typed plugin callbacks throw a TypeError. Pass `''` and guard the include. | verified |
+| 2 | T3 | medium | `front-page.php:91` | `include apply_filters( 'content_template', $post )` passes a `WP_Post` as default; with no override the include fatals, and the string-typed plugin callbacks throw a TypeError. Pass `''` and guard the include. | **FIXED** front-page.php now passes `''` to `content_template` and only includes a readable path returned as a string (test: FrontPageContentTemplateTest). |
 | 3 | T24 | medium | `library/banner/search.php:13`, `template-parts/banner.php:50` | the banner runs `do_shortcode()` on text containing the visitor's search query, so `/?s=[shortcode]` executes registered shortcodes unauthenticated. Escape brackets or do not shortcode-expand the subtitle for search. | verified |
 | 4 | T26 | medium | `comments.php` | approved comments are listed before `post_password_required()` is checked, exposing comments on password-protected posts. | verified |
 | 5 | T27 | medium | `library/plugins.php:74` | TGM installs `runcache-latest.zip` over plain `http://`; an on-path attacker can swap the archive. Use https or drop the entry. | verified |
@@ -19,8 +19,8 @@ critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43). Severity
 | 7 | T28 | medium | `library/foundation.php` gallery override | attachment caption placed in `title`/`data-title` with only `wptexturize()` (likely attribute breakout by Authors). | reviewer (exploit inferred, not run) |
 | 8 | T6 | medium | `library/enqueue-scripts.php` | jQuery and FontAwesome from a CDN without SRI; WP's jQuery deregistered in wp-admin. | reviewer |
 | 9 | T30 | medium | several | `rwmb_meta()`, `SortedSeasons` and plugin control classes used without presence guards: deactivating a plugin fatals pages. | reviewer |
-| 10 | T4 | medium | `single.php`, `template-parts/posts.php`, `front-page.php` | include of a filter-returned path with only `empty()` (hardening; current callbacks return fixed paths). | reviewer |
-| 11 | T7 | low | `front-page.php` | countdown ids from a theme mod are not cast to int before being put in a shortcode string. | verified by reading |
+| 10 | T4 | medium | `single.php`, `template-parts/posts.php`, `front-page.php` | include of a filter-returned path with only `empty()` (hardening; current callbacks return fixed paths). | **FIXED** front-page.php, single.php and template-parts/posts.php only include a `content_template` result that is a non-empty, readable string. |
+| 11 | T7 | low | `front-page.php` | countdown ids from a theme mod are not cast to int before being put in a shortcode string. | **FIXED** front-page.php casts countdown ids with `absint()` and skips zero (test: FrontPageContentTemplateTest). |
 
 ## Decisions needed
 
