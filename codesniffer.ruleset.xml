@@ -6,6 +6,31 @@
 	<!-- Set a description for this ruleset. -->
 	<description>A custom set of code standard rules to check for WordPress themes.</description>
 
+	<file>.</file>
+
+	<!-- Generated and vendored code. -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/dist/*</exclude-pattern>
+	<exclude-pattern>*/packaged/*</exclude-pattern>
+	<exclude-pattern>*/src/assets/*</exclude-pattern>
+	<exclude-pattern>*/library/class-tgm-plugin-activation.php</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+
+	<config name="minimum_wp_version" value="6.9"/>
+	<config name="testVersion" value="8.3-"/>
+
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="hyperpress"/>
+			</property>
+		</properties>
+	</rule>
+
 	<!-- Include the WordPress ruleset, with exclusions. -->
 	<rule ref="WordPress">
 		<exclude name="Generic.WhiteSpace.ScopeIndent.IncorrectExact" />
@@ -38,10 +63,8 @@
 		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.NoSpaceAfterArrayOpener" />
 		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.NoSpaceBeforeArrayCloser" />
 
-		<exclude name="WordPress.Variables.GlobalVariables" />
 		<exclude name="WordPress.WhiteSpace.ControlStructureSpacing.NoSpaceAfterOpenParenthesis" />
 		<exclude name="WordPress.WhiteSpace.ControlStructureSpacing.NoSpaceBeforeCloseParenthesis)" />
 
-		<exclude name="WordPress.VIP.RestrictedFunctions" />
 	</rule>
 </ruleset>
