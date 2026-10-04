@@ -1,5 +1,7 @@
 <?php
 /**
+ * The hyperPress Countdown plugin.
+ *
  * @wordpress-plugin
  * Plugin Name:         hyperPress Countdown
  * Plugin URI:          https://hyperalumni.org
