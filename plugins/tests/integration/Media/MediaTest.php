@@ -7,10 +7,12 @@ use WP_UnitTestCase;
 
 final class MediaTest extends WP_UnitTestCase {
 
-	public function test_svg_and_avif_mime_types_are_allowed(): void {
+	public function test_avif_is_allowed_and_svg_is_left_to_safe_svg(): void {
 		$mimes = apply_filters( 'upload_mimes', array() );
-		$this->assertSame( 'image/svg+xml', $mimes['svg'] ?? null );
 		$this->assertSame( 'image/avif', $mimes['avif'] ?? null );
+		// SVG uploads are enabled (with sanitising) by the Safe SVG plugin, never by this plugin.
+		$this->assertArrayNotHasKey( 'svg', $mimes );
+		$this->assertFalse( class_exists( 'HyperPress\\Media\\Uploads\\Svg' ) );
 	}
 
 	public function test_nextgen_breadcrumbs_only_hook_when_nextgen_is_present(): void {

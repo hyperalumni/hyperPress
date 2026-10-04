@@ -5,10 +5,11 @@
  * @wordpress-plugin
  * Plugin Name:         hyperPress Media
  * Plugin URI:          https://hyperalumni.org
- * Description:         Media support for hyperPress: SVG and AVIF uploads and NextGen Gallery breadcrumbs and Customizer options
+ * Description:         Media support for hyperPress: AVIF uploads and NextGen Gallery breadcrumbs and Customizer options. SVG uploads come from the Safe SVG plugin.
  * Version:             2026.0.0
  * Requires at least:   6.9
  * Requires PHP:        8.3
+ * Requires Plugins:    safe-svg
  * Author:              Chris McGroarty
  * Author URI:          https://idesign.co
  * License:             MIT License

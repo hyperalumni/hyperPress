@@ -9,7 +9,7 @@ Companion WordPress plugins for the hyperPress theme. Each `hyperpress-*/` direc
 | `hyperpress-award`, `-competition`, `-countdown`, `-newsletter`, `-robot`, `-sponsor` | Custom post types (`hyper_*`) |
 | `hyperpress-socials` | Social links (Customizer section and widget) |
 | `hyperpress-shortcodes` | Content shortcodes moved out of the theme (time-restrict, date distance, raw, emphasis, banner) |
-| `hyperpress-media` | SVG and AVIF uploads and NextGen Gallery integration, moved out of the theme |
+| `hyperpress-media` | AVIF uploads and NextGen Gallery integration, moved out of the theme. SVG uploads come from the required Safe SVG plugin, which sanitises them |
 | `hyperpress-label`, `hyperpress-student` | Placeholders with no behaviour yet |
 
 ## Development

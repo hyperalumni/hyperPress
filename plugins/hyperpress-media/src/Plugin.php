@@ -6,7 +6,6 @@ defined( 'ABSPATH' ) || exit;
 final class Plugin {
 
 	public static function boot(): void {
-		Uploads\Svg::register();
 		Uploads\Avif::register();
 		NextGen\Customizer::register();
 

@@ -63,6 +63,7 @@ Resulting `Requires Plugins`:
 | sponsor | hyperpress-utils, hyperpress-season, meta-box-aio |
 | season, program | hyperpress-utils, meta-box-aio |
 | socials, label, student | none |
+| media (added later) | safe-svg (SVG uploads and their sanitising come from Safe SVG) |
 | utils | none |
 
 Countdown does not require season: it is a non-public utility CPT with no
