@@ -17,8 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Check to see if rev-manifest exists for CSS and JS static asset revisioning
 //https://github.com/sindresorhus/gulp-rev/blob/master/integration.md
 
-if ( ! function_exists( 'foundationpress_asset_path' ) ) :
-	function foundationpress_asset_path( $filename ): string {
+if ( ! function_exists( 'hyperpress_asset_path' ) ) :
+	function hyperpress_asset_path( $filename ): string {
 		$filename_split = explode( '.', $filename );
 		$dir            = end( $filename_split );
 		$manifest_path  = dirname( dirname( __FILE__ ) ) . '/dist/assets/' . $dir . '/rev-manifest.json';
@@ -43,10 +43,10 @@ $fontAwesomeVersion   = '7.3.1';
 $jqueryVersion        = '3.7.1';
 $jqueryMigrateVersion = '3.6.0';
 
-if ( ! function_exists( 'foundationpress_scripts' ) ) :
-	add_action( 'wp_enqueue_scripts', 'foundationpress_scripts' );
+if ( ! function_exists( 'hyperpress_scripts' ) ) :
+	add_action( 'wp_enqueue_scripts', 'hyperpress_scripts' );
 
-	function foundationpress_scripts(): void {
+	function hyperpress_scripts(): void {
 		global $hyperPressVersion, $foundationVersion, $fontAwesomeVersion, $jqueryVersion, $jqueryMigrateVersion;
 
 		// Deregister the jquery version bundled with WordPress.
@@ -68,7 +68,7 @@ if ( ! function_exists( 'foundationpress_scripts' ) ) :
 		}
 
 		// Enqueue the main Stylesheet.
-		wp_enqueue_style( 'main-stylesheet', get_template_directory_uri() . '/dist/assets/css/' . foundationpress_asset_path( 'app.css' ), array(
+		wp_enqueue_style( 'main-stylesheet', get_template_directory_uri() . '/dist/assets/css/' . hyperpress_asset_path( 'app.css' ), array(
 			'oswald',
 			'opensans',
 			'fontawesome'
@@ -84,8 +84,8 @@ if ( ! function_exists( 'foundationpress_scripts' ) ) :
 		// wp_enqueue_script( 'jquery-migrate' );
 
 		// Enqueue Foundation scripts
-		wp_enqueue_script( 'foundation', get_template_directory_uri() . '/dist/assets/js/' . foundationpress_asset_path( 'foundation.js' ), array( 'jquery' ), $foundationVersion, true );
-		wp_enqueue_script( 'main-script', get_template_directory_uri() . '/dist/assets/js/' . foundationpress_asset_path( 'app.js' ), array( 'foundation' ), $hyperPressVersion, true );
+		wp_enqueue_script( 'foundation', get_template_directory_uri() . '/dist/assets/js/' . hyperpress_asset_path( 'foundation.js' ), array( 'jquery' ), $foundationVersion, true );
+		wp_enqueue_script( 'main-script', get_template_directory_uri() . '/dist/assets/js/' . hyperpress_asset_path( 'app.js' ), array( 'foundation' ), $hyperPressVersion, true );
 
 		// Add the comment-reply library on pages where it is necessary
 		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -94,10 +94,10 @@ if ( ! function_exists( 'foundationpress_scripts' ) ) :
 	}
 endif;
 
-if ( ! function_exists( 'foundationpress_admin_scripts' ) ) :
-	add_action( 'admin_enqueue_scripts', 'foundationpress_admin_scripts' );
+if ( ! function_exists( 'hyperpress_admin_scripts' ) ) :
+	add_action( 'admin_enqueue_scripts', 'hyperpress_admin_scripts' );
 
-	function foundationpress_admin_scripts(): void {
+	function hyperpress_admin_scripts(): void {
 		global $hyperPressVersion, $jqueryVersion, $jqueryMigrateVersion;
 		// Deregister the jquery version bundled with WordPress.
 		wp_deregister_script( 'jquery' );
@@ -113,7 +113,7 @@ if ( ! function_exists( 'foundationpress_admin_scripts' ) ) :
 		// Enqueue jQuery migrate. Uncomment the line below to enable.
 		// wp_enqueue_script( 'jquery-migrate' );
 
-		wp_register_style( 'wp-admin-svg-support', get_template_directory_uri() . '/dist/assets/css/' . foundationpress_asset_path( 'svg-wp-admin.css' ), array(), $hyperPressVersion, 'screen' );
+		wp_register_style( 'wp-admin-svg-support', get_template_directory_uri() . '/dist/assets/css/' . hyperpress_asset_path( 'svg-wp-admin.css' ), array(), $hyperPressVersion, 'screen' );
 		// only load svg support on a screen to edit a post/page/custom-post-type
 		if ( get_current_screen()->base == 'post' ) {
 			wp_enqueue_style( 'wp-admin-svg-support' );

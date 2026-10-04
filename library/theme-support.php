@@ -71,6 +71,6 @@ if ( ! function_exists( 'hyperpress_theme_support' ) ) :
 		add_editor_style( get_stylesheet_directory_uri() . '/dist/assets/css/editor.css' );
 
 		// Add foundation.css as editor style https://codex.wordpress.org/Editor_Style
-		// add_editor_style( 'dist/assets/css/' . foundationpress_asset_path( 'editor.css' ) );
+		// add_editor_style( 'dist/assets/css/' . hyperpress_asset_path( 'editor.css' ) );
 	}
 endif;
