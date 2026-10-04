@@ -1,19 +1,18 @@
 <?php
+namespace HyperPress\Season;
 
-namespace HYPER_Press_Season;
+defined( 'ABSPATH' ) || exit;
 
-// Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+final class Banner {
 
-if ( ! function_exists( '\HYPER_Press_Season\hyperpress_banner_season' ) ) :
-	add_filter( 'hyperpress_banner_content', '\HYPER_Press_Season\hyperpress_banner_season' );
+	public static function register(): void {
+		add_filter( 'hyperpress_banner_content', array( self::class, 'filter' ) );
+	}
 
-	function hyperpress_banner_season( $banner ) {
+	public static function filter( $banner ) {
 		$hyper_season = 'season';
 
-		if ( is_tax( 'season' ) && ! is_post_type_archive() ) {
+		if ( is_tax( 'hyper_season' ) && ! is_post_type_archive() ) {
 			$banner['type']            = $hyper_season;
 			$banner['backgroundColor'] = get_theme_mod( 'hyperpress_gear_blue' );
 
@@ -30,7 +29,6 @@ if ( ! function_exists( '\HYPER_Press_Season\hyperpress_banner_season' ) ) :
 			}
 		}
 
-
 		return $banner;
 	}
-endif;
+}

@@ -3,7 +3,6 @@
  * @wordpress-plugin
  * Plugin Name:         hyperPress Season
  * Plugin URI:          https://hyperalumni.org
- * GitHub Plugin URI:   https://github.com/hyperalumni/hyperPress
  * Description:         Custom Taxonomy for Seasons for hyperPress
  * Version:             2026.0.0
  * Requires at least:   6.9
@@ -18,19 +17,21 @@
  * Requires Plugins:    hyperpress-utils, meta-box-aio
  */
 
-namespace HYPER_Press_Season;
-
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
-// require the definitions first
-require_once( __DIR__ . '/lib/custom-taxonomy.php' );
-// then require the ancillary
-require_once( __DIR__ . '/lib/banner.php' );
-require_once( __DIR__ . '/lib/breadcrumbs.php' );
-require_once( __DIR__ . '/lib/customize.php' );
-require_once( __DIR__ . '/lib/functions.php' );
-require_once( __DIR__ . '/lib/meta-boxes.php' );
-require_once( __DIR__ . '/lib/rewrite.php' );
+spl_autoload_register(
+	static function ( string $class_name ): void {
+		$prefix = 'HyperPress\\Season\\';
+		if ( 0 !== strpos( $class_name, $prefix ) ) {
+			return;
+		}
+		$file = __DIR__ . '/src/' . str_replace( '\\', '/', substr( $class_name, strlen( $prefix ) ) ) . '.php';
+		if ( is_file( $file ) ) {
+			require_once $file;
+		}
+	}
+);
+
+// Boot after every plugin's main file is loaded, so Utils is always available.
+add_action( 'plugins_loaded', array( \HyperPress\Season\Plugin::class, 'boot' ) );

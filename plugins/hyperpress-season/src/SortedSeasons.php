@@ -1,26 +1,23 @@
 <?php
+namespace HyperPress\Season;
 
-namespace HYPER_Press_Season;
+defined( 'ABSPATH' ) || exit;
 
-// Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+final class SortedSeasons {
 
-if ( ! function_exists( '\HYPER_Press_Season\get_sorted_seasons' ) ) :
 	/**
 	 * Retrieves a list of sorted seasons for the current post.
 	 *
 	 * @return array An array of seasons sorted by name.
 	 */
-	function get_sorted_seasons(): array {
+	public static function get(): array {
 		$seasons = wp_get_post_terms(
 			get_the_ID(),
-			'season',
-			[
+			'hyper_season',
+			array(
 				'orderby' => 'name',
-				'order'   => 'DESC'
-			]
+				'order'   => 'DESC',
+			)
 		);
 
 		if ( ! empty( $seasons ) ) {
@@ -30,4 +27,4 @@ if ( ! function_exists( '\HYPER_Press_Season\get_sorted_seasons' ) ) :
 
 		return $seasons;
 	}
-endif;
+}
