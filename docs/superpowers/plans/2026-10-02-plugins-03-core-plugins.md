@@ -241,9 +241,9 @@ The legacy function was named `hyperpress_register_season_taxonomoy` (typo). It 
   - `Customizer`: control ids `season_banner_subtitle` becomes `hyperpress_season_banner_subtitle`; `season_post_types` becomes `hyperpress_season_post_types`; `hyperpress_season_current` is already compliant. Replace `\HYPER_Press_Utils\HYPERpress_Dropdown_Post_Type_Control` with `\HyperPress\Utils\Controls\PostTypeDropdownControl`. Section and panel `hyperpress_season` are unchanged.
   - `MetaBoxes`: panel id `hyperpress_season` is unchanged; apply the R3 conversion only. Keep its `meta-box-aio` dependency.
   - `Shortcodes\SeasonCount` (new, extracted from the theme): read `theme/library/shortcodes/season-count.php` (21 lines) and move the `hyper_season_count` shortcode here unchanged: same tag, same attributes (including the `season` attribute), same output. It calls `[hyper_date_distance]`, which lives in `hyperpress-shortcodes` (plugins-04-remaining-plugins Task 6); when that shortcode is not registered the tag renders unexpanded, which is accepted (season does not hard-depend on the shortcodes plugin). Register it from `Plugin::boot()` via `SeasonCount::register()` on `init`. Add `tests/integration/SeasonCountTest.php` asserting the tag is registered and that, with a stand-in `hyper_date_distance` shortcode registered in the test, the output equals what the theme code produces for the same attributes (capture the expected string by running the theme file once in a scratch test, as in plugins-04-remaining-plugins Task 6 Step 4).
-  - `Rewrite`: the legacy rule already targets `index.php?hyper_season=$matches[1]&post_type=$matches[2]`, a leftover that pointed at a query var that did not yet exist. After this rename it is valid. Keep the rule as is, but read its regex and check that `$matches[2]` can only be a registered post type key; if it cannot be made valid, record it as a finding in the plugins audit rather than changing it here.
+  - `Rewrite` (needs real work, found during plugins-02 Task 5): the legacy rule is `^seasons/([^/]+)/([^/]+)?s$` -> `index.php?hyper_season=$matches[1]&post_type=$matches[2]`. It derives `post_type` from the archive slug by stripping the trailing `s` (`sponsors` becomes `sponsor`), which only equals the post type key for the legacy keys; with `hyper_sponsor` it would query a post type that does not exist. Replace it: `Rewrite::register()` hooks `init` at priority 20 (after the post types register at 10) and, for every public post type whose key starts with `hyper_` and whose `has_archive` is a string, adds `add_rewrite_rule( '^seasons/([^/]+)/' . preg_quote( $archive ) . '/?$', 'index.php?hyper_season=$matches[1]&post_type=' . $key, 'top' )`. This produces the same public URLs as before (`/seasons/2026/sponsors/`) and matches what `HyperPress\Utils\Breadcrumbs` links to. The season rewrite slug `seasons` must be read from `get_taxonomy( 'hyper_season' )->rewrite['slug']`, not hard-coded twice.
 
-- [ ] **Step 5: Add a test that the season rewrite rule resolves** `tests/integration/SeasonRewriteTest.php`
+- [ ] **Step 5: Add a test that the season rewrite rules resolve** `tests/integration/SeasonRewriteTest.php`
 
 ```php
 <?php
@@ -252,15 +252,32 @@ namespace HyperPress\Tests\Integration;
 use WP_UnitTestCase;
 
 final class SeasonRewriteTest extends WP_UnitTestCase {
-	public function test_rule_targets_the_renamed_query_var(): void {
+
+	public function test_each_hyper_archive_gets_a_season_rule_with_the_real_post_type_key(): void {
 		flush_rewrite_rules();
 		$rules = (array) get_option( 'rewrite_rules' );
-		$found = array_filter( $rules, static fn( $target ) => false !== strpos( (string) $target, 'hyper_season=$matches[1]&post_type=$matches[2]' ) );
-		$this->assertNotEmpty( $found, 'Expected a rewrite rule using the hyper_season query var' );
+
+		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $key => $type ) {
+			if ( 0 !== strpos( $key, 'hyper_' ) || ! is_string( $type->has_archive ) ) {
+				continue;
+			}
+			$expected = 'index.php?hyper_season=$matches[1]&post_type=' . $key;
+			$this->assertContains( $expected, $rules, "No season rule for $key" );
+		}
+	}
+
+	public function test_season_archive_url_resolves_to_the_post_type_archive(): void {
+		$term_id = self::factory()->term->create( array( 'taxonomy' => 'hyper_season', 'name' => '2026', 'slug' => '2026' ) );
+		flush_rewrite_rules();
+		$this->go_to( home_url( '/seasons/2026/sponsors/' ) );
+		$this->assertTrue( is_post_type_archive( 'hyper_sponsor' ) );
+		$this->assertTrue( is_tax( 'hyper_season' ) );
+		$this->assertSame( $term_id, get_queried_object_id() );
 	}
 }
 ```
 
+If `is_tax` is false on the archive request, read how WordPress resolves `hyper_season=2026&post_type=hyper_sponsor` (both query vars set) and adjust the assertions to what WordPress actually reports, keeping the `post_type` check: the requirement is that the URL resolves to sponsors of that season, not a 404.
 - [ ] **Step 6: Delete the legacy `lib/` files, then run R7 verification**, with `<name>`=season and `<old>`=season (taxonomy case):
 
 Run: `docker compose run --rm php composer test:integration -- --filter 'RegistrationParityTest.*season|SeasonRewriteTest'`
