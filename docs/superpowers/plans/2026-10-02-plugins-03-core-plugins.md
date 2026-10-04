@@ -71,10 +71,12 @@ final class RegistrationParityTest extends WP_UnitTestCase {
 
 	// show_in_rest is intentionally not compared: REST is now off for every type (nothing uses it; see the audit, item 10).
 	private const POST_TYPE_PROPS = array( 'public', 'publicly_queryable', 'hierarchical', 'exclude_from_search', 'has_archive', 'menu_position', 'menu_icon', 'description' );
+	// Own constant: data providers run before other test classes are autoloaded.
+	private const FIXTURE = __DIR__ . '/../fixtures/legacy-registrations.json';
 	private const TAXONOMY_PROPS  = array( 'public', 'publicly_queryable', 'hierarchical', 'show_tagcloud', 'show_in_quick_edit', 'show_admin_column' );
 
 	private static function snapshot(): array {
-		return json_decode( (string) file_get_contents( SnapshotLegacyTest::FIXTURE ), true );
+		return json_decode( (string) file_get_contents( self::FIXTURE ), true );
 	}
 
 	public static function post_types(): array {

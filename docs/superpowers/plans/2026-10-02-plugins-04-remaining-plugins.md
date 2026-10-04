@@ -519,8 +519,11 @@ use WP_UnitTestCase;
 
 final class ShortcodeParityTest extends WP_UnitTestCase {
 
+	// Own constant: data providers run before other test classes are autoloaded.
+	private const FIXTURE = __DIR__ . '/../../fixtures/legacy-shortcodes.json';
+
 	private static function fixture(): array {
-		return json_decode( (string) file_get_contents( CaptureLegacyShortcodesTest::FIXTURE ), true );
+		return json_decode( (string) file_get_contents( self::FIXTURE ), true );
 	}
 
 	public static function cases(): array {
