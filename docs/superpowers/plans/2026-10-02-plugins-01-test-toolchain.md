@@ -125,13 +125,9 @@ volumes:
   },
   "config": {
     "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true,
-      "johnpbloch/wordpress-core-installer": true
+      "dealerdirect/phpcodesniffer-composer-installer": true
     },
     "sort-packages": true
-  },
-  "extra": {
-    "wordpress-install-dir": "vendor/wordpress"
   },
   "scripts": {
     "lint:syntax": "find hyperpress-* tests -name '*.php' -print0 | xargs -0 -n1 php -d display_errors=stderr -l > /dev/null",
@@ -553,7 +549,7 @@ git commit -m "test: add header lint and shared Convention expectations (failing
 ```php
 <?php
 // Constants for the WordPress test suite. Values come from the compose.yaml environment.
-define( 'ABSPATH', dirname( __DIR__ ) . '/vendor/wordpress/' );
+define( 'ABSPATH', dirname( __DIR__ ) . '/vendor/johnpbloch/wordpress-core/' );
 
 define( 'DB_NAME', getenv( 'WP_DB_NAME' ) ?: 'wordpress_test' );
 define( 'DB_USER', getenv( 'WP_DB_USER' ) ?: 'root' );
