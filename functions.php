@@ -69,12 +69,6 @@ require_once( 'library/plugins.php' );
 /** WP Customize Options */
 require_once( 'library/customize.php' );
 
-/** Allow SVG Media */
-require_once( 'library/supports/svg.php' );
-
-/** Allow AVIF Media */
-require_once( 'library/supports/avif.php' );
-
 /** HYPER Colors in wp-head */
 require_once( 'library/root-colors.php' );
 
