@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-$labels = apply_filters( 'hyperpress_labels_content', [] );
+$labels = apply_filters( 'hyperpress_labels_content', array() );
 if ( ! empty( $labels ) ) :
 	?>
 	<div class="entry-meta">

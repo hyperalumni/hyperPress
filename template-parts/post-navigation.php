@@ -4,7 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-the_post_navigation( [
-	'prev_text' => __( '&laquo; %title' ),
-	'next_text' => __( '%title &raquo;' )
-] );
+the_post_navigation(
+    array(
+		'prev_text' => __( '&laquo; %title' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
+		'next_text' => __( '%title &raquo;' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
+	)
+    );

@@ -18,16 +18,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<header>
 	<?php
 		if ( is_single() ) {
-			the_title( '<h1 class="entry-title">', '</h1>' );
+		the_title( '<h1 class="entry-title">', '</h1>' );
 		} else {
-			the_title( '<h2 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
+		the_title( '<h2 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
 		}
 	?>
 	<?php get_template_part( 'template-parts/labels' ); ?>
 	</header>
 	<div class="entry-content">
 		<?php if ( has_post_thumbnail() ) : ?>
-			<?php the_post_thumbnail( '', array('class' => 'thumbnail') ); ?>
+			<?php the_post_thumbnail( '', array( 'class' => 'thumbnail' ) ); ?>
 		<?php endif; ?>
 		<?php the_content(); ?>
 		<?php get_template_part( 'template-parts/edit-link' ); ?>
@@ -36,11 +36,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php
 			wp_link_pages(
 				array(
-					'before' => '<nav id="page-nav"><p>' . __( 'Pages:', 'foundationpress' ),
+					'before' => '<nav id="page-nav"><p>' . __( 'Pages:', 'hyperpress' ),
 					'after'  => '</p></nav>',
 				)
 			);
 		?>
-		<?php $tag = get_the_tags(); if ( $tag ) { ?><p><?php the_tags(); ?></p><?php } ?>
+		<?php
+        $tag = get_the_tags(); if ( $tag ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- theme audit
+?>
+<p><?php the_tags(); ?></p><?php } ?>
 	</footer>
 </article>

@@ -2,7 +2,6 @@
 /**
  * The default template for displaying page content
  *
- *
  * @package FoundationPress
  * @since FoundationPress 1.0.0
  */
@@ -21,11 +20,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php
 			wp_link_pages(
 				array(
-					'before' => '<nav id="page-nav"><p>' . __( 'Pages:', 'foundationpress' ),
+					'before' => '<nav id="page-nav"><p>' . __( 'Pages:', 'hyperpress' ),
 					'after'  => '</p></nav>',
 				)
 			);
 		?>
-		<?php $tag = get_the_tags(); if ( $tag ) { ?><p><?php the_tags(); ?></p><?php } ?>
+		<?php
+        $tag = get_the_tags(); if ( $tag ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- theme audit
+?>
+<p><?php the_tags(); ?></p><?php } ?>
 	</footer>
 </article>

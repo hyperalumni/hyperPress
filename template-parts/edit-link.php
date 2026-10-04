@@ -5,4 +5,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<?php edit_post_link( __( '(Edit)', 'foundationpress' ), '<div class="content"><span class="edit-link">', '</span></div>' ); ?>
+<?php
+edit_post_link( __( '(Edit)', 'hyperpress' ), '<div class="content"><span class="edit-link">', '</span></div>' );
