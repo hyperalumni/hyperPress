@@ -31,8 +31,8 @@ get_header(); ?>
 				elseif ( is_paged() ) :
 					?>
 					<nav id="post-nav">
-						<div class="post-previous"><?php next_posts_link( __( '&larr; Older posts', 'foundationpress' ) ); ?></div>
-						<div class="post-next"><?php previous_posts_link( __( 'Newer posts &rarr;', 'foundationpress' ) ); ?></div>
+						<div class="post-previous"><?php next_posts_link( __( '&larr; Older posts', 'hyperpress' ) ); ?></div>
+						<div class="post-next"><?php previous_posts_link( __( 'Newer posts &rarr;', 'hyperpress' ) ); ?></div>
 					</nav>
 				<?php endif; ?>
 
@@ -41,4 +41,5 @@ get_header(); ?>
 
 		</div>
 	</div>
-<?php get_footer();
+<?php
+get_footer();

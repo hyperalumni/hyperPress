@@ -12,12 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<form role="search" method="get" id="searchform" action="<?php echo home_url( '/' ); ?>">
+<form role="search" method="get" id="searchform" action="<?php echo home_url( '/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>">
 	<div class="input-group">
-		<input type="text" class="input-group-field" value="" name="s" id="s" aria-label="Search" placeholder="<?php
-		esc_attr_e( 'Search', 'foundationpress' ); ?>">
+		<input type="text" class="input-group-field" value="" name="s" id="s" aria-label="Search" placeholder="
+        <?php
+		esc_attr_e( 'Search', 'hyperpress' );
+        ?>
+        ">
 		<div class="input-group-button">
-			<input type="submit" id="searchsubmit" value="<?php esc_attr_e( 'Search', 'foundationpress' ); ?>" class="button">
+			<input type="submit" id="searchsubmit" value="<?php esc_attr_e( 'Search', 'hyperpress' ); ?>" class="button">
 		</div>
 	</div>
 </form>

@@ -7,6 +7,7 @@
  * @package FoundationPress
  * @since FoundationPress 1.0.0
  */
+
 // Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
@@ -21,4 +22,5 @@ get_header(); ?>
 			<?php get_sidebar(); ?>
 		</div>
 	</div>
-<?php get_footer();
+<?php
+get_footer();

@@ -21,7 +21,10 @@ get_header(); ?>
 	<div class="main-grid">
 		<main class="main-content">
 			<?php get_template_part( 'template-parts/breadcrumbs' ); ?>
-			<?php while ( have_posts() ) : the_post(); ?>
+			<?php
+            while ( have_posts() ) :
+the_post();
+?>
 				<?php get_template_part( 'template-parts/content', 'page' ); ?>
 				<?php comments_template(); ?>
 			<?php endwhile; ?>
