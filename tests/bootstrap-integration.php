@@ -21,7 +21,7 @@ tests_add_filter( 'pre_option_permalink_structure', static fn() => '/%postname%/
 tests_add_filter(
 	'muplugins_loaded',
 	static function (): void {
-		register_theme_directory( '/themes' );
+		register_theme_directory( '/hp-themes' );
 	}
 );
 tests_add_filter( 'pre_option_template', static fn() => 'hyperpress' );
