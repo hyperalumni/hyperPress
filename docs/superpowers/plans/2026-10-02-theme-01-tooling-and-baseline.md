@@ -89,10 +89,9 @@ volumes:
 
 - [ ] **Step 3: Extend `composer.json`**
 
-Add to `require-dev` (keep the three existing entries): `"phpunit/phpunit": "^9.6"`, `"yoast/phpunit-polyfills": "^2.0"`, `"wp-phpunit/wp-phpunit": "^6.9"`, `"johnpbloch/wordpress-core": "^6.9"`, `"wp-coding-standards/wpcs": "^3.1"`, `"phpcompatibility/phpcompatibility-wp": "^2.1"`. Use the PHPUnit version that worked in plugins plugins-01-test-toolchain Task 1. Add `"johnpbloch/wordpress-core-installer": true` to `config.allow-plugins`, `"sort-packages": true` to `config`, and:
+Add to `require-dev` (keep the three existing entries): `"phpunit/phpunit": "^9.6"`, `"yoast/phpunit-polyfills": "^2.0"`, `"wp-phpunit/wp-phpunit": "^6.9"`, `"johnpbloch/wordpress-core": "^6.9"`, `"wp-coding-standards/wpcs": "^3.1"`, `"phpcompatibility/phpcompatibility-wp": "^2.1"`. Use the PHPUnit version that worked in plugins plugins-01-test-toolchain Task 1. `"sort-packages": true` to `config`, and:
 
 ```json
-"extra": { "wordpress-install-dir": "vendor/wordpress" },
 "autoload-dev": { "psr-4": { "HyperPress\\ThemeTests\\": "tests/src/" } },
 "scripts": {
   "lint:syntax": "find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -not -path './dist/*' -not -path './packaged/*' -print0 | xargs -0 -n1 php -d display_errors=stderr -l > /dev/null",
@@ -198,7 +197,7 @@ git commit -m "test: extend phpcs ruleset for PHP 8.3 compatibility and the hype
 
 ```php
 <?php
-define( 'ABSPATH', dirname( __DIR__ ) . '/vendor/wordpress/' );
+define( 'ABSPATH', dirname( __DIR__ ) . '/vendor/johnpbloch/wordpress-core/' );
 
 define( 'DB_NAME', getenv( 'WP_DB_NAME' ) ?: 'wordpress_test' );
 define( 'DB_USER', getenv( 'WP_DB_USER' ) ?: 'root' );
