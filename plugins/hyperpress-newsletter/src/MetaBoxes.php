@@ -5,6 +5,11 @@ defined( 'ABSPATH' ) || exit;
 
 final class MetaBoxes {
 
+	/**
+	 * HTML5 pattern (matched against the whole value) for the Canva URL field.
+	 */
+	public const CANVA_URL_PATTERN = 'https://([a-z0-9\\-]+\\.)*canva\\.com(/[^\\s"\'<>]*)?';
+
 	public static function register(): void {
 		add_filter( 'rwmb_meta_boxes', array( self::class, 'register_newsletter_meta_boxes' ) );
 	}
@@ -32,6 +37,9 @@ final class MetaBoxes {
 					'label_description' => '',
 					'desc'              => 'Share > Embed > Smart embed link',
 					'required'          => true,
+					// Browser-side check (Meta Box validation); canva_url() is the authority on save.
+					'pattern'           => self::CANVA_URL_PATTERN,
+					'title'             => 'Enter an https link on canva.com, for example https://www.canva.com/design/DESIGNID/view',
 					'sanitize_callback' => array( self::class, 'canva_url' ),
 				),
 			),
