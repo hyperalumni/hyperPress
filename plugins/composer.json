@@ -32,6 +32,6 @@
     "lint:cs": "phpcs",
     "lint": ["@lint:syntax", "@lint:cs"],
     "test:unit": "phpunit --testsuite unit",
-    "test:integration": "phpunit --testsuite integration"
+    "test:integration": "phpunit --testsuite integration --bootstrap tests/bootstrap-integration.php"
   }
 }
