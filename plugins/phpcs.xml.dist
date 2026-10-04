@@ -2,7 +2,7 @@
 <ruleset name="HYPERpress plugins">
     <description>WordPress coding standards and PHP compatibility for the HYPERpress plugins.</description>
 
-    <!-- hyperpress-media and hyperpress-shortcodes: add here when the plugins are created (phpcs aborts on missing paths). -->
+    <!-- hyperpress-media: add here when the plugin is created (phpcs aborts on missing paths). -->
     <file>./hyperpress-award</file>
     <file>./hyperpress-competition</file>
     <file>./hyperpress-countdown</file>
@@ -11,6 +11,7 @@
     <file>./hyperpress-program</file>
     <file>./hyperpress-robot</file>
     <file>./hyperpress-season</file>
+    <file>./hyperpress-shortcodes</file>
     <file>./hyperpress-socials</file>
     <file>./hyperpress-sponsor</file>
     <file>./hyperpress-student</file>
