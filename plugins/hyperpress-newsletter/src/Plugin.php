@@ -17,6 +17,15 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'register' ) );
 		add_action( 'init', array( self::class, 'ensure_capabilities' ), 20 );
 		Breadcrumbs::register( array( self::POST_TYPE ) );
+		add_action( 'init', array( self::class, 'register_banner' ) );
+		BannerFilter::register();
+		Content::register();
+		Customizer::register();
+		Labels::register();
+		MetaBoxes::register();
+	}
+
+	public static function register_banner(): void {
 		Banner::register(
 			self::POST_TYPE,
 			array(
@@ -28,11 +37,6 @@ final class Plugin {
 				'always_set_archive_title' => true,
 			)
 		);
-		BannerFilter::register();
-		Content::register();
-		Customizer::register();
-		Labels::register();
-		MetaBoxes::register();
 	}
 
 	public static function register(): void {
