@@ -1,5 +1,11 @@
 <?php
-if ( ! function_exists( 'hyperpress_banner_category' ) ) :
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+if ( ! function_exists( 'hyperpress_banner_attachment' ) ) :
+	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_attachment' );
 	function hyperpress_banner_attachment( $banner ) {
 		if ( is_attachment() ) {
 			$banner['type']     = 'attachment';
@@ -9,6 +15,4 @@ if ( ! function_exists( 'hyperpress_banner_category' ) ) :
 
 		return $banner;
 	}
-
-	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_category' );
 endif;

@@ -102,7 +102,7 @@
 }
 
 .section-divider {
-  flex: 1 1 100%;
+  flex: 0 1;
 
   @include xy-grid-container;
   @include xy-grid;

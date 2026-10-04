@@ -1,4 +1,8 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 // Allow SVG
 add_filter( 'wp_check_filetype_and_ext', function($data, $file, $filename, $mimes) {
 
@@ -17,8 +21,8 @@ add_filter( 'wp_check_filetype_and_ext', function($data, $file, $filename, $mime
 
 }, 10, 4 );
 
-function cc_mime_types( $mimes ){
+
+add_filter( 'upload_mimes', function( $mimes ){
 	$mimes['svg'] = 'image/svg+xml';
 	return $mimes;
-}
-add_filter( 'upload_mimes', 'cc_mime_types' );
+} );

@@ -6,6 +6,10 @@
  * @since FoundationPress 1.1.0
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 if ( ! class_exists( 'Foundationpress_Protocol_Relative_Theme_Assets' ) ) :
 	class Foundationpress_Protocol_Relative_Theme_Assets {
 		/**

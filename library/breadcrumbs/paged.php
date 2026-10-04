@@ -1,6 +1,13 @@
 <?php
-if ( ! function_exists( 'hyperpress_breadcrumb_paged' ) ) :
-	function hyperpress_breadcrumb_paged( $breadcrumbs ) {
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+if ( ! function_exists( 'hyperpress_breadcrumbs_paged' ) ) :
+	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_paged' );
+
+	function hyperpress_breadcrumbs_paged( $breadcrumbs ) {
 		$paged = get_query_var( 'paged' );
 		if ( ! empty( $paged ) ) {
 
@@ -15,6 +22,4 @@ if ( ! function_exists( 'hyperpress_breadcrumb_paged' ) ) :
 
 		return $breadcrumbs;
 	}
-
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumb_paged' );
 endif;

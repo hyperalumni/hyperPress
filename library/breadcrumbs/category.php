@@ -1,10 +1,16 @@
 <?php
-if ( ! function_exists( 'hyperpress_breadcrumb_category' ) ) :
-	function hyperpress_breadcrumb_category( $breadcrumbs ) {
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+if ( ! function_exists( 'hyperpress_breadcrumbs_category' ) ) :
+	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_category' );
+
+	function hyperpress_breadcrumbs_category( $breadcrumbs ) {
 		if ( is_category() ) {
 			// Get the query & post information
-			global $post;
-			$category = get_the_category();
+			$category = get_category( get_query_var( 'cat' ) );
 
 			$breadcrumbs[] = [
 				"title"   => __( 'Category', 'hyperpress' ),
@@ -13,18 +19,18 @@ if ( ! function_exists( 'hyperpress_breadcrumb_category' ) ) :
 
 			// add category
 			$breadcrumbs[] = [
-				"title"   => $category[0]->cat_name,
-				"url"     => get_category_link( $category[0] ),
+				"title"   => $category->cat_name,
+				"url"     => get_category_link( $category ),
 				"classes" => [
 					'li'    => [
 						'item-category',
-						'item-category-' . $category[0]->term_id,
-						'item-category-' . $category[0]->category_nicename
+						'item-category-' . $category->term_id,
+						'item-category-' . $category->category_nicename
 					],
 					'bread' => [
 						'bread-category',
-						'bread-category-' . $category[0]->term_id,
-						'bread-category-' . $category[0]->category_nicename
+						'bread-category-' . $category->term_id,
+						'bread-category-' . $category->category_nicename
 					]
 				]
 			];
@@ -32,6 +38,4 @@ if ( ! function_exists( 'hyperpress_breadcrumb_category' ) ) :
 
 		return $breadcrumbs;
 	}
-
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumb_category' );
 endif;

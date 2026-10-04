@@ -13,6 +13,10 @@
  * @since FoundationPress 1.0.0
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 get_header(); ?>
 <?php get_template_part( 'template-parts/banner' ); ?>
 	<div class="main-container">

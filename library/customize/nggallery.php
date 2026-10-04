@@ -1,10 +1,12 @@
 <?php
-// Exit if accessed directly.
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
 if ( ! function_exists( 'hyperpress_customize_nggallery' ) ) :
+	add_action( 'customize_register', 'hyperpress_customize_nggallery' );
+
 	function hyperpress_customize_nggallery( $wp_customize ): void {
 		$wp_customize->add_setting( 'hyperpress_nggallery_photos_page',
 			array(
@@ -17,10 +19,8 @@ if ( ! function_exists( 'hyperpress_customize_nggallery' ) ) :
 				'description' => __( 'For breadcrumb generation', 'hyperpress' ),
 				'settings' => 'hyperpress_nggallery_photos_page',
 				'type'     => 'dropdown-pages',
-				'section'  => 'hyperpress',
+				'section'  => 'hyperpress_gallery',
 			) ) );
 	}
-
-	add_action( 'customize_register', 'hyperpress_customize_nggallery' );
 endif;
 

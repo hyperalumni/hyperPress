@@ -1,6 +1,13 @@
 <?php
-if ( ! function_exists( 'hyperpress_breadcrumb_day' ) ) :
-	function hyperpress_breadcrumb_day( $breadcrumbs ) {
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+if ( ! function_exists( 'hyperpress_breadcrumbs_day' ) ) :
+	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_day' );
+
+	function hyperpress_breadcrumbs_day( $breadcrumbs ) {
 		if ( is_day() ) {
 			$archivesText = __( 'Archives', 'hyperpress' );
 			// add year
@@ -60,6 +67,4 @@ if ( ! function_exists( 'hyperpress_breadcrumb_day' ) ) :
 
 		return $breadcrumbs;
 	}
-
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumb_day' );
 endif;

@@ -1,12 +1,18 @@
 <?php
-/**
- * Register theme support for languages, menus, post-thumbnails, post-formats etc.
- *
- * @package FoundationPress
- * @since FoundationPress 1.0.0
- */
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 
 if ( ! function_exists( 'foundationpress_theme_support' ) ) :
+	add_action( 'after_setup_theme', 'foundationpress_theme_support' );
+
+/**
+	 * Register theme support for languages, menus, post-thumbnails, post-formats etc.
+	 *
+	 * @package FoundationPress
+	 * @since FoundationPress 1.0.0
+	 */
 	function foundationpress_theme_support() {
 		// Add language support
 		load_theme_textdomain( 'foundationpress', get_template_directory() . '/languages' );
@@ -67,6 +73,4 @@ if ( ! function_exists( 'foundationpress_theme_support' ) ) :
 		// Add foundation.css as editor style https://codex.wordpress.org/Editor_Style
 		// add_editor_style( 'dist/assets/css/' . foundationpress_asset_path( 'editor.css' ) );
 	}
-
-	add_action( 'after_setup_theme', 'foundationpress_theme_support' );
 endif;

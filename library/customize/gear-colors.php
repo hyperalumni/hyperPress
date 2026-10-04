@@ -1,9 +1,17 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'hyperpress_customize_gear_colors' ) ) :
+	add_action( 'customize_register', 'hyperpress_customize_gear_colors' );
+
 	function hyperpress_customize_gear_colors( $wp_customize ): void {
 		// HYPER Gear colors
 		$wp_customize->add_setting( 'hyperpress_gear_blue',
 			array(
+				'default'           => '#092238',
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
 				'sanitize_callback' => 'sanitize_hex_color',
@@ -41,6 +49,4 @@ if ( ! function_exists( 'hyperpress_customize_gear_colors' ) ) :
 				'section'  => 'colors',
 			) ) );
 	}
-
-	add_action( 'customize_register', 'hyperpress_customize_gear_colors' );
 endif;

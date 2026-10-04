@@ -1,17 +1,18 @@
 <?php
-// Exit if accessed directly.
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
 use Imagely\NGG\DataMappers\Album as AlbumMapper;
 use Imagely\NGG\DataMappers\Gallery as GalleryMapper;
 
-if ( ! function_exists( 'hyperpress_breadcrumb_nggallery' ) ) :
-	function hyperpress_breadcrumb_nggallery( $breadcrumbs ) {
+if ( ! function_exists( 'hyperpress_breadcrumbs_nggallery' ) ) :
+	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_nggallery', 20 );
+
+	function hyperpress_breadcrumbs_nggallery( $breadcrumbs ) {
 		$photosPage = get_theme_mod( 'hyperpress_nggallery_photos_page' );
 		if ( ! empty( $photosPage ) && is_page( $photosPage ) ) {
-			global $page;
 			$currentUrlFromServer = $_SERVER['REQUEST_URI'];
 			$nggSlug              = get_option( 'ngg_options' )['router_param_slug'];
 			if ( str_contains( $currentUrlFromServer, $nggSlug ) ) {
@@ -26,7 +27,7 @@ if ( ! function_exists( 'hyperpress_breadcrumb_nggallery' ) ) :
 						if ( ! empty( $album ) ) {
 							$breadcrumbs[] = [
 								"title"   => $album->name,
-								"url"     => sanitize_url( $page . get_permalink() . $nggSlug . '/' . $album->slug . '/' ),
+								"url"     => sanitize_url( get_permalink() . $nggSlug . '/' . $album->slug . '/' ),
 								"classes" => [
 									'li'    => [
 										'item-album',
@@ -49,7 +50,7 @@ if ( ! function_exists( 'hyperpress_breadcrumb_nggallery' ) ) :
 								if ( ! empty( $gallery ) ) {
 									$breadcrumbs[] = [
 										"title"   => $gallery->title,
-										"url"     => sanitize_url( $page . get_permalink() . $nggSlug . '/' . $album->slug . '/' . $gallery->slug . '/' ),
+										"url"     => sanitize_url( get_permalink() . $nggSlug . '/' . $album->slug . '/' . $gallery->slug . '/' ),
 										"classes" => [
 											'li'    => [
 												'item-gallery',
@@ -72,6 +73,4 @@ if ( ! function_exists( 'hyperpress_breadcrumb_nggallery' ) ) :
 
 		return $breadcrumbs;
 	}
-
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumb_nggallery', 20 );
 endif;

@@ -7,6 +7,10 @@
  * @package FoundationPress
  * @since FoundationPress 1.0.0
  */
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 ?>
 <footer class="footer-container">
 	<div class="footer-grid-container">
@@ -95,7 +99,7 @@
 								<?php $target = str_contains( $social['url'], get_site_url() ) ? '_self' : '_blank'; ?>
 								<li>
 									<a href="<?php echo esc_url( $social['url'] ); ?>" title="<?php echo esc_attr( $social['title'] ) ?>"
-										 target="<?php echo $target; ?>">
+									   target="<?php echo $target; ?>">
 										<i class="<?php echo $social['icon']; ?> fa-inverse" aria-hidden="true"></i>
 									</a>
 								</li>

@@ -6,8 +6,15 @@
  * @since FoundationPress 1.0.0
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'wpt_register_theme_customizer' ) ) :
-	function wpt_register_theme_customizer( $wp_customize ) {
+	add_action( 'customize_register', 'wpt_register_theme_customizer' );
+
+	function wpt_register_theme_customizer( $wp_customize ): void {
 
 		// Create custom panels
 		$wp_customize->add_panel(
@@ -54,10 +61,10 @@ if ( ! function_exists( 'wpt_register_theme_customizer' ) ) :
 		);
 
 	}
+endif;
 
-	add_action( 'customize_register', 'wpt_register_theme_customizer' );
-
-	// Add class to body to help w/ CSS
+if ( ! function_exists( 'mobile_nav_class' ) ) :
+// Add class to body to help w/ CSS
 	add_filter( 'body_class', 'mobile_nav_class' );
 	function mobile_nav_class( $classes ) {
 		if ( ! get_theme_mod( 'wpt_mobile_menu_layout' ) || get_theme_mod( 'wpt_mobile_menu_layout' ) === 'topbar' ) :
@@ -65,6 +72,7 @@ if ( ! function_exists( 'wpt_register_theme_customizer' ) ) :
 		elseif ( get_theme_mod( 'wpt_mobile_menu_layout' ) === 'offcanvas' ) :
 			$classes[] = 'offcanvas';
 		endif;
+
 		return $classes;
 	}
 endif;

@@ -1,24 +1,21 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 
 if ( ! function_exists( 'hyperpress_homepage_customize_metabox' ) ) :
+	add_filter( 'rwmb_meta_boxes', 'hyperpress_homepage_customize_metabox' );
+
 	function hyperpress_homepage_customize_metabox( $meta_boxes ) {
 		$prefix = 'hyperpress_homepage_customize_';
 
 		$meta_boxes[] = [
-			'title'  => __( 'Homepage Banner & Countdown', 'hyperpress' ),
-			'id'     => 'homepage_banner_countdown',
+			'title'  => __( 'Front Page', 'hyperpress' ),
+			'id'     => 'hyperpress_homepage',
 			'panel'  => '',
+			'priority' => 131,
 			'fields' => [
-				[
-					'type'        => 'post',
-					'id'          => $prefix . 'countdowns',
-					'name'        => __( 'Countdowns', 'hyperpress' ),
-					'post_type'   => [ 'countdown' ],
-					'multiple'    => true,
-					'parent'      => false,
-					'field_type'  => 'select_advanced',
-					'placeholder' => __( 'Select a countdown', 'hyperpress' ),
-				],
 				[
 					'type'           => 'color',
 					'id'             => $prefix . 'banner_background_color',
@@ -29,7 +26,9 @@ if ( ! function_exists( 'hyperpress_homepage_customize_metabox' ) ) :
 					'type'  => 'text',
 					'id'    => $prefix . 'banner_title',
 					'name'  => __( 'Banner Title', 'hyperpress' ),
-					'limit' => 20,
+					'limit' => 4,
+					'limit_type' => 'word',
+					'hide_from_rest' => true,
 				],
 				[
 					'type'       => 'textarea',
@@ -40,12 +39,44 @@ if ( ! function_exists( 'hyperpress_homepage_customize_metabox' ) ) :
 					'options'    => [],
 					'limit'      => 100,
 					'limit_type' => 'word',
+					'hide_from_rest' => true,
 				],
+				[
+					'type'  => 'text',
+					'id'    => $prefix . 'banner_button_text',
+					'name'  => __( 'Banner Button Text', 'hyperpress' ),
+					'limit' => 4,
+					'limit_type' => 'word',
+					'hide_from_rest' => true,
+				],
+				[
+					'type' => 'post',
+					'id' => $prefix.'banner_button_page',
+					'post_type' => 'page',
+					'field_type'  => 'select_advanced',
+					'placeholder' => 'Select a page',
+					'name'  => __( 'Banner Button Page', 'hyperpress' ),
+					'hide_from_rest' => true,
+					'query_args'  => [
+						'post_status'    => 'publish',
+						'posts_per_page' => - 1,
+					]
+				],
+				[
+					'type'        => 'post',
+					'id'          => $prefix . 'countdowns',
+					'name'        => __( 'Countdowns', 'hyperpress' ),
+					'post_type'   => [ 'countdown' ],
+					'multiple'    => true,
+					'parent'      => false,
+					'field_type'  => 'select_advanced',
+					'placeholder' => __( 'Select a countdown', 'hyperpress' ),
+					'hide_from_rest' => true,
+				],
+
 			],
 		];
 
 		return $meta_boxes;
 	}
-
-	add_filter( 'rwmb_meta_boxes', 'hyperpress_homepage_customize_metabox' );
 endif;

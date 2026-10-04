@@ -2,11 +2,15 @@
 /*
 Template Name: Kitchen Sink
 */
+
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 get_header(); ?>
 
-
-<?php /* Start loop */ ?>
-<?php while ( have_posts() ) : the_post(); ?>
+<?php while ( have_posts() ) : the_post(); /* Start loop */ ?>
     <div class="main-container">
         <div class="main-grid">
             <header class="kitchen-sink-header">

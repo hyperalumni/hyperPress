@@ -1,6 +1,13 @@
 <?php
-if ( ! function_exists( 'hyperpress_breadcrumb_month' ) ) :
-	function hyperpress_breadcrumb_month( $breadcrumbs ) {
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+if ( ! function_exists( 'hyperpress_breadcrumbs_month' ) ) :
+	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_month' );
+
+	function hyperpress_breadcrumbs_month( $breadcrumbs ) {
 		if ( is_month() ) {
 			$archivesText = __( 'Archives', 'hyperpress' );
 			// add year
@@ -43,6 +50,4 @@ if ( ! function_exists( 'hyperpress_breadcrumb_month' ) ) :
 
 		return $breadcrumbs;
 	}
-
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumb_month' );
 endif;

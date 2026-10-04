@@ -1,17 +1,19 @@
 /**
  * Theme Name:         hyperPress
  * Theme URI:          https://hyperalumni.org
- * Github Theme URI:   https://github.com/hyperalumni/hyperPress
- * Description:        hyperPress is a fork of FoundationPress (based on Foundation 6 by Zurb) for HYPER WordPress sites
- * Version:            2026.0.0
+ * GitHub Theme URI:   https://github.com/hyperalumni/hyperPress
  * Author:             Chris McGroarty
  * Author URI:         https://idesign.co
- * Text Domain:        hyperpress
- * Tested up to:       6.4
- * Requires at least:  6.2
- * Requires PHP:       7.4
+ * Description:        hyperPress is a fork of FoundationPress (based on Foundation 6 by Zurb) for HYPER WordPress sites
+ * Version:            2026.0.0
+ * Requires at least:  6.9
+ * Tested up to:       6.9
+ * Requires PHP:       8.3
  * License:            MIT License
  * License URI:        http://www.opensource.org/licenses/mit-license.php
+ * Text Domain:        hyperpress
+ * Tags:               hyper alumni, hyper online, hyper press, hyperpress, foundation, foundation 6, wordpress, theme, responsive
+ * Domain Path:       /languages
 */
 
 /* ----------------------------------------------------------------------------

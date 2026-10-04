@@ -1,5 +1,12 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'hyperpress_banner_post' ) ) :
+	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_post' );
+
 	function hyperpress_banner_post( $banner ) {
 		if ( is_singular( 'post' ) ) {
 			$banner['type'] = 'post';
@@ -26,6 +33,4 @@ if ( ! function_exists( 'hyperpress_banner_post' ) ) :
 
 		return $banner;
 	}
-
-	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_post' );
 endif;

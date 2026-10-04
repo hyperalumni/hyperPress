@@ -1,42 +1,44 @@
 <?php
-if ( ! function_exists( 'hyperpress_breadcrumb_page' ) ) :
-	function hyperpress_breadcrumb_page( $breadcrumbs ) {
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+if ( ! function_exists( 'hyperpress_breadcrumbs_page' ) ) :
+	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_page' );
+
+	function hyperpress_breadcrumbs_page( $breadcrumbs ) {
 		if ( is_page() ) {
 			// Get the query & post information
-			global $post;
-			if ( $post->post_parent ) {
+			if ( get_post_parent() ) {
 				// If child page, get parents
-				$anc = get_post_ancestors( $post->ID );
+				// If child page, get parents
+				$ancestors = array_reverse( get_post_ancestors( get_the_ID() ) );
 
-				// Get parents in the right order
-				$anc = array_reverse( $anc );
-			}
-
-			foreach ( $anc as $ancestor ) {
-				$breadcrumbs[] = [
-					"title"   => get_the_title( $ancestor ),
-					"url"     => get_permalink( $ancestor ),
-					"classes" => [
-						'li'    => [ 'item-page', 'item-page-' . $ancestor ],
-						'bread' => [ 'bread-page', 'bread-page-' . $ancestor ]
-					],
-				];
+				foreach ( $ancestors as $ancestor ) {
+					$breadcrumbs[] = [
+						"title"   => get_the_title( $ancestor ),
+						"url"     => get_permalink( $ancestor ),
+						"classes" => [
+							'li'    => [ 'item-page', 'item-page-' . $ancestor ],
+							'bread' => [ 'bread-page', 'bread-page-' . $ancestor ]
+						],
+					];
+				}
 			}
 
 
 			// add current page
 			$breadcrumbs[] = [
 				"title"   => get_the_title(),
-				"url" => get_permalink(),
+				"url"     => get_permalink(),
 				"classes" => [
-					'li'    => [ 'item-page', 'item-page-' . $post->ID ],
-					'bread' => [ 'bread-page', 'bread-page-' . $post->ID ]
+					'li'    => [ 'item-page', 'item-page-' . get_the_ID() ],
+					'bread' => [ 'bread-page', 'bread-page-' . get_the_ID() ]
 				]
 			];
 		}
 
 		return $breadcrumbs;
 	}
-
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumb_page' );
 endif;

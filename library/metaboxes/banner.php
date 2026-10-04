@@ -1,6 +1,12 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 
 if ( ! function_exists( 'hyperpress_banner_metabox' ) ) :
+	add_filter( 'rwmb_meta_boxes', 'hyperpress_banner_metabox' );
+
 	function hyperpress_banner_metabox( $meta_boxes ) {
 		$prefix = 'hyperpress_banner_';
 
@@ -36,6 +42,4 @@ if ( ! function_exists( 'hyperpress_banner_metabox' ) ) :
 
 		return $meta_boxes;
 	}
-
-	add_filter( 'rwmb_meta_boxes', 'hyperpress_banner_metabox' );
 endif;

@@ -1,7 +1,13 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 
 if ( ! function_exists( 'hyper_set_initial_theme_mod_values' ) ) :
-	function hyper_set_initial_theme_mod_values() {
+	add_action( 'after_switch_theme', 'hyper_set_initial_theme_mod_values' );
+
+	function hyper_set_initial_theme_mod_values(): void {
 		$themeModNames = [
 			'hyperpress_gear_blue'               => '#092238',
 			'hyperpress_gear_orange'             => '#F15622',
@@ -27,13 +33,13 @@ if ( ! function_exists( 'hyper_set_initial_theme_mod_values' ) ) :
 			}
 		}
 	}
-
-	add_action( 'after_switch_theme', 'hyper_set_initial_theme_mod_values' );
 endif;
 
 
 if ( ! function_exists( 'hyper_clean_up_theme_mod_values' ) ) :
-	function hyper_clean_up_theme_mod_values() {
+	// add_action( 'switch_theme', 'hyper_clean_up_theme_mod_values' );
+
+	function hyper_clean_up_theme_mod_values(): void {
 		$themeModNames = [
 			'hyperpress_countdown_days_color',
 			'hyperpress_countdown_hours_color',
@@ -45,5 +51,4 @@ if ( ! function_exists( 'hyper_clean_up_theme_mod_values' ) ) :
 			remove_theme_mod( $themeModName );
 		}
 	}
-// add_action( 'switch_theme', 'hyper_clean_up_theme_mod_values' );
 endif;

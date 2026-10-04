@@ -1,5 +1,11 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 if ( ! function_exists( 'hyperpress_customize_copyright' ) ) :
+	add_action( 'customize_register', 'hyperpress_customize_copyright' );
+
 	function hyperpress_customize_copyright( $wp_customize ): void {
 		$wp_customize->add_setting( 'hyperpress_site_copyright_name',
 			array(
@@ -14,6 +20,4 @@ if ( ! function_exists( 'hyperpress_customize_copyright' ) ) :
 				'section'  => 'title_tagline',
 			) ) );
 	}
-
-	add_action( 'customize_register', 'hyperpress_customize_copyright' );
 endif;

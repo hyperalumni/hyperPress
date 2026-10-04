@@ -12,8 +12,14 @@
  * @since    2.0
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 
 if ( ! function_exists( 'time_restricted_shortcode' ) ) :
+	add_shortcode( 'time-restrict', 'time_restricted_shortcode' );
+
 	/**
 	 * Time Restricted Shortcode
 	 *
@@ -24,7 +30,7 @@ if ( ! function_exists( 'time_restricted_shortcode' ) ) :
 	 * @author     Dave Clements
 	 * @since      2.0
 	 */
-	function time_restricted_shortcode( $atts, $content ) {
+	function time_restricted_shortcode( $atts, $content ): string {
 		extract( shortcode_atts(
 				array(
 					'show' => '', // Retired in favor of 'on' for better consistency.
@@ -62,11 +68,14 @@ if ( ! function_exists( 'time_restricted_shortcode' ) ) :
 
 		return '';
 	}
-
-	add_shortcode( 'time-restrict', 'time_restricted_shortcode' );
 endif;
 
 if ( ! function_exists( 'repeat_time_restricted_shortcode' ) ) :
+	add_shortcode( 'time-restrict-repeat', 'repeat_time_restricted_shortcode' );
+	add_shortcode( 'time-restrict-repeat-1', 'repeat_time_restricted_shortcode' );
+	add_shortcode( 'time-restrict-repeat-2', 'repeat_time_restricted_shortcode' );
+	add_shortcode( 'time-restrict-repeat-3', 'repeat_time_restricted_shortcode' );
+
 	/**
 	 * Time Restricted Repeat Shortcode
 	 *
@@ -77,7 +86,7 @@ if ( ! function_exists( 'repeat_time_restricted_shortcode' ) ) :
 	 * @author     Dave Clements
 	 * @since      2.0
 	 */
-	function repeat_time_restricted_shortcode( $atts, $content ) {
+	function repeat_time_restricted_shortcode( $atts, $content ): string {
 		extract( shortcode_atts(
 				array(
 					'type'     => '',
@@ -241,9 +250,4 @@ if ( ! function_exists( 'repeat_time_restricted_shortcode' ) ) :
 
 		return '';
 	}
-
-	add_shortcode( 'time-restrict-repeat', 'repeat_time_restricted_shortcode' );
-	add_shortcode( 'time-restrict-repeat-1', 'repeat_time_restricted_shortcode' );
-	add_shortcode( 'time-restrict-repeat-2', 'repeat_time_restricted_shortcode' );
-	add_shortcode( 'time-restrict-repeat-3', 'repeat_time_restricted_shortcode' );
 endif;

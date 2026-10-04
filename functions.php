@@ -13,7 +13,10 @@
  * @package FoundationPress
  * @since FoundationPress 1.0.0
  */
-
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 /** Various clean up functions */
 require_once( 'library/cleanup.php' );
 
@@ -25,10 +28,15 @@ require_once( 'library/class-foundationpress-comments.php' );
 
 /** Register all navigation menus */
 require_once( 'library/navigation.php' );
+
+/** Add Breadcrumbs */
 require_once( 'library/breadcrumbs.php' );
 
 /** Add Banner */
 require_once( 'library/banner.php' );
+
+/** Add Labels */
+require_once( 'library/labels.php' );
 
 /** Add menu walkers for top-bar and off-canvas */
 require_once( 'library/class-foundationpress-top-bar-walker.php' );
@@ -36,9 +44,6 @@ require_once( 'library/class-foundationpress-mobile-walker.php' );
 
 /** Create widget areas in sidebar and footer */
 require_once( 'library/widget-areas.php' );
-
-/** Return entry meta information for posts */
-require_once( 'library/entry-meta.php' );
 
 /** Enqueue scripts */
 require_once( 'library/enqueue-scripts.php' );
@@ -65,12 +70,15 @@ require_once( 'library/plugins.php' );
 require_once( 'library/customize.php' );
 
 /** Allow SVG Media */
-require_once( 'library/allow-svg.php' );
+require_once( 'library/supports/svg.php' );
+
+/** Allow AVIF Media */
+require_once( 'library/supports/avif.php' );
 
 /** HYPER Colors in wp-head */
 require_once( 'library/root-colors.php' );
 
-/** Add theme defined shortcodes */
+/** Add theme-defined shortcodes */
 require_once( 'library/shortcodes.php' );
 
 /** Add theme metaboxes */

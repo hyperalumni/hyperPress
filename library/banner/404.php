@@ -1,5 +1,12 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'hyperpress_banner_404' ) ) :
+	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_404' );
+
 	function hyperpress_banner_404( $banner ) {
 		if ( is_404() ) {
 			$banner['type']            = 'error';
@@ -10,6 +17,4 @@ if ( ! function_exists( 'hyperpress_banner_404' ) ) :
 
 		return $banner;
 	}
-
-	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_404' );
 endif;

@@ -1,5 +1,12 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'hyperpress_banner_blog' ) ) :
+	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_blog' );
+
 	function hyperpress_banner_blog( $banner ) {
 		if ( is_home() && ! is_front_page() ) {
 			$blogPageID = get_option( 'page_for_posts' );
@@ -20,6 +27,4 @@ if ( ! function_exists( 'hyperpress_banner_blog' ) ) :
 
 		return $banner;
 	}
-
-	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_blog' );
 endif;

@@ -2,6 +2,12 @@
 /*
 Template Name: Full Screen
 */
+
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 get_header(); ?>
 <?php get_template_part( 'template-parts/banner' ); ?>
 <?php get_template_part( 'template-parts/featured-image' ); ?>

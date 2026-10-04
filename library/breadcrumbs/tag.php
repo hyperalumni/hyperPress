@@ -1,8 +1,14 @@
 <?php
-if ( ! function_exists( 'hyperpress_breadcrumb_tag' ) ) :
-	function hyperpress_breadcrumb_tag( $breadcrumbs ) {
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+if ( ! function_exists( 'hyperpress_breadcrumbs_tag' ) ) :
+	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_tag' );
+
+	function hyperpress_breadcrumbs_tag( $breadcrumbs ) {
 		if ( is_tag() ) {
-			global $post;
 			// Get tag information
 			$term_id  = get_query_var( 'tag_id' );
 			$taxonomy = 'post_tag';
@@ -35,6 +41,4 @@ if ( ! function_exists( 'hyperpress_breadcrumb_tag' ) ) :
 
 		return $breadcrumbs;
 	}
-
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumb_tag' );
 endif;

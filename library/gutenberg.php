@@ -1,7 +1,14 @@
 <?php
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'foundationpress_gutenberg_support' ) ) :
-	function foundationpress_gutenberg_support() {
+	add_action( 'after_setup_theme', 'foundationpress_gutenberg_support' );
+
+	function foundationpress_gutenberg_support(): void {
 
     // Add foundation color palette to the editor
     add_theme_support( 'editor-color-palette', array(
@@ -33,6 +40,4 @@ if ( ! function_exists( 'foundationpress_gutenberg_support' ) ) :
     ) );
 
 	}
-
-	add_action( 'after_setup_theme', 'foundationpress_gutenberg_support' );
 endif;

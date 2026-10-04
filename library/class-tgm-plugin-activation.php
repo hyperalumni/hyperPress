@@ -15,6 +15,10 @@
  * @license   GPL-2.0+
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 /*
 	Copyright 2011 Thomas Griffin (thomasgriffinmedia.com)
 

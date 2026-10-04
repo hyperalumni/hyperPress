@@ -6,6 +6,10 @@
  * @since FoundationPress 1.0.0
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 // Pagination.
 if ( ! function_exists( 'foundationpress_pagination' ) ) :
 	function foundationpress_pagination() {
@@ -161,13 +165,14 @@ endif;
 
 // Add Foundation 'is-active' class for the current menu item.
 if ( ! function_exists( 'foundationpress_active_nav_class' ) ) :
+	add_filter( 'nav_menu_css_class', 'foundationpress_active_nav_class', 10, 2 );
+
 	function foundationpress_active_nav_class( $classes, $item ) {
 		if ( $item->current == 1 || $item->current_item_ancestor == true ) {
 			$classes[] = 'is-active';
 		}
 		return $classes;
 	}
-	add_filter( 'nav_menu_css_class', 'foundationpress_active_nav_class', 10, 2 );
 endif;
 
 /**
@@ -175,16 +180,14 @@ endif;
  * From required+ Foundation http://themes.required.ch.
  */
 if ( ! function_exists( 'foundationpress_active_list_pages_class' ) ) :
-	function foundationpress_active_list_pages_class( $input ) {
+	add_filter( 'wp_list_pages', 'foundationpress_active_list_pages_class', 10, 2 );
 
+	function foundationpress_active_list_pages_class( $input ) {
 		$pattern = '/current_page_item/';
 		$replace = 'current_page_item is-active';
 
-		$output = preg_replace( $pattern, $replace, $input );
-
-		return $output;
+		return preg_replace( $pattern, $replace, $input );
 	}
-	add_filter( 'wp_list_pages', 'foundationpress_active_list_pages_class', 10, 2 );
 endif;
 
 
@@ -219,8 +222,9 @@ endif;
  * Custom markup for Wordpress gallery
  */
 if ( ! function_exists( 'foundationpress_gallery' ) ) :
-	function foundationpress_gallery($attr) {
+	add_shortcode('gallery', 'foundationpress_gallery');
 
+	function foundationpress_gallery($attr) {
 		$post = get_post();
 		static $instance = 0;
 		$instance++;
@@ -349,5 +353,4 @@ if ( ! function_exists( 'foundationpress_gallery' ) ) :
 
 		return $output;
 	}
-	add_shortcode('gallery', 'foundationpress_gallery');
 endif;

@@ -8,6 +8,10 @@
  * @since FoundationPress 1.0.0
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
@@ -19,7 +23,7 @@
 			the_title( '<h2 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
 		}
 	?>
-		<?php foundationpress_entry_meta(); ?>
+	<?php get_template_part( 'template-parts/labels' ); ?>
 	</header>
 	<div class="entry-content">
 		<?php if ( has_post_thumbnail() ) : ?>

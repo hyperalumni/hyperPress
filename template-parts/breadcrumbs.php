@@ -1,0 +1,29 @@
+<?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+$breadcrumbs = apply_filters( 'hyperpress_breadcrumbs_content', [
+	[
+		"title"   => 'Home',
+		"url"     => home_url(),
+		"classes" => [ 'li' => [ 'item-home' ], 'bread' => [ 'bread-link bread-home' ] ],
+	],
+] );
+?>
+<ul id="breadcrumbs" class="breadcrumbs">
+	<?php foreach ( $breadcrumbs as $breadcrumb ) : ?>
+		<li class="item <?php echo esc_attr( implode( " ", $breadcrumb["classes"]["li"] ) ); ?>">
+			<?php if ( ! empty( $breadcrumb["url"] ) ): ?>
+				<a
+					class="breadcrumb <?php echo esc_attr( implode( " ", $breadcrumb["classes"]["bread"] ) ); ?>"
+					title="<?php echo esc_attr( $breadcrumb["title"] ); ?>"
+					href="<?php echo esc_attr( $breadcrumb["url"] ); ?>"><?php echo esc_attr( $breadcrumb["title"] ); ?></a>
+			<?php else : ?>
+				<span class="<?php echo esc_attr( implode( " ", $breadcrumb["classes"]["bread"] ) ); ?>"
+				      title="<?php echo esc_attr( $breadcrumb["title"] ); ?>"><?php echo esc_attr( $breadcrumb["title"] ); ?></span>
+			<?php endif; ?>
+		</li>
+	<?php endforeach; ?>
+</ul>

@@ -59,10 +59,10 @@
 
 
 // Helpers
-// @include foundation-float-classes;
+@include foundation-float-classes;
 @include foundation-flex-classes;
 @include foundation-visibility-classes;
-// @include foundation-prototype-classes;
+@include foundation-prototype-classes;
 
 // Motion UI
 @include motion-ui-transitions;
@@ -84,6 +84,7 @@
 @import "modules/content";
 @import "modules/footer";
 @import "modules/editor-style";
+@import "modules/sidebar";
 @import "modules/sticky";
 
 // Components

@@ -1,5 +1,12 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'hyperpress_banner_tag' ) ) :
+	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_tag' );
+
 	function hyperpress_banner_tag( $banner ) {
 		if ( is_tag() ) {
 			$banner['type']     = 'tag';
@@ -8,6 +15,4 @@ if ( ! function_exists( 'hyperpress_banner_tag' ) ) :
 
 		return $banner;
 	}
-
-	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_tag' );
 endif;

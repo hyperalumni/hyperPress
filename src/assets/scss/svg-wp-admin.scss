@@ -1,0 +1,5 @@
+// add styling to properly display svg images in the admin panel
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+}

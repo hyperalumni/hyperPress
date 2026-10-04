@@ -1,27 +1,28 @@
 {
-    "name": "olefredrik/foundationpress",
-    "description": "FoundationPress is a WordPress starter theme based on Foundation 6 by Zurb",
-    "type": "wordpress-theme",
-    "minimum-stability" : "dev",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Ole Fredrik Lie",
-            "email": "mail@olefredrik.com"
-        }
-    ],
-    "require": {
-        "composer/installers": "~2.3.0"
-    },
-    "require-dev": {
-        "squizlabs/php_codesniffer": "*",
-        "phpcompatibility/php-compatibility": "*",
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.2.0"
-    },
-    "config": {
-        "allow-plugins": {
-            "composer/installers": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
+  "name": "olefredrik/foundationpress",
+  "description": "FoundationPress is a WordPress starter theme based on Foundation 6 by Zurb",
+  "type": "wordpress-theme",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ole Fredrik Lie",
+      "email": "mail@olefredrik.com"
     }
+  ],
+  "require": {
+    "composer/installers": "~2.3.0",
+    "ext-intl": "*"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "*",
+    "phpcompatibility/php-compatibility": "*",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.2.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  }
 }

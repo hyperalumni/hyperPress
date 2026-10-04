@@ -3,3 +3,15 @@
     width: 100%;
   }
 }
+
+img {
+  &.full-width {
+    width: 100%;
+  }
+}
+
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+}
+

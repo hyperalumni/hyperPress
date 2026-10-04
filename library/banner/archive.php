@@ -1,5 +1,12 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'hyperpress_banner_archive' ) ) :
+	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_archive' );
+
 	function hyperpress_banner_archive( $banner ) {
 		if ( empty( $banner['type'] ) ) {
 			if ( is_archive() ) {
@@ -16,6 +23,4 @@ if ( ! function_exists( 'hyperpress_banner_archive' ) ) :
 
 		return $banner;
 	}
-
-	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_archive' );
 endif;

@@ -1,5 +1,12 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'hyperpress_banner_year' ) ) :
+	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_year' );
+
 	function hyperpress_banner_year( $banner ) {
 		if ( is_year() ) {
 			$banner['type']     = 'year';
@@ -8,6 +15,4 @@ if ( ! function_exists( 'hyperpress_banner_year' ) ) :
 
 		return $banner;
 	}
-
-	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_year' );
 endif;

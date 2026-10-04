@@ -5,6 +5,10 @@
  * @package FoundationPress
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 if ( ! class_exists( 'Foundationpress_Comments' ) ) :
 	class Foundationpress_Comments extends Walker_Comment {
 

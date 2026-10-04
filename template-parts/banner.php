@@ -1,4 +1,8 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 
 $banner = apply_filters( 'hyperpress_banner_content', [
 	'type'            => '',
@@ -8,7 +12,7 @@ $banner = apply_filters( 'hyperpress_banner_content', [
 	'buttonText'      => '',
 	'buttonLink'      => '',
 ] );
-// set a default value if no value was provided by the filter
+// set a default value if the filter provided no value
 if ( empty( $banner['type'] ) ) {
 	$banner['type'] = 'unset';
 }
@@ -16,7 +20,7 @@ if ( empty( $banner['title'] ) ) {
 	$banner['title'] = get_the_title();
 }
 if ( empty( $banner['subtitle'] ) ) {
-	$banner['subtitle'] = get_theme_mod( 'hyperpress_home_banner_subtitle' );
+	$banner['subtitle'] = get_theme_mod( 'hyperpress_homepage_customize_banner_subtitle' );
 }
 
 $banner['type']            = sanitize_text_field( $banner['type'] );
@@ -25,8 +29,6 @@ $banner['subtitle']        = sanitize_text_field( $banner['subtitle'] );
 $banner['backgroundColor'] = sanitize_hex_color( $banner['backgroundColor'] );
 $banner['buttonText']      = sanitize_text_field( $banner['buttonText'] );
 $banner['buttonLink']      = sanitize_url( $banner['buttonLink'] );
-
-
 ?>
 
 <header role="banner" class="banner <?php echo $banner['type']; ?>"
@@ -39,7 +41,7 @@ $banner['buttonLink']      = sanitize_url( $banner['buttonLink'] );
 					<h2 class="entry-title"><?php echo $banner['title']; ?></h2>
 				<?php } ?>
 				<?php if ( ! empty( $banner['subtitle'] ) ) { ?>
-					<h4 class="subtitle"><?php echo $banner['subtitle']; ?></h4>
+					<h4 class="subtitle"><?php echo do_shortcode( $banner['subtitle'] ); ?></h4>
 				<?php } ?>
 			</div>
 			<?php if ( $banner['type'] === 'front' ) { ?>

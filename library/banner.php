@@ -1,4 +1,9 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 require_once( 'banner/404.php' );
 require_once( 'banner/archive.php' );
 require_once( 'banner/attachment.php' );

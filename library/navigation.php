@@ -7,6 +7,11 @@
  * @since FoundationPress 1.0.0
  */
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 register_nav_menus(
 	array(
 		'top-bar-r'  => esc_html__( 'Right Top Bar', 'foundationpress' ),
@@ -20,8 +25,8 @@ register_nav_menus(
  *
  * @link http://codex.wordpress.org/Function_Reference/wp_nav_menu
  */
-if ( ! function_exists( 'foundationpress_top_bar_r' ) ) {
-	function foundationpress_top_bar_r() {
+if ( ! function_exists( 'foundationpress_top_bar_r' ) ) :
+	function foundationpress_top_bar_r(): void {
 		wp_nav_menu(
 			array(
 				'container'      => false,
@@ -34,14 +39,14 @@ if ( ! function_exists( 'foundationpress_top_bar_r' ) ) {
 			)
 		);
 	}
-}
+endif;
 
 
 /**
  * Mobile navigation - topbar (default) or offcanvas
  */
-if ( ! function_exists( 'foundationpress_mobile_nav' ) ) {
-	function foundationpress_mobile_nav() {
+if ( ! function_exists( 'foundationpress_mobile_nav' ) ) :
+	function foundationpress_mobile_nav(): void {
 		wp_nav_menu(
 			array(
 				'container'      => false,                         // Remove nav container
@@ -54,7 +59,7 @@ if ( ! function_exists( 'foundationpress_mobile_nav' ) ) {
 			)
 		);
 	}
-}
+endif;
 
 
 /**
@@ -64,23 +69,22 @@ if ( ! function_exists( 'foundationpress_mobile_nav' ) ) {
  * 3) On your menu item, type 'has-form' in the CSS-classes field. Type 'button' in the XFN field
  * 4) Save Menu. Your menu item will now appear as a button in your top-menu
  */
-if ( ! function_exists( 'foundationpress_add_menuclass' ) ) {
-	function foundationpress_add_menuclass( $ulclass ) {
+if ( ! function_exists( 'foundationpress_add_menuclass' ) ) :
+	add_filter( 'wp_nav_menu', 'foundationpress_add_menuclass' );
+
+	function foundationpress_add_menuclass( $ulclass ): array|string|null {
 		$find    = array( '/<a rel="button"/', '/<a title=".*?" rel="button"/' );
 		$replace = array( '<a rel="button" class="button"', '<a rel="button" class="button"' );
 
 		return preg_replace( $find, $replace, $ulclass, 1 );
 	}
-
-	add_filter( 'wp_nav_menu', 'foundationpress_add_menuclass' );
-}
+endif;
 
 if ( ! function_exists( 'hyperpress_customize_the_read_more_link' ) ) :
-	function hyperpress_customize_the_read_more_link() {
-		global $post;
+	add_filter( 'the_content_more_link', 'hyperpress_customize_the_read_more_link' );
 
-		return '<button class="hollow button medium-down-expanded more-link" href="' . get_permalink() . '#more-' . $post->ID . '">Continue Reading</button>';
+	function hyperpress_customize_the_read_more_link(): string {
+		return '<button class="hollow button medium-down-expanded more-link" href="' . get_permalink() . '#more-' . get_the_ID() . '">Continue Reading</button>';
 	}
 
-	add_filter( 'the_content_more_link', 'hyperpress_customize_the_read_more_link' );
 endif;

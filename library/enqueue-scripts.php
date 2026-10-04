@@ -10,11 +10,15 @@
  */
 
 
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 // Check to see if rev-manifest exists for CSS and JS static asset revisioning
 //https://github.com/sindresorhus/gulp-rev/blob/master/integration.md
 
 if ( ! function_exists( 'foundationpress_asset_path' ) ) :
-	function foundationpress_asset_path( $filename ) {
+	function foundationpress_asset_path( $filename ): string {
 		$filename_split = explode( '.', $filename );
 		$dir            = end( $filename_split );
 		$manifest_path  = dirname( dirname( __FILE__ ) ) . '/dist/assets/' . $dir . '/rev-manifest.json';
@@ -33,40 +37,48 @@ if ( ! function_exists( 'foundationpress_asset_path' ) ) :
 	}
 endif;
 
-$hyperPressVersion  = '2.11.1';
-$foundationVersion  = '6.9.0';
-$fontAwesomeVersion = '7.0.1';
-$timeCirclesVersion = '1.5.3';
+$hyperPressVersion    = '2.11.1';
+$foundationVersion    = '6.9.0';
+$fontAwesomeVersion   = '7.3.1';
+$jqueryVersion        = '3.7.1';
+$jqueryMigrateVersion = '3.6.0';
 
 if ( ! function_exists( 'foundationpress_scripts' ) ) :
-	function foundationpress_scripts() {
-		global $hyperPressVersion, $foundationVersion, $fontAwesomeVersion, $timeCirclesVersion;
+	add_action( 'wp_enqueue_scripts', 'foundationpress_scripts' );
+
+	function foundationpress_scripts(): void {
+		global $hyperPressVersion, $foundationVersion, $fontAwesomeVersion, $jqueryVersion, $jqueryMigrateVersion;
 
 		// Deregister the jquery version bundled with WordPress.
 		wp_deregister_script( 'jquery' );
 		// Deregister the jquery-migrate version bundled with WordPress.
 		wp_deregister_script( 'jquery-migrate' );
 
+		// Register the Google Fonts
+//		wp_register_style( 'oswald', 'https://fonts.googleapis.com/css?family=Oswald:300,400,500,600,700' );
+		wp_register_style( 'oswald', 'https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swa' );
+		wp_register_style( 'opensans', 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap' );
+
+
+		// The official plugin is not active, so add FontAwesome from CDN.
+		if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
+			// Enqueue FontAwesome from CDN.
+			wp_enqueue_script( 'fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/' . $fontAwesomeVersion . '/js/all.min.js', array(), $fontAwesomeVersion, true );
+			wp_enqueue_style( 'fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/' . $fontAwesomeVersion . '/css/all.min.css', array(), $fontAwesomeVersion, true ); // needs the 'true' for media, or else the icons load funny
+		}
 
 		// Enqueue the main Stylesheet.
 		wp_enqueue_style( 'main-stylesheet', get_template_directory_uri() . '/dist/assets/css/' . foundationpress_asset_path( 'app.css' ), array(
 			'oswald',
 			'opensans',
 			'fontawesome'
-		), $hyperPressVersion, 'all' );
-
-
-		// Register the Google Fonts
-		wp_register_style( 'oswald', 'https://fonts.googleapis.com/css?family=Oswald:300,400,500,600,700', array(), 'all' );
-		wp_register_style( 'opensans', 'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,500italic,600italic,700italic,800italic,300,400,500,600,700,800', array(), 'all' );
-
+		), $hyperPressVersion );
 
 		// CDN hosted jQuery placed in the header, as some plugins require that jQuery is loaded in the header.
-		wp_enqueue_script( 'jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js', array(), '3.7.1', false );
+		wp_enqueue_script( 'jquery', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/' . $jqueryVersion . '/jquery.min.js', array(), $jqueryVersion, false );
 
-
-		// CDN hosted jQuery migrate for compatibility with jQuery 3.x
-		wp_register_script( 'jquery-migrate', 'https://code.jquery.com/jquery-migrate-3.6.0.min.js', array( 'jquery' ), '3.6.0', false );
+		// CDN hosted jQuery migrate for compatibility with jQuery 4.x
+		wp_register_script( 'jquery-migrate', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/' . $jqueryMigrateVersion . '/jquery-migrate.min.js', array( 'jquery' ), $jqueryMigrateVersion, false );
 
 		// Enqueue jQuery migrate. Uncomment the line below to enable.
 		// wp_enqueue_script( 'jquery-migrate' );
@@ -75,36 +87,36 @@ if ( ! function_exists( 'foundationpress_scripts' ) ) :
 		wp_enqueue_script( 'foundation', get_template_directory_uri() . '/dist/assets/js/' . foundationpress_asset_path( 'foundation.js' ), array( 'jquery' ), $foundationVersion, true );
 		wp_enqueue_script( 'main-script', get_template_directory_uri() . '/dist/assets/js/' . foundationpress_asset_path( 'app.js' ), array( 'foundation' ), $hyperPressVersion, true );
 
-		// Enqueue FontAwesome from CDN. Uncomment the line below if you need FontAwesome.
-		wp_enqueue_script( 'fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/js/all.min.js', array(), $fontAwesomeVersion, true );
-		wp_enqueue_style( 'fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css', array(), $fontAwesomeVersion, true );
-
 		// Add the comment-reply library on pages where it is necessary
 		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 			wp_enqueue_script( 'comment-reply' );
 		}
 	}
-
-	add_action( 'wp_enqueue_scripts', 'foundationpress_scripts' );
 endif;
 
 if ( ! function_exists( 'foundationpress_admin_scripts' ) ) :
-	function foundationpress_admin_scripts() {
-		global $hyperPressVersion;
+	add_action( 'admin_enqueue_scripts', 'foundationpress_admin_scripts' );
+
+	function foundationpress_admin_scripts(): void {
+		global $hyperPressVersion, $jqueryVersion, $jqueryMigrateVersion;
 		// Deregister the jquery version bundled with WordPress.
 		wp_deregister_script( 'jquery' );
 		// Deregister the jquery-migrate version bundled with WordPress.
 		wp_deregister_script( 'jquery-migrate' );
 
 		// CDN hosted jQuery placed in the header, as some plugins require that jQuery is loaded in the header.
-		wp_enqueue_script( 'jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js', array(), '3.7.1', false );
+		wp_enqueue_script( 'jquery', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/' . $jqueryVersion . '/jquery.min.js', array(), $jqueryVersion, false );
 
 		// CDN hosted jQuery migrate for compatibility with jQuery 3.x
-		wp_register_script( 'jquery-migrate', 'https://code.jquery.com/jquery-migrate-3.6.0.min.js', array( 'jquery' ), '3.6.0', false );
+		wp_register_script( 'jquery-migrate', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/' . $jqueryMigrateVersion . '/jquery-migrate.min.js', array( 'jquery' ), $jqueryMigrateVersion, false );
 
+		// Enqueue jQuery migrate. Uncomment the line below to enable.
+		// wp_enqueue_script( 'jquery-migrate' );
 
-
+		wp_register_style( 'wp-admin-svg-support', get_template_directory_uri() . '/dist/assets/css/' . foundationpress_asset_path( 'svg-wp-admin.css' ), array(), $hyperPressVersion, 'screen' );
+		// only load svg support on a screen to edit a post/page/custom-post-type
+		if ( get_current_screen()->base == 'post' ) {
+			wp_enqueue_style( 'wp-admin-svg-support' );
+		}
 	}
-
-	add_action( 'admin_enqueue_scripts', 'foundationpress_admin_scripts' );
 endif;

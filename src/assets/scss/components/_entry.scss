@@ -8,10 +8,8 @@
   .label {
     font-weight: 600;
 
-    &:not(.neutral) {
-      a {
-        color: $white;
-      }
+    a {
+      color: inherit;
     }
   }
 

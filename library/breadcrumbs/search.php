@@ -1,6 +1,13 @@
 <?php
-if ( ! function_exists( 'hyperpress_breadcrumb_search' ) ) :
-	function hyperpress_breadcrumb_search( $breadcrumbs ) {
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
+if ( ! function_exists( 'hyperpress_breadcrumbs_search' ) ) :
+	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_search' );
+
+	function hyperpress_breadcrumbs_search( $breadcrumbs ) {
 		if ( is_search() ) {
 			$breadcrumbs[] = [
 				"title"   => __( 'Search', 'hyperpress' ),
@@ -23,6 +30,4 @@ if ( ! function_exists( 'hyperpress_breadcrumb_search' ) ) :
 
 		return $breadcrumbs;
 	}
-
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumb_search' );
 endif;

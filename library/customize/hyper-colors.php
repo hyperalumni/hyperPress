@@ -1,7 +1,14 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'hyperpress_customize_hyper_colors' ) ) :
+	add_action( 'customize_register', 'hyperpress_customize_hyper_colors' );
+
 	function hyperpress_customize_hyper_colors( $wp_customize ): void {
-// HYPER Logo colors
+		// HYPER Logo colors
 		$wp_customize->add_setting( 'hyperpress_hyper_red',
 			array(
 				'default'           => '#C52026',
@@ -72,6 +79,4 @@ if ( ! function_exists( 'hyperpress_customize_hyper_colors' ) ) :
 				'section'  => 'colors',
 			) ) );
 	}
-
-	add_action( 'customize_register', 'hyperpress_customize_hyper_colors' );
 endif;

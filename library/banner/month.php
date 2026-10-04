@@ -1,5 +1,12 @@
 <?php
+// Don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
+
 if ( ! function_exists( 'hyperpress_banner_month' ) ) :
+	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_month' );
+
 	function hyperpress_banner_month( $banner ) {
 		if ( is_month() ) {
 			$banner['type'] = 'month';
@@ -8,6 +15,4 @@ if ( ! function_exists( 'hyperpress_banner_month' ) ) :
 
 		return $banner;
 	}
-
-	add_filter( 'hyperpress_banner_content', 'hyperpress_banner_month' );
 endif;
