@@ -17,6 +17,8 @@
 	<exclude-pattern>*/library/class-tgm-plugin-activation.php</exclude-pattern>
 	<!-- Untracked local scratch space for agent tooling; not theme source. -->
 	<exclude-pattern>*/.superpowers/*</exclude-pattern>
+	<!-- Test code follows PHPUnit conventions and is not linted (the plugins repo does not lint tests either). -->
+	<exclude-pattern>*/tests/*</exclude-pattern>
 
 	<arg name="extensions" value="php"/>
 
@@ -59,8 +61,6 @@
 		<exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace" />
 		<exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpenHint" />
 
-		<exclude name="WordPress.XSS.EscapeOutput.UnsafePrintingFunction" />
-		<exclude name="WordPress.XSS.EscapeOutput.OutputNotEscaped" />
 		<exclude name="WordPress.Arrays.ArrayDeclaration.NoSpaceAfterOpenParenthesis" />
 		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.NoSpaceAfterArrayOpener" />
 		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.NoSpaceBeforeArrayCloser" />
