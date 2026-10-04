@@ -1,5 +1,7 @@
 <?php
 /**
+ * The hyperPress Season plugin.
+ *
  * @wordpress-plugin
  * Plugin Name:         hyperPress Season
  * Plugin URI:          https://hyperalumni.org

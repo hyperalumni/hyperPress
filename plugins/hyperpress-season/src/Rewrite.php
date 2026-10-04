@@ -22,7 +22,7 @@ final class Rewrite {
 				continue;
 			}
 			add_rewrite_rule(
-				'^' . preg_quote( $season_slug ) . '/([^/]+)/' . preg_quote( $type->has_archive ) . '/?$',
+				'^' . preg_quote( $season_slug ) . '/([^/]+)/' . preg_quote( $type->has_archive ) . '/?$', // phpcs:ignore WordPress.PHP.PregQuoteDelimiter.Missing -- plugins audit
 				'index.php?' . Plugin::TAXONOMY . '=$matches[1]&post_type=' . $key,
 				'top'
 			);

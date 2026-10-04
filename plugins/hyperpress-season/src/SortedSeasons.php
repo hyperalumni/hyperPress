@@ -21,7 +21,7 @@ final class SortedSeasons {
 		);
 
 		if ( ! empty( $seasons ) ) {
-			// still sort them by name, because the result of get_terms is inconsistent even with the orderby flag
+			// still sort them by name, because the result of get_terms is inconsistent even with the orderby flag.
 			usort( $seasons, fn( $a, $b ) => $b->name <=> $a->name );
 		}
 
