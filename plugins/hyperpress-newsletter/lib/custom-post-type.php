@@ -1,10 +1,14 @@
 <?php
-// Exit if accessed directly.
+
+namespace HYPER_Press_Newsletter;
+// Don't load directly.
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_register_newsletter_post_type' ) ) :
+if ( ! function_exists( '\HYPER_Press_Newsletter\hyperpress_register_newsletter_post_type' ) ) :
+	add_action( 'init', '\HYPER_Press_Newsletter\hyperpress_register_newsletter_post_type' );
+
 	function hyperpress_register_newsletter_post_type(): void {
 		$labels = [
 			'name'                     => esc_html__( 'Newsletters', 'hyperpress' ),
@@ -41,8 +45,8 @@ if ( ! function_exists( 'hyperpress_register_newsletter_post_type' ) ) :
 		];
 		$args   = [
 			'label'               => esc_html__( 'Newsletters', 'hyperpress' ),
+			'description'         => esc_html__( 'Newsletters from Team HYPER Students', 'hyperpress' ),
 			'labels'              => $labels,
-			'description'         => 'Newsletters from Team HYPER Students',
 			'public'              => true,
 			'hierarchical'        => false,
 			'exclude_from_search' => false,
@@ -60,16 +64,18 @@ if ( ! function_exists( 'hyperpress_register_newsletter_post_type' ) ) :
 			'has_archive'         => 'newsletters',
 			'rest_base'           => '',
 			'show_in_menu'        => true,
-			'menu_position'       => 20,
+			'menu_position'       => 21,
 			'menu_icon'           => 'dashicons-media-text',
 			'capability_type'     => 'post',
-			'supports'            => [ 'title', 'author', 'editor' ],
+			'supports'            => [ 'title', 'author', 'editor', 'revisions' ],
 			'taxonomies'          => [],
-			'rewrite'             => [ 'with_front' => false, 'slug' => 'newsletter' ],
+			'rewrite'             => [
+				'with_front'   => false,
+				'slug'         => 'newsletter',
+				'hierarchical' => true
+			],
 		];
 
 		register_post_type( 'newsletter', $args );
 	}
-
-	add_action( 'init', 'hyperpress_register_newsletter_post_type' );
 endif;
