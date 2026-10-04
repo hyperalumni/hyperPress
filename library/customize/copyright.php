@@ -7,9 +7,10 @@ function hyperpress_customize_copyright( $wp_customize ): void {
 	$wp_customize->add_setting(
         'hyperpress_site_copyright_name',
 		array(
-			'default'   => get_bloginfo( 'name' ),
-			'type'      => 'theme_mod',
-			'transport' => 'refresh',
+			'default'           => get_bloginfo( 'name' ),
+			'type'              => 'theme_mod',
+			'transport'         => 'refresh',
+			'sanitize_callback' => 'sanitize_text_field',
 		)
         );
 	$wp_customize->add_control(

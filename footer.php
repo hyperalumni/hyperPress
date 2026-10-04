@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
 				<section class="cell shrink">
 					<?php $copyright_name = get_theme_mod( 'hyperpress_site_copyright_name' ); ?>
 					<?php if ( ! empty( $copyright_name ) ) : ?>
-						<h6><?php echo $copyright_name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?></h6>
+						<h6><?php echo esc_html( $copyright_name ); ?></h6>
 					<?php endif; ?>
 				</section>
 				<section class="cell shrink">
