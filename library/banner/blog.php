@@ -8,18 +8,18 @@ add_filter( 'hyperpress_banner_content', 'hyperpress_banner_blog' );
 
 function hyperpress_banner_blog( $banner ) {
 	if ( is_home() && ! is_front_page() ) {
-		$blogPageID = get_option( 'page_for_posts' );
+		$blog_page_id = get_option( 'page_for_posts' );
 
 		$banner['type'] = 'blog';
 
-		if ( $blogPageID > 0 ) {
+		if ( $blog_page_id > 0 ) {
 			// if the blog page is not the front page, use its values
-			$banner['title']           = get_the_title( $blogPageID );
-			$banner['backgroundColor'] = rwmb_meta( 'hyperpress_banner_background_color', '', $blogPageID );
+			$banner['title']           = get_the_title( $blog_page_id );
+			$banner['backgroundColor'] = rwmb_meta( 'hyperpress_banner_background_color', '', $blog_page_id );
 
-			$pageSubtitle = rwmb_meta( 'hyperpress_banner_subtitle', '', $blogPageID );
-			if ( ! empty( $pageSubtitle ) ) {
-				$banner['subtitle'] = $pageSubtitle;
+			$page_subtitle = rwmb_meta( 'hyperpress_banner_subtitle', '', $blog_page_id );
+			if ( ! empty( $page_subtitle ) ) {
+				$banner['subtitle'] = $page_subtitle;
 			}
 		}
 	}

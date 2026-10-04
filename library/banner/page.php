@@ -13,16 +13,15 @@ function hyperpress_banner_page( $banner ) {
 		$banner['backgroundColor'] = rwmb_meta( 'hyperpress_banner_background_color' );
 
 		if ( empty( $banner['backgroundColor'] ) ) {
-			$parentIDs = array_reverse( get_post_ancestors( get_the_ID() ) );
-			if ( ! empty( $parentIDs ) && ! empty( $parentIDs[0] ) ) {
-				$banner['backgroundColor'] = rwmb_meta( 'hyperpress_banner_background_color', '', $parentIDs[0] );
+			$parent_ids = array_reverse( get_post_ancestors( get_the_ID() ) );
+			if ( ! empty( $parent_ids ) && ! empty( $parent_ids[0] ) ) {
+				$banner['backgroundColor'] = rwmb_meta( 'hyperpress_banner_background_color', '', $parent_ids[0] );
 			}
 		}
 
-
-		$pageSubtitle = rwmb_meta( 'hyperpress_banner_subtitle' );
-		if ( ! empty( $pageSubtitle ) ) {
-			$banner['subtitle'] = $pageSubtitle;
+		$page_subtitle = rwmb_meta( 'hyperpress_banner_subtitle' );
+		if ( ! empty( $page_subtitle ) ) {
+			$banner['subtitle'] = $page_subtitle;
 		}
 	}
 
