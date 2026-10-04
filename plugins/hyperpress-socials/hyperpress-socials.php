@@ -1,5 +1,7 @@
 <?php
 /**
+ * The hyperPress Socials plugin.
+ *
  * @wordpress-plugin
  * Plugin Name:         hyperPress Socials
  * Plugin URI:          https://hyperalumni.org

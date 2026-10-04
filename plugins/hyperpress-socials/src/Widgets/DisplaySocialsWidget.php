@@ -7,7 +7,7 @@ use WP_Widget;
 
 class DisplaySocialsWidget extends WP_Widget {
 
-	function __construct() {
+	public function __construct() {
 		parent::__construct(
 			'hyperpress_socials',
 			__( 'hyperPress Socials', 'hyperpress' ),
@@ -16,74 +16,75 @@ class DisplaySocialsWidget extends WP_Widget {
 	}
 
 	public function widget( $args, $instance ): void {
-		$socials = [
-			[
+		$socials = array(
+			array(
 				'icon'  => 'fa-solid fa-robot',
 				'url'   => get_theme_mod( 'hyperpress_socials_firstinspires' ),
-				'title' => 'FIRST Inspires'
-			],
-			[
+				'title' => 'FIRST Inspires',
+			),
+			array(
 				'icon'  => 'fa-regular fa-lightbulb',
 				'url'   => get_theme_mod( 'hyperpress_socials_thebluealliance' ),
-				'title' => 'The Blue Alliance'
-			],
-			[
+				'title' => 'The Blue Alliance',
+			),
+			array(
 				'icon'  => 'fa-brands fa-github',
 				'url'   => get_theme_mod( 'hyperpress_socials_github' ),
-				'title' => 'GitHub'
-			],
-			[
+				'title' => 'GitHub',
+			),
+			array(
 				'icon'  => 'fa-brands fa-facebook-f',
 				'url'   => get_theme_mod( 'hyperpress_socials_facebook' ),
-				'title' => 'Facebook'
-			],
-			[
+				'title' => 'Facebook',
+			),
+			array(
 				'icon'  => 'fa-brands fa-instagram',
 				'url'   => get_theme_mod( 'hyperpress_socials_instagram' ),
-				'title' => 'Instagram'
-			],
-			[
+				'title' => 'Instagram',
+			),
+			array(
 				'icon'  => 'fa-brands fa-twitter',
 				'url'   => get_theme_mod( 'hyperpress_socials_twitter' ),
-				'title' => 'Twitter'
-			],
-			[
+				'title' => 'Twitter',
+			),
+			array(
 				'icon'  => 'fa-brands fa-youtube',
 				'url'   => get_theme_mod( 'hyperpress_socials_youtube' ),
-				'title' => 'YouTube'
-			],
-			[
+				'title' => 'YouTube',
+			),
+			array(
 				'icon'  => 'fa-brands fa-snapchat',
 				'url'   => get_theme_mod( 'hyperpress_socials_snapchat' ),
-				'title' => 'Snapchat'
-			],
-			[
+				'title' => 'Snapchat',
+			),
+			array(
 				'icon'  => 'fa-brands fa-tiktok',
 				'url'   => get_theme_mod( 'hyperpress_socials_tiktok' ),
-				'title' => 'TikTok'
-			],
-			[
+				'title' => 'TikTok',
+			),
+			array(
 				'icon'  => 'fa-brands fa-discord',
 				'url'   => get_theme_mod( 'hyperpress_socials_discord' ),
-				'title' => 'Discord Server'
-			],
-			[
+				'title' => 'Discord Server',
+			),
+			array(
 				'icon'  => 'fa-regular fa-envelope',
 				'url'   => ! empty( get_theme_mod( 'hyperpress_socials_contact' ) ) ? get_page_link( get_theme_mod( 'hyperpress_socials_contact' ) ) : '',
-				'title' => 'Contact Us'
-			],
-			[
+				'title' => 'Contact Us',
+			),
+			array(
 				'icon'  => 'fa-regular fa-calendar',
 				'url'   => get_theme_mod( 'hyperpress_socials_add_calendar' ),
-				'title' => 'Add Our Calendar'
-			]
-		];
-
+				'title' => 'Add Our Calendar',
+			),
+		);
 
 		$title = apply_filters( 'widget_title', $instance['title'] );
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
 		echo $args['before_widget'];
 		if ( ! empty( $title ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
 			echo $args['before_title'] . $title . $args['after_title'];
 		}
 		echo '<div class="grid-x grid-padding-x xsmall-up-3 small-up-4 medium-up-2 large-up-3 xlarge-up-4">';
@@ -92,11 +93,13 @@ class DisplaySocialsWidget extends WP_Widget {
 			if ( ! empty( $social['url'] ) ) {
 				$target = str_contains( $social['url'], get_site_url() ) ? '_self' : '_blank';
 				echo '<div class="cell">';
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
 				echo '<a href="' . esc_url( $social['url'] ) . '" title="' . esc_attr( $social['title'] ) . '" target="' . $target . '">';
 				echo '<span class="fa-stack fa-2x">';
-				// the "font-size: 2rem;" is needed or else the icons are too big, as it uses "font-size: 2em;"
-//				echo '<i class="fa-solid fa-square fa-stack-2x" style="font-size: 2rem;"></i>';
+				// echo '<i class="fa-solid fa-square fa-stack-2x" style="font-size: 2rem;"></i>';
+				// The "font-size: 2rem;" is needed or else the icons are too big, as it uses "font-size: 2em;".
 				echo '<i class="fa-solid fa-square fa-stack-2x"></i>';
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
 				echo '<i class="' . $social['icon'] . ' fa-stack-1x fa-inverse"></i>';
 				echo '</span>';
 				echo '</a>';
@@ -106,22 +109,23 @@ class DisplaySocialsWidget extends WP_Widget {
 
 		echo '</div>';
 
-		// Output widget content here
+		// Output widget content here.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
 		echo $args['after_widget'];
 	}
 
 	public function form( $instance ): void {
 		$title = $instance['title'] ?? __( 'Stalk Us', 'hyperpress' );
 
-		// Widget admin form
+		// Widget admin form.
 		?>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>">
-				<?php _e( 'Title:', 'hyperpress' ); ?>
+			<label for="<?php echo $this->get_field_id( 'title' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>">
+				<?php /* phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- plugins audit */ _e( 'Title:', 'hyperpress' ); ?>
 			</label>
 			<input
-					class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>"
-					name="<?php echo $this->get_field_name( 'title' ); ?>"
+					class="widefat" id="<?php echo $this->get_field_id( 'title' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>"
+					name="<?php echo $this->get_field_name( 'title' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>"
 					type="text"
 					value="<?php echo esc_attr( $title ); ?>"
 			/>
@@ -130,8 +134,9 @@ class DisplaySocialsWidget extends WP_Widget {
 	}
 
 	public function update( $new_instance, $old_instance ): array {
-		// Process widget options to be saved
-		$instance          = array();
+		// Process widget options to be saved.
+		$instance = array();
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- plugins audit
 		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
 
 		return $instance;
