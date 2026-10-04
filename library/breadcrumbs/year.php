@@ -4,30 +4,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_breadcrumbs_year' ) ) :
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_year' );
+add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_year' );
 
-	function hyperpress_breadcrumbs_year( $breadcrumbs ) {
-		if ( is_year() ) {
-			$archivesText = __( 'Archives', 'hyperpress' );
-			// add year
-			$year          = get_the_time( 'Y' );
-			$breadcrumbs[] = [
-				"title"   => $year . ' ' . $archivesText,
-				"url"     => get_year_link( $year ),
-				"classes" => [
-					'li'    => [
-						'item-year',
-						'item-year-' . $year
-					],
-					'bread' => [
-						'bread-year',
-						'bread-year-' . $year
-					]
+function hyperpress_breadcrumbs_year( $breadcrumbs ) {
+	if ( is_year() ) {
+		$archivesText = __( 'Archives', 'hyperpress' );
+		// add year
+		$year          = get_the_time( 'Y' );
+		$breadcrumbs[] = [
+			"title"   => $year . ' ' . $archivesText,
+			"url"     => get_year_link( $year ),
+			"classes" => [
+				'li'    => [
+					'item-year',
+					'item-year-' . $year
+				],
+				'bread' => [
+					'bread-year',
+					'bread-year-' . $year
 				]
-			];
-		}
-
-		return $breadcrumbs;
+			]
+		];
 	}
-endif;
+
+	return $breadcrumbs;
+}

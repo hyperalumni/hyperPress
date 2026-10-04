@@ -4,67 +4,65 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-if ( ! function_exists( 'hyperpress_breadcrumbs_day' ) ) :
-	add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_day' );
+add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_day' );
 
-	function hyperpress_breadcrumbs_day( $breadcrumbs ) {
-		if ( is_day() ) {
-			$archivesText = __( 'Archives', 'hyperpress' );
-			// add year
-			$year          = get_the_time( 'Y' );
-			$breadcrumbs[] = [
-				"title"   => $year . ' ' . $archivesText,
-				"url"     => get_year_link( $year ),
-				"classes" => [
-					'li'    => [
-						'item-year',
-						'item-year-' . $year
-					],
-					'bread' => [
-						'bread-year',
-						'bread-year-' . $year
-					]
+function hyperpress_breadcrumbs_day( $breadcrumbs ) {
+	if ( is_day() ) {
+		$archivesText = __( 'Archives', 'hyperpress' );
+		// add year
+		$year          = get_the_time( 'Y' );
+		$breadcrumbs[] = [
+			"title"   => $year . ' ' . $archivesText,
+			"url"     => get_year_link( $year ),
+			"classes" => [
+				'li'    => [
+					'item-year',
+					'item-year-' . $year
+				],
+				'bread' => [
+					'bread-year',
+					'bread-year-' . $year
 				]
-			];
+			]
+		];
 
-			// add month
-			$monthNumber   = get_the_time( 'm' );
-			$monthName     = get_the_time( 'M' );
-			$breadcrumbs[] = [
-				"title"   => $monthName . ' ' . $archivesText,
-				"url"     => get_month_link( $year, $monthNumber ),
-				"classes" => [
-					'li'    => [
-						'item-month',
-						'item-month-' . $monthNumber,
-						'item-month-' . $monthName
-					],
-					'bread' => [
-						'bread-month',
-						'bread-month-' . $monthNumber,
-						'bread-month-' . $monthName
-					]
+		// add month
+		$monthNumber   = get_the_time( 'm' );
+		$monthName     = get_the_time( 'M' );
+		$breadcrumbs[] = [
+			"title"   => $monthName . ' ' . $archivesText,
+			"url"     => get_month_link( $year, $monthNumber ),
+			"classes" => [
+				'li'    => [
+					'item-month',
+					'item-month-' . $monthNumber,
+					'item-month-' . $monthName
+				],
+				'bread' => [
+					'bread-month',
+					'bread-month-' . $monthNumber,
+					'bread-month-' . $monthName
 				]
-			];
+			]
+		];
 
-			$dayNumber     = get_the_time( 'j' );
-			$daySuffix     = get_the_time( 'S' );
-			$breadcrumbs[] = [
-				"title"   => $dayNumber . $daySuffix . ' ' . $monthName . ' ' . $archivesText,
-				"url"     => get_day_link( $year, $monthNumber, $dayNumber ),
-				"classes" => [
-					'li'    => [
-						'item-day',
-						'item-day-' . $dayNumber,
-					],
-					'bread' => [
-						'bread-day',
-						'bread-day-' . $dayNumber,
-					]
+		$dayNumber     = get_the_time( 'j' );
+		$daySuffix     = get_the_time( 'S' );
+		$breadcrumbs[] = [
+			"title"   => $dayNumber . $daySuffix . ' ' . $monthName . ' ' . $archivesText,
+			"url"     => get_day_link( $year, $monthNumber, $dayNumber ),
+			"classes" => [
+				'li'    => [
+					'item-day',
+					'item-day-' . $dayNumber,
+				],
+				'bread' => [
+					'bread-day',
+					'bread-day-' . $dayNumber,
 				]
-			];
-		}
-
-		return $breadcrumbs;
+			]
+		];
 	}
-endif;
+
+	return $breadcrumbs;
+}
