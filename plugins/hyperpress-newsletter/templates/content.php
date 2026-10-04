@@ -36,14 +36,8 @@ $season       = ! empty( $seasons ) ? $seasons[0] : null;
 <div class="entry-content">
 	<?php
 	// Embed only https URLs on canva.com or one of its subdomains; anything else renders nothing.
-	$canva_url   = get_post_custom_values( 'hyperpress_newsletter_canva_url', get_the_ID() )[0] ?? '';
-	$canva_parts = wp_parse_url( $canva_url );
-	$canva_host  = strtolower( $canva_parts['host'] ?? '' );
-	if (
-		'https' !== ( $canva_parts['scheme'] ?? '' )
-		|| ( 'canva.com' !== $canva_host && ! str_ends_with( $canva_host, '.canva.com' ) )
-		|| esc_url_raw( $canva_url ) !== $canva_url
-	) {
+	$canva_url = get_post_custom_values( 'hyperpress_newsletter_canva_url', get_the_ID() )[0] ?? '';
+	if ( ! \HyperPress\Newsletter\MetaBoxes::is_canva_url( $canva_url ) ) {
 		$canva_url = '';
 	}
 	?>
