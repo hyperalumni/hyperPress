@@ -667,3 +667,4 @@ git commit -m "docs(plans): complete plugins-04-remaining-plugins" -- docs/super
 - Test-isolation fix: `SeasonCountTest` removed the real `hyper_date_distance` shortcode in tear_down; it now restores it.
 - Deferred minors: weekly/monthly/annual `time-restrict-repeat` branches are date-dependent (parity only shows stable output); several thin tests (newsletter archive/colour fallback, media gating); existing data is not migrated (dev DB reset by design).
 - Update (audit S20): the SVG upload filter was removed from `hyperpress-media`; SVG uploads now come from the Safe SVG plugin, declared as `Requires Plugins: safe-svg`. `Uploads\Svg` no longer exists, and `MediaTest` asserts the SVG MIME type is not added by this plugin.
+- Update (audit S30): `Uploads\Avif` was removed too; WordPress core already allows and detects AVIF. `hyperpress-media` now only carries the NextGen integration.

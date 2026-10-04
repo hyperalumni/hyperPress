@@ -6,7 +6,6 @@ defined( 'ABSPATH' ) || exit;
 final class Plugin {
 
 	public static function boot(): void {
-		Uploads\Avif::register();
 		NextGen\Customizer::register();
 
 		// NextGen Gallery is an optional third-party plugin.
