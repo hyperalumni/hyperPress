@@ -9,8 +9,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
-if ( ! class_exists( 'Foundationpress_Comments' ) ) :
-	class Foundationpress_Comments extends Walker_Comment {
+if ( ! class_exists( 'HyperPress_Theme_Comments' ) ) :
+	class HyperPress_Theme_Comments extends Walker_Comment {
 
 		// Init classwide variables.
 		public $tree_type = 'comment';

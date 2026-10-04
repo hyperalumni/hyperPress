@@ -24,7 +24,7 @@ require_once( 'library/cleanup.php' );
 require_once( 'library/foundation.php' );
 
 /** Format comments */
-require_once( 'library/class-foundationpress-comments.php' );
+require_once( 'library/class-hyperpress-comments.php' );
 
 /** Register all navigation menus */
 require_once( 'library/navigation.php' );
@@ -76,6 +76,6 @@ require_once( 'library/root-colors.php' );
 require_once( 'library/metaboxes.php' );
 
 /** If your site requires protocol relative url's for theme assets, uncomment the line below */
-// require_once( 'library/class-foundationpress-protocol-relative-theme-assets.php' );
+// require_once( 'library/class-hyperpress-protocol-relative-theme-assets.php' );
 
 

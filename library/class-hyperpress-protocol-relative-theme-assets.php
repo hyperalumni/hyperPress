@@ -10,8 +10,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
-if ( ! class_exists( 'Foundationpress_Protocol_Relative_Theme_Assets' ) ) :
-	class Foundationpress_Protocol_Relative_Theme_Assets {
+if ( ! class_exists( 'HyperPress_Theme_Protocol_Relative_Theme_Assets' ) ) :
+	class HyperPress_Theme_Protocol_Relative_Theme_Assets {
 		/**
 		 * Plugin URI: https://github.com/ryanjbonnell/Protocol-Relative-Theme-Assets
 		 * Description: Transforms enqueued CSS and JavaScript theme URLs to use protocol-relative paths.
@@ -90,5 +90,5 @@ if ( ! class_exists( 'Foundationpress_Protocol_Relative_Theme_Assets' ) ) :
 		}
 	}
 
-	$foundationpress_protocol_relative_theme_assets = new Foundationpress_Protocol_Relative_Theme_Assets;
+	$hyperpress_protocol_relative_theme_assets = new HyperPress_Theme_Protocol_Relative_Theme_Assets;
 endif;
