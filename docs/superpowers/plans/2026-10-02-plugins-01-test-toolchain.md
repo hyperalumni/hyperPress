@@ -1,6 +1,8 @@
 # Plugins 01: Test Toolchain and Contract Tests
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **STATUS: COMPLETED** (2026-10-04). Baseline commit: b95c565. Branch cleanup/convention-and-tests.
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build the Docker-based PHP 8.5 test toolchain for `plugins/`, snapshot the current registrations, and write header-lint and contract tests that FAIL on the current code and pass once the migration plans (plugins-02 to plugins-04) are done.
 
@@ -52,7 +54,7 @@
 - Create: `Dockerfile`, `compose.yaml`, `composer.json`, `phpunit.xml.dist`, `tests/bootstrap-unit.php`, `tests/unit/SmokeTest.php`
 - Modify: `.gitignore`
 
-- [ ] **Step 1: Write `Dockerfile`**
+- [x] **Step 1: Write `Dockerfile`**
 
 ```dockerfile
 FROM php:8.5-cli
@@ -67,7 +69,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 WORKDIR /app
 ```
 
-- [ ] **Step 2: Write `compose.yaml`**
+- [x] **Step 2: Write `compose.yaml`**
 
 ```yaml
 services:
@@ -101,7 +103,7 @@ volumes:
   composer-cache:
 ```
 
-- [ ] **Step 3: Write `composer.json`**
+- [x] **Step 3: Write `composer.json`**
 
 ```json
 {
@@ -139,7 +141,7 @@ volumes:
 }
 ```
 
-- [ ] **Step 4: Write `phpunit.xml.dist`**
+- [x] **Step 4: Write `phpunit.xml.dist`**
 
 Deprecations are reported but not fatal: WordPress core and wp-phpunit may emit PHP 8.5 deprecations we cannot fix. Our own code is covered by PHPCompatibilityWP in `phpcs`.
 
@@ -166,14 +168,14 @@ Deprecations are reported but not fatal: WordPress core and wp-phpunit may emit 
 
 Note: the integration suite needs a different bootstrap. Task 4 adds `--bootstrap tests/bootstrap-integration.php` to the `test:integration` script. The default bootstrap stays the unit one.
 
-- [ ] **Step 5: Write `tests/bootstrap-unit.php`**
+- [x] **Step 5: Write `tests/bootstrap-unit.php`**
 
 ```php
 <?php
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 ```
 
-- [ ] **Step 6: Write the smoke test `tests/unit/SmokeTest.php`**
+- [x] **Step 6: Write the smoke test `tests/unit/SmokeTest.php`**
 
 ```php
 <?php
@@ -188,7 +190,7 @@ final class SmokeTest extends TestCase {
 }
 ```
 
-- [ ] **Step 7: Append to `.gitignore`**
+- [x] **Step 7: Append to `.gitignore`**
 
 ```
 vendor/
@@ -196,7 +198,7 @@ vendor/
 .phpunit.result.cache
 ```
 
-- [ ] **Step 8: Build, install and run**
+- [x] **Step 8: Build, install and run**
 
 Run: `docker compose build php && docker compose run --rm php composer install`
 Expected: dependencies install with no errors. If Composer reports PHPUnit 9.6 is incompatible with PHP 8.5, change `phpunit/phpunit` to `^10.5` (or `^11`), re-run `composer install`, and update `phpunit.xml.dist` with `vendor/bin/phpunit --migrate-configuration`. Record the version chosen in the commit message.
@@ -207,7 +209,7 @@ Expected: `OK (1 test, 1 assertion)`
 Run: `docker compose run --rm php composer lint:syntax`
 Expected: exit code 0, no output.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add Dockerfile compose.yaml composer.json composer.lock phpunit.xml.dist .gitignore tests/bootstrap-unit.php tests/unit/SmokeTest.php
@@ -221,7 +223,7 @@ git commit -m "test: add Docker PHP 8.5 toolchain and smoke test" -- Dockerfile 
 **Files:**
 - Create: `phpcs.xml.dist`
 
-- [ ] **Step 1: Write `phpcs.xml.dist`**
+- [x] **Step 1: Write `phpcs.xml.dist`**
 
 ```xml
 <?xml version="1.0"?>
@@ -277,7 +279,7 @@ git commit -m "test: add Docker PHP 8.5 toolchain and smoke test" -- Dockerfile 
 </ruleset>
 ```
 
-- [ ] **Step 2: Run phpcs to confirm the config loads**
+- [x] **Step 2: Run phpcs to confirm the config loads**
 
 Run: `docker compose run --rm php vendor/bin/phpcs -i`
 Expected: output lists `WordPress`, `WordPress-Core`, `PHPCompatibilityWP` among installed standards.
@@ -285,7 +287,7 @@ Expected: output lists `WordPress`, `WordPress-Core`, `PHPCompatibilityWP` among
 Run: `docker compose run --rm php vendor/bin/phpcs --report=summary`
 Expected: the command runs and reports violations in the current code (exit code 1 or 2). This is fine: `lint:cs` is non-gating until the migration plans finish. Record the total error count in the commit message as a baseline.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add phpcs.xml.dist
@@ -299,7 +301,7 @@ git commit -m "test: add phpcs ruleset (non-gating baseline: N errors)" -- phpcs
 **Files:**
 - Create: `tests/src/Support/Convention.php`, `tests/src/Support/PluginHeaders.php`, `tests/unit/PluginHeadersTest.php`
 
-- [ ] **Step 1: Write `tests/src/Support/Convention.php`**
+- [x] **Step 1: Write `tests/src/Support/Convention.php`**
 
 ```php
 <?php
@@ -423,7 +425,7 @@ final class Convention {
 }
 ```
 
-- [ ] **Step 2: Write `tests/src/Support/PluginHeaders.php`**
+- [x] **Step 2: Write `tests/src/Support/PluginHeaders.php`**
 
 ```php
 <?php
@@ -462,7 +464,7 @@ final class PluginHeaders {
 }
 ```
 
-- [ ] **Step 3: Write `tests/unit/PluginHeadersTest.php`**
+- [x] **Step 3: Write `tests/unit/PluginHeadersTest.php`**
 
 ```php
 <?php
@@ -524,12 +526,12 @@ final class PluginHeadersTest extends TestCase {
 }
 ```
 
-- [ ] **Step 4: Run and confirm the expected failures**
+- [x] **Step 4: Run and confirm the expected failures**
 
 Run: `docker compose run --rm php composer test:unit`
 Expected: `SmokeTest` passes, `test_requires_table_covers_every_plugin` passes, and the per-plugin tests FAIL (main files are still `award.php` etc., `GitHub Plugin URI` present, Requires Plugins absent). Save the failure count for the commit message.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests/src tests/unit/PluginHeadersTest.php
@@ -544,7 +546,7 @@ git commit -m "test: add header lint and shared Convention expectations (failing
 - Create: `tests/wp-tests-config.php`, `tests/bootstrap-integration.php`, `tests/integration/BootTest.php`
 - Modify: `composer.json` (script), `phpunit.xml.dist` (per-suite note only, no change needed if script passes `--bootstrap`)
 
-- [ ] **Step 1: Write `tests/wp-tests-config.php`**
+- [x] **Step 1: Write `tests/wp-tests-config.php`**
 
 ```php
 <?php
@@ -567,7 +569,7 @@ define( 'WPLANG', '' );
 $table_prefix = 'wptests_';
 ```
 
-- [ ] **Step 2: Write `tests/bootstrap-integration.php`**
+- [x] **Step 2: Write `tests/bootstrap-integration.php`**
 
 Main files are discovered by header, not by name, so the same bootstrap works before and after the main-file rename.
 
@@ -641,7 +643,7 @@ tests_add_filter(
 require $hyperpress_tests_dir . '/includes/bootstrap.php';
 ```
 
-- [ ] **Step 3: Write `tests/integration/BootTest.php`**
+- [x] **Step 3: Write `tests/integration/BootTest.php`**
 
 ```php
 <?php
@@ -657,7 +659,7 @@ final class BootTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 4: Point the integration script at its bootstrap**
+- [x] **Step 4: Point the integration script at its bootstrap**
 
 In `composer.json` change:
 
@@ -665,12 +667,12 @@ In `composer.json` change:
 "test:integration": "phpunit --testsuite integration --bootstrap tests/bootstrap-integration.php"
 ```
 
-- [ ] **Step 5: Run**
+- [x] **Step 5: Run**
 
 Run: `docker compose run --rm php composer test:integration`
 Expected: WordPress installs into the test DB, `OK (1 test, 2 assertions)`. If the WordPress test-suite bootstrap complains about a missing `WP_TESTS_CONFIG_FILE_PATH`, confirm the `define` lines above run before the `require` of `includes/bootstrap.php`. If any plugin fatals while loading, note which plugin and why in the commit message and stop: the migration plans must handle it, but the toolchain has to boot first. (plugins-01-test-toolchain fatal from a `function_exists` or load-order issue can be fixed in `LOAD_ORDER`.)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add tests/wp-tests-config.php tests/bootstrap-integration.php tests/integration/BootTest.php composer.json
@@ -686,7 +688,7 @@ Must run BEFORE any migration-plan change. The snapshot is the reference for URL
 **Files:**
 - Create: `tests/integration/SnapshotLegacyTest.php`, `tests/fixtures/legacy-registrations.json`
 
-- [ ] **Step 1: Write `tests/integration/SnapshotLegacyTest.php`**
+- [x] **Step 1: Write `tests/integration/SnapshotLegacyTest.php`**
 
 The test is a no-op unless `HYPERPRESS_WRITE_SNAPSHOT=1`, so normal runs never rewrite the fixture.
 
@@ -761,24 +763,24 @@ final class SnapshotLegacyTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 2: Generate the snapshot**
+- [x] **Step 2: Generate the snapshot**
 
 Run: `docker compose run --rm -e HYPERPRESS_WRITE_SNAPSHOT=1 php composer test:integration -- --filter SnapshotLegacyTest`
 Expected: PASS and `tests/fixtures/legacy-registrations.json` exists.
 
 If the key-set assertion fails, the message shows the real legacy keys. Correct `Convention::OLD_TO_NEW` (and `POST_TYPES`/`TAXONOMIES` if a plugin registers something unexpected) and re-run until it passes. Do not edit the assertion.
 
-- [ ] **Step 3: Read the fixture and sanity check it**
+- [x] **Step 3: Read the fixture and sanity check it**
 
 Run: `docker compose run --rm php php -r 'echo json_encode(array_keys(json_decode(file_get_contents("tests/fixtures/legacy-registrations.json"), true)["post_types"])), "\n";'`
 Expected: a list of the six legacy post type keys. Open the file and confirm `has_archive` and `rewrite.slug` are populated for each public post type and that `season`'s and `program`'s `object_type` is `[]` (verified in source: `get_theme_mod( 'hyperpress_season_post_types', [] )`). If either is anything else, add that to the commit message and stop: the specs assume `[]`.
 
-- [ ] **Step 4: Re-run without the env var to confirm it skips**
+- [x] **Step 4: Re-run without the env var to confirm it skips**
 
 Run: `docker compose run --rm php composer test:integration -- --filter SnapshotLegacyTest`
 Expected: 1 skipped, fixture unchanged (`git status --short tests/fixtures` shows nothing new beyond the untracked file).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests/integration/SnapshotLegacyTest.php tests/fixtures/legacy-registrations.json
@@ -792,7 +794,7 @@ git commit -m "test: snapshot legacy post type and taxonomy registrations" -- te
 **Files:**
 - Create: `tests/integration/KeyConventionTest.php`, `tests/integration/PublicUrlTest.php`
 
-- [ ] **Step 1: Write `tests/integration/KeyConventionTest.php`**
+- [x] **Step 1: Write `tests/integration/KeyConventionTest.php`**
 
 ```php
 <?php
@@ -823,7 +825,7 @@ final class KeyConventionTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 2: Write `tests/integration/PublicUrlTest.php`**
+- [x] **Step 2: Write `tests/integration/PublicUrlTest.php`**
 
 Public URLs must not change. Compare the new registration to the snapshot through `OLD_TO_NEW`.
 
@@ -886,12 +888,12 @@ final class PublicUrlTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 3: Run and confirm expected failures**
+- [x] **Step 3: Run and confirm expected failures**
 
 Run: `docker compose run --rm php composer test:integration -- --filter 'KeyConventionTest|PublicUrlTest'`
 Expected: FAIL. The key tests fail because old keys are registered; the URL tests fail with "hyper_* is not registered". Non-public types (countdown, the tier taxonomy) are reported as skipped, not failed. Also confirm in the fixture that `rewrite` is an array (not `false`) for `award`: if it is `false`, the permalink filter from Task 4 is not applied before `init` and must be fixed first.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/integration/KeyConventionTest.php tests/integration/PublicUrlTest.php
@@ -905,7 +907,7 @@ git commit -m "test: add key convention and public URL contracts (failing until 
 **Files:**
 - Create: `tests/integration/CapabilitiesTest.php`, `tests/integration/TaxonomyAttachmentTest.php`
 
-- [ ] **Step 1: Write `tests/integration/CapabilitiesTest.php`**
+- [x] **Step 1: Write `tests/integration/CapabilitiesTest.php`**
 
 The capability set comes from the registered post type object, so the test does not hard-code names. Granting happens on the version-gated `init` check (plugins-02-shared-utils), which has already fired by the time the test runs.
 
@@ -969,7 +971,7 @@ final class CapabilitiesTest extends WP_UnitTestCase {
 
 Note: `edit_{$post_type}s` assumes the plural is the key plus `s`. the migration plans define `capability_type => array( 'hyper_award', 'hyper_awards' )`, which satisfies this for all six keys. If a plan task picks a different plural, update this assertion in the same commit.
 
-- [ ] **Step 2: Write `tests/integration/TaxonomyAttachmentTest.php`**
+- [x] **Step 2: Write `tests/integration/TaxonomyAttachmentTest.php`**
 
 ```php
 <?php
@@ -1005,12 +1007,12 @@ final class TaxonomyAttachmentTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 3: Run and confirm expected failures**
+- [x] **Step 3: Run and confirm expected failures**
 
 Run: `docker compose run --rm php composer test:integration -- --filter 'CapabilitiesTest|TaxonomyAttachmentTest'`
 Expected: FAIL ("hyper_* is not registered").
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/integration/CapabilitiesTest.php tests/integration/TaxonomyAttachmentTest.php
@@ -1024,7 +1026,7 @@ git commit -m "test: add capability and taxonomy attachment contracts (failing u
 **Files:**
 - Create: `tests/integration/IdentifierConventionTest.php`, `tests/unit/NoLegacyKeysTest.php`
 
-- [ ] **Step 1: Write `tests/integration/IdentifierConventionTest.php`**
+- [x] **Step 1: Write `tests/integration/IdentifierConventionTest.php`**
 
 Covers Meta Box ids (through the `rwmb_meta_boxes` filter), customizer settings/controls/sections/panels, and widget id bases.
 
@@ -1122,7 +1124,7 @@ final class IdentifierConventionTest extends WP_UnitTestCase {
 
 Caveat: the control/setting matching is intentionally strict. If this test errors on the customizer internals rather than on the convention (for example a control with several settings), fix the test logic in this task, not the convention. The widget and script-handle assertions are simpler and should be exact.
 
-- [ ] **Step 2: Write `tests/unit/NoLegacyKeysTest.php`**
+- [x] **Step 2: Write `tests/unit/NoLegacyKeysTest.php`**
 
 plugins-01-test-toolchain line is flagged when it uses a registration or lookup function and contains a quoted legacy key. Slug lines (`'slug' => 'award'`) do not match the function list, so public URLs are untouched.
 
@@ -1163,7 +1165,7 @@ final class NoLegacyKeysTest extends TestCase {
 }
 ```
 
-- [ ] **Step 3: Run both**
+- [x] **Step 3: Run both**
 
 Run: `docker compose run --rm php composer test:unit -- --filter NoLegacyKeysTest`
 Expected: FAIL, listing offending `file:line` entries. Skim the list: any entry that is a genuine false positive (for example the WordPress built-in `'post'`/`'page'` are not in the old-key set, so they cannot appear). If a line is a real false positive, tighten `CONTEXT` rather than adding an allowlist.
@@ -1171,7 +1173,7 @@ Expected: FAIL, listing offending `file:line` entries. Skim the list: any entry 
 Run: `docker compose run --rm php composer test:integration -- --filter IdentifierConventionTest`
 Expected: FAIL on the old ids (`competition-information`, `tier`, `timecircles`, and the like). If a test instead ERRORS (exception, not an assertion), fix the test mechanics in this task until it fails only for convention reasons.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tests/integration/IdentifierConventionTest.php tests/unit/NoLegacyKeysTest.php
@@ -1184,21 +1186,21 @@ git commit -m "test: add identifier convention and legacy-key scan (failing unti
 
 **Files:** none created.
 
-- [ ] **Step 1: Run both suites and record the baseline**
+- [x] **Step 1: Run both suites and record the baseline**
 
 Run: `docker compose run --rm php composer test:unit; docker compose run --rm php composer test:integration`
 Expected: failures ONLY in the contract and header tests from Tasks 3, 6, 7 and 8. `SmokeTest`, `BootTest`, `test_requires_table_covers_every_plugin` and the snapshot skip pass. Any failure outside that set is a tooling defect to fix before plugins-02-shared-utils starts.
 
-- [ ] **Step 2: Confirm the gating commands**
+- [x] **Step 2: Confirm the gating commands**
 
 Run: `docker compose run --rm php composer lint:syntax`
 Expected: exit 0.
 
-- [ ] **Step 3: Note the baseline at the bottom of this plan**
+- [x] **Step 3: Note the baseline at the bottom of this plan**
 
 Append a short "Execution notes" section recording: PHPUnit version actually used, failing-test counts per suite, the phpcs baseline error count, and any legacy keys or season `object_type` surprises found in Task 5. Flip all checkboxes above and add the banner `> **STATUS: COMPLETED** (date). Baseline commit: <hash>.`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add docs/superpowers/plans/2026-10-02-plugins-01-test-toolchain.md
@@ -1223,3 +1225,13 @@ Not in this plan, by design:
 - Registrar, capability, breadcrumb and banner **unit/behavior tests** need the Utils classes, so they are written test-first inside plugins-02-shared-utils.
 - The "`Requires Plugins` equals the table" check is in the header lint (Task 3).
 - Audit tests belong to plugins-06-audit.
+
+## Execution notes
+
+- PHPUnit 9.6.37 works on PHP 8.5 (no fallback needed). Compose file is `compose.yaml`. WordPress core is at `vendor/johnpbloch/wordpress-core/` (the installer is not a dependency); the dead composer `extra` config was removed.
+- Baseline, unit suite: 73 tests, 2 pass (SmokeTest, `test_requires_table_covers_every_plugin`), 71 red by design (56 errors because the main files do not exist under the new names yet, 15 failures).
+- Baseline, integration suite: 42 tests, 36 red by design, 3 skipped (snapshot writer, non-public URL cases), the rest pass (BootTest and constants-only checks).
+- `composer lint:syntax`: exit 0. phpcs baseline: 1465 errors, 27 warnings (non-gating). The `hyperpress-media` and `hyperpress-shortcodes` `<file>` entries are left out of `phpcs.xml.dist` until those plugins exist (add them in plugins-04).
+- Snapshot findings: `season` and `program` `object_type` is `[]`; `tier` rewrite has a stray `"0"` key and `with_front` true (compare rewrite by key); countdown supports `slug`.
+- Test-code fixes made while implementing: `PublicUrlTest` has its own `FIXTURE` constant; `NoLegacyKeysTest` is comment-blind and skips missing plugin dirs; id-less heading/divider/custom_html/button Meta Box fields are skipped.
+- Deferred minors: `Convention.php` array arrow alignment may trip phpcs; `BootTest` is weak; the multi-line legacy-key path has no positive test.
