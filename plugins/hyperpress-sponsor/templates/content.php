@@ -1,13 +1,9 @@
 <?php
-namespace HYPER_Press_Sponsor;
-
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-    die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 ?>
 <header>
-    <?php if ( ! is_singular( 'sponsor' ) ) : ?>
+    <?php if ( ! is_singular( 'hyper_sponsor' ) ) : ?>
         <h2 class="entry-title">
             <a href="<?php echo esc_url( get_permalink() ) ?>" rel="bookmark">
                 <?php the_title(); ?>
@@ -21,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <?php the_post_thumbnail( '', array( 'class' => 'thumbnail' ) ); ?>
     <?php endif; ?>
 
-    <?php $sponsor_website = get_post_custom_values( 'sponsor_website', get_the_ID() )[0]; ?>
+    <?php $sponsor_website = get_post_custom_values( 'hyperpress_sponsor_website', get_the_ID() )[0]; ?>
 
     <?php if ( ! empty( $sponsor_website ) ) : ?>
         <p><strong>Website:</strong> <a href="<?php echo esc_url( $sponsor_website ); ?>" target="_blank"

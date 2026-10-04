@@ -1,60 +1,59 @@
 <?php
+namespace HyperPress\Sponsor;
 
-namespace HYPER_Press_Sponsor;
+defined( 'ABSPATH' ) || exit;
 
-// Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+final class MetaBoxes {
 
-if ( ! function_exists( '\HYPER_Press_Sponsor\hyperpress_register_sponsor_meta_boxes' ) ) :
-	function hyperpress_register_sponsor_meta_boxes( $meta_boxes ) {
+	public static function register(): void {
+		add_filter( 'rwmb_meta_boxes', array( self::class, 'register_sponsor_meta_boxes' ) );
+	}
+
+	public static function register_sponsor_meta_boxes( $meta_boxes ) {
 		// Sponsor Meta
-		$meta_boxes[] = [
+		$meta_boxes[] = array(
 			'title'    => __( 'Sponsors', 'hyperpress' ),
 			'id'       => 'hyperpress_sponsor',
 			'panel'    => '',
 			'priority' => 135,
-		];
-		$meta_boxes[] = [
-			'id'         => 'information',
+		);
+		$meta_boxes[] = array(
+			'id'         => 'hyperpress_sponsor_information',
 			'title'      => 'Sponsor Information',
-			'post_types' => [ 'sponsor' ],
+			'post_types' => array( Plugin::POST_TYPE ),
 			'context'    => 'normal',
 			'priority'   => 'high',
-			'fields'     => [
-				[
+			'fields'     => array(
+				array(
 					'name'           => 'Sponsorship Tier',
 					'desc'           => 'Select the sponsorship tier for this sponsor in the latest Season of Sponsorship.',
-					'id'             => 'tier',
+					'id'             => 'hyperpress_sponsor_tier',
 					'type'           => 'taxonomy',
-					'taxonomy'       => 'tier',
+					'taxonomy'       => Plugin::TIER,
 					'field_type'     => 'select',
 					'add_new'        => false,
 					'remove_default' => true,
-					'required'       => false
-				],
-				[
+					'required'       => false,
+				),
+				array(
 					'name'              => 'Sponsor Website',
-					'id'                => 'sponsor_website',
+					'id'                => 'hyperpress_sponsor_website',
 					'type'              => 'url',
 					'placeholder'       => 'https://hyperonline.org',
 					'label_description' => '',
 					'required'          => false,
-					'sanitize_callback' => 'url'
-				],
-				[
+					'sanitize_callback' => 'url',
+				),
+				array(
 					'name'        => 'Sponsor Description',
-					'id'          => 'sponsor_description',
+					'id'          => 'hyperpress_sponsor_description',
 					'type'        => 'textarea',
 					'placeholder' => 'A brief description of the Sponsor',
-					'required'    => false
-				]
-			]
-		];
+					'required'    => false,
+				),
+			),
+		);
 
 		return $meta_boxes;
 	}
-
-	add_filter( 'rwmb_meta_boxes', '\HYPER_Press_Sponsor\hyperpress_register_sponsor_meta_boxes' );
-endif;
+}

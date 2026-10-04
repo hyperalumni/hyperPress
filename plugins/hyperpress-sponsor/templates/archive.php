@@ -1,11 +1,6 @@
 <?php
-
-namespace HYPER_Press_Sponsor;
-
 // Don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-    die( '-1' );
-}
+defined( 'ABSPATH' ) || exit;
 
 get_header(); ?>
     <?php get_template_part( 'template-parts/banner' ); ?>
