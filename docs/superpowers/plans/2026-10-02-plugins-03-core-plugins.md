@@ -180,7 +180,7 @@ git commit -m "test: add registration parity test against the legacy snapshot" -
 
 **Requires Plugins:** `hyperpress-utils, meta-box-aio`. **Namespace:** `HyperPress\Season`. **Legacy files:** `season.php`, `lib/{banner,breadcrumbs,custom-taxonomy,customize,functions,meta-boxes,rewrite}.php`, `lib/functions/get-sorted-seasons.php`.
 
-**Target files:** `hyperpress-season.php`, `src/Plugin.php`, `src/Banner.php`, `src/Breadcrumbs.php`, `src/Customizer.php`, `src/MetaBoxes.php`, `src/Rewrite.php`, `src/SortedSeasons.php`, `src/Shortcodes/SeasonCount.php`.
+**Target files:** `hyperpress-season.php`, `src/Plugin.php`, `src/SeasonBanner.php`, `src/Breadcrumbs.php`, `src/Customizer.php`, `src/MetaBoxes.php`, `src/Rewrite.php`, `src/SortedSeasons.php`, `src/Shortcodes/SeasonCount.php`.
 
 - [x] **Step 1: Read every legacy file**
 
@@ -204,7 +204,7 @@ final class Plugin {
 
 	public static function boot(): void {
 		add_action( 'init', array( self::class, 'register' ) );
-		Banner::register();
+		SeasonBanner::register();
 		Breadcrumbs::register();
 		Customizer::register();
 		MetaBoxes::register();
@@ -237,7 +237,7 @@ final class Plugin {
 The legacy function was named `hyperpress_register_season_taxonomoy` (typo). It is replaced, not renamed. Object types read the theme mod `hyperpress_season_post_types` with default `[]` (attached to nothing), matching legacy.
 
 - [x] **Step 4: Convert the concern files (R3)** with these specific edits:
-  - `Banner`: `is_tax( 'season' )` becomes `is_tax( 'hyper_season' )`. Keep `$banner['type'] = 'season'` (theme-facing value) and the `hyperpress_gear_blue` / `hyperpress_season_banner_subtitle` theme mods unchanged.
+  - `SeasonBanner`: `is_tax( 'season' )` becomes `is_tax( 'hyper_season' )`. Keep `$banner['type'] = 'season'` (theme-facing value) and the `hyperpress_gear_blue` / `hyperpress_season_banner_subtitle` theme mods unchanged.
   - `Breadcrumbs`: `is_tax( 'season' )` becomes `is_tax( 'hyper_season' )`. The rest is copied unchanged (the array-based breadcrumb logic is season-specific and stays here).
   - `SortedSeasons`: `get_sorted_seasons` becomes `SortedSeasons::get(...)` with the same parameters and body; `'season'` in `wp_get_post_terms` becomes `'hyper_season'`. Update every caller found in the plugins-02-shared-utils Task 0 list that lives in a plugin.
   - `Customizer`: control ids `season_banner_subtitle` becomes `hyperpress_season_banner_subtitle`; `season_post_types` becomes `hyperpress_season_post_types`; `hyperpress_season_current` is already compliant. Replace `\HYPER_Press_Utils\HYPERpress_Dropdown_Post_Type_Control` with `\HyperPress\Utils\Controls\PostTypeDropdownControl`. Section and panel `hyperpress_season` are unchanged.

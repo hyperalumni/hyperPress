@@ -12,7 +12,7 @@ final class Plugin {
 
 	public static function boot(): void {
 		add_action( 'init', array( self::class, 'register' ) );
-		Banner::register();
+		SeasonBanner::register();
 		Breadcrumbs::register();
 		Customizer::register();
 		MetaBoxes::register();

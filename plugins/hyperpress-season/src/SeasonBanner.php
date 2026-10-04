@@ -3,7 +3,7 @@ namespace HyperPress\Season;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Banner {
+final class SeasonBanner {
 
 	public static function register(): void {
 		add_filter( 'hyperpress_banner_content', array( self::class, 'filter' ) );
