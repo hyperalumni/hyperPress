@@ -467,6 +467,7 @@ $wp_customize->add_setting( 'wpt_mobile_menu_layout', array( 'default' => __( 't
 - Impact: `wp_nav_menu( 'menu' => … )` looks a menu up by id, slug or name, so a translation of `mobile-nav` makes the lookup miss and falls back to the location (fragile). The setting default `topbar` is compared against the literal `'topbar'`/`'offcanvas'` in header.php, footer.php and foundation.php:189-201; translating the default can make the comparison fail in a non-English locale. `wpt_mobile_menu_layout` has no sanitize_callback, so a crafted Customizer request can store any string; all consumers compare with `===` or print a fixed class, so no injection (header/footer/body_class), just a broken layout.
 - Fix: literal `'mobile-nav'` and `'topbar'`; `'sanitize_callback' => static fn( $v ) => in_array( $v, array( 'topbar', 'offcanvas' ), true ) ? $v : 'topbar'`.
 - Test: unit test. Switch locale with a `.mo` that translates `topbar`; assert `mobile_nav_class()` yields `topbar`. `$setting->sanitize( 'evil' )` returns `'topbar'`.
+- **FIXED**: the mobile menu id and the layout default are literals again, and `wpt_mobile_menu_layout` sanitizes to `topbar`|`offcanvas` with a `topbar` fallback.
 
 ### T35 (low) Homepage Customizer settings: empty sanitize_callback, unregistered section and setting
 - File: library/customize/homepage.php:14-24, 26-32, 46-53

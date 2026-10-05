@@ -45,7 +45,7 @@ function hyperpress_mobile_nav(): void {
 	wp_nav_menu(
 		array(
 			'container'      => false,                         // Remove nav container
-			'menu'           => __( 'mobile-nav', 'hyperpress' ),
+			'menu'           => 'mobile-nav',
 			'menu_class'     => 'vertical menu',
 			'theme_location' => 'mobile-nav',
 			'items_wrap'     => '<ul id="%1$s" class="%2$s" data-accordion-menu data-submenu-toggle="true">%3$s</ul>',

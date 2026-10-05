@@ -38,7 +38,10 @@ function wpt_register_theme_customizer( $wp_customize ): void {
 	$wp_customize->add_setting(
 		'wpt_mobile_menu_layout',
 		array(
-			'default' => __( 'topbar', 'hyperpress' ),
+			'default'           => 'topbar',
+			'sanitize_callback' => static function ( $value ): string {
+				return in_array( $value, array( 'topbar', 'offcanvas' ), true ) ? $value : 'topbar';
+			},
 		)
 	);
 
