@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 
 the_post_navigation(
     array(
-		'prev_text' => __( '&laquo; %title' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
-		'next_text' => __( '%title &raquo;' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
+		'prev_text' => __( '&laquo; %title', 'hyperpress' ),
+		'next_text' => __( '%title &raquo;', 'hyperpress' ),
 	)
     );

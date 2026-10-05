@@ -32,10 +32,10 @@ function hyperpress_custom_sizes( $sizes ) {
 	return array_merge(
 		$sizes,
         array(
-			'fp-small'  => __( 'FP Small' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
-			'fp-medium' => __( 'FP Medium' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
-			'fp-large'  => __( 'FP Large' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
-			'fp-xlarge' => __( 'FP XLarge' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- theme audit
+			'fp-small'  => __( 'FP Small', 'hyperpress' ),
+			'fp-medium' => __( 'FP Medium', 'hyperpress' ),
+			'fp-large'  => __( 'FP Large', 'hyperpress' ),
+			'fp-xlarge' => __( 'FP XLarge', 'hyperpress' ),
 		)
 	);
 }

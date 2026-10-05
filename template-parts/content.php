@@ -40,7 +40,7 @@ defined( 'ABSPATH' ) || exit;
 			);
 		?>
 		<?php
-        $tag = get_the_tags(); if ( $tag ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- theme audit
+        $post_tags = get_the_tags(); if ( $post_tags ) {
 ?>
 <p><?php the_tags(); ?></p><?php } ?>
 	</footer>
