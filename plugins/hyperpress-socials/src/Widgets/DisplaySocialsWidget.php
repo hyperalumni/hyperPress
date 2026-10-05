@@ -16,15 +16,19 @@ class DisplaySocialsWidget extends WP_Widget {
 		);
 	}
 
-	public function widget( $args, $instance ): void {
-		$title = apply_filters( 'widget_title', $instance['title'] ?? __( 'Stalk Us', 'hyperpress' ), $instance, $this->id_base );
+	/**
+	 * Instance for rendering this widget as the default content of a widget area with the_widget().
+	 *
+	 * @return array{title: string, layout: string}
+	 */
+	public static function default_instance(): array {
+		return array(
+			'title'  => '',
+			'layout' => 'inline',
+		);
+	}
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-		echo $args['before_widget'];
-		if ( ! empty( $title ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-			echo $args['before_title'] . $title . $args['after_title'];
-		}
+	private function render_grid(): void {
 		echo '<div class="grid-x grid-padding-x xsmall-up-3 small-up-4 medium-up-2 large-up-3 xlarge-up-4">';
 
 		foreach ( Links::all() as $link ) {
@@ -45,6 +49,37 @@ class DisplaySocialsWidget extends WP_Widget {
 		}
 
 		echo '</div>';
+	}
+
+	private function render_inline(): void {
+		echo '<ul class="menu simple">';
+
+		foreach ( Links::all() as $link ) {
+			echo '<li><a href="' . esc_url( $link['url'] ) . '" title="' . esc_attr( $link['title'] ) . '" target="' . esc_attr( $link['target'] ) . '"';
+			if ( '' !== $link['rel'] ) {
+				echo ' rel="' . esc_attr( $link['rel'] ) . '"';
+			}
+			echo '>';
+			echo '<i class="' . esc_attr( $link['icon'] ) . ' fa-inverse" aria-hidden="true"></i>';
+			echo '</a></li>';
+		}
+
+		echo '</ul>';
+	}
+	public function widget( $args, $instance ): void {
+		$title = apply_filters( 'widget_title', $instance['title'] ?? __( 'Stalk Us', 'hyperpress' ), $instance, $this->id_base );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
+		echo $args['before_widget'];
+		if ( ! empty( $title ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
+			echo $args['before_title'] . $title . $args['after_title'];
+		}
+		if ( 'inline' === ( $instance['layout'] ?? 'grid' ) ) {
+			$this->render_inline();
+		} else {
+			$this->render_grid();
+		}
 
 		// Output widget content here.
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
@@ -52,7 +87,8 @@ class DisplaySocialsWidget extends WP_Widget {
 	}
 
 	public function form( $instance ): void {
-		$title = $instance['title'] ?? __( 'Stalk Us', 'hyperpress' );
+		$title  = $instance['title'] ?? __( 'Stalk Us', 'hyperpress' );
+		$layout = 'inline' === ( $instance['layout'] ?? 'grid' ) ? 'inline' : 'grid';
 
 		// Widget admin form.
 		?>
@@ -67,6 +103,18 @@ class DisplaySocialsWidget extends WP_Widget {
 					value="<?php echo esc_attr( $title ); ?>"
 			/>
 		</p>
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'layout' ) ); ?>">
+				<?php esc_html_e( 'Layout:', 'hyperpress' ); ?>
+			</label>
+			<select
+					class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'layout' ) ); ?>"
+					name="<?php echo esc_attr( $this->get_field_name( 'layout' ) ); ?>"
+			>
+				<option value="grid"<?php selected( $layout, 'grid' ); ?>><?php esc_html_e( 'Grid (large icons)', 'hyperpress' ); ?></option>
+				<option value="inline"<?php selected( $layout, 'inline' ); ?>><?php esc_html_e( 'Inline list (small icons)', 'hyperpress' ); ?></option>
+			</select>
+		</p>
 		<?php
 	}
 
@@ -74,6 +122,11 @@ class DisplaySocialsWidget extends WP_Widget {
 		// Process widget options to be saved.
 		$title = $new_instance['title'] ?? '';
 
-		return array( 'title' => is_string( $title ) ? sanitize_text_field( $title ) : '' );
+		$layout = $new_instance['layout'] ?? '';
+
+		return array(
+			'title'  => is_string( $title ) ? sanitize_text_field( $title ) : '',
+			'layout' => 'inline' === $layout ? 'inline' : 'grid',
+		);
 	}
 }

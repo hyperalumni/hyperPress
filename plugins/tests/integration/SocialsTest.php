@@ -130,8 +130,8 @@ final class SocialsTest extends WP_UnitTestCase {
 	public function test_update_turns_an_array_title_into_an_empty_string(): void {
 		$widget = new \HyperPress\Socials\Widgets\DisplaySocialsWidget();
 
-		$this->assertSame( array( 'title' => '' ), $widget->update( array( 'title' => array( 'x' ) ), array() ) );
-		$this->assertSame( array( 'title' => 'Hi' ), $widget->update( array( 'title' => '<b>Hi</b>' ), array() ) );
+		$this->assertSame( array( 'title' => '', 'layout' => 'grid' ), $widget->update( array( 'title' => array( 'x' ) ), array() ) );
+		$this->assertSame( array( 'title' => 'Hi', 'layout' => 'grid' ), $widget->update( array( 'title' => '<b>Hi</b>' ), array() ) );
 	}
 
 	public function test_the_widget_title_filter_receives_the_instance_and_id_base(): void {
