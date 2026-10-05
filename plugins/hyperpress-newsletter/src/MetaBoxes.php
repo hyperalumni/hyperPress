@@ -17,12 +17,6 @@ final class MetaBoxes {
 	public static function register_newsletter_meta_boxes( $meta_boxes ) {
 		// Newsletter Meta.
 		$meta_boxes[] = array(
-			'title'    => __( 'Newsletters', 'hyperpress' ),
-			'id'       => 'hyperpress_newsletter',
-			'panel'    => '',
-			'priority' => 135,
-		);
-		$meta_boxes[] = array(
 			'id'         => 'hyperpress_newsletter_information',
 			'title'      => 'Canva Newsletter',
 			'post_types' => array( 'hyper_newsletter' ),
