@@ -88,7 +88,7 @@ final class Shortcode {
 
 		$event_name      = rwmb_meta( 'hyperpress_countdown_event_name', '', $countdown->ID );
 		$event_location  = rwmb_meta( 'hyperpress_countdown_event_location', '', $countdown->ID );
-		$count_past_zero = (bool) rwmb_meta( 'hyperpress_countdown_past_zero', '', $countdown->ID );
+		$count_past_zero = filter_var( rwmb_meta( 'hyperpress_countdown_past_zero', '', $countdown->ID ), FILTER_VALIDATE_BOOLEAN );
 
 		$output  = '<section class="grid-x countdown align-center">';
 		$output .= '<div class="cell xsmall-12 large-10">';

@@ -136,6 +136,12 @@ final class CountdownShortcodeHardeningTest extends WP_UnitTestCase {
 			'string one'   => array( '1', 'true' ),
 			'int one'      => array( 1, 'true' ),
 			'true'         => array( true, 'true' ),
+			'word false'   => array( 'false', 'false' ),
+			'word off'     => array( 'off', 'false' ),
+			'word no'      => array( 'no', 'false' ),
+			'word true'    => array( 'true', 'true' ),
+			'word on'      => array( 'on', 'true' ),
+			'array value'  => array( array( '1' ), 'false' ),
 		);
 	}
 
