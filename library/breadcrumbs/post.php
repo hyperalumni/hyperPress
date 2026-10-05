@@ -7,7 +7,7 @@ add_filter( 'hyperpress_breadcrumbs_content', 'hyperpress_breadcrumbs_post' );
 function hyperpress_breadcrumbs_post( $breadcrumbs ) {
 	if ( is_singular( 'post' ) ) {
 		// Get the season information
-		$seasons = \HyperPress\Season\SortedSeasons::get();
+		$seasons = hyperpress_sorted_seasons();
 		if ( ! empty( $seasons ) ) {
 			$season = $seasons[0];
 			if ( ! empty( $season ) ) {

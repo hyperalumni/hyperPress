@@ -8,7 +8,8 @@ $hyperpress_tests_dir = dirname( __DIR__ ) . '/vendor/wp-phpunit/wp-phpunit';
 require_once $hyperpress_tests_dir . '/includes/functions.php';
 
 // Meta Box is not installed in tests. Tests set $GLOBALS['hyperpress_test_rwmb'][ $key ] to simulate meta.
-if ( ! function_exists( 'rwmb_meta' ) ) {
+// HYPERPRESS_TEST_WITHOUT_PLUGINS=1 also leaves out this stub and every HYPER plugin (see NoPluginsTest).
+if ( ! getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) && ! function_exists( 'rwmb_meta' ) ) {
 	function rwmb_meta( $key, $args = array(), $post_id = null ) { // phpcs:ignore
 		return $GLOBALS['hyperpress_test_rwmb'][ $key ] ?? '';
 	}
@@ -37,6 +38,10 @@ tests_add_filter(
 		$all = array_map( 'basename', glob( '/plugins/hyperpress-*', GLOB_ONLYDIR ) );
 		sort( $all );
 		$ordered = array_merge( $first, array_diff( $all, $first ) );
+
+		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
+			return;
+		}
 
 		foreach ( $ordered as $plugin ) {
 			$main = "/plugins/$plugin/$plugin.php";

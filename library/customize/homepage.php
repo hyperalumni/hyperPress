@@ -28,18 +28,21 @@ function hyperpress_customize_homepage( $wp_customize ): void {
 			'sanitize_callback' => '',
 		)
         );
-	$wp_customize->add_control(
-        new CategoryDropdownControl(
-        $wp_customize,
-        'hyperpress_home_blog_categories',
-        array(
-			'section'     => 'hyperpress_homepage',
-			'label'       => __( 'Homepage Blog Category', 'hyperpress' ),
-			'description' => __( 'Select the category that the homepage will show posts from', 'hyperpress' ),
-			'settings'    => 'hyperpress_home_blog_categories',
-		)
-        )
-        );
+	// The control classes come from hyperpress-utils; without it the setting stays but has no control.
+	if ( class_exists( CategoryDropdownControl::class ) ) {
+		$wp_customize->add_control(
+	        new CategoryDropdownControl(
+	        $wp_customize,
+	        'hyperpress_home_blog_categories',
+	        array(
+				'section'     => 'hyperpress_homepage',
+				'label'       => __( 'Homepage Blog Category', 'hyperpress' ),
+				'description' => __( 'Select the category that the homepage will show posts from', 'hyperpress' ),
+				'settings'    => 'hyperpress_home_blog_categories',
+			)
+	        )
+	        );
+	}
 
 	$wp_customize->add_setting(
         'hyperpress_home_blog_post_types',
@@ -49,16 +52,19 @@ function hyperpress_customize_homepage( $wp_customize ): void {
 			'sanitize_callback' => '',
 		)
         );
-	$wp_customize->add_control(
-        new PostTypeDropdownControl(
-        $wp_customize,
-        'hyperpress_home_blog_post_types',
-        array(
-			'section'     => 'hyperpress_homepage',
-			'label'       => __( 'Homepage Blog Post Types', 'hyperpress' ),
-			'description' => __( 'Select the Post Types that the homepage will display', 'hyperpress' ),
-			'settings'    => 'hyperpress_home_blog_post_types',
-		)
-        )
-        );
+	// The control classes come from hyperpress-utils; without it the setting stays but has no control.
+	if ( class_exists( PostTypeDropdownControl::class ) ) {
+		$wp_customize->add_control(
+	        new PostTypeDropdownControl(
+	        $wp_customize,
+	        'hyperpress_home_blog_post_types',
+	        array(
+				'section'     => 'hyperpress_homepage',
+				'label'       => __( 'Homepage Blog Post Types', 'hyperpress' ),
+				'description' => __( 'Select the Post Types that the homepage will display', 'hyperpress' ),
+				'settings'    => 'hyperpress_home_blog_post_types',
+			)
+	        )
+	        );
+	}
 }

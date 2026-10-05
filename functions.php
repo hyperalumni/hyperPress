@@ -28,6 +28,9 @@ require_once 'library/class-hyperpress-comments.php';
 /** Register all navigation menus */
 require_once 'library/navigation.php';
 
+/** Wrappers for plugin functions (Meta Box, seasons) */
+require_once 'library/helpers.php';
+
 /** Add Breadcrumbs */
 require_once 'library/breadcrumbs.php';
 

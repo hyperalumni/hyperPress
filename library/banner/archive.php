@@ -13,7 +13,7 @@ function hyperpress_banner_archive( $banner ) {
 			$blog_page_id = get_option( 'page_for_posts' );
 			if ( $blog_page_id > 0 ) {
 				// if the blog page is not the front page, use its values
-				$banner['backgroundColor'] = rwmb_meta( 'hyperpress_banner_background_color', '', $blog_page_id );
+				$banner['backgroundColor'] = hyperpress_meta( 'hyperpress_banner_background_color', $blog_page_id );
 			}
 		}
 	}

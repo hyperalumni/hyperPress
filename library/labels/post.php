@@ -23,7 +23,7 @@ function hyperpress_labels_post( $labels ) {
 			'rel'     => 'author',
 		);
 		// Get the season information
-		$seasons = \HyperPress\Season\SortedSeasons::get();
+		$seasons = hyperpress_sorted_seasons();
 		if ( ! empty( $seasons ) ) {
 			$season = $seasons[0];
 			if ( ! empty( $season ) ) {
