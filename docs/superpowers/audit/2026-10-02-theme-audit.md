@@ -164,6 +164,7 @@ if ( array_key_exists( $filename, $manifest ) ) {
 - Impact: WP skips (does not print) a style whose dependency is unregistered, so the whole theme CSS can vanish if that constant is ever defined without the theme's `fontawesome` handle registered. Whether the official plugin defines that constant, and under which handle it registers, was not verified. If it is never defined, the branch is dead code.
 - Fix: only add `'fontawesome'` to the dependency list if `wp_style_is( 'fontawesome', 'registered' )`.
 - Test: unit test defines the constant and asserts `wp_styles()->registered['main-stylesheet']` is printable (`wp_style_is( 'main-stylesheet', 'done' )` after `wp_print_styles`).
+- **FIXED**: `hyperpress_main_style_deps()` lists `fontawesome` as a dependency of `main-stylesheet` only when that handle is registered.
 
 ### T11 (low) Small enqueue defects
 - File: library/enqueue-scripts.php:55-56, 62, 116

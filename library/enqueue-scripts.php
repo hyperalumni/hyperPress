@@ -140,6 +140,26 @@ add_filter( 'style_loader_tag', 'hyperpress_add_integrity', 10, 3 );
 
 add_action( 'wp_enqueue_scripts', 'hyperpress_scripts' );
 
+/**
+ * Style handles the main stylesheet depends on.
+ *
+ * WordPress skips a style whose dependency is not registered, so 'fontawesome' is only listed when it is
+ * (the theme does not register it when the official Font Awesome plugin is active).
+ *
+ * @param bool|null $fontawesome_registered Whether the 'fontawesome' style is registered; null checks WordPress.
+ * @return string[]
+ */
+function hyperpress_main_style_deps( ?bool $fontawesome_registered = null ): array {
+	$fontawesome_registered ??= wp_style_is( 'fontawesome', 'registered' );
+
+	$deps = array( 'oswald', 'opensans' );
+	if ( $fontawesome_registered ) {
+		$deps[] = 'fontawesome';
+	}
+
+	return $deps;
+}
+
 function hyperpress_scripts(): void {
 	global $google_fonts_base, $hyper_press_version, $foundation_version, $font_awesome_version, $jquery_version, $jquery_migrate_version;
 
@@ -164,11 +184,7 @@ function hyperpress_scripts(): void {
 	wp_enqueue_style(
         'main-stylesheet',
         get_template_directory_uri() . '/dist/assets/css/' . hyperpress_asset_path( 'app.css' ),
-        array(
-			'oswald',
-			'opensans',
-			'fontawesome',
-		),
+        hyperpress_main_style_deps(),
         $hyper_press_version
         );
 
