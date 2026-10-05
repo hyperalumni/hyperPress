@@ -7,6 +7,7 @@ use HyperPress\Utils\Banner;
 use HyperPress\Utils\Breadcrumbs;
 use HyperPress\Utils\Capabilities;
 use HyperPress\Utils\PostTypeRegistrar;
+use HyperPress\Utils\Version;
 
 final class Plugin {
 
@@ -44,7 +45,7 @@ final class Plugin {
 	}
 
 	public static function ensure_capabilities(): void {
-		Capabilities::ensure( self::CAPS_OPTION, self::version(), array( self::POST_TYPE ) );
+		Capabilities::ensure( self::CAPS_OPTION, Version::of( dirname( __DIR__ ) . '/hyperpress-newsletter.php' ), array( self::POST_TYPE ) );
 	}
 
 	public static function activate(): void {
@@ -68,10 +69,5 @@ final class Plugin {
 			'hierarchical'         => false,
 			'rewrite_hierarchical' => true,
 		);
-	}
-
-	private static function version(): string {
-		$data = get_file_data( dirname( __DIR__ ) . '/hyperpress-newsletter.php', array( 'version' => 'Version' ) );
-		return $data['version'];
 	}
 }
