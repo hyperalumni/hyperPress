@@ -60,16 +60,6 @@ endif;
 ?>
 
 <?php
-	/*
-	Do not delete these lines.
-	Prevent access to this file directly
-	*/
-
-	defined( 'ABSPATH' ) || exit;
-
-?>
-
-<?php
 if ( comments_open() ) :
 ?>
 <section id="respond">
