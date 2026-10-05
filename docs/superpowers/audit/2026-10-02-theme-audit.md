@@ -35,6 +35,58 @@ critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43). Severity
 - Found while testing and **FIXED**: `hyperpress_get_the_comments_pagination()` expected the current page as `<span class="page-numbers current">`, but WordPress prints `<span aria-current="page" class="page-numbers current">`, so the current page never got the `active` class. The opening tag is now matched by its class, and the generated link carries `aria-current="page"`.
 - Remaining suppressions: `template-parts/content.php` and `content-page.php` no longer overwrite WordPress's `$tag` global (the local is `$post_tags`); the `FP Small/Medium/Large/XLarge` image size labels in `library/responsive-images.php` and the `template-parts/post-navigation.php` prev/next labels now pass the `hyperpress` text domain (they were being translated with `default`). The comment walker's `GlobalVariablesOverride` ignores and the `remove_thumbnail_dimensions()` unused-parameter ignore now state why they are intentional (the walker mirrors `Walker_Comment`, which sets those globals; the filter signature is fixed by `post_thumbnail_html`). The dead-code ignores (`library/class-hyperpress-protocol-relative-theme-assets.php` unused parameters and the `CommentedOutCode` ignores in `functions.php`, `library/foundation.php`, `library/plugins.php`, `library/theme-activation.php`) remain, pending the decision to delete that code.
 
+## Status of every finding
+
+Status as of the last commit on this branch. **Fixed** means the code changed and a test covers it (or the note says why none could); **Info** means no action is needed; **Open** means still to do.
+
+| ID | Severity | Finding | Status |
+|---|---|---|---|
+| T1 | low | Meta Box download key in local git history | **Owner**: drop the key from commit `14566eb` with a rebase before pushing |
+| T2 | medium | `.env` is tracked by git | **Open**: the tracked environment file holds only one harmless key; untrack it and add an example file (owner's call) |
+| T3 | medium | `front-page.php` passes a WP_Post as the `content_template` default and includes it | **Fixed** |
+| T4 | medium | Unvalidated `include` of a filter-returned path | **Fixed** |
+| T5 | medium | Unescaped Customizer color mods printed into inline `<style>` | Accepted: every color setting uses `sanitize_hex_color`; downgraded |
+| T6 | medium | jQuery and FontAwesome JS from a CDN with no SRI, and WP jQuery deregistered in wp-admin | **Fixed** |
+| T7 | low | Countdown ids from a theme mod are concatenated into a shortcode string without a cast | **Fixed** |
+| T8 | low | `template-parts/banner.php`: class attribute echoed unescaped, missing array keys from th... | **Fixed** |
+| T9 | low | `hyperpress_asset_path()` throws a TypeError on an invalid manifest | **Fixed** |
+| T10 | low | `main-stylesheet` depends on the `fontawesome` handle, which is not registered when FONT_... | **Fixed** |
+| T11 | low | Small enqueue defects | **Fixed** (partial): `display=swap` and the null screen fixed; `true` passed as `$media` stays (a comment says the icons need it) |
+| T12 | low | cleanup.php removes `rel_canonical` and feed links | **Fixed** |
+| T13 | low | cleanup.php: ineffective and dead removals | **Fixed** |
+| T14 | low | front-page.php query hygiene | **Fixed** |
+| T15 | low | nggallery: DivisionByZeroError / TypeError on thumbnail aspect ratio (unverified source o... | **Fixed** |
+| T16 | low | nggallery: NextGen fields echoed unescaped (unverified) | **Fixed** (partial): escaped, but NextGen is not installed so it is only syntax-checked |
+| T17 | low | breadcrumbs/tag.php uses the removed `get_terms( $taxonomy, $args )` signature | **Fixed** |
+| T18 | low | class-hyperpress-comments.php: date string used as a printf format, `htmlspecialchars` in... | **Fixed** |
+| T19 | low | footer.php: theme-mod-driven values echoed unescaped (unverified) | **Fixed** |
+| T20 | low | Late-escaping gaps for trusted strings | **Fixed** |
+| T21 | info | foundation.php:145-154 menu fallback prints admin URLs (unverified) | **Fixed** |
+| T22 | info | Protocol-relative asset class (candidate row 9), body unverified | **Owner**: dead class, waiting for a delete decision |
+| T23 | info | False-positive `theme audit` suppressions (confirmed or likely benign) | Info, no action |
+| T24 | medium | Visitor-controlled search string is run through `do_shortcode()` in the banner | **Fixed** |
+| T25 | low | `sanitize_text_field` strips the `<span class="emphasis">` markup every banner router pro... | **Fixed** |
+| T26 | medium | comments.php renders approved comments of password-protected posts before the password check | **Fixed** |
+| T27 | medium | TGMPA installs an unpinned plugin ZIP over plain HTTP | **Fixed** |
+| T28 | medium | Gallery shortcode puts the attachment caption into HTML attributes with only `wptexturize()` | **Fixed** |
+| T29 | medium | Copyright name: no sanitize_callback, echoed raw in the footer | **Fixed** |
+| T30 | medium | Hard dependency on Meta Box and HYPER plugin classes with no guards | **Fixed** |
+| T31 | low | `body_class()` is printed on `<html>`, and `<body>` has no classes or `wp_body_open()` | **Fixed** |
+| T32 | low | Author banner title: operator precedence drops the prefix | **Fixed** |
+| T33 | low | "Continue Reading" is a `<button href>` that does not navigate | **Fixed** |
+| T34 | low | Translated identifiers, and an unsanitized theme setting | **Fixed** |
+| T35 | low | Homepage Customizer settings: empty sanitize_callback, unregistered section and setting | **Fixed** |
+| T36 | low | Undefined array keys / null dereferences in labels and breadcrumbs | **Fixed** |
+| T37 | low | Breadcrumb `href` uses `esc_attr()`, and the author crumb links to the author's own website | **Fixed** |
+| T38 | low | Template parts read the global `$post` and pass an empty size | **Fixed** |
+| T39 | low | searchform.php: whitespace inside the placeholder, duplicate ids | **Fixed** |
+| T40 | info | Relative `require_once` paths resolve through `include_path` first | **Fixed** |
+| T41 | info | Dead and unreachable code | **Owner**: dead code, waiting for a delete decision |
+| T42 | low | `nggallery/gallery.php` is an empty template that shadows NextGEN's own | Decided: keep; it will be expanded (owner) |
+| T43 | info | Minor hygiene | Info, no action (open hygiene: duplicate `role="banner"`, unused WooCommerce supports) |
+
+Totals: 35 Fixed, 3 Owner, 2 Info, no action, 1 Open, 1 Accepted, 1 Decided.
+
 ## Decisions needed
 
 Proposed default: rebase the key out of `14566eb` before pushing (T1, owner), then fix T3, T24, T26, T27, T29 (test first), then T28, T30 and T4; defer the rest.
