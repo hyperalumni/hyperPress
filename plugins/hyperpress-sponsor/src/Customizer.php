@@ -15,9 +15,10 @@ final class Customizer {
 		$wp_customize->add_setting(
 			'hyperpress_sponsor_banner_subtitle',
 			array(
-				'default'   => 'Helping Make HYPER Happen',
-				'type'      => 'theme_mod',
-				'transport' => 'refresh',
+				'default'           => 'Helping Make HYPER Happen',
+				'type'              => 'theme_mod',
+				'transport'         => 'refresh',
+				'sanitize_callback' => 'wp_kses_post',
 			)
 		);
 		$wp_customize->add_control(
