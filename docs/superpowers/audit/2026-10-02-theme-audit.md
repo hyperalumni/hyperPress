@@ -41,7 +41,7 @@ Status as of the last commit on this branch. **Fixed** means the code changed an
 
 | ID | Severity | Finding | Status |
 |---|---|---|---|
-| T1 | low | Meta Box download key in local git history | **Owner**: drop the key from commit `14566eb` with a rebase before pushing |
+| T1 | low | Meta Box download key in local git history | **Fixed** (owner): the key was removed from the local history with a rebase before anything was pushed. A search of the full history for an `api_key=` line with a value finds nothing; rotating the key is optional |
 | T2 | medium | `.env` is tracked by git | **Fixed**: the environment file is untracked (it stays on disk and in `.gitignore`), and an example file lists its one key, `NODE_OPTIONS`, with no value |
 | T3 | medium | `front-page.php` passes a WP_Post as the `content_template` default and includes it | **Fixed** |
 | T4 | medium | Unvalidated `include` of a filter-returned path | **Fixed** |
@@ -85,11 +85,11 @@ Status as of the last commit on this branch. **Fixed** means the code changed an
 | T42 | low | `nggallery/gallery.php` is an empty template that shadows NextGEN's own | Decided: keep; it will be expanded (owner) |
 | T43 | info | Minor hygiene | Info, no action (open hygiene: duplicate `role="banner"`, unused WooCommerce supports) |
 
-Totals: 36 Fixed, 3 Owner, 2 Info, no action, 0 Open, 1 Accepted, 1 Decided.
+Totals: 37 Fixed, 2 Owner, 2 Info, no action, 0 Open, 1 Accepted, 1 Decided.
 
 ## Decisions needed
 
-Proposed default: rebase the key out of `14566eb` before pushing (T1, owner), then fix T3, T24, T26, T27, T29 (test first), then T28, T30 and T4; defer the rest.
+Proposed default: fix T3, T24, T26, T27, T29 (test first), then T28, T30 and T4; defer the rest.
 
 ## Appendix: reviewer report
 
@@ -134,6 +134,8 @@ critical 0 | high 1 | medium 5 | low 14 | info 3
 - Fix: rotate or revoke the key with the vendor. Optionally rewrite history if the repo is or will be shared. Keep the key in a constant or env var outside the repo.
 - Test: a secret scan of full history (`gitleaks detect` or `trufflehog git file://.`) is clean after rotation. A lint test asserts `library/plugins.php` has no `download_url`/`api_key` literals.
 - T1 update: `git log --oneline -S'api_key' -- library/plugins.php` returns `f8c4aed` then `1b1e87c` (newest first), so `1b1e87c` introduced the key and `f8c4aed` removed it. `git grep -n -i api_key -- '*.php'` on the current tree matches only `tests/unit/PluginsListTest.php:16-18`, which are regex strings in a guard test, no key value. The key is absent from the current tree. Still recoverable from history, severity unchanged.
+
+- **Resolved (owner)**: the key was rebased out of the local history (the commit ids above no longer exist). Checked afterwards: no commit in the full history adds or removes an `api_key=` line that has a value, and the current tree has none.
 
 ### T2 (medium) `.env` is tracked by git
 - Evidence: `git ls-files` lists `.env`. theme/AGENTS.md says it is git-ignored, so either the ignore rule is missing or the file was added before it. Contents not inspected (key names and values unknown).
