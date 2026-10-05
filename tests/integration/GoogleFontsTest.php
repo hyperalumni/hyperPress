@@ -27,6 +27,15 @@ final class GoogleFontsTest extends WP_UnitTestCase {
 		$this->assertStringEndsWith( '&display=swap', $style->src, 'display=swap is spelled correctly' );
 	}
 
+	/** @dataProvider fonts */
+	public function test_font_urls_carry_no_wordpress_version( string $handle, string $family ): void {
+		$this->assertNull( wp_styles()->registered[ $handle ]->ver, 'no version, so no ?ver= is appended to the Google URL' );
+		wp_enqueue_style( $handle );
+		ob_start();
+		wp_print_styles();
+		$this->assertStringNotContainsString( 'ver=', (string) ob_get_clean() );
+	}
+
 	public function test_the_main_stylesheet_depends_on_both_fonts(): void {
 		$deps = wp_styles()->registered['main-stylesheet']->deps;
 		$this->assertContains( 'oswald', $deps );

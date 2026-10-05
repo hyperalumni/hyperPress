@@ -98,9 +98,10 @@ function hyperpress_scripts(): void {
 	// Deregister the jquery-migrate version bundled with WordPress.
 	wp_deregister_script( 'jquery-migrate' );
 
-	// Register the Google Fonts
-	wp_register_style( 'oswald', $google_fonts_base . 'family=Oswald:wght@200..700&display=swap' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- theme audit
-	wp_register_style( 'opensans', $google_fonts_base . 'family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- theme audit
+	// Register the Google Fonts. They have no version (Google updates the files behind the URL), so the version is
+	// null: WordPress then adds no ?ver= to the URL. The sniff cannot tell that from a forgotten version.
+	wp_register_style( 'oswald', $google_fonts_base . 'family=Oswald:wght@200..700&display=swap', array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- third-party URL without a version.
+	wp_register_style( 'opensans', $google_fonts_base . 'family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap', array(), null ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- third-party URL without a version.
 
 	// The official plugin is not active, so add FontAwesome from CDN.
 	if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
