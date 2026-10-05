@@ -6,7 +6,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Shortcodes to show or hide content on a one-off basis or on a recurring schedule.
  *
- * Moved unchanged from the theme (library/shortcodes/show-hide-content.php).
+ * Moved from the theme (library/shortcodes/show-hide-content.php). Behaviour is unchanged except for audit fixes
+ * (S24: the annual same-month branch read an undefined variable).
  *
  * @author Dave Clements
  */
@@ -18,6 +19,16 @@ final class TimeRestrict {
 		add_shortcode( 'time-restrict-repeat-1', array( self::class, 'render_repeat' ) );
 		add_shortcode( 'time-restrict-repeat-2', array( self::class, 'render_repeat' ) );
 		add_shortcode( 'time-restrict-repeat-3', array( self::class, 'render_repeat' ) );
+	}
+
+	/**
+	 * The current (site-local) timestamp used by every time comparison in this class.
+	 *
+	 * Filterable so the schedule logic can be tested with a frozen clock.
+	 */
+	private static function now(): int {
+		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
+		return (int) apply_filters( 'hyperpress_shortcodes_now', current_time( 'timestamp' ) );
 	}
 
 	/**
@@ -55,12 +66,12 @@ final class TimeRestrict {
 		}
 
 		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
-		if ( empty( $on ) || strtotime( $on ) < current_time( 'timestamp' ) ) { // If on time isn't set, or has already passed, show the content.
+		if ( empty( $on ) || strtotime( $on ) < self::now() ) { // If on time isn't set, or has already passed, show the content.
 			$showit = 1;
 		}
 
 		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
-		if ( empty( $off ) || strtotime( $off ) > current_time( 'timestamp' ) ) {  // If off time isn't set, or is in the future, show the content.
+		if ( empty( $off ) || strtotime( $off ) > self::now() ) {  // If off time isn't set, or is in the future, show the content.
 			$hideit = 0;
 		}
 
@@ -109,10 +120,10 @@ final class TimeRestrict {
 		$onmonth  = date( 'n', strtotime( $onmonth ) ); // Make sure month is in numberical format.
 		$offmonth = date( 'n', strtotime( $offmonth ) );
 
-		$todaysday   = date( 'w', current_time( 'timestamp' ) ); // What's the time, Mr. Wolf?
-		$todaysdate  = date( 'j', current_time( 'timestamp' ) );
-		$todaysmonth = date( 'n', current_time( 'timestamp' ) );
-		$currenttime = date( 'H:i:s', current_time( 'timestamp' ) );
+		$todaysday   = date( 'w', self::now() ); // What's the time, Mr. Wolf?
+		$todaysdate  = date( 'j', self::now() );
+		$todaysmonth = date( 'n', self::now() );
+		$currenttime = date( 'H:i:s', self::now() );
 		// phpcs:enable WordPress.DateTime.RestrictedFunctions.date_date,WordPress.DateTime.CurrentTimeTimestamp.Requested
 
 		if ( 'annually' === $type && ( empty( $ondate ) || empty( $offdate ) || empty( $onmonth ) || empty( $offmonth ) ) ) { // Show content if not all required attributes set.
@@ -171,7 +182,7 @@ final class TimeRestrict {
 			} elseif ( $ondate === $todaysdate ) { // Today is on day.
 				if ( $offdate > $todaysdate && $ontime < $currenttime ) { // Turns off later this month and on time has passed.
 					$showit = 1;
-				} elseif ( $offdate < $todaydate && $ontime < $currenttime ) { // Turns off next year and on time has passed.
+				} elseif ( $offdate < $todaysdate && $ontime < $currenttime ) { // Turns off next year and on time has passed.
 					$showit = 1;
 				} elseif ( $offdate === $todaysdate && $ontime < $currenttime && $offtime > $currenttime ) { // Turns on and off today and is between show times.
 					$showit = 1;
