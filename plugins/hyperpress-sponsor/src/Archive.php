@@ -17,7 +17,7 @@ final class Archive {
 	 * @return mixed
 	 */
 	public static function add_archive_template( mixed $archive_template ): mixed {
-		if ( get_post_type() === Plugin::POST_TYPE ) {
+		if ( is_post_type_archive( Plugin::POST_TYPE ) ) {
 			$archive_template = dirname( __DIR__ ) . '/templates/archive.php';
 		}
 

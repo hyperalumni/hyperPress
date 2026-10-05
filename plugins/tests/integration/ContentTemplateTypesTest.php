@@ -62,8 +62,9 @@ final class ContentTemplateTypesTest extends WP_UnitTestCase {
 	}
 
 	public function test_sponsor_archive_template_still_supplies_the_plugin_path_for_sponsors(): void {
-		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_sponsor' ) );
-		$this->go_to( get_permalink( $post_id ) );
+		self::factory()->post->create( array( 'post_type' => 'hyper_sponsor' ) );
+		flush_rewrite_rules();
+		$this->go_to( home_url( '/sponsors/' ) );
 
 		$result = apply_filters( 'archive_template', '' );
 
