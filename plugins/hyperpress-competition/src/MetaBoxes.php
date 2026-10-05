@@ -21,14 +21,13 @@ final class MetaBoxes {
 			'default_hidden' => false,
 			'fields'         => array(
 				array(
-					'type'              => 'post',
-					'id'                => 'hyperpress_competition_robot',
-					'name'              => __( 'Robot', 'hyperpress' ),
-					'desc'              => __( 'Select the robot for this competition', 'hyperpress' ),
-					'label_description' => '',
-					'placeholder'       => 'Select a Robot',
-					'field_type'        => 'select_advanced',
-					'post_type'         => array( 'hyper_robot' ),
+					'type'        => 'post',
+					'id'          => 'hyperpress_competition_robot',
+					'name'        => __( 'Robot', 'hyperpress' ),
+					'desc'        => __( 'Select the robot for this competition', 'hyperpress' ),
+					'placeholder' => 'Select a Robot',
+					'field_type'  => 'select_advanced',
+					'post_type'   => array( 'hyper_robot' ),
 				),
 				array(
 					'type'        => 'text',

@@ -38,7 +38,7 @@ final class EmptyLabelTest extends WP_UnitTestCase {
 		return $found;
 	}
 
-	public function test_empty_label_descriptions_are_not_run_through_translation(): void {
+	public function test_fields_do_not_declare_an_empty_label_description(): void {
 		$boxes = apply_filters( 'rwmb_meta_boxes', array() );
 
 		$this->assertNotEmpty( $boxes );
@@ -48,10 +48,10 @@ final class EmptyLabelTest extends WP_UnitTestCase {
 			$values = array_merge( $values, $this->label_descriptions( $box['fields'] ?? array() ) );
 		}
 
-		$this->assertNotEmpty( $values, 'Expected at least one label_description to check.' );
 		foreach ( $values as $value ) {
+			// An absent key means the same as '', and a translated empty string would return the .po header.
 			$this->assertNotSame( 'TRANSLATED', $value );
-			$this->assertSame( '', $value );
+			$this->assertNotSame( '', $value, 'Leave label_description out instead of setting it to an empty string.' );
 		}
 	}
 }

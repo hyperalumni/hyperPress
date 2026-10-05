@@ -34,7 +34,6 @@ final class MetaBoxes {
 					'id'                => 'hyperpress_newsletter_canva_url',
 					'type'              => 'url',
 					'placeholder'       => 'https://www.canva.com/design/DESIGNID/view',
-					'label_description' => '',
 					'desc'              => 'Share > Embed > Smart embed link',
 					'required'          => true,
 					// Browser-side check (Meta Box validation); canva_url() is the authority on save.

@@ -40,7 +40,6 @@ final class MetaBoxes {
 					'id'                => 'hyperpress_sponsor_website',
 					'type'              => 'url',
 					'placeholder'       => 'https://hyperonline.org',
-					'label_description' => '',
 					'required'          => false,
 					'sanitize_callback' => 'url',
 				),
