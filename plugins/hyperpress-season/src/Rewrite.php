@@ -43,7 +43,7 @@ final class Rewrite {
 
 		foreach ( self::archives() as list( $archive, $key ) ) {
 			add_rewrite_rule(
-				'^' . preg_quote( $season_slug ) . '/([^/]+)/' . preg_quote( $archive ) . '/?$', // phpcs:ignore WordPress.PHP.PregQuoteDelimiter.Missing -- plugins audit
+				'^' . preg_quote( $season_slug, '#' ) . '/([^/]+)/' . preg_quote( $archive, '#' ) . '/?$',
 				'index.php?' . Plugin::TAXONOMY . '=$matches[1]&post_type=' . $key,
 				'top'
 			);
