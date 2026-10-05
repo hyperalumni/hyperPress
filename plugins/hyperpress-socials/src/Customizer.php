@@ -234,8 +234,9 @@ final class Customizer {
 		$wp_customize->add_setting(
 			'hyperpress_socials_contact',
 			array(
-				'type'      => 'theme_mod',
-				'transport' => 'refresh',
+				'type'              => 'theme_mod',
+				'transport'         => 'refresh',
+				'sanitize_callback' => 'absint',
 			)
 		);
 		$wp_customize->add_control(

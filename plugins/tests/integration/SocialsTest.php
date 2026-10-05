@@ -31,6 +31,7 @@ final class SocialsTest extends WP_UnitTestCase {
 		foreach ( self::URL_SETTINGS as $name ) {
 			remove_theme_mod( 'hyperpress_socials_' . $name );
 		}
+		remove_theme_mod( 'hyperpress_socials_contact' );
 		parent::tear_down();
 	}
 
@@ -116,4 +117,64 @@ final class SocialsTest extends WP_UnitTestCase {
 		$html = $this->render();
 
 		$this->assertStringContainsString( 'target="_self"', $html );
-	}}
+	}
+
+	public function test_the_widget_renders_the_default_title_for_an_empty_instance(): void {
+		ob_start();
+		the_widget( 'HyperPress\Socials\Widgets\DisplaySocialsWidget', array() );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'Stalk Us', $html );
+	}
+
+	public function test_update_turns_an_array_title_into_an_empty_string(): void {
+		$widget = new \HyperPress\Socials\Widgets\DisplaySocialsWidget();
+
+		$this->assertSame( array( 'title' => '' ), $widget->update( array( 'title' => array( 'x' ) ), array() ) );
+		$this->assertSame( array( 'title' => 'Hi' ), $widget->update( array( 'title' => '<b>Hi</b>' ), array() ) );
+	}
+
+	public function test_the_widget_title_filter_receives_the_instance_and_id_base(): void {
+		$received = null;
+		add_filter(
+			'widget_title',
+			static function ( $title, $instance = null, $id_base = null ) use ( &$received ) {
+				$received = array( $instance, $id_base );
+				return $title;
+			},
+			10,
+			3
+		);
+
+		$this->render();
+
+		$this->assertSame( array( array( 'title' => 'Follow' ), 'hyperpress_socials' ), $received );
+	}
+
+	public function test_the_contact_page_setting_is_an_absolute_integer(): void {
+		$setting = $this->customizer()->get_setting( 'hyperpress_socials_contact' );
+
+		$this->assertSame( 5, $setting->sanitize( '5abc' ) );
+		$this->assertSame( 3, $setting->sanitize( -3 ) );
+	}
+
+	public function test_the_contact_link_shows_for_a_published_page(): void {
+		$page_id = self::factory()->post->create( array( 'post_type' => 'page', 'post_status' => 'publish' ) );
+		set_theme_mod( 'hyperpress_socials_contact', $page_id );
+
+		$this->assertStringContainsString( 'title="Contact Us"', $this->render() );
+	}
+
+	public function test_the_contact_link_is_omitted_when_the_page_does_not_exist(): void {
+		set_theme_mod( 'hyperpress_socials_contact', 999999 );
+
+		$this->assertStringNotContainsString( 'Contact Us', $this->render() );
+	}
+
+	public function test_the_contact_link_is_omitted_for_an_unpublished_page(): void {
+		$page_id = self::factory()->post->create( array( 'post_type' => 'page', 'post_status' => 'draft' ) );
+		set_theme_mod( 'hyperpress_socials_contact', $page_id );
+
+		$this->assertStringNotContainsString( 'Contact Us', $this->render() );
+	}
+}

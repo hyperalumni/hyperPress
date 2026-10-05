@@ -69,7 +69,7 @@ class DisplaySocialsWidget extends WP_Widget {
 			),
 			array(
 				'icon'  => 'fa-regular fa-envelope',
-				'url'   => ! empty( get_theme_mod( 'hyperpress_socials_contact' ) ) ? get_page_link( get_theme_mod( 'hyperpress_socials_contact' ) ) : '',
+				'url'   => self::contact_url(),
 				'title' => 'Contact Us',
 			),
 			array(
@@ -79,7 +79,7 @@ class DisplaySocialsWidget extends WP_Widget {
 			),
 		);
 
-		$title = apply_filters( 'widget_title', $instance['title'] );
+		$title = apply_filters( 'widget_title', $instance['title'] ?? __( 'Stalk Us', 'hyperpress' ), $instance, $this->id_base );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
 		echo $args['before_widget'];
@@ -136,11 +136,24 @@ class DisplaySocialsWidget extends WP_Widget {
 
 	public function update( $new_instance, $old_instance ): array {
 		// Process widget options to be saved.
-		$instance = array();
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- plugins audit
-		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+		$title = $new_instance['title'] ?? '';
 
-		return $instance;
+		return array( 'title' => is_string( $title ) ? sanitize_text_field( $title ) : '' );
+	}
+
+	/**
+	 * Permalink of the Customizer contact page, or an empty string when none is set or it is not published.
+	 */
+	private static function contact_url(): string {
+		$page_id = absint( get_theme_mod( 'hyperpress_socials_contact' ) );
+
+		if ( 0 === $page_id || 'publish' !== get_post_status( $page_id ) ) {
+			return '';
+		}
+
+		$link = get_permalink( $page_id );
+
+		return false === $link ? '' : $link;
 	}
 
 	/**
