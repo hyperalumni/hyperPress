@@ -1,3 +1,4 @@
+name: hyperpress-theme
 services:
   php:
     build: .
