@@ -19,18 +19,19 @@ final class Banner {
 			'hyperpress_banner_content',
 			static function ( $banner ) use ( $post_type, $args ) {
 				$is_tax_season = is_tax( self::SEASON_TAXONOMY );
+				$queried       = $is_tax_season ? get_queried_object() : null;
 				$ctx           = array(
 					'is_singular'   => is_singular( $post_type ),
 					'is_archive'    => is_post_type_archive( $post_type ),
 					'is_tax_season' => $is_tax_season,
 					'subtitle'      => get_theme_mod( $args['subtitle_mod'] ),
 					'color'         => get_theme_mod( $args['color_mod'] ),
-					'term_name'     => $is_tax_season ? get_term( get_queried_object_id() )->name : '',
+					'term_name'     => $queried instanceof \WP_Term ? $queried->name : '',
 				);
 				if ( ! $ctx['is_singular'] && ! $ctx['is_archive'] ) {
 					return $banner;
 				}
-				$banner = self::apply( $banner, $args, $ctx );
+				$banner = self::apply( (array) $banner, $args, $ctx );
 
 				/**
 				 * Lets a plugin adjust the assembled banner for its own post type.

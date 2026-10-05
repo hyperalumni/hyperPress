@@ -10,16 +10,18 @@ final class Breadcrumbs {
 	}
 
 	public static function filter( $breadcrumbs ) {
-		if ( is_tax( 'hyper_season' ) && ! is_post_type_archive() ) {
+		$term = get_queried_object();
+		if ( is_tax( 'hyper_season' ) && ! is_post_type_archive() && $term instanceof \WP_Term ) {
+			$breadcrumbs   = (array) $breadcrumbs;
 			$breadcrumbs[] = array(
-				'title'   => 'Seasons',
+				'title'   => __( 'Seasons', 'hyperpress' ),
 				'classes' => array(
 					'li'    => array(),
 					'bread' => array(),
 				),
 			);
 			$breadcrumbs[] = array(
-				'title'   => get_queried_object()->name,
+				'title'   => $term->name,
 				'classes' => array(
 					'li'    => array(),
 					'bread' => array(),

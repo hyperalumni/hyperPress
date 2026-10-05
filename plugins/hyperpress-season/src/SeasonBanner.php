@@ -18,9 +18,9 @@ final class SeasonBanner {
 
 			if ( empty( $banner['title'] ) ) {
 				$banner['title'] = __( 'Season', 'hyperpress' );
-				$season          = get_term( get_queried_object_id() )->name;
-				if ( ! empty( $season ) ) {
-					$banner['title'] = $season;
+				$term            = get_queried_object();
+				if ( $term instanceof \WP_Term && ! empty( $term->name ) ) {
+					$banner['title'] = $term->name;
 				}
 			}
 

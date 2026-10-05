@@ -100,7 +100,7 @@ final class Breadcrumbs {
 			);
 			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
 				// get_terms ordering is inconsistent even with orderby, so sort again by name.
-				usort( $terms, static fn( $a, $b ) => $b->name <=> $a->name );
+				usort( $terms, static fn( $a, $b ) => strnatcasecmp( $b->name, $a->name ) );
 				$term = $terms[0];
 			}
 		} elseif ( is_tax( self::SEASON_TAXONOMY ) ) {

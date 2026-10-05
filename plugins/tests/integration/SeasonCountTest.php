@@ -41,10 +41,10 @@ final class SeasonCountTest extends WP_UnitTestCase {
 	}
 
 	public function test_default_output_matches_the_theme_shortcode(): void {
-		$this->assertSame( '[1995-09-01||true] Season', do_shortcode( '[hyper_season_count]' ) );
+		$this->assertSame( '[1995-09-01|false|true] Season', do_shortcode( '[hyper_season_count]' ) );
 	}
 
 	public function test_suffix_true_and_season_false(): void {
-		$this->assertSame( '[1995-09-01|1|true] ', do_shortcode( '[hyper_season_count suffix="true" season="false"]' ) );
+		$this->assertSame( '[1995-09-01|true|true] ', do_shortcode( '[hyper_season_count suffix="true" season="false"]' ) );
 	}
 }

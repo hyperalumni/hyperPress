@@ -20,9 +20,13 @@ final class SortedSeasons {
 			)
 		);
 
+		if ( is_wp_error( $seasons ) ) {
+			return array();
+		}
+
 		if ( ! empty( $seasons ) ) {
 			// still sort them by name, because the result of get_terms is inconsistent even with the orderby flag.
-			usort( $seasons, fn( $a, $b ) => $b->name <=> $a->name );
+			usort( $seasons, fn( $a, $b ) => strnatcasecmp( $b->name, $a->name ) );
 		}
 
 		return $seasons;
