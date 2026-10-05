@@ -25,7 +25,7 @@ defined( 'ABSPATH' ) || exit;
 	</header>
 	<div class="entry-content">
 		<?php if ( has_post_thumbnail() ) : ?>
-			<?php the_post_thumbnail( '', array( 'class' => 'thumbnail' ) ); ?>
+			<?php the_post_thumbnail( 'full', array( 'class' => 'thumbnail' ) ); ?>
 		<?php endif; ?>
 		<?php the_content(); ?>
 		<?php get_template_part( 'template-parts/edit-link' ); ?>

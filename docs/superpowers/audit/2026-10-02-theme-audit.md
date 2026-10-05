@@ -516,6 +516,7 @@ if ( has_post_thumbnail( $post->ID ) ) :
 - Impact: `featured-image.php` is loaded from page.php/page templates, where the main query sets global `$post`; from any non-singular context (a plugin calling the part, or a 404) `$post` is null, giving "Attempt to read property 'ID' on null". `the_post_thumbnail( '' )` passes an empty size instead of `'post-thumbnail'`; I did not verify what size WordPress resolves it to (it may serve the full-size original on every archive/search listing). Unverified.
 - Fix: `has_post_thumbnail()` with no argument (uses the loop post), and `'post-thumbnail'`/a registered size.
 - Test: integration test. Render the part with `$post` unset, no notices. Inspect the `<img>` `src` of a listing item for a registered size suffix.
+- **FIXED**: featured-image.php no longer reads the global `$post` (`get_post() && has_post_thumbnail()`); the empty size in content.php resolved to the full-size original, so it is now the explicit `full` to keep the look.
 
 ### T39 (low) searchform.php: whitespace inside the placeholder, duplicate ids
 - File: searchform.php:17-21
