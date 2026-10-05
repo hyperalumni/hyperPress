@@ -2,4 +2,4 @@
 // Don't load directly.
 defined( 'ABSPATH' ) || exit;
 
-require_once 'labels/post.php';
+require_once __DIR__ . '/labels/post.php';

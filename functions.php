@@ -17,65 +17,65 @@
 // Don't load directly.
 defined( 'ABSPATH' ) || exit;
 /** Various clean up functions */
-require_once 'library/cleanup.php';
+require_once get_template_directory() . '/library/cleanup.php';
 
 /** Required for Foundation to work properly */
-require_once 'library/foundation.php';
+require_once get_template_directory() . '/library/foundation.php';
 
 /** Format comments */
-require_once 'library/class-hyperpress-comments.php';
+require_once get_template_directory() . '/library/class-hyperpress-comments.php';
 
 /** Register all navigation menus */
-require_once 'library/navigation.php';
+require_once get_template_directory() . '/library/navigation.php';
 
 /** Wrappers for plugin functions (Meta Box, seasons) */
-require_once 'library/helpers.php';
+require_once get_template_directory() . '/library/helpers.php';
 
 /** Add Breadcrumbs */
-require_once 'library/breadcrumbs.php';
+require_once get_template_directory() . '/library/breadcrumbs.php';
 
 /** Add Banner */
-require_once 'library/banner.php';
+require_once get_template_directory() . '/library/banner.php';
 
 /** Add Labels */
-require_once 'library/labels.php';
+require_once get_template_directory() . '/library/labels.php';
 
 /** Add menu walkers for top-bar and off-canvas */
-require_once 'library/class-hyperpress-top-bar-walker.php';
-require_once 'library/class-hyperpress-mobile-walker.php';
+require_once get_template_directory() . '/library/class-hyperpress-top-bar-walker.php';
+require_once get_template_directory() . '/library/class-hyperpress-mobile-walker.php';
 
 /** Create widget areas in sidebar and footer */
-require_once 'library/widget-areas.php';
+require_once get_template_directory() . '/library/widget-areas.php';
 
 /** Enqueue scripts */
-require_once 'library/enqueue-scripts.php';
+require_once get_template_directory() . '/library/enqueue-scripts.php';
 
 /** Add theme support */
-require_once 'library/theme-support.php';
+require_once get_template_directory() . '/library/theme-support.php';
 
 /** Add Nav Options to Customer */
-require_once 'library/custom-nav.php';
+require_once get_template_directory() . '/library/custom-nav.php';
 
 /** Change WP's sticky post class */
-require_once 'library/sticky-posts.php';
+require_once get_template_directory() . '/library/sticky-posts.php';
 
 /** Configure responsive image sizes */
-require_once 'library/responsive-images.php';
+require_once get_template_directory() . '/library/responsive-images.php';
 
 /** Gutenberg editor support */
-require_once 'library/gutenberg.php';
+require_once get_template_directory() . '/library/gutenberg.php';
 
 /** TGMPA plugins */
-require_once 'library/plugins.php';
+require_once get_template_directory() . '/library/plugins.php';
 
 /** WP Customize Options */
-require_once 'library/customize.php';
+require_once get_template_directory() . '/library/customize.php';
 
 /** HYPER Colors in wp-head */
-require_once 'library/root-colors.php';
+require_once get_template_directory() . '/library/root-colors.php';
 
 /** Add theme metaboxes */
-require_once 'library/metaboxes.php';
+require_once get_template_directory() . '/library/metaboxes.php';
 
 /** If your site requires protocol relative url's for theme assets, uncomment the line below */
 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- theme audit

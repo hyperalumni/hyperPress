@@ -2,17 +2,17 @@
 // Don't load directly.
 defined( 'ABSPATH' ) || exit;
 
-require_once 'banner/404.php';
-require_once 'banner/archive.php';
-require_once 'banner/attachment.php';
-require_once 'banner/author.php';
-require_once 'banner/blog.php';
-require_once 'banner/category.php';
-require_once 'banner/day.php';
-require_once 'banner/front.php';
-require_once 'banner/month.php';
-require_once 'banner/page.php';
-require_once 'banner/post.php';
-require_once 'banner/search.php';
-require_once 'banner/tag.php';
-require_once 'banner/year.php';
+require_once __DIR__ . '/banner/404.php';
+require_once __DIR__ . '/banner/archive.php';
+require_once __DIR__ . '/banner/attachment.php';
+require_once __DIR__ . '/banner/author.php';
+require_once __DIR__ . '/banner/blog.php';
+require_once __DIR__ . '/banner/category.php';
+require_once __DIR__ . '/banner/day.php';
+require_once __DIR__ . '/banner/front.php';
+require_once __DIR__ . '/banner/month.php';
+require_once __DIR__ . '/banner/page.php';
+require_once __DIR__ . '/banner/post.php';
+require_once __DIR__ . '/banner/search.php';
+require_once __DIR__ . '/banner/tag.php';
+require_once __DIR__ . '/banner/year.php';
