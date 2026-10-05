@@ -41,4 +41,15 @@ final class NextGenPathTest extends WP_UnitTestCase {
 	public function test_the_slug_must_be_a_whole_path_segment(): void {
 		$this->assertNull( Breadcrumbs::parse_path( '/photos/notnggallery/a/b', 'nggallery' ) );
 	}
+
+	public function test_hostile_segments_come_out_as_sanitized_slugs(): void {
+		$this->assertSame(
+			array( 'album' => 'or-11', 'gallery' => 'x' ),
+			Breadcrumbs::parse_path( '/photos/nggallery/%27%20OR%201%3D1/x%3Cscript%3E', 'nggallery' )
+		);
+	}
+
+	public function test_plain_slugs_are_unchanged(): void {
+		$this->assertSame( array( 'album' => 'my-album_2', 'gallery' => 'gal-1' ), Breadcrumbs::parse_path( '/photos/nggallery/my-album_2/gal-1/', 'nggallery' ) );
+	}
 }

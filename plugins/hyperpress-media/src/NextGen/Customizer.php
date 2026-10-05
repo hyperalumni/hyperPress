@@ -22,8 +22,10 @@ final class Customizer {
 		$wp_customize->add_setting(
 			'hyperpress_nggallery_photos_page',
 			array(
-				'type'      => 'theme_mod',
-				'transport' => 'refresh',
+				'type'              => 'theme_mod',
+				'default'           => 0,
+				'sanitize_callback' => 'absint',
+				'transport'         => 'refresh',
 			)
 		);
 		$wp_customize->add_control(

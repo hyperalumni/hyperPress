@@ -17,7 +17,7 @@ final class Breadcrumbs {
 	 *
 	 * @param string $path URL path (no query string).
 	 * @param string $slug NextGEN router slug.
-	 * @return array{album: string, gallery: string}|null Null when the path has no `<slug>/` segment.
+	 * @return array{album: string, gallery: string}|null Segments decoded and run through sanitize_title(); null when the path has no `<slug>/` segment.
 	 */
 	public static function parse_path( string $path, string $slug ): ?array {
 		if ( '' === $slug ) {
@@ -29,8 +29,8 @@ final class Breadcrumbs {
 		}
 
 		return array(
-			'album'   => $matches[1] ?? '',
-			'gallery' => $matches[2] ?? '',
+			'album'   => sanitize_title( rawurldecode( $matches[1] ?? '' ) ),
+			'gallery' => sanitize_title( rawurldecode( $matches[2] ?? '' ) ),
 		);
 	}
 
@@ -46,8 +46,8 @@ final class Breadcrumbs {
 			return $breadcrumbs;
 		}
 
-		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only parsed into a path and matched, never output.
-		$path        = wp_parse_url( is_string( $request_uri ) ? $request_uri : '', PHP_URL_PATH );
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$path        = wp_parse_url( $request_uri, PHP_URL_PATH );
 		$segments    = is_string( $path ) ? self::parse_path( $path, $ngg_slug ) : null;
 		if ( null === $segments || '' === $segments['album'] ) {
 			return $breadcrumbs;
