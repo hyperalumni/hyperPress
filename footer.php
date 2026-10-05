@@ -98,8 +98,8 @@ defined( 'ABSPATH' ) || exit;
 								<?php $target = str_contains( $social['url'], get_site_url() ) ? '_self' : '_blank'; ?>
 								<li>
 									<a href="<?php echo esc_url( $social['url'] ); ?>" title="<?php echo esc_attr( $social['title'] ); ?>"
-										target="<?php echo $target; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>">
-										<i class="<?php echo $social['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?> fa-inverse" aria-hidden="true"></i>
+										target="<?php echo esc_attr( $target ); ?>">
+										<i class="<?php echo esc_attr( $social['icon'] ); ?> fa-inverse" aria-hidden="true"></i>
 									</a>
 								</li>
 							<?php endif; ?>
