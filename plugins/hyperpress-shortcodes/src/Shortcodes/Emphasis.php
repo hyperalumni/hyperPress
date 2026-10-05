@@ -10,6 +10,8 @@ final class Emphasis {
 	}
 
 	public static function render( $atts = array(), $content = '' ): string {
+		$content = (string) $content;
+
 		return '<span class="emphasis">' . do_shortcode( $content ) . '</span>';
 	}
 }

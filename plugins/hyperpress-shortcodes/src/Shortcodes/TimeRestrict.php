@@ -40,6 +40,7 @@ final class TimeRestrict {
 	 * @return string The content to display
 	 */
 	public static function render( $atts, $content ): string {
+		$content = (string) $content;
 		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- plugins audit
 		extract(
 			shortcode_atts(
@@ -93,6 +94,7 @@ final class TimeRestrict {
 	 * @return string The content to display
 	 */
 	public static function render_repeat( $atts, $content ): string {
+		$content = (string) $content;
 		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- plugins audit
 		extract(
 			shortcode_atts(

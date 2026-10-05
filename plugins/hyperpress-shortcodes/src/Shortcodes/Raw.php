@@ -10,6 +10,8 @@ final class Raw {
 	}
 
 	public static function render( $atts = null, $content = '' ): array|string|null {
+		$content = (string) $content;
+
 		$content = do_shortcode( shortcode_unautop( $content ) );
 
 		return preg_replace( '#^<\/p>|^<br \/>|<p>$#', '', $content );
