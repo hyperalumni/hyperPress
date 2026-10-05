@@ -30,4 +30,15 @@ final class MediaTest extends WP_UnitTestCase {
 		$control = $manager->get_control( 'hyperpress_nggallery_photos_page' );
 		$this->assertNotNull( $control, 'Control id must equal the setting id' );
 	}
+
+	public function test_the_nextgen_section_sits_where_the_old_gallery_section_was(): void {
+		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
+		$manager = new WP_Customize_Manager();
+		do_action( 'customize_register', $manager );
+
+		$section = $manager->get_section( 'hyperpress_media_nextgen' );
+		$this->assertNotNull( $section );
+		$this->assertSame( 'NextGen Gallery', $section->title );
+		$this->assertSame( 140, $section->priority, 'the position of the Meta Box "Gallery" section this one replaces' );
+	}
 }

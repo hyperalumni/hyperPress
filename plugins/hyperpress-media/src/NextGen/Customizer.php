@@ -15,7 +15,8 @@ final class Customizer {
 		$wp_customize->add_section(
 			'hyperpress_media_nextgen',
 			array(
-				'title' => __( 'NextGen Gallery', 'hyperpress' ),
+				'title'    => __( 'NextGen Gallery', 'hyperpress' ),
+				'priority' => 140,
 			)
 		);
 
