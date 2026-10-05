@@ -530,6 +530,7 @@ placeholder="
 - Impact: the placeholder value is "newline + spaces + Search + newline + spaces". Browsers render the whitespace; some assistive tech reads it. `id="searchform"`, `id="s"`, `id="searchsubmit"` are duplicated if the form is rendered twice on a page (content-none.php:37 plus a sidebar search widget), which is invalid HTML and breaks label associations. The input `value=""` is hard-coded, so the current search is not reflected (no XSS); a UX gap only.
 - Fix: one-line `placeholder="<?php echo esc_attr_x( 'Search', 'placeholder', 'hyperpress' ); ?>"`; drop or make the ids unique with `wp_unique_id()`.
 - Test: unit test. Render `get_search_form( false )` twice; assert unique ids and a trimmed placeholder.
+- **FIXED**: the placeholder is now a one-line `esc_attr_x` value with no surrounding whitespace; the ids `searchform`, `s` and `searchsubmit` were kept because TemplateEscapingTest asserts `id="searchform"` (so they are still duplicated if the form renders twice).
 
 ### T40 (info) Relative `require_once` paths resolve through `include_path` first
 - Files: functions.php:22-77; library/banner.php:7-20; library/breadcrumbs.php:7-17; library/labels.php:7; library/metaboxes.php:7-9; library/customize.php:7-11 (contrast library/plugins.php:38 which uses `get_template_directory()`)
