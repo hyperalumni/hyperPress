@@ -420,6 +420,7 @@ $banner['title'] = __( 'Published By ', 'hyperpress' ) . ( ! empty( get_the_auth
 - Impact: `.` binds tighter than `?:`, so the condition is `( 'Published By ' . bool )`, a non-empty string, which is always truthy. The title is always `firstname lastname`, "Published By " is never shown, and when both names are empty the title is the single space `' '`, so the `display_name` fallback never runs and the author banner title is blank. The author, category and other subtitles also call `get_the_author_meta()` without an ID (outside the loop it depends on `$authordata`; unverified on an archive before `the_post()`). Correctness only.
 - Fix: wrap the ternary: `__(...) . ( $cond ? $full : $display )`, and pass `get_queried_object_id()` to `get_the_author_meta()`.
 - Test: unit test on an author archive with (a) both names, (b) neither. Expect "Published By First Last" and "Published By <display_name>".
+ - **FIXED**: the ternary is now parenthesised so the title is always "Published By " plus the full name or the display_name fallback, and the author meta is read for the queried author ID.
 
 ### T33 (low) "Continue Reading" is a `<button href>` that does not navigate
 - File: library/navigation.php:80
