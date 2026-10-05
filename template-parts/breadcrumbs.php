@@ -23,10 +23,10 @@ $breadcrumbs = apply_filters(
 				<a
 					class="breadcrumb <?php echo esc_attr( implode( ' ', $breadcrumb['classes']['bread'] ) ); ?>"
 					title="<?php echo esc_attr( $breadcrumb['title'] ); ?>"
-					href="<?php echo esc_attr( $breadcrumb['url'] ); ?>"><?php echo esc_attr( $breadcrumb['title'] ); ?></a>
+					href="<?php echo esc_url( $breadcrumb['url'] ); ?>"><?php echo esc_html( $breadcrumb['title'] ); ?></a>
 			<?php else : ?>
 				<span class="<?php echo esc_attr( implode( ' ', $breadcrumb['classes']['bread'] ) ); ?>"
-						title="<?php echo esc_attr( $breadcrumb['title'] ); ?>"><?php echo esc_attr( $breadcrumb['title'] ); ?></span>
+						title="<?php echo esc_attr( $breadcrumb['title'] ); ?>"><?php echo esc_html( $breadcrumb['title'] ); ?></span>
 			<?php endif; ?>
 		</li>
 	<?php endforeach; ?>

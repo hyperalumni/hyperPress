@@ -16,7 +16,7 @@ function hyperpress_breadcrumbs_author( $breadcrumbs ) {
 
 		$breadcrumbs[] = array(
 			'title'   => get_the_author_meta('display_name'),
-			'url'     => get_the_author_meta('user_url'),
+			'url'     => get_author_posts_url( get_queried_object_id() ),
 			'classes' => array(
 				'li'    => array(
 					'item-author',

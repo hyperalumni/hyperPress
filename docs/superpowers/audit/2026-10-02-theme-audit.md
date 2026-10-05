@@ -505,6 +505,7 @@ href="<?php echo esc_attr( $breadcrumb['url'] ); ?>"
 - Impact: `esc_attr` does not validate a URL scheme, so a crumb URL of `javascript:…` from any `hyperpress_breadcrumbs_content` filter callback would be rendered as a live link. All in-theme routers use `get_*_link()`, except the author crumb, which uses `user_url` (saved through `esc_url_raw`, so safe), and that is a bug of its own: the crumb for an author archive links to the author's personal website (or renders as a plain span when empty) instead of `get_author_posts_url()`. The crumb text uses `esc_attr()` in element context, which works but is the wrong function. Low.
 - Fix: `esc_url( … )` for href, `esc_html` for the text, `get_author_posts_url( get_queried_object_id() )` for the author crumb.
 - Test: unit test. A filter adds a crumb with `url => 'javascript:alert(1)'`; assert the href is empty or `about:blank`. Author archive crumb href equals `get_author_posts_url()`.
+- **FIXED**: the breadcrumb href is escaped with `esc_url`, the printed crumb text with `esc_html`, and the author crumb links to `get_author_posts_url( get_queried_object_id() )`.
 
 ### T38 (low) Template parts read the global `$post` and pass an empty size
 - Files: template-parts/featured-image.php:11; template-parts/content.php:30
