@@ -47,19 +47,22 @@ final class TimeRestrict {
 	 */
 	public static function render( $atts, $content ): string {
 		$content = (string) $content;
-		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- plugins audit
-		extract(
-			shortcode_atts(
-				array(
-					'show' => '', // Retired in favor of 'on' for better consistency.
-					'hide' => '', // Retired in favor of 'off' for better consistency.
-					'on'   => '',
-					'off'  => '',
-					'else' => '',
-				),
-				$atts
-			)
+		$atts    = shortcode_atts(
+			array(
+				'show' => '', // Retired in favor of 'on' for better consistency.
+				'hide' => '', // Retired in favor of 'off' for better consistency.
+				'on'   => '',
+				'off'  => '',
+				'else' => '',
+			),
+			$atts
 		);
+
+		$show = $atts['show'];
+		$hide = $atts['hide'];
+		$on   = $atts['on'];
+		$off  = $atts['off'];
+		$else = $atts['else'];
 
 		$showit = 0; // Set some defaults.
 		$hideit = 1;
@@ -116,24 +119,32 @@ final class TimeRestrict {
 	 */
 	public static function render_repeat( $atts, $content ): string {
 		$content = (string) $content;
-		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- plugins audit
-		extract(
-			shortcode_atts(
-				array(
-					'type'     => '',
-					'ontime'   => '00:00:00',
-					'offtime'  => '23:59:59',
-					'onday'    => '',
-					'offday'   => '',
-					'ondate'   => '',
-					'offdate'  => '',
-					'onmonth'  => '',
-					'offmonth' => '',
-					'else'     => '',
-				),
-				$atts
-			)
+		$atts    = shortcode_atts(
+			array(
+				'type'     => '',
+				'ontime'   => '00:00:00',
+				'offtime'  => '23:59:59',
+				'onday'    => '',
+				'offday'   => '',
+				'ondate'   => '',
+				'offdate'  => '',
+				'onmonth'  => '',
+				'offmonth' => '',
+				'else'     => '',
+			),
+			$atts
 		);
+
+		$type     = $atts['type'];
+		$ontime   = $atts['ontime'];
+		$offtime  = $atts['offtime'];
+		$onday    = $atts['onday'];
+		$offday   = $atts['offday'];
+		$ondate   = $atts['ondate'];
+		$offdate  = $atts['offdate'];
+		$onmonth  = $atts['onmonth'];
+		$offmonth = $atts['offmonth'];
+		$else     = $atts['else'];
 
 		$showit = 0; // Set some defaults.
 

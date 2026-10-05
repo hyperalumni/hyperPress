@@ -11,17 +11,18 @@ final class Banner {
 
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- plugins audit
 	public static function render( $atts = array(), $content = null ): string {
-		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- plugins audit
-		extract(
-			shortcode_atts(
-				array(
-					'anchor'   => '',
-					'title'    => '',
-					'subtitle' => '',
-				),
-				$atts
-			)
+		$atts = shortcode_atts(
+			array(
+				'anchor'   => '',
+				'title'    => '',
+				'subtitle' => '',
+			),
+			$atts
 		);
+
+		$anchor   = $atts['anchor'];
+		$title    = $atts['title'];
+		$subtitle = $atts['subtitle'];
 		if ( ! empty( $title ) || ! empty( $subtitle ) ) {
 			$output = '<header role="banner" class="banner">';
 			if ( ! empty( $anchor ) ) {
