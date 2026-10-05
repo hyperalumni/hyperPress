@@ -23,7 +23,7 @@ class PostTypeDropdownControl extends WP_Customize_Control {
 
 	protected function render_content() {
 		?>
-		<label for="<?php esc_attr( $this->id ); ?>">
+		<label for="<?php echo esc_attr( $this->id ); ?>">
 		<?php
 		if ( ! empty( $this->label ) ) :
 			?>
@@ -40,16 +40,17 @@ class PostTypeDropdownControl extends WP_Customize_Control {
 		</label>
 		<?php
 		if ( ! empty( $this->post_types ) ) :
+			$values = (array) $this->value();
 			?>
-			<select <?php $this->link(); ?> name="<?php esc_attr( $this->id ); ?>"
-											id="<?php esc_attr( $this->id ); ?>"
+			<select <?php $this->link(); ?> name="<?php echo esc_attr( $this->id ); ?>"
+											id="<?php echo esc_attr( $this->id ); ?>"
 											multiple size="<?php echo count( $this->post_types ); ?>">
 				<?php
 				foreach ( $this->post_types as $post_type ) {
 					printf(
 						'<option value="%s" %s>%s</option>',
 						esc_attr( $post_type->name ),
-						selected( $this->value(), $post_type->name, false ),
+						selected( in_array( $post_type->name, $values, true ), true, false ),
 						esc_html( $post_type->labels->name )
 					);
 				}

@@ -12,7 +12,7 @@ class CategoryDropdownControl extends WP_Customize_Control {
 
 	protected function render_content(): void {
 		?>
-		<label>
+		<label for="_customize-input-<?php echo esc_attr( $this->id ); ?>">
 		<?php
 		if ( ! empty( $this->label ) ) :
 			?>
@@ -33,7 +33,7 @@ class CategoryDropdownControl extends WP_Customize_Control {
 			$this->dropdown_args,
 			array(
 				'taxonomy'          => 'category',
-				'show_option_none'  => 'Uncategorized',
+				'show_option_none'  => __( 'Uncategorized', 'hyperpress' ),
 				'show_option_all'   => '',
 				'orderby'           => 'id',
 				'order'             => 'ASC',
@@ -48,13 +48,24 @@ class CategoryDropdownControl extends WP_Customize_Control {
 				'option_none_value' => 0,
 				'value_field'       => 'term_id',
 				'echo'              => false,
+				'selected'          => -1,
+				'name'              => $this->id,
+				'id'                => '_customize-input-' . $this->id,
 			)
 		);
 
-		$dropdown       = wp_dropdown_categories( $dropdown_args );
-		$dropdown       = str_replace( '<select', '<select' . $this->get_link(), $dropdown );
-		$multi_dropdown = str_replace( '<select', '<select multiple size="10"', $dropdown );
+		$selected = array_map( 'strval', (array) $this->value() );
+		$dropdown = wp_dropdown_categories( $dropdown_args );
+		$dropdown = str_replace( '<select', '<select multiple size="10" ' . $this->get_link(), $dropdown );
+		// The core walker preselects a single term only; mark every stored value for this multi-select.
+		$dropdown = preg_replace_callback(
+			'/<option [^>]*?value=([\'"])(\d+)\1/',
+			static fn( array $found ): string => in_array( $found[2], $selected, true )
+				? $found[0] . ' selected="selected"'
+				: $found[0],
+			$dropdown
+		);
 
-		echo $multi_dropdown; // phpcs:ignore WordPress.Security.EscapeOutput
+		echo $dropdown; // phpcs:ignore WordPress.Security.EscapeOutput -- wp_dropdown_categories() escapes its output
 	}
 }
