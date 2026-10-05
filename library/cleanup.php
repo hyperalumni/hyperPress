@@ -18,41 +18,24 @@ function hyperpress_start_cleanup(): void {
 	// Remove WP version from RSS.
 	add_filter( 'the_generator', 'hyperpress_remove_rss_version' );
 
-	// Remove pesky injected css for recent comments widget.
-	add_filter( 'wp_head', 'hyperpress_remove_wp_widget_recent_comments_style', 1 );
-
 	// Clean up comment styles in the head.
 	add_action( 'wp_head', 'hyperpress_remove_recent_comments_style', 1 );
 }
 /**
- * Clean up head.+
- * ----------------------------------------------------------------------------
+ * Clean up the head.
+ *
+ * Only output nobody needs is removed. The canonical link and the feed autodiscovery links are deliberately kept:
+ * the canonical link protects against duplicate URLs (?replytocom, tracking parameters) unless an SEO plugin takes
+ * over, and the feed links let readers find the RSS feeds. Upstream FoundationPress removed them without a recorded
+ * reason.
  */
 function hyperpress_cleanup_head(): void {
 
 	// EditURI link.
 	remove_action( 'wp_head', 'rsd_link' );
 
-	// Category feed links.
-	remove_action( 'wp_head', 'feed_links_extra', 3 );
-
-	// Post and comment feed links.
-	remove_action( 'wp_head', 'feed_links', 2 );
-
 	// Windows Live Writer.
 	remove_action( 'wp_head', 'wlwmanifest_link' );
-
-	// Index link.
-	remove_action( 'wp_head', 'index_rel_link' );
-
-	// Previous link.
-	remove_action( 'wp_head', 'parent_post_rel_link', 10 );
-
-	// Start link.
-	remove_action( 'wp_head', 'start_post_rel_link', 10 );
-
-	// Canonical.
-	remove_action( 'wp_head', 'rel_canonical', 10 );
 
 	// Shortlink.
 	remove_action( 'wp_head', 'wp_shortlink_wp_head', 10 );
@@ -66,20 +49,15 @@ function hyperpress_cleanup_head(): void {
 	// Emoji detection script.
 	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 
-	// Emoji styles.
+	// Emoji styles. Since WordPress 6.4 they are enqueued by wp_enqueue_emoji_styles, and print_emoji_styles stays
+	// hooked for backwards compatibility (core only unhooks it from inside the enqueue function), so both go.
+	remove_action( 'wp_enqueue_scripts', 'wp_enqueue_emoji_styles' );
 	remove_action( 'wp_print_styles', 'print_emoji_styles' );
 }
 
 // Remove WP version from RSS.
 function hyperpress_remove_rss_version(): string {
 	return '';
-}
-
-// Remove injected CSS for recent comments widget.
-function hyperpress_remove_wp_widget_recent_comments_style(): void {
-	if ( has_filter( 'wp_head', 'wp_widget_recent_comments_style' ) ) {
-		remove_filter( 'wp_head', 'wp_widget_recent_comments_style' );
-	}
 }
 
 // Remove injected CSS from recent comments widget.

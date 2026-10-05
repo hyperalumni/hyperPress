@@ -191,6 +191,8 @@ remove_action( 'wp_head', 'rel_canonical', 10 );
 - Fix: keep `rel_canonical` (delete line 57) unless a plugin owns it. Document the feed removal.
 - Test: assert `has_action('wp_head','rel_canonical')` is truthy, or that `wp_head` output contains a canonical link on a singular view.
 
+- **FIXED**: the `rel_canonical`, `feed_links` and `feed_links_extra` removals are deleted, so core prints the canonical link (singular pages) and the feed autodiscovery links again. Upstream FoundationPress removed them in its first commit under a generic "WordPress outputs a lot of junk in the head" rationale (maintainer comment on issue #566), with no reason recorded for the canonical link. The admin can still use an SEO plugin, which replaces core's canonical.
+
 ### T13 (low) cleanup.php: ineffective and dead removals
 - File: library/cleanup.php:24, 48-54, 72
 ```php
@@ -204,6 +206,8 @@ remove_action( 'wp_print_styles', 'print_emoji_styles' );
 - Emoji removal is also incomplete (no admin print hooks, feeds, email, TinyMCE). REST, embeds and oEmbed are NOT touched in this file (candidate row 8 mentioned them: rejected).
 - Fix: `remove_action( 'wp_enqueue_scripts', 'wp_enqueue_emoji_styles' )`; delete the dead lines.
 - Test: assert `! has_action( 'wp_enqueue_scripts', 'wp_enqueue_emoji_styles' )` after `init`.
+
+- **FIXED**: deleted the dead removals (`index_rel_link`, `parent_post_rel_link`, `start_post_rel_link`, the recent-comments-style filter that was hooked to the wrong kind of hook), and emoji styles are now unhooked from `wp_enqueue_scripts` (`wp_enqueue_emoji_styles`) as well as the old `wp_print_styles` hook. `CleanupHeadTest` covers the head output.
 
 ### T14 (low) front-page.php query hygiene
 - File: front-page.php:23-33, 45-80, 86-105
