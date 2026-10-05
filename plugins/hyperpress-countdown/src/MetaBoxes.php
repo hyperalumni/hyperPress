@@ -77,7 +77,7 @@ final class MetaBoxes {
 				array(
 					'name'              => __( 'Hide Before', 'hyperpress' ),
 					'desc'              => __( 'Do not display the Count Down until', 'hyperpress' ),
-					'label_description' => __( '', 'hyperpress' ), // phpcs:ignore WordPress.WP.I18n.NoEmptyStrings -- plugins audit
+					'label_description' => '',
 					'id'                => 'hyperpress_countdown_hide_before',
 					'type'              => 'datetime',
 					'required'          => false,
@@ -89,7 +89,7 @@ final class MetaBoxes {
 				array(
 					'name'              => __( 'Hide After', 'hyperpress' ),
 					'desc'              => __( 'Do not display the Count Down after', 'hyperpress' ),
-					'label_description' => __( '', 'hyperpress' ), // phpcs:ignore WordPress.WP.I18n.NoEmptyStrings -- plugins audit
+					'label_description' => '',
 					'id'                => 'hyperpress_countdown_hide_after',
 					'type'              => 'datetime',
 					'required'          => false,
