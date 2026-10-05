@@ -38,6 +38,7 @@ $font_awesome_version   = '7.3.1';
 $jquery_version         = '3.7.1';
 $jquery_migrate_version = '3.6.0';
 $cdn_base               = 'https://cdnjs.cloudflare.com/ajax/libs/';
+$google_fonts_base      = 'https://fonts.googleapis.com/css2?';
 
 /**
  * Subresource Integrity hashes for the CDN assets, keyed by URL (without the version query).
@@ -90,7 +91,7 @@ add_filter( 'style_loader_tag', 'hyperpress_add_integrity', 10, 3 );
 add_action( 'wp_enqueue_scripts', 'hyperpress_scripts' );
 
 function hyperpress_scripts(): void {
-	global $cdn_base, $hyper_press_version, $foundation_version, $font_awesome_version, $jquery_version, $jquery_migrate_version;
+	global $cdn_base, $google_fonts_base, $hyper_press_version, $foundation_version, $font_awesome_version, $jquery_version, $jquery_migrate_version;
 
 	// Deregister the jquery version bundled with WordPress.
 	wp_deregister_script( 'jquery' );
@@ -98,9 +99,8 @@ function hyperpress_scripts(): void {
 	wp_deregister_script( 'jquery-migrate' );
 
 	// Register the Google Fonts
-// wp_register_style( 'oswald', 'https://fonts.googleapis.com/css?family=Oswald:300,400,500,600,700' );
-	wp_register_style( 'oswald', 'https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swa' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- theme audit
-	wp_register_style( 'opensans', 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- theme audit
+	wp_register_style( 'oswald', $google_fonts_base . 'family=Oswald:wght@200..700&display=swap' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- theme audit
+	wp_register_style( 'opensans', $google_fonts_base . 'family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- theme audit
 
 	// The official plugin is not active, so add FontAwesome from CDN.
 	if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
