@@ -52,7 +52,7 @@ class DisplaySponsorsWidget extends WP_Widget {
 						array(
 							'post_type'      => Plugin::POST_TYPE,
 							// Only display Sponsors in the selected season.
-							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- plugins audit
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- small, bounded sponsor set; no cheaper way to filter by tier and thumbnail
 							'tax_query'      => array(
 								'relation' => 'AND',
 								array(
@@ -67,7 +67,7 @@ class DisplaySponsorsWidget extends WP_Widget {
 								),
 							),
 							// Only display Sponsors with a featured image to display.
-							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- plugins audit
+							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- small, bounded sponsor set; no cheaper way to filter by tier and thumbnail
 							'meta_query'     => array( array( 'key' => '_thumbnail_id' ) ),
 							// Only fetch what still fits, so the merged result never exceeds the maximum.
 							'posts_per_page' => $max_count - $the_query->post_count,

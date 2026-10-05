@@ -62,12 +62,12 @@ final class Shortcode {
 			$on  = rwmb_meta( 'hyperpress_countdown_hide_before', '', $countdown->ID );
 			$off = rwmb_meta( 'hyperpress_countdown_hide_after', '', $countdown->ID );
 
-			if ( empty( $on ) || strtotime( $on ) < current_time( 'timestamp' ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
+			if ( empty( $on ) || strtotime( $on ) < current_time( 'timestamp' ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- compared with user-entered site-local times, so the site-offset timestamp is intended
 				// If on time isn't set, or has already passed, show the content.
 				$showit = 1;
 			}
 
-			if ( empty( $off ) || strtotime( $off ) > current_time( 'timestamp' ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
+			if ( empty( $off ) || strtotime( $off ) > current_time( 'timestamp' ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- compared with user-entered site-local times, so the site-offset timestamp is intended
 				// If off time isn't set, or is in the future, show the content.
 				$hideit = 0;
 			}

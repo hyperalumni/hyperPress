@@ -33,7 +33,7 @@ final class TimeRestrict {
 	 * Filterable so the schedule logic can be tested with a frozen clock.
 	 */
 	private static function now(): int {
-		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
+		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- compared with user-entered site-local times, so the site-offset timestamp is intended
 		return (int) apply_filters( 'hyperpress_shortcodes_now', current_time( 'timestamp' ) );
 	}
 
@@ -148,7 +148,7 @@ final class TimeRestrict {
 
 		$showit = 0; // Set some defaults.
 
-		// phpcs:disable WordPress.DateTime.RestrictedFunctions.date_date,WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
+		// phpcs:disable WordPress.DateTime.RestrictedFunctions.date_date,WordPress.DateTime.CurrentTimeTimestamp.Requested -- date() on a site-offset timestamp yields the site-local weekday, which is what the schedule compares against
 		$onwday  = (int) date( 'w', strtotime( ucfirst( $onday ) ) ); // Convert day to PHP numerical representation of day (w).
 		$offwday = (int) date( 'w', strtotime( ucfirst( $offday ) ) );
 

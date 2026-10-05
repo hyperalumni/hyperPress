@@ -9,7 +9,7 @@ final class DateDistance {
 		add_shortcode( 'hyper_date_distance', array( self::class, 'render' ) );
 	}
 
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- plugins audit
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress always passes $content to shortcode callbacks; the signature matches the other shortcodes
 	public static function render( $atts = array(), $content = null ): string {
 		$args = shortcode_atts(
 			array(
