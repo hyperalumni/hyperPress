@@ -373,6 +373,10 @@ $banner['subtitle'] = sanitize_text_field( $banner['subtitle'] );
 - Fix: `wp_kses( $banner['subtitle'], array( 'span' => array( 'class' => true ), 'strong' => array(), 'em' => array(), 'br' => array() ) )`, and escape the dynamic pieces (`esc_html`) inside the routers.
 - Test: unit test. Banner for a category archive outputs `<span class="emphasis">`; a subtitle of `<script>x</script>` outputs no `<script`.
 
+- **FIXED**: `banner.php` now passes the subtitle through `wp_kses` with an allow-list (`span[class]`, `strong`, `em`, `br`) instead of `sanitize_text_field`, so the `<span class="emphasis">` the seven archive routers produce survives (it was always stripped before), and `[hyper_emphasis]` keeps working. The routers escape the dynamic part with `esc_html`. `BannerSubtitleTest` covers category, tag, year, search (shortcodes still neutralized), a configured subtitle using either form, and hostile markup.
+- Also removed: the four `hyperpress_home_banner_*` defaults in `library/theme-activation.php`. Nothing reads those keys; the front page reads `hyperpress_homepage_customize_banner_*`.
+- Found, not changed: the Customizer control "Homepage Banner Button Text" (`hyperpress_home_banner_button_text`, `library/customize/homepage.php`) is not read by the front banner either, which uses `hyperpress_homepage_customize_banner_button_text` (a Meta Box field). The control does nothing; it needs a decision (remove it, or make the banner read it).
+
 ### T26 (medium) comments.php renders approved comments of password-protected posts before the password check
 - File: comments.php:16-49 (render) vs 59-68 (check)
 ```php

@@ -7,7 +7,7 @@ add_filter( 'hyperpress_banner_content', 'hyperpress_banner_year' );
 function hyperpress_banner_year( $banner ) {
 	if ( is_year() ) {
 		$banner['type']     = 'year';
-		$banner['subtitle'] = __( 'Year', 'hyperpress' ) . ': <span class="emphasis">' . get_the_time( 'Y' ) . '</span>';
+		$banner['subtitle'] = __( 'Year', 'hyperpress' ) . ': <span class="emphasis">' . esc_html( get_the_time( 'Y' ) ) . '</span>';
 	}
 
 	return $banner;

@@ -24,8 +24,17 @@ if ( empty( $banner['subtitle'] ) ) {
 	$banner['subtitle'] = get_theme_mod( 'hyperpress_homepage_customize_banner_subtitle' );
 }
 
-$banner['type']            = sanitize_text_field( $banner['type'] );
-$banner['subtitle']        = sanitize_text_field( $banner['subtitle'] );
+$banner['type'] = sanitize_text_field( $banner['type'] );
+// The subtitle may carry emphasis (<span class="emphasis">, which the archive routers produce) but no other markup.
+$banner['subtitle']        = wp_kses(
+	(string) $banner['subtitle'],
+	array(
+		'span'   => array( 'class' => true ),
+		'strong' => array(),
+		'em'     => array(),
+		'br'     => array(),
+	)
+);
 $banner['backgroundColor'] = sanitize_hex_color( $banner['backgroundColor'] );
 $banner['buttonText']      = sanitize_text_field( $banner['buttonText'] );
 $banner['buttonLink']      = sanitize_url( $banner['buttonLink'] );

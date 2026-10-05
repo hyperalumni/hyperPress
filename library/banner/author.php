@@ -13,7 +13,7 @@ function hyperpress_banner_author( $banner ) {
 
 		$banner['type']     = 'author';
 		$banner['title']    = __( 'Published By ', 'hyperpress' ) . $author_name;
-		$banner['subtitle'] = __( 'Author', 'hyperpress' ) . ': <span class="emphasis">' . get_the_author_meta( 'user_nicename', $author_id ) . '</span>';
+		$banner['subtitle'] = __( 'Author', 'hyperpress' ) . ': <span class="emphasis">' . esc_html( get_the_author_meta( 'user_nicename', $author_id ) ) . '</span>';
 	}
 
 	return $banner;

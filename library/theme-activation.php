@@ -18,10 +18,6 @@ function hyper_set_initial_theme_mod_values(): void {
 		'hyperpress_countdown_hours_color'   => '#F15623',
 		'hyperpress_countdown_minutes_color' => '#049655',
 		'hyperpress_countdown_seconds_color' => '#0B67B2',
-		'hyperpress_home_banner_button_link' => '#',
-		'hyperpress_home_banner_button_text' => 'Learn More',
-		'hyperpress_home_banner_title'       => 'HYPER',
-		'hyperpress_home_banner_subtitle'    => 'Dedicated to improving &amp; expanding the abilities of <span class="emphasis">Team HYPER</span>',
 	);
 
 	foreach ( $theme_mod_names as $theme_mod_name => $theme_mod_default_value ) {
