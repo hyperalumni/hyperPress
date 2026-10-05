@@ -3,18 +3,20 @@
   position: fixed !important;
 }
 
-// Make sure that the WP admin-bar does not overlap Foundation components
-html.admin-bar {
+// Make sure that the WP admin-bar does not overlap Foundation components.
+// body_class() prints on <body> (header.php), so the admin-bar, topbar and offcanvas classes are on the body.
+// The root height rule needs the html element itself, hence :has().
+html:has(body.admin-bar) {
   height: calc(100% - rem-calc(32));
+}
 
-
+body.admin-bar {
   // Offset sticky top bar
   &.topbar, &.offcanvas {
     .site-header.sticky.is-stuck {
       margin-top: rem-calc(32) !important;
     }
   }
-
 
   // Offset mobile off-canvas menu
   &.offcanvas {
@@ -26,4 +28,3 @@ html.admin-bar {
     }
   }
 }
-

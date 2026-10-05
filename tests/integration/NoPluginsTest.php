@@ -14,6 +14,11 @@ final class NoPluginsTest extends WP_UnitTestCase {
 		if ( ! getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
 			$this->markTestSkipped( 'Run with HYPERPRESS_TEST_WITHOUT_PLUGINS=1' );
 		}
+
+		// WordPress core still hooks the deprecated the_block_template_skip_link() on these actions, which trips the
+		// test case's deprecation check now that header.php fires wp_body_open().
+		remove_action( 'wp_body_open', 'the_block_template_skip_link' );
+		remove_action( 'wp_footer', 'the_block_template_skip_link' );
 	}
 
 	private function render( string $url ): string {

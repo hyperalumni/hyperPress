@@ -12,7 +12,7 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 <!doctype html>
-<html <?php language_attributes(); ?> <?php body_class(); ?> >
+<html <?php language_attributes(); ?>>
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<?php wp_head(); ?>
 </head>
-<body>
+<body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
 <?php if ( get_theme_mod( 'wpt_mobile_menu_layout' ) === 'offcanvas' ) : ?>
