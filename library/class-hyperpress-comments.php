@@ -34,7 +34,7 @@ if ( ! class_exists( 'HyperPress_Theme_Comments' ) ) :
 		/** START_LVL
          * Starts the list before the CHILD elements are added. */
 		public function start_lvl( &$output, $depth = 0, $args = array() ) {
-			$GLOBALS['comment_depth'] = $depth + 1; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- theme audit
+			$GLOBALS['comment_depth'] = $depth + 1; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- mirrors Walker_Comment, which sets these globals for comment_text() and the comment template functions
             ?>
 
 					<ul class="children">
@@ -44,7 +44,7 @@ if ( ! class_exists( 'HyperPress_Theme_Comments' ) ) :
 		/** END_LVL
          * Ends the children list of after the elements are added. */
 		public function end_lvl( &$output, $depth = 0, $args = array() ) {
-			$GLOBALS['comment_depth'] = $depth + 1; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- theme audit
+			$GLOBALS['comment_depth'] = $depth + 1; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- mirrors Walker_Comment, which sets these globals for comment_text() and the comment template functions
             ?>
 
 			</ul><!-- /.children -->
@@ -55,8 +55,8 @@ if ( ! class_exists( 'HyperPress_Theme_Comments' ) ) :
 		/** START_EL */
 		public function start_el( &$output, $comment, $depth = 0, $args = array(), $id = 0 ) {
 			++$depth;
-			$GLOBALS['comment_depth'] = $depth; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- theme audit
-			$GLOBALS['comment']       = $comment; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- theme audit
+			$GLOBALS['comment_depth'] = $depth; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- mirrors Walker_Comment, which sets these globals for comment_text() and the comment template functions
+			$GLOBALS['comment']       = $comment; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- mirrors Walker_Comment, which sets these globals for comment_text() and the comment template functions
 			$parent_class             = ( empty( $args['has_children'] ) ? '' : 'parent' );
             ?>
 

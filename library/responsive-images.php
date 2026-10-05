@@ -68,7 +68,7 @@ function hyperpress_adjust_image_sizes_attr( $sizes, $size ) {
 add_filter( 'post_thumbnail_html', 'remove_thumbnail_dimensions', 10, 3 );
 
 // Remove inline width and height attributes for post thumbnails
-function remove_thumbnail_dimensions( $html, $post_id, $post_image_id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- theme audit
+function remove_thumbnail_dimensions( $html, $post_id, $post_image_id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- signature required by the post_thumbnail_html filter
 	if ( ! strpos( $html, 'attachment-shop_single' ) ) {
 		$html = preg_replace( '/^(width|height)=\"\d*\"\s/', '', $html );
 	}
