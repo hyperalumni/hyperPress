@@ -44,9 +44,39 @@ final class CountdownShortcodeHardeningTest extends WP_UnitTestCase {
 		$output = $this->render( $id );
 
 		$this->assertStringContainsString( '<section class="grid-x countdown align-center">', $output );
-		$this->assertStringContainsString( 'data-date="2030-01-01 10:00"', $output );
+		$this->assertStringContainsString( 'data-date="2030-01-01T10:00:00+00:00"', $output );
 		$this->assertStringContainsString( '<h2 class="cell align-center">Big Game</h2>', $output );
 		$this->assertStringContainsString( '<h4 class="cell align-center">Field 1</h4>', $output );
+	}
+
+	public function test_rendering_the_same_countdown_twice_gives_distinct_ids_targeted_by_their_own_script(): void {
+		$id    = $this->countdown();
+		$first = $this->render( $id );
+		$again = $this->render( $id );
+
+		$this->assertSame( 1, preg_match( '/<div id="([^"]+)" class="cell" data-date/', $first, $a ) );
+		$this->assertSame( 1, preg_match( '/<div id="([^"]+)" class="cell" data-date/', $again, $b ) );
+		$this->assertNotSame( $a[1], $b[1], 'element ids must be unique per render' );
+
+		$js = $this->inline_js();
+		$this->assertStringContainsString( '$( "#' . $a[1] . '" ).TimeCircles', $js );
+		$this->assertStringContainsString( '$( "#' . $b[1] . '" ).TimeCircles', $js );
+	}
+
+	public function test_data_date_carries_the_site_time_zone_offset_for_the_same_instant(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id     = $this->countdown( array( 'hyperpress_countdown_event_date_time' => '2030-07-01 10:00' ) );
+		$output = $this->render( $id );
+
+		$this->assertSame( 1, preg_match( '/data-date="([^"]+)"/', $output, $m ) );
+		$this->assertStringEndsWith( '-04:00', $m[1] );
+		$stored = new \DateTimeImmutable( '2030-07-01 10:00', wp_timezone() );
+		$this->assertSame( $stored->getTimestamp(), ( new \DateTimeImmutable( $m[1] ) )->getTimestamp() );
+	}
+
+	public function test_data_date_offset_is_zero_on_a_utc_site(): void {
+		$this->assertSame( 1, preg_match( '/data-date="([^"]+)"/', $this->render( $this->countdown() ), $m ) );
+		$this->assertStringEndsWith( '+00:00', $m[1] );
 	}
 
 	public function test_stored_markup_is_escaped_in_output_and_inline_script(): void {

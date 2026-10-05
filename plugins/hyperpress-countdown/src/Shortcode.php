@@ -105,13 +105,17 @@ final class Shortcode {
 		wp_enqueue_script( 'hyperpress-countdown-timecircles' );
 		wp_enqueue_style( 'hyperpress-countdown-timecircles' );
 
+		// TimeCircles hands anything it cannot match to Date.parse(), which honors an ISO 8601 offset; without one it would use the visitor's time zone.
+		$data_date  = ( new \DateTimeImmutable( $event_date, wp_timezone() ) )->format( 'c' );
+		$element_id = $slug . '-' . wp_unique_id();
+
 		$event_name      = Meta::get( 'hyperpress_countdown_event_name', $countdown->ID );
 		$event_location  = Meta::get( 'hyperpress_countdown_event_location', $countdown->ID );
 		$count_past_zero = filter_var( Meta::get( 'hyperpress_countdown_past_zero', $countdown->ID ), FILTER_VALIDATE_BOOLEAN );
 
 		$output  = '<section class="grid-x countdown align-center">';
 		$output .= '<div class="cell xsmall-12 large-10">';
-		$output .= '<div id="' . esc_attr( $slug ) . '" class="cell" data-date="' . esc_attr( $event_date ) . '" ></div>';
+		$output .= '<div id="' . esc_attr( $element_id ) . '" class="cell" data-date="' . esc_attr( $data_date ) . '" ></div>';
 
 		if ( ! empty( $event_name ) ) {
 			$output .= '<h2 class="cell align-center">' . esc_html( $event_name ) . '</h2>';
@@ -127,7 +131,7 @@ final class Shortcode {
 		$output .= '</section>';
 		$output .= '<div class="section-divider"><hr/></div>';
 
-		$selector = wp_json_encode( '#' . $slug, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
+		$selector = wp_json_encode( '#' . $element_id, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
 		$js       = 'jQuery( function ( $ ) {
 	$( ' . $selector . ' ).TimeCircles( {
 		"animation": "smooth",
