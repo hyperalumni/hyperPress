@@ -9,6 +9,10 @@ function hyperpress_breadcrumbs_category( $breadcrumbs ) {
 		// Get the query & post information
 		$category = get_category( get_query_var( 'cat' ) );
 
+		if ( ! $category instanceof WP_Term ) {
+			return $breadcrumbs;
+		}
+
 		$breadcrumbs[] = array(
 			'title'   => __( 'Category', 'hyperpress' ),
 			'classes' => array(

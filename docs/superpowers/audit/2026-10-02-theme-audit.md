@@ -468,6 +468,7 @@ $terms = get_terms( $taxonomy, $args );   // T17
 - Impact: a post whose category set is empty raises "Undefined array key 0" (PHP 8) before the guard runs. On a tag archive whose `tag_id` matches nothing, or if `get_terms` returns a `WP_Error`, `$terms[0]->name` and `get_tag_link( $terms[0] )` raise warnings and emit an empty crumb. `get_category()` can return a `WP_Error` (category.php:12), after which `$category->cat_name` warns. With WP_DEBUG_DISPLAY the warnings are printed into the page. The labels also hard-code English (`'Posted At'`, `' comments'`, labels/post.php:14,22,55) outside `__()`.
 - Fix: `$category = $categories[0] ?? null;` `$term = get_queried_object(); if ( $term instanceof WP_Term ) { … }`; wrap labels in `__()`/`_n()`.
 - Test: integration test. Post with `wp_set_post_categories( $id, array() )` and a tag archive for an empty term; assert no notices (`$this->setExpectedIncorrectUsage` not needed, convert warnings to exceptions).
+- **FIXED**: The post label and the category breadcrumb now skip themselves when the category set is empty or get_category() returns null or a WP_Error (the tag breadcrumb was already guarded); covered by LabelsBreadcrumbsGuardTest. The hard-coded English label strings are not changed.
 
 ### T37 (low) Breadcrumb `href` uses `esc_attr()`, and the author crumb links to the author's own website
 - Files: template-parts/breadcrumbs.php:28; library/breadcrumbs/author.php:19-21

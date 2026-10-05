@@ -39,7 +39,7 @@ function hyperpress_labels_post( $labels ) {
 
 		// Get category information
 		$categories = get_the_category();
-		$category   = $categories[0];
+		$category   = ! empty( $categories ) ? reset( $categories ) : null;
 		if ( ! empty( $category ) ) {
 			$labels[] = array(
 				'label'   => $category->cat_name,
