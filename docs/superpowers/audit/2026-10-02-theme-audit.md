@@ -22,6 +22,15 @@ critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43). Severity
 | 10 | T4 | medium | `single.php`, `template-parts/posts.php`, `front-page.php` | include of a filter-returned path with only `empty()` (hardening; current callbacks return fixed paths). | **FIXED** front-page.php, single.php and template-parts/posts.php only include a `content_template` result that is a non-empty, readable string. |
 | 11 | T7 | low | `front-page.php` | countdown ids from a theme mod are not cast to int before being put in a shortcode string. | **FIXED** front-page.php casts countdown ids with `absint()` and skips zero (test: FrontPageContentTemplateTest). |
 
+## Suppressions resolved
+
+- Plain strings: `_e()` became `esc_html_e()` (`esc_attr_e()` for the header aria-label) in `404.php`, `comments.php`, `header.php`, `library/class-hyperpress-comments.php` and `template-parts/content-none.php`; the strings that carry links (404 home/back, content-none, the `library/foundation.php` menu notice) now go through `wp_kses()` allowing only `<a href>`, with the URLs wrapped in `esc_url()`, and only the theme-controlled "Back" link gets the `javascript` protocol.
+- URLs and attributes: `searchform.php`, `front-page.php` and the comment walker now use `esc_url()` / `esc_attr( get_comment_date( 'c' ) )`, the walker's date link text is `esc_html( get_comment_date() )` (the old `printf( get_comment_date(), get_comment_time() )` only ever printed the date), and the `get_comment_author_link()` ignore now says why it is safe.
+- `template-parts/banner.php` (T8): type, background colour, title, button link and button text are escaped with `esc_attr`, `esc_attr` (printed only for a valid `sanitize_hex_color()`), `wp_kses_post`, `esc_url` and `esc_html`; the title is no longer flattened by `sanitize_text_field()` so that harmless markup such as `<em>` survives.
+- Trusted output: the pagination ignores in `library/foundation.php` and the `library/root-colors.php` disable now give specific reasons (every colour theme mod is registered with `sanitize_hex_color`), and `nggallery/album-compact.php` escapes its plain-text and numeric values, runs the NextGen descriptions through `wp_kses_post` and documents the `Router::esc_url()` ones.
+- `library/enqueue-scripts.php` reads the asset manifest with `wp_json_file_decode()` instead of `file_get_contents()`.
+- `comments.php` uses the plain `defined( 'ABSPATH' ) || exit;` guard instead of `die( __() )`.
+
 ## Decisions needed
 
 Proposed default: rebase the key out of `14566eb` before pushing (T1, owner), then fix T3, T24, T26, T27, T29 (test first), then T28, T30 and T4; defer the rest.

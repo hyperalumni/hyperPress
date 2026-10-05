@@ -24,11 +24,11 @@ use Imagely\NGG\Util\Router;
 	<div class="album-info callout primary">
 		<?php $album_name = $album->name; ?>
 		<?php if ( ! empty( $album_name ) ) : ?>
-			<h5><?php echo $album_name; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?></h5>
+			<h5><?php echo esc_html( $album_name ); ?></h5>
 		<?php endif; ?>
 		<?php $album_desc = $album->albumdesc; ?>
 		<?php if ( ! empty( $album_desc ) ) : ?>
-			<p><?php echo $album_desc; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?></p>
+			<p><?php echo wp_kses_post( $album_desc ); ?></p>
 		<?php endif; ?>
 	</div>
 	<?php if ( ! empty( $galleries ) ) : ?>
@@ -37,8 +37,8 @@ use Imagely\NGG\Util\Router;
 				<div class="cell card grid-y align-bottom small-12 medium-6 large-4 xlarge-3">
 					<div class="cell card-image">
 						<?php if ( ! empty( $gallery->previewurl ) ) : ?>
-							<a href="<?php echo Router::esc_url( $gallery->pagelink ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>">
-								<img src="<?php echo Router::esc_url( $gallery->previewurl ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>">
+							<a href="<?php echo Router::esc_url( $gallery->pagelink ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>">
+								<img src="<?php echo Router::esc_url( $gallery->previewurl ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>">
 							</a>
 						<?php else : ?>
 							<?php $album_settings = $album->display_type_settings['photocrati-nextgen_basic_compact_album'] ?? array(); ?>
@@ -48,25 +48,25 @@ use Imagely\NGG\Util\Router;
 					</div>
 					<div class="cell card-section flex-child-auto">
 						<?php if ( ! empty( $gallery->title ) ) : ?>
-							<h4><a href="<?php echo Router::esc_url( $gallery->pagelink ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>"><?php echo $gallery->title; ?></a></h4>
+							<h4><a href="<?php echo Router::esc_url( $gallery->pagelink ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>"><?php echo esc_html( $gallery->title ); ?></a></h4>
 						<?php endif; ?>
 						<p>
 							<?php if ( ! empty( $gallery->counter ) ) : ?>
 								<span
-									class="label primary"><strong><?php echo $gallery->counter; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.Security.EscapeOutput.UnsafePrintingFunction,WordPress.WP.I18n.TextDomainMismatch -- theme audit ?></strong>&nbsp;<?php _e( 'Photos', 'nggallery' ); ?></span>
+									class="label primary"><strong><?php echo (int) $gallery->counter; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- 'nggallery' is NextGen's own text domain, reused on purpose ?></strong>&nbsp;<?php esc_html_e( 'Photos', 'nggallery' ); ?></span>
 							<?php endif; ?>
 							<?php if ( ! empty( $gallery->author ) ) : ?>
 								<?php $author = get_userdata( $gallery->author ); ?>
 								<?php if ( ! empty( $author ) ) : ?>
 									<?php $author_displayname = $author->display_name; ?>
 									<?php if ( ! empty( $author_displayname ) ) : ?>
-										<span class="label warning"><?php echo $author_displayname; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?></span>
+										<span class="label warning"><?php echo esc_html( $author_displayname ); ?></span>
 									<?php endif; ?>
 								<?php endif; ?>
 							<?php endif; ?>
 						</p>
 						<?php if ( ! empty( $gallery->galdesc ) ) : ?>
-							<p><?php echo $gallery->galdesc; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?></p>
+							<p><?php echo wp_kses_post( $gallery->galdesc ); ?></p>
 						<?php endif; ?>
 					</div>
 				</div>

@@ -17,7 +17,7 @@ if ( post_password_required() ) {
 	?>
 	<section id="comments">
 		<div class="notice">
-			<p class="bottom"><?php _e( 'This post is password protected. Enter the password to view comments.', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></p>
+			<p class="bottom"><?php esc_html_e( 'This post is password protected. Enter the password to view comments.', 'hyperpress' ); ?></p>
 		</div>
 	</section>
 	<?php
@@ -65,7 +65,7 @@ endif;
 	Prevent access to this file directly
 	*/
 
-	defined( 'ABSPATH' ) || die( __( 'Please do not load this page directly. Thanks!', 'hyperpress' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
+	defined( 'ABSPATH' ) || exit;
 
 ?>
 

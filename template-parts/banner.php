@@ -25,24 +25,23 @@ if ( empty( $banner['subtitle'] ) ) {
 }
 
 $banner['type']            = sanitize_text_field( $banner['type'] );
-$banner['title']           = sanitize_text_field( $banner['title'] );
 $banner['subtitle']        = sanitize_text_field( $banner['subtitle'] );
 $banner['backgroundColor'] = sanitize_hex_color( $banner['backgroundColor'] );
 $banner['buttonText']      = sanitize_text_field( $banner['buttonText'] );
 $banner['buttonLink']      = sanitize_url( $banner['buttonLink'] );
 ?>
 
-<header role="banner" class="banner <?php echo $banner['type']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>"
+<header role="banner" class="banner <?php echo esc_attr( $banner['type'] ?? '' ); ?>"
 	<?php
     if ( ! empty( $banner['backgroundColor'] ) ) {
 ?>
-style="background-color: <?php echo $banner['backgroundColor'] . ';'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>" <?php } ?>
+style="background-color: <?php echo esc_attr( $banner['backgroundColor'] ); ?>;" <?php } ?>
 >
 	<div class="grid-container">
 		<div class="grid-x align-middle">
 			<div class="small-12 large-8 cell title">
 				<?php if ( ! empty( $banner['title'] ) ) { ?>
-					<h2 class="entry-title"><?php echo $banner['title']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?></h2>
+					<h2 class="entry-title"><?php echo wp_kses_post( $banner['title'] ); ?></h2>
 				<?php } ?>
 				<?php if ( ! empty( $banner['subtitle'] ) ) { ?>
 					<h4 class="subtitle"><?php echo do_shortcode( $banner['subtitle'] ); ?></h4>
@@ -51,8 +50,8 @@ style="background-color: <?php echo $banner['backgroundColor'] . ';'; // phpcs:i
 			<?php if ( 'front' === $banner['type'] ) { ?>
 				<?php if ( ! empty( $banner['buttonText'] ) && ! empty( $banner['buttonLink'] ) ) { ?>
 					<div class="small-12 large-4 cell grid-x align-center">
-						<a class="button dark" href="<?php echo $banner['buttonLink']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>">
-							<h4><?php echo $banner['buttonText']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?></h4></a>
+						<a class="button dark" href="<?php echo esc_url( $banner['buttonLink'] ); ?>">
+							<h4><?php echo esc_html( $banner['buttonText'] ); ?></h4></a>
 					</div>
 				<?php } ?>
 			<?php } ?>

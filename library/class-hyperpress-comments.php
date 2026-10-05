@@ -74,11 +74,11 @@ if ( ! class_exists( 'HyperPress_Theme_Comments' ) ) :
 				<?php
 				printf(
 					/* translators: %s: comment author link */
-					__( '<cite class="fn">%s</cite>', 'hyperpress' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.WP.I18n.NoHtmlWrappedStrings -- theme audit
+					__( '<cite class="fn">%s</cite>', 'hyperpress' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.WP.I18n.NoHtmlWrappedStrings -- get_comment_author_link() returns core-escaped HTML and the <cite> wrapper is a theme-controlled string
 					get_comment_author_link()
 				);
 				?>
-				<time datetime="<?php echo comment_date( 'c' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>"><a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>"><?php printf( get_comment_date(), get_comment_time() ); ?></a></time>
+				<time datetime="<?php echo esc_attr( get_comment_date( 'c' ) ); ?>"><a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>"><?php echo esc_html( get_comment_date() ); ?></a></time>
 
 			</div><!-- /.comment-author -->
 
@@ -87,7 +87,7 @@ if ( ! class_exists( 'HyperPress_Theme_Comments' ) ) :
 				<section id="comment-content-<?php comment_ID(); ?>" class="comment">
 					<?php if ( ! $comment->comment_approved ) : ?>
 							<div class="notice">
-					<p class="bottom"><?php _e( 'Your comment is awaiting moderation.', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></p>
+					<p class="bottom"><?php esc_html_e( 'Your comment is awaiting moderation.', 'hyperpress' ); ?></p>
 				</div>
 					<?php
                     else :
@@ -97,7 +97,7 @@ comment_text();
 				</section><!-- /.comment-content -->
 
 				<div class="comment-meta comment-meta-data hide">
-					<a href="<?php echo htmlspecialchars( get_comment_link( get_comment_ID() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>"><?php comment_date(); ?> at <?php comment_time(); ?></a> <?php edit_comment_link( '(Edit)' ); ?>
+					<a href="<?php echo esc_url( get_comment_link( get_comment_ID() ) ); ?>"><?php comment_date(); ?> at <?php comment_time(); ?></a> <?php edit_comment_link( '(Edit)' ); ?>
 				</div><!-- /.comment-meta -->
 
 				<div class="reply">

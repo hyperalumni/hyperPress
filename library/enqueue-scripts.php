@@ -35,7 +35,7 @@ function hyperpress_asset_path( $filename, string $manifest_dir = '' ): string {
 	if ( ! array_key_exists( $manifest_path, $manifests ) ) {
 		$manifest = array();
 		if ( file_exists( $manifest_path ) ) {
-			$decoded = json_decode( file_get_contents( $manifest_path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- theme audit
+			$decoded = wp_json_file_decode( $manifest_path, array( 'associative' => true ) );
 			if ( is_array( $decoded ) ) {
 				$manifest = $decoded;
 			}

@@ -15,28 +15,34 @@ get_header(); ?>
 		<main class="main-content">
 			<article>
 				<header>
-					<h1 class="entry-title"><?php _e( 'File Not Found', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></h1>
+					<h1 class="entry-title"><?php esc_html_e( 'File Not Found', 'hyperpress' ); ?></h1>
 				</header>
 				<div class="entry-content">
 					<div class="error">
-						<p class="bottom"><?php _e( 'The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></p>
+						<p class="bottom"><?php esc_html_e( 'The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.', 'hyperpress' ); ?></p>
 					</div>
-					<p><?php _e( 'Please try the following:', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></p>
+					<p><?php esc_html_e( 'Please try the following:', 'hyperpress' ); ?></p>
 					<ul>
 						<li>
-							<?php _e( 'Check your spelling', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?>
+							<?php esc_html_e( 'Check your spelling', 'hyperpress' ); ?>
 						</li>
 						<li>
 							<?php
-								printf(
-									/* translators: %s: home page url */
-									__( 'Return to the <a href="%s">home page</a>', 'hyperpress' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
-									home_url() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
+								echo wp_kses(
+									sprintf(
+										/* translators: %s: home page url */
+										__( 'Return to the <a href="%s">home page</a>', 'hyperpress' ),
+										esc_url( home_url() )
+									),
+									array( 'a' => array( 'href' => array() ) )
 								);
 							?>
 						</li>
 						<li>
-							<?php _e( 'Click the <a href="javascript:history.back()">Back</a> button', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?>
+							<?php
+								// The string is theme-controlled, so the javascript: protocol is allowed for this one link (kses would strip it).
+								echo wp_kses( __( 'Click the <a href="javascript:history.back()">Back</a> button', 'hyperpress' ), array( 'a' => array( 'href' => array() ) ), array( 'http', 'https', 'mailto', 'javascript' ) );
+							?>
 						</li>
 					</ul>
 				</div>

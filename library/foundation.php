@@ -69,7 +69,7 @@ function hyperpress_pagination() {
 
             $paginate_links = '<nav aria-label="Pagination">' . $paginate_links . '</nav>';
 
-		echo $paginate_links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
+		echo $paginate_links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() returns finished, core-escaped HTML
 	}
 }
 
@@ -129,7 +129,7 @@ function hyperpress_get_the_comments_pagination( $args = array() ) {
 
 // Custom Comments Pagination.
 function hyperpress_the_comments_pagination( $args = array() ) {
-	echo hyperpress_get_the_comments_pagination( $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
+	echo hyperpress_get_the_comments_pagination( $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() returns finished, core-escaped HTML
 }
 
 
@@ -138,19 +138,22 @@ function hyperpress_the_comments_pagination( $args = array() ) {
  */
 function hyperpress_menu_fallback() {
 	echo '<div class="alert-box secondary">';
-	printf(
-		/* translators: %1$s: link to menus, %2$s: link to customize. */
-		__( 'Please assign a menu to the primary menu location under %1$s or %2$s the design.', 'hyperpress' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
+	echo wp_kses(
 		sprintf(
-			/* translators: %s: menu url */
-			__( '<a href="%s">Menus</a>', 'hyperpress' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
-			get_admin_url( get_current_blog_id(), 'nav-menus.php' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
+			/* translators: %1$s: link to menus, %2$s: link to customize. */
+			__( 'Please assign a menu to the primary menu location under %1$s or %2$s the design.', 'hyperpress' ),
+			sprintf(
+				/* translators: %s: menu url */
+				__( '<a href="%s">Menus</a>', 'hyperpress' ),
+				esc_url( get_admin_url( get_current_blog_id(), 'nav-menus.php' ) )
+			),
+			sprintf(
+				/* translators: %s: customize url */
+				__( '<a href="%s">Customize</a>', 'hyperpress' ),
+				esc_url( get_admin_url( get_current_blog_id(), 'customize.php' ) )
+			)
 		),
-		sprintf(
-			/* translators: %s: customize url */
-			__( '<a href="%s">Customize</a>', 'hyperpress' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
-			get_admin_url( get_current_blog_id(), 'customize.php' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
-		)
+		array( 'a' => array( 'href' => array() ) )
 	);
 	echo '</div>';
 }

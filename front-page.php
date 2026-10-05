@@ -115,7 +115,7 @@ get_template_part( 'template-parts/content', get_post_type() );
 				<div class="grid-x align-center">
 					<div class="cell small-12 medium-8 large-6 xlarge-4">
 						<a class="button hollow large expanded primary"
-							href="<?php echo get_permalink( get_option( 'page_for_posts' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>">Read
+							href="<?php echo esc_url( (string) get_permalink( get_option( 'page_for_posts' ) ) ); ?>">Read
 							More</a>
 					</div>
 				</div>

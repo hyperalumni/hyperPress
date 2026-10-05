@@ -31,7 +31,7 @@ defined( 'ABSPATH' ) || exit;
 	<header class="site-header" role="banner" data-sticky data-stick-to="top">
 		<div class="site-title-bar title-bar" <?php hyperpress_title_bar_responsive_toggle(); ?>>
 			<div class="title-bar-left">
-				<button aria-label="<?php _e( 'Main Menu', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?>" class="menu-icon" type="button"
+				<button aria-label="<?php esc_attr_e( 'Main Menu', 'hyperpress' ); ?>" class="menu-icon" type="button"
 								data-toggle="<?php hyperpress_mobile_menu_id(); ?>"></button>
 				<span class="site-mobile-title title-bar-title">
 					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>

@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 ?>
 
 <header class="page-header">
-	<h1 class="page-title"><?php _e( 'Nothing Found', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></h1>
+	<h1 class="page-title"><?php esc_html_e( 'Nothing Found', 'hyperpress' ); ?></h1>
 </header>
 
 <div class="page-content">
@@ -21,22 +21,25 @@ defined( 'ABSPATH' ) || exit;
 
 	<p>
 		<?php
-			printf(
-				/* translators: %1$s: new post url */
-				__( 'Ready to publish your first post? <a href="%1$s">Get started here</a>.', 'hyperpress' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
-				admin_url( 'post-new.php' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit
+			echo wp_kses(
+				sprintf(
+					/* translators: %1$s: new post url */
+					__( 'Ready to publish your first post? <a href="%1$s">Get started here</a>.', 'hyperpress' ),
+					esc_url( admin_url( 'post-new.php' ) )
+				),
+				array( 'a' => array( 'href' => array() ) )
 			);
 		?>
 	</p>
 
 	<?php elseif ( is_search() ) : ?>
 
-	<p><?php _e( 'Sorry, but nothing matched your search terms. Please try again with some different keywords.', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></p>
+	<p><?php esc_html_e( 'Sorry, but nothing matched your search terms. Please try again with some different keywords.', 'hyperpress' ); ?></p>
 	<?php get_search_form(); ?>
 
 	<?php else : ?>
 
-	<p><?php _e( 'It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help.', 'hyperpress' ); // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- theme audit ?></p>
+	<p><?php esc_html_e( 'It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help.', 'hyperpress' ); ?></p>
 	<?php get_search_form(); ?>
 
 	<?php endif; ?>

@@ -10,7 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 
-<form role="search" method="get" id="searchform" action="<?php echo home_url( '/' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>">
+<form role="search" method="get" id="searchform" action="<?php echo esc_url( home_url( '/' ) ); ?>">
 	<div class="input-group">
 		<input type="text" class="input-group-field" value="" name="s" id="s" aria-label="Search" placeholder="
         <?php
