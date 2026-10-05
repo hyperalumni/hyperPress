@@ -9,8 +9,16 @@ function hyperpress_breadcrumbs_tag( $breadcrumbs ) {
 		// Get tag information
 		$term_id  = get_query_var( 'tag_id' );
 		$taxonomy = 'post_tag';
-		$args     = 'include=' . $term_id;
-		$terms    = get_terms( $taxonomy, $args ); // phpcs:ignore WordPress.WP.DeprecatedParameters.Get_termsParam2Found -- theme audit
+		$terms    = get_terms(
+			array(
+				'taxonomy' => $taxonomy,
+				'include'  => $term_id,
+			)
+		);
+
+		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			return $breadcrumbs;
+		}
 
 		$breadcrumbs[] = array(
 			'title'   => __( 'Tag', 'hyperpress' ),

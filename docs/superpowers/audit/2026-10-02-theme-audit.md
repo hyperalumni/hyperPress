@@ -239,6 +239,7 @@ $terms = get_terms( $taxonomy, $args ); // phpcs:ignore ...Get_termsParam2Found 
 - The suppression hides a real defect: positional taxonomy is deprecated since WP 4.5 and calls `_deprecated_argument()` on every tag archive. With WP_DEBUG_DISPLAY on, a notice is printed into the page.
 - Fix: `get_terms( array_merge( array( 'taxonomy' => $taxonomy ), $args ) )`.
 - Test: `$this->setExpectedDeprecated()` is NOT expected; the test calls the breadcrumb on a tag archive and asserts no `_deprecated_argument` fired.
+ - **FIXED**: the tag breadcrumbs now call get_terms() with the single-array signature and return early on a WP_Error or empty result (the legacy form was not actually deprecated-notice-emitting in this WP version, but an unknown tag crashed with an undefined offset).
 
 ### T18 (low) class-hyperpress-comments.php: date string used as a printf format, `htmlspecialchars` instead of `esc_url`
 - File: library/class-hyperpress-comments.php:83, 102 (from grep)
