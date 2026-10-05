@@ -32,8 +32,10 @@ final class GoogleFontsTest extends WP_UnitTestCase {
 		$this->assertNull( wp_styles()->registered[ $handle ]->ver, 'no version, so no ?ver= is appended to the Google URL' );
 		wp_enqueue_style( $handle );
 		ob_start();
-		wp_print_styles();
-		$this->assertStringNotContainsString( 'ver=', (string) ob_get_clean() );
+		wp_print_styles( $handle );
+		$tag = (string) ob_get_clean();
+		$this->assertStringContainsString( 'fonts.googleapis.com', $tag );
+		$this->assertStringNotContainsString( 'ver=', $tag );
 	}
 
 	public function test_the_main_stylesheet_depends_on_both_fonts(): void {
