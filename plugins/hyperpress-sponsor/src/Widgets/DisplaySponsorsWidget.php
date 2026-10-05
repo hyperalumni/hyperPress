@@ -11,6 +11,7 @@ class DisplaySponsorsWidget extends WP_Widget {
 
 	private string $default_title  = 'Our Sponsors';
 	private int $default_max_count = 5;
+	private int $max_count_limit   = 100;
 
 	public function __construct() {
 		parent::__construct(
@@ -21,38 +22,32 @@ class DisplaySponsorsWidget extends WP_Widget {
 	}
 
 	public function widget( $args, $instance ): void {
-		$title = apply_filters( 'widget_title', $instance['title'] );
+		$title     = apply_filters( 'widget_title', $instance['title'] ?? '' );
+		$max_count = $this->max_count( $instance['maxCount'] ?? null );
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- widget wrapper markup is supplied by the theme.
 		echo $args['before_widget'];
 		if ( ! empty( $title ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- widget wrapper markup is supplied by the theme.
 			echo $args['before_title'] . $title . $args['after_title'];
 		}
 		$current_season_slug = get_theme_mod( 'hyperpress_season_current' );
 		if ( ! empty( $current_season_slug ) ) {
-			$tiers = array_reduce(
-				get_terms(
-					array(
-						'taxonomy'   => Plugin::TIER,
-						'orderby'    => 'slug',
-						'order'      => 'DESC',
-						'hide_empty' => true,
-					)
-				),
-				function ( $carry, $tier ) {
-					$carry[] = $tier->slug;
-
-					return $carry;
-				},
-				array()
+			$tier_terms = get_terms(
+				array(
+					'taxonomy'   => Plugin::TIER,
+					'orderby'    => 'slug',
+					'order'      => 'DESC',
+					'hide_empty' => true,
+				)
 			);
+			$tiers      = is_wp_error( $tier_terms ) ? array() : wp_list_pluck( $tier_terms, 'slug' );
 			// If there are tiers, query them.
 			if ( ! empty( $tiers ) ) {
 				// Create a query that is empty to merge the results into.
 				$the_query = new WP_Query( array( 'post__in' => array( 0 ) ) );
 
-				while ( $the_query->post_count < $instance['maxCount'] && ! empty( $tiers ) ) {
+				while ( $the_query->post_count < $max_count && ! empty( $tiers ) ) {
 					$tier       = array_shift( $tiers );
 					$temp_query = new WP_Query(
 						array(
@@ -75,8 +70,9 @@ class DisplaySponsorsWidget extends WP_Widget {
 							// Only display Sponsors with a featured image to display.
 							// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- plugins audit
 							'meta_query'     => array( array( 'key' => '_thumbnail_id' ) ),
-							'posts_per_page' => $instance['maxCount'],
-							'orderby'        => 'order title',
+							// Only fetch what still fits, so the merged result never exceeds the maximum.
+							'posts_per_page' => $max_count - $the_query->post_count,
+							'orderby'        => 'menu_order title',
 							'order'          => 'ASC',
 						)
 					);
@@ -90,30 +86,62 @@ class DisplaySponsorsWidget extends WP_Widget {
 						$the_query->the_post();
 						if ( has_post_thumbnail() ) {
 							echo '<div class="cell">';
-							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-							echo '<a href="' . get_the_permalink() . '" title="' . get_the_title() . '">';
+							echo '<a href="' . esc_url( get_the_permalink() ) . '" title="' . esc_attr( get_the_title() ) . '">';
 							the_post_thumbnail( '', array( 'class' => 'full-width' ) );
 							echo '</a>';
 							echo '</div>';
 						}
 					}
 					echo '</div></div>';
+					wp_reset_postdata();
 				}
-				$seasons_url = get_term_link( get_term_by( 'slug', $current_season_slug, 'hyper_season' ) );
 
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-				echo '<a class="button neutral expanded small" href="' . $seasons_url . 'sponsors">See This Season\'s Sponsors</a>';
+				$seasons_url = $this->all_sponsors_url( (string) $current_season_slug );
+				if ( '' !== $seasons_url ) {
+					echo '<a class="button neutral expanded small" href="' . esc_url( $seasons_url ) . '">See This Season\'s Sponsors</a>';
+				}
 
 				if ( ! empty( $instance['becomeASponsorPage'] ) ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-					echo '<a class="button primary expanded small" href="' . get_page_link( $instance['becomeASponsorPage'] ) . '">Become A Sponsor</a>';
+					echo '<a class="button primary expanded small" href="' . esc_url( get_page_link( $instance['becomeASponsorPage'] ) ) . '">Become A Sponsor</a>';
 				}
 			}
 		}
 
-		// Output widget content here.
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- widget wrapper markup is supplied by the theme.
 		echo $args['after_widget'];
+	}
+
+	/**
+	 * The "see all sponsors" URL for a season, or an empty string when the season or its link is unavailable.
+	 *
+	 * @param string $season_slug Slug of the current season term.
+	 *
+	 * @return string
+	 */
+	private function all_sponsors_url( string $season_slug ): string {
+		$season = get_term_by( 'slug', $season_slug, 'hyper_season' );
+		if ( ! $season ) {
+			return '';
+		}
+		$term_link = get_term_link( $season );
+		if ( is_wp_error( $term_link ) ) {
+			return '';
+		}
+		if ( get_option( 'permalink_structure' ) ) {
+			$archive = Plugin::definition()['archive'];
+
+			return trailingslashit( $term_link ) . $archive;
+		}
+
+		return add_query_arg( 'post_type', Plugin::POST_TYPE, $term_link );
+	}
+
+	private function max_count( $value ): int {
+		if ( ! is_numeric( $value ) ) {
+			return $this->default_max_count;
+		}
+
+		return min( $this->max_count_limit, max( 1, (int) $value ) );
 	}
 
 	public function form( $instance ): void {
@@ -176,10 +204,9 @@ class DisplaySponsorsWidget extends WP_Widget {
 		$instance = array();
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- plugins audit
 		$instance['title']              = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
-		$instance['maxCount']           = ( is_numeric( $new_instance['maxCount'] ) ) ? $new_instance['maxCount'] : $this->default_max_count;
-		$instance['selectedSeason']     = ( is_numeric( $new_instance['selectedSeason'] ) ) ? $new_instance['selectedSeason'] : '';
-		$instance['seeAllSponsorsPage'] = ( is_numeric( $new_instance['seeAllSponsorsPage'] ) ) ? $new_instance['seeAllSponsorsPage'] : '';
-		$instance['becomeASponsorPage'] = ( is_numeric( $new_instance['becomeASponsorPage'] ) ) ? $new_instance['becomeASponsorPage'] : '';
+		$instance['maxCount']           = $this->max_count( $new_instance['maxCount'] ?? null );
+		$become_a_sponsor_page          = $new_instance['becomeASponsorPage'] ?? '';
+		$instance['becomeASponsorPage'] = is_numeric( $become_a_sponsor_page ) ? $become_a_sponsor_page : '';
 
 		return $instance;
 	}

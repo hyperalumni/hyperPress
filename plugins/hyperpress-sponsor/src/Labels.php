@@ -22,11 +22,12 @@ final class Labels {
 			}
 
 			if ( ! empty( $season ) ) {
-				$labels[] = array(
+				$season_link = get_term_link( $season );
+				$labels[]    = array(
 					'label'   => $season->name,
 					'title'   => 'Last Sponsored',
 					'classes' => array( 'warning' ),
-					'url'     => get_category_link( $season->term_id ),
+					'url'     => is_wp_error( $season_link ) ? '' : $season_link,
 					'rel'     => '',
 				);
 			}
