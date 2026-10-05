@@ -7,7 +7,13 @@ defined( 'ABSPATH' ) || exit;
  * Shortcodes to show or hide content on a one-off basis or on a recurring schedule.
  *
  * Moved from the theme (library/shortcodes/show-hide-content.php). Behaviour is unchanged except for audit fixes
- * (S24: the annual same-month branch read an undefined variable).
+ * (S24: the annual same-month branch read an undefined variable; S25: attribute validation).
+ *
+ * Attribute validation: a date or time attribute that cannot be parsed counts as if it was not set.
+ * - time-restrict: an unparsable `on` or `off` is ignored, so the content shows whenever the other condition allows.
+ * - time-restrict-repeat: an unparsable month name counts as a missing month (annually shows the content when
+ *   a required attribute is missing), an unparsable `ontime` or `offtime` falls back to its default, and dates
+ *   and times are normalised (`05` is 5, `9:00` is 09:00:00) before they are compared.
  *
  * @author Dave Clements
  */
@@ -66,13 +72,14 @@ final class TimeRestrict {
 			$off = $hide;
 		}
 
-		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
-		if ( empty( $on ) || strtotime( $on ) < self::now() ) { // If on time isn't set, or has already passed, show the content.
+		$on_ts  = empty( $on ) ? false : strtotime( $on ); // An unparsable time is treated as not set.
+		$off_ts = empty( $off ) ? false : strtotime( $off );
+
+		if ( false === $on_ts || $on_ts < self::now() ) { // If on time isn't set, or has already passed, show the content.
 			$showit = 1;
 		}
 
-		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
-		if ( empty( $off ) || strtotime( $off ) > self::now() ) {  // If off time isn't set, or is in the future, show the content.
+		if ( false === $off_ts || $off_ts > self::now() ) {  // If off time isn't set, or is in the future, show the content.
 			$hideit = 0;
 		}
 
@@ -83,6 +90,20 @@ final class TimeRestrict {
 		}
 
 		return '';
+	}
+
+	/**
+	 * A time attribute as zero padded H:i:s, or the fallback when it cannot be parsed.
+	 *
+	 * @param string $time     The attribute value.
+	 * @param string $fallback The H:i:s to use when the value is not a time.
+	 */
+	private static function normalise_time( string $time, string $fallback ): string {
+		$timestamp = strtotime( $time );
+		if ( false === $timestamp ) {
+			return $fallback;
+		}
+		return gmdate( 'H:i:s', $timestamp ); // WordPress runs PHP in UTC, so this equals date().
 	}
 
 	/**
@@ -117,18 +138,33 @@ final class TimeRestrict {
 		$showit = 0; // Set some defaults.
 
 		// phpcs:disable WordPress.DateTime.RestrictedFunctions.date_date,WordPress.DateTime.CurrentTimeTimestamp.Requested -- plugins audit
-		$onwday   = date( 'w', strtotime( ucfirst( $onday ) ) ); // Convert day to PHP numerical representation of day (w).
-		$offwday  = date( 'w', strtotime( ucfirst( $offday ) ) );
-		$onmonth  = date( 'n', strtotime( $onmonth ) ); // Make sure month is in numberical format.
-		$offmonth = date( 'n', strtotime( $offmonth ) );
+		$onwday  = (int) date( 'w', strtotime( ucfirst( $onday ) ) ); // Convert day to PHP numerical representation of day (w).
+		$offwday = (int) date( 'w', strtotime( ucfirst( $offday ) ) );
 
-		$todaysday   = date( 'w', self::now() ); // What's the time, Mr. Wolf?
-		$todaysdate  = date( 'j', self::now() );
-		$todaysmonth = date( 'n', self::now() );
+		// Check what was set before normalising: a missing or unparsable month counts as missing.
+		$ondate_set   = ! empty( $ondate );
+		$offdate_set  = ! empty( $offdate );
+		$ontime_set   = ! empty( $ontime );
+		$offtime_set  = ! empty( $offtime );
+		$onmonth_ts   = empty( $onmonth ) ? false : strtotime( $onmonth );
+		$offmonth_ts  = empty( $offmonth ) ? false : strtotime( $offmonth );
+		$onmonth_set  = false !== $onmonth_ts;
+		$offmonth_set = false !== $offmonth_ts;
+
+		$onmonth  = $onmonth_set ? (int) date( 'n', $onmonth_ts ) : 0; // Make sure month is in numerical format.
+		$offmonth = $offmonth_set ? (int) date( 'n', $offmonth_ts ) : 0;
+		$ondate   = (int) $ondate; // Dates are compared as numbers: '05' is 5.
+		$offdate  = (int) $offdate;
+		$ontime   = self::normalise_time( $ontime, '00:00:00' ); // Times are compared as zero padded H:i:s strings.
+		$offtime  = self::normalise_time( $offtime, '23:59:59' );
+
+		$todaysday   = (int) date( 'w', self::now() ); // What's the time, Mr. Wolf?
+		$todaysdate  = (int) date( 'j', self::now() );
+		$todaysmonth = (int) date( 'n', self::now() );
 		$currenttime = date( 'H:i:s', self::now() );
 		// phpcs:enable WordPress.DateTime.RestrictedFunctions.date_date,WordPress.DateTime.CurrentTimeTimestamp.Requested
 
-		if ( 'annually' === $type && ( empty( $ondate ) || empty( $offdate ) || empty( $onmonth ) || empty( $offmonth ) ) ) { // Show content if not all required attributes set.
+		if ( 'annually' === $type && ( ! $ondate_set || ! $offdate_set || ! $onmonth_set || ! $offmonth_set ) ) { // Show content if not all required attributes set.
 			$showit = 1;
 		} elseif ( 'annually' === $type && $onmonth < $offmonth ) { // Months do not cross years.
 			if ( $onmonth < $todaysmonth && $offmonth > $todaysmonth ) { // Today is in between show months.
@@ -200,7 +236,7 @@ final class TimeRestrict {
 			$showit = 1;
 		}
 
-		if ( 'monthly' === $type && ( empty( $ondate ) || empty( $offdate ) ) ) { // Show content if not all required attributes set.
+		if ( 'monthly' === $type && ( ! $ondate_set || ! $offdate_set ) ) { // Show content if not all required attributes set.
 			$showit = 1;
 		} elseif ( 'monthly' === $type && $ondate < $offdate ) { // Dates do not cross months.
 			if ( $ondate < $todaysdate && $offdate > $todaysdate ) { // Today is between show dates.
@@ -244,7 +280,7 @@ final class TimeRestrict {
 			$showit = 1;
 		}
 
-		if ( 'daily' === $type && ( empty( $ontime ) || empty( $offtime ) ) ) { // Show content is not all required attributes set.
+		if ( 'daily' === $type && ( ! $ontime_set || ! $offtime_set ) ) { // Show content is not all required attributes set.
 			$showit = 1;
 		} elseif ( 'daily' === $type && $ontime < $offtime ) { // Time does not cross days.
 			if ( $ontime < $currenttime && $currenttime < $offtime ) { // Current time is between show times.
