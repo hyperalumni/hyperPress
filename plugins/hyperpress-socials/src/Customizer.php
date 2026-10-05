@@ -25,7 +25,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -47,7 +47,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -68,7 +68,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -89,7 +89,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -110,7 +110,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -131,7 +131,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -152,7 +152,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -173,7 +173,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -194,7 +194,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -215,7 +215,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(
@@ -256,7 +256,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'transport'         => 'refresh',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => 'esc_url_raw',
 			)
 		);
 		$wp_customize->add_control(

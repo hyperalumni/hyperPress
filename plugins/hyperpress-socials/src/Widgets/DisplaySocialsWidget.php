@@ -92,9 +92,10 @@ class DisplaySocialsWidget extends WP_Widget {
 		foreach ( $socials as $social ) {
 			if ( ! empty( $social['url'] ) ) {
 				$target = str_contains( $social['url'], get_site_url() ) ? '_self' : '_blank';
+				$rel    = '_blank' === $target ? ' rel="noopener noreferrer"' : '';
 				echo '<div class="cell">';
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-				echo '<a href="' . esc_url( $social['url'] ) . '" title="' . esc_attr( $social['title'] ) . '" target="' . $target . '">';
+				echo '<a href="' . esc_url( $social['url'] ) . '" title="' . esc_attr( $social['title'] ) . '" target="' . $target . '"' . $rel . '>';
 				echo '<span class="fa-stack fa-2x">';
 				// echo '<i class="fa-solid fa-square fa-stack-2x" style="font-size: 2rem;"></i>';
 				// The "font-size: 2rem;" is needed or else the icons are too big, as it uses "font-size: 2em;".
