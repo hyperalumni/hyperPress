@@ -23,7 +23,7 @@ $season       = ! is_wp_error( $seasons ) && ! empty( $seasons ) ? $seasons[0] :
 		<h2 class="entry-title">
 			<a href="<?php echo esc_url( get_permalink() ); ?>" rel="bookmark">
 				<?php if ( ! is_tax( 'hyper_season' ) ) : ?>
-					<?php echo ! empty( $season ) ? $season->name . ': ' : ''; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>
+					<?php echo ! empty( $season ) ? esc_html( $season->name ) . ': ' : ''; ?>
 				<?php endif; ?>
 
 				<?php the_title(); ?>

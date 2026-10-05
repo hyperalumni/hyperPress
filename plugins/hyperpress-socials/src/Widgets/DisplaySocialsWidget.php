@@ -69,11 +69,11 @@ class DisplaySocialsWidget extends WP_Widget {
 	public function widget( $args, $instance ): void {
 		$title = apply_filters( 'widget_title', $instance['title'] ?? __( 'Stalk Us', 'hyperpress' ), $instance, $this->id_base );
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sidebar wrappers are trusted markup from register_sidebar(), printed unescaped by core widgets too
 		echo $args['before_widget'];
 		if ( ! empty( $title ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-			echo $args['before_title'] . $title . $args['after_title'];
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sidebar wrappers are trusted markup from register_sidebar(), printed unescaped by core widgets too
+			echo $args['before_title'] . esc_html( $title ) . $args['after_title'];
 		}
 		if ( 'inline' === ( $instance['layout'] ?? 'grid' ) ) {
 			$this->render_inline();
@@ -82,7 +82,7 @@ class DisplaySocialsWidget extends WP_Widget {
 		}
 
 		// Output widget content here.
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sidebar wrappers are trusted markup from register_sidebar(), printed unescaped by core widgets too
 		echo $args['after_widget'];
 	}
 
@@ -93,12 +93,12 @@ class DisplaySocialsWidget extends WP_Widget {
 		// Widget admin form.
 		?>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>">
-				<?php /* phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- plugins audit */ _e( 'Title:', 'hyperpress' ); ?>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>">
+				<?php esc_html_e( 'Title:', 'hyperpress' ); ?>
 			</label>
 			<input
-					class="widefat" id="<?php echo $this->get_field_id( 'title' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>"
-					name="<?php echo $this->get_field_name( 'title' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>"
+					class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"
+					name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>"
 					type="text"
 					value="<?php echo esc_attr( $title ); ?>"
 			/>

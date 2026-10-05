@@ -25,11 +25,11 @@ class DisplaySponsorsWidget extends WP_Widget {
 		$title     = apply_filters( 'widget_title', $instance['title'] ?? '' );
 		$max_count = $this->max_count( $instance['maxCount'] ?? null );
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- widget wrapper markup is supplied by the theme.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sidebar wrappers are trusted markup from register_sidebar(), printed unescaped by core widgets too
 		echo $args['before_widget'];
 		if ( ! empty( $title ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- widget wrapper markup is supplied by the theme.
-			echo $args['before_title'] . $title . $args['after_title'];
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sidebar wrappers are trusted markup from register_sidebar(), printed unescaped by core widgets too
+			echo $args['before_title'] . esc_html( $title ) . $args['after_title'];
 		}
 		$current_season_slug = get_theme_mod( 'hyperpress_season_current' );
 		if ( ! empty( $current_season_slug ) ) {
@@ -107,7 +107,7 @@ class DisplaySponsorsWidget extends WP_Widget {
 			}
 		}
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- widget wrapper markup is supplied by the theme.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sidebar wrappers are trusted markup from register_sidebar(), printed unescaped by core widgets too
 		echo $args['after_widget'];
 	}
 
@@ -153,44 +153,40 @@ class DisplaySponsorsWidget extends WP_Widget {
 		// Widget admin form.
 		?>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>">
-				<?php /* phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- plugins audit */ _e( 'Title:', 'hyperpress' ); ?>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>">
+				<?php esc_html_e( 'Title:', 'hyperpress' ); ?>
 			</label>
 			<input
-					class="widefat" id="<?php echo $this->get_field_id( 'title' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>"
-					name="<?php echo $this->get_field_name( 'title' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>"
+					class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"
+					name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>"
 					type="text"
 					value="<?php echo esc_attr( $title ); ?>"
 			/>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'maxCount' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>">
-				<?php /* phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- plugins audit */ _e( 'Max Count:', 'hyperpress' ); ?>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'maxCount' ) ); ?>">
+				<?php esc_html_e( 'Max Count:', 'hyperpress' ); ?>
 			</label>
 			<input
-					class="widefat" id="<?php echo $this->get_field_id( 'maxCount' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>"
-					name="<?php echo $this->get_field_name( 'maxCount' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>"
+					class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'maxCount' ) ); ?>"
+					name="<?php echo esc_attr( $this->get_field_name( 'maxCount' ) ); ?>"
 					type="number"
 					min="1"
 					value="<?php echo esc_attr( $max_count ); ?>"
 			/>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'becomeASponsorPage' ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit */ ?>">
-				<?php /* phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction -- plugins audit */ _e( 'Become a Sponsor Page:', 'hyperpress' ); ?>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'becomeASponsorPage' ) ); ?>">
+				<?php esc_html_e( 'Become a Sponsor Page:', 'hyperpress' ); ?>
 			</label>
 			<?php
 			wp_dropdown_pages(
 				array(
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-					'name'             => $this->get_field_name( 'becomeASponsorPage' ),
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-					'id'               => $this->get_field_id( 'becomeASponsorPage' ),
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-					'selected'         => $become_a_sponsor_page,
+					'name'             => esc_attr( $this->get_field_name( 'becomeASponsorPage' ) ),
+					'id'               => esc_attr( $this->get_field_id( 'becomeASponsorPage' ) ),
+					'selected'         => absint( $become_a_sponsor_page ),
 					'class'            => 'widefat',
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
-					'show_option_none' => __( 'Select a page', 'hyperpress' ),
+					'show_option_none' => esc_html__( 'Select a page', 'hyperpress' ),
 					'required'         => true,
 				)
 			)
