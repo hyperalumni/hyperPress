@@ -14,19 +14,37 @@ defined( 'ABSPATH' ) || exit;
 // Check to see if rev-manifest exists for CSS and JS static asset revisioning
 // https://github.com/sindresorhus/gulp-rev/blob/master/integration.md
 
-function hyperpress_asset_path( $filename ): string {
+/**
+ * Map a source asset name to its revisioned filename via the gulp-rev manifest.
+ *
+ * The manifest is read once per request and an unreadable or non-array manifest is ignored.
+ *
+ * @param string $filename     Asset name, e.g. 'app.css'.
+ * @param string $manifest_dir Base directory holding the per-type manifests; defaults to dist/assets.
+ */
+function hyperpress_asset_path( $filename, string $manifest_dir = '' ): string {
+	static $manifests = array();
+
 	$filename_split = explode( '.', $filename );
 	$dir            = end( $filename_split );
-	$manifest_path  = dirname( __DIR__ ) . '/dist/assets/' . $dir . '/rev-manifest.json';
+	if ( '' === $manifest_dir ) {
+		$manifest_dir = dirname( __DIR__ ) . '/dist/assets';
+	}
+	$manifest_path = $manifest_dir . '/' . $dir . '/rev-manifest.json';
 
-	if ( file_exists( $manifest_path ) ) {
-		$manifest = json_decode( file_get_contents( $manifest_path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- theme audit
-	} else {
+	if ( ! array_key_exists( $manifest_path, $manifests ) ) {
 		$manifest = array();
+		if ( file_exists( $manifest_path ) ) {
+			$decoded = json_decode( file_get_contents( $manifest_path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- theme audit
+			if ( is_array( $decoded ) ) {
+				$manifest = $decoded;
+			}
+		}
+		$manifests[ $manifest_path ] = $manifest;
 	}
 
-	if ( array_key_exists( $filename, $manifest ) ) {
-		return $manifest[ $filename ];
+	if ( array_key_exists( $filename, $manifests[ $manifest_path ] ) ) {
+		return (string) $manifests[ $manifest_path ][ $filename ];
 	}
 
 	return $filename;

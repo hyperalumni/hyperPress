@@ -157,6 +157,7 @@ if ( array_key_exists( $filename, $manifest ) ) {
 - Impact: an empty or corrupt `rev-manifest.json` makes `$manifest` null, and `array_key_exists(): Argument #2 must be of type array, null given` is a fatal error on every page (PHP 8). Also, `file_get_contents` runs up to 4 times per request without caching. Not visitor-triggerable (build artifact).
 - Fix: `if ( ! is_array( $manifest ) ) { $manifest = array(); }`; cache in a static.
 - Test: unit test writes an empty manifest file and asserts `hyperpress_asset_path('app.css')` returns `'app.css'`.
+- **FIXED**: hyperpress_asset_path() ignores a manifest that is empty, null, a JSON scalar or invalid JSON (falls back to the plain filename) and reads each manifest once per request through a static cache; covered by AssetPathTest.
 
 ### T10 (low) `main-stylesheet` depends on the `fontawesome` handle, which is not registered when FONT_AWESOME_OFFICIAL_LOADED is defined
 - File: library/enqueue-scripts.php:59-63, 66-75
