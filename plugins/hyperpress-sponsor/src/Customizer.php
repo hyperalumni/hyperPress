@@ -12,6 +12,14 @@ final class Customizer {
 	}
 
 	public static function customize_sponsor_banner( $wp_customize ): void {
+		$wp_customize->add_section(
+			'hyperpress_sponsor',
+			array(
+				'title'    => __( 'Sponsors', 'hyperpress' ),
+				'priority' => 108,
+			)
+		);
+
 		$wp_customize->add_setting(
 			'hyperpress_sponsor_banner_subtitle',
 			array(

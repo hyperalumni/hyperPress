@@ -12,12 +12,6 @@ final class MetaBoxes {
 	public static function register_sponsor_meta_boxes( $meta_boxes ) {
 		// Sponsor Meta.
 		$meta_boxes[] = array(
-			'title'    => __( 'Sponsors', 'hyperpress' ),
-			'id'       => 'hyperpress_sponsor',
-			'panel'    => '',
-			'priority' => 135,
-		);
-		$meta_boxes[] = array(
 			'id'         => 'hyperpress_sponsor_information',
 			'title'      => 'Sponsor Information',
 			'post_types' => array( Plugin::POST_TYPE ),
