@@ -17,7 +17,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'default'           => array( 'post' ),
-				'sanitize_callback' => '',
+				'sanitize_callback' => array( PostTypeDropdownControl::class, 'sanitize_post_types' ),
 			)
 		);
 		$wp_customize->add_control(

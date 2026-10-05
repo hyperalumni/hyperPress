@@ -16,9 +16,10 @@ final class Customizer {
 		$wp_customize->add_setting(
 			'hyperpress_season_banner_subtitle',
 			array(
-				'default'   => '',
-				'type'      => 'theme_mod',
-				'transport' => 'refresh',
+				'default'           => '',
+				'type'              => 'theme_mod',
+				'transport'         => 'refresh',
+				'sanitize_callback' => 'wp_kses_post',
 			)
 		);
 		$wp_customize->add_control(
@@ -38,7 +39,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'default'           => array( 'post' ),
-				'sanitize_callback' => '',
+				'sanitize_callback' => array( PostTypeDropdownControl::class, 'sanitize_post_types' ),
 			)
 		);
 		$wp_customize->add_control(
@@ -59,7 +60,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'default'           => '',
-				'sanitize_callback' => '',
+				'sanitize_callback' => array( self::class, 'sanitize_current' ),
 			)
 		);
 		$seasons = get_terms(
@@ -71,7 +72,7 @@ final class Customizer {
 			)
 		);
 		$seasons = array_reduce(
-			$seasons,
+			is_wp_error( $seasons ) ? array() : $seasons,
 			function ( $carry, $season ) {
 				$carry[ $season->slug ] = $season->name;
 
@@ -87,8 +88,20 @@ final class Customizer {
 				'description' => __( 'Select the current season for the site', 'hyperpress' ),
 				'settings'    => 'hyperpress_season_current',
 				'type'        => 'select',
-				'choices'     => $seasons ?? array(),
+				'choices'     => $seasons,
 			)
 		);
+	}
+
+	/**
+	 * Sanitize callback for the current season: the slug of an existing season, else an empty string.
+	 *
+	 * @param mixed $value Submitted value.
+	 */
+	public static function sanitize_current( $value ): string {
+		if ( ! is_string( $value ) || '' === $value ) {
+			return '';
+		}
+		return get_term_by( 'slug', $value, 'hyper_season' ) ? $value : '';
 	}
 }

@@ -21,6 +21,27 @@ class PostTypeDropdownControl extends WP_Customize_Control {
 		parent::__construct( $manager, $id, $args );
 	}
 
+	/**
+	 * Sanitize callback for the post type multi-select: keep only registered, public post type keys.
+	 *
+	 * @param mixed $value Submitted value.
+	 * @return string[]
+	 */
+	public static function sanitize_post_types( $value ): array {
+		return array_values(
+			array_filter(
+				is_array( $value ) ? $value : array(),
+				static function ( $type ): bool {
+					if ( ! is_string( $type ) || ! post_type_exists( $type ) ) {
+						return false;
+					}
+					$object = get_post_type_object( $type );
+					return null !== $object && $object->public;
+				}
+			)
+		);
+	}
+
 	protected function render_content() {
 		?>
 		<label for="<?php echo esc_attr( $this->id ); ?>">
