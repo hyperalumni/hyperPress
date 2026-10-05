@@ -3,6 +3,8 @@ namespace HyperPress\Newsletter;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Utils\Meta;
+
 final class BannerFilter {
 
 	public static function register(): void {
@@ -37,10 +39,10 @@ final class BannerFilter {
 			}
 		}
 
-		$banner['backgroundColor'] = rwmb_meta( 'hyperpress_banner_background_color' );
+		$banner['backgroundColor'] = Meta::get( 'hyperpress_banner_background_color' );
 		$blog_page_id              = get_option( 'page_for_posts' );
 		if ( empty( $banner['backgroundColor'] ) && $blog_page_id > 0 ) {
-			$banner['backgroundColor'] = rwmb_meta( 'hyperpress_banner_background_color', '', $blog_page_id );
+			$banner['backgroundColor'] = Meta::get( 'hyperpress_banner_background_color', $blog_page_id );
 		}
 
 		return $banner;

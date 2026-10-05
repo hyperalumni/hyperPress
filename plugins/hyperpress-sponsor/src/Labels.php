@@ -4,6 +4,7 @@ namespace HyperPress\Sponsor;
 defined( 'ABSPATH' ) || exit;
 
 use HyperPress\Season\SortedSeasons;
+use HyperPress\Utils\Meta;
 
 final class Labels {
 
@@ -32,7 +33,7 @@ final class Labels {
 				);
 			}
 
-			$level = rwmb_meta( 'hyperpress_sponsor_tier' );
+			$level = Meta::get( 'hyperpress_sponsor_tier' );
 			if ( ! empty( $level ) ) {
 				$labels[] = array(
 					'label'   => $level->name,

@@ -3,6 +3,8 @@ namespace HyperPress\Countdown;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Utils\Meta;
+
 final class Shortcode {
 
 	public static function register(): void {
@@ -59,8 +61,8 @@ final class Shortcode {
 			$showit = 0;
 			$hideit = 1;
 			// retrieve the values from the countdown cpt.
-			$on  = rwmb_meta( 'hyperpress_countdown_hide_before', '', $countdown->ID );
-			$off = rwmb_meta( 'hyperpress_countdown_hide_after', '', $countdown->ID );
+			$on  = Meta::get( 'hyperpress_countdown_hide_before', $countdown->ID );
+			$off = Meta::get( 'hyperpress_countdown_hide_after', $countdown->ID );
 
 			if ( empty( $on ) || strtotime( $on ) < current_time( 'timestamp' ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- compared with user-entered site-local times, so the site-offset timestamp is intended
 				// If on time isn't set, or has already passed, show the content.
@@ -77,7 +79,7 @@ final class Shortcode {
 			return '';
 		}
 
-		$event_date = rwmb_meta( 'hyperpress_countdown_event_date_time', '', $countdown->ID );
+		$event_date = Meta::get( 'hyperpress_countdown_event_date_time', $countdown->ID );
 		if ( ! strtotime( $event_date ) ) {
 			return '';
 		}
@@ -86,9 +88,9 @@ final class Shortcode {
 		wp_enqueue_script( 'hyperpress-countdown-timecircles' );
 		wp_enqueue_style( 'hyperpress-countdown-timecircles' );
 
-		$event_name      = rwmb_meta( 'hyperpress_countdown_event_name', '', $countdown->ID );
-		$event_location  = rwmb_meta( 'hyperpress_countdown_event_location', '', $countdown->ID );
-		$count_past_zero = filter_var( rwmb_meta( 'hyperpress_countdown_past_zero', '', $countdown->ID ), FILTER_VALIDATE_BOOLEAN );
+		$event_name      = Meta::get( 'hyperpress_countdown_event_name', $countdown->ID );
+		$event_location  = Meta::get( 'hyperpress_countdown_event_location', $countdown->ID );
+		$count_past_zero = filter_var( Meta::get( 'hyperpress_countdown_past_zero', $countdown->ID ), FILTER_VALIDATE_BOOLEAN );
 
 		$output  = '<section class="grid-x countdown align-center">';
 		$output .= '<div class="cell xsmall-12 large-10">';
