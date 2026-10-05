@@ -1,3 +1,4 @@
+name: hyperpress-plugins
 services:
   php:
     build: .
