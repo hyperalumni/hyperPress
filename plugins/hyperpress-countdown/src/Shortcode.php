@@ -26,6 +26,23 @@ final class Shortcode {
 		return 'private' === $countdown->post_status && current_user_can( 'read_post', $countdown->ID );
 	}
 
+	/**
+	 * JSON-encoded colour for one TimeCircles unit: the Customizer value, or TimeCircles' own default when unset or invalid.
+	 *
+	 * @param string $unit days|hours|minutes|seconds.
+	 */
+	private static function color( string $unit ): string {
+		$defaults = array(
+			'days'    => '#FC6',
+			'hours'   => '#9CF',
+			'minutes' => '#BFB',
+			'seconds' => '#F99',
+		);
+		$color    = sanitize_hex_color( (string) get_theme_mod( 'hyperpress_countdown_' . $unit . '_color' ) );
+
+		return wp_json_encode( empty( $color ) ? $defaults[ $unit ] : $color, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
+	}
+
 	public static function add_countdown_shortcode( $atts ): string {
 		$atts = shortcode_atts(
 			array(
@@ -121,22 +138,22 @@ final class Shortcode {
 		"time": {
 			"Days": {
 				"text": "Days",
-				"color": "' . get_theme_mod( 'hyperpress_countdown_days_color' ) . '",
+				"color": ' . self::color( 'days' ) . ',
 				"show": true
 			},
 			"Hours": {
 				"text": "Hours",
-				"color": "' . get_theme_mod( 'hyperpress_countdown_hours_color' ) . '",
+				"color": ' . self::color( 'hours' ) . ',
 				"show": true
 			},
 			"Minutes": {
 				"text": "Minutes",
-				"color": "' . get_theme_mod( 'hyperpress_countdown_minutes_color' ) . '",
+				"color": ' . self::color( 'minutes' ) . ',
 				"show": true
 			},
 			"Seconds": {
 				"text": "Seconds",
-				"color": "' . get_theme_mod( 'hyperpress_countdown_seconds_color' ) . '",
+				"color": ' . self::color( 'seconds' ) . ',
 				"show": true
 			}
 		}
