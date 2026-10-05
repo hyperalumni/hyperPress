@@ -1,6 +1,8 @@
 # Plugins 06: Security and Correctness Audit
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
+> **STATUS: COMPLETED** (2026-10-05). 70 fixed, 0 open, 7 info, 1 decided (78 findings). Head of the branch cleanup/convention-and-tests when closed: `5c2ea4a`.
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [x]`) syntax.
 
 **Goal:** Review every plugin for security and correctness defects, verify each finding in source, get the user's approval on the fix list, then fix each approved finding test-first.
 
@@ -15,7 +17,7 @@
 
 ## Task 1: Checklist and known candidates
 
-- [ ] **Step 1: Audit areas** (each file in each plugin is read against all of them)
+- [x] **Step 1: Audit areas** (each file in each plugin is read against all of them)
   1. Output escaping: every echo/printf of a variable, including shortcode output, widget output, `$args['before_widget']`-style values, admin notices, Customizer controls.
   2. Shortcodes: attribute handling, `extract()`, whether attribute values reach output or queries unescaped.
   3. Input sanitizing: meta fields with no `sanitize_callback`, Customizer settings with no `sanitize_callback`, `$_GET`/`$_POST`/`$_REQUEST` reads.
@@ -26,7 +28,7 @@
   8. Assets: unversioned or externally loaded scripts, handle collisions, vendored library age (`TimeCircles.js`).
   9. Dependencies: calls into Meta Box, the theme, or other plugins without a presence check; undeclared dependencies.
 
-- [ ] **Step 2: Known candidates to verify first** (each must be confirmed or rejected by reading the code, never assumed)
+- [x] **Step 2: Known candidates to verify first** (each must be confirmed or rejected by reading the code, never assumed)
 
 | # | Candidate | Where |
 |---|---|---|
@@ -49,15 +51,15 @@
 | 17 | Suppressed non-security quality items that need a decision: `__( '' )` returns the .po header in translated locales (competition and countdown MetaBoxes), dynamic `__( $var )` (SeasonBanner, sponsor widget), `strip_tags` in both widgets' `update()` (consider `wp_strip_all_tags`), `json_encode` (consider `wp_json_encode`), loose `==` in media `Avif.php`, `current_time('timestamp')` and `date()` in countdown/time-restrict (timezone behavior) | see item 16 grep |
 | 18 | `SlowDBQuery` (`tax_query`, `meta_query`) in sponsor queries; phpcs exclusion comment for `FileComment.MissingPackageTag` says existing docblocks are still validated but that sniff is excluded | `hyperpress-sponsor`, `phpcs.xml.dist` |
 
-- [ ] **Step 3: Commit nothing** (read-only).
+- [x] **Step 3: Commit nothing** (read-only).
 
 ---
 
 ## Task 2: Review every file
 
-- [ ] **Step 1: Dispatch read-only reviewers**, one per group of plugins, so each reads its files in full against the Task 1 checklist and returns findings as structured items (file:line, what, why it matters, suggested fix). Suggested groups: (utils, season, program), (competition, robot, award), (countdown, newsletter), (sponsor, socials, label, student). Give each reviewer the exact checklist and candidate rows for its plugins. Reviewers do not edit files.
+- [x] **Step 1: Dispatch read-only reviewers**, one per group of plugins, so each reads its files in full against the Task 1 checklist and returns findings as structured items (file:line, what, why it matters, suggested fix). Suggested groups: (utils, season, program), (competition, robot, award), (countdown, newsletter), (sponsor, socials, label, student). Give each reviewer the exact checklist and candidate rows for its plugins. Reviewers do not edit files.
 
-- [ ] **Step 2: Verify every finding yourself in the source.** Open the cited file:line and confirm the code does what the finding says, and that the data really is user-controlled or the behavior really is wrong. Discard anything that does not hold up; downgrade anything exaggerated. plugins-01-test-toolchain reviewer's claim is a lead, not evidence.
+- [x] **Step 2: Verify every finding yourself in the source.** Open the cited file:line and confirm the code does what the finding says, and that the data really is user-controlled or the behavior really is wrong. Discard anything that does not hold up; downgrade anything exaggerated. plugins-01-test-toolchain reviewer's claim is a lead, not evidence.
 
 ---
 
@@ -66,16 +68,16 @@
 **Files:**
 - Create: `docs/superpowers/audit/2026-10-02-audit.md`
 
-- [ ] **Step 1: Write the report** with: method, per-plugin coverage (every file listed), and the findings table sorted by severity (critical, high, medium, low, info). Each finding has: ID, severity, plugin, file:line, evidence (the quoted code), impact, proposed fix, and the test that will prove it. Include the rejected candidates with the reason.
+- [x] **Step 1: Write the report** with: method, per-plugin coverage (every file listed), and the findings table sorted by severity (critical, high, medium, low, info). Each finding has: ID, severity, plugin, file:line, evidence (the quoted code), impact, proposed fix, and the test that will prove it. Include the rejected candidates with the reason.
 
-- [ ] **Step 2: Commit the report**
+- [x] **Step 2: Commit the report**
 
 ```bash
 git add docs/superpowers/audit/2026-10-02-audit.md
 git commit -m "docs(audit): add security and correctness audit report" -- docs/superpowers/audit/2026-10-02-audit.md
 ```
 
-- [ ] **Step 3: STOP. Ask the user to approve the fix list** (which findings to fix, which to accept or defer). Do not start Phase 2 without that answer.
+- [x] **Step 3: STOP. Ask the user to approve the fix list** (which findings to fix, which to accept or defer). Do not start Phase 2 without that answer.
 
 ---
 
@@ -91,7 +93,7 @@ Each fix is its own task and its own commit:
 
 ### Worked example (candidate 1, if confirmed): sanitize the sponsor description
 
-- [ ] **Step 1: Failing test** `tests/integration/SponsorDescriptionSanitizeTest.php`
+- [x] **Step 1: Failing test** `tests/integration/SponsorDescriptionSanitizeTest.php`
 
 ```php
 <?php
@@ -122,15 +124,23 @@ final class SponsorDescriptionSanitizeTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 2: Run, expect FAIL** (`sanitize_callback` key missing).
-- [ ] **Step 3: Fix:** add `'sanitize_callback' => 'wp_kses_post'` to that field in `hyperpress-sponsor/src/MetaBoxes.php`.
-- [ ] **Step 4: Run the test and the full suite: green.**
-- [ ] **Step 5: Commit** per the loop above.
+- [x] **Step 2: Run, expect FAIL** (`sanitize_callback` key missing).
+- [x] **Step 3: Fix:** add `'sanitize_callback' => 'wp_kses_post'` to that field in `hyperpress-sponsor/src/MetaBoxes.php`.
+- [x] **Step 4: Run the test and the full suite: green.**
+- [x] **Step 5: Commit** per the loop above.
 
 ---
 
 ## Task 5: Close out
 
-- [ ] **Step 1:** Run `composer lint`, `composer test:unit`, `composer test:integration`: all exit 0.
-- [ ] **Step 2:** Confirm every approved finding is marked fixed in the report and every deferred/accepted one has the user's stated reason recorded.
-- [ ] **Step 3:** Add the `STATUS: COMPLETED` banner to this plan and commit it with the final report state.
+- [x] **Step 1:** Run `composer lint`, `composer test:unit`, `composer test:integration`: all exit 0.
+- [x] **Step 2:** Confirm every approved finding is marked fixed in the report and every deferred/accepted one has the user's stated reason recorded.
+- [x] **Step 3:** Add the `STATUS: COMPLETED` banner to this plan and commit it with the final report state.
+
+## Execution notes
+
+- The audit report is `docs/superpowers/audit/2026-10-02-audit.md`. Its "Status of every finding" table lists all 78 findings with the fix or the reason none was needed.
+- Four reviewers read every file. The controller re-read the source for the high and medium findings and most of the lows; items the reviewers reported without a second check are marked in the report.
+- Each fix has a test that failed first, except characterization tests (noted in the commits). Every suite passes and `composer lint` exits 0.
+- Two early audit conclusions were wrong and are corrected in the report: the stub meta boxes were not unused (they create the Customizer sections through Meta Box AIO), and the countdown time zone belongs to the site, not the visitor.
+- Deferred on purpose: nothing from the audit is open. The remaining `phpcs:ignore` comments each state why.
