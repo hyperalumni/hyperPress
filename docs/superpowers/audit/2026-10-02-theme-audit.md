@@ -32,7 +32,7 @@ critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43). Severity
 - `comments.php` uses the plain `defined( 'ABSPATH' ) || exit;` guard instead of `die( __() )`.
 
 - Loose comparisons (13 `StrictComparisons` suppressions): all replaced by strict ones. The nav walker test uses `! empty()` on the two flags, because WordPress leaves them unset on items it has not resolved (an undefined-property warning before). `get_current_screen()->base` no longer fatals when there is no current screen. The `post_gallery` test now matches core (`! empty( $output )`), so a filter returning `null` or `false` falls through to the theme gallery as before. `StrictComparisonsTest` pins the previous behaviour for the other sites.
-- Found while testing, not fixed: `hyperpress_get_the_comments_pagination()` expects the current page as `<span class="page-numbers current">`, but WordPress now prints `<span aria-current="page" class="page-numbers current">`, so the current page never gets the `active` class.
+- Found while testing and **FIXED**: `hyperpress_get_the_comments_pagination()` expected the current page as `<span class="page-numbers current">`, but WordPress prints `<span aria-current="page" class="page-numbers current">`, so the current page never got the `active` class. The opening tag is now matched by its class, and the generated link carries `aria-current="page"`.
 
 ## Decisions needed
 

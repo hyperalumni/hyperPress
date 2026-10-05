@@ -64,9 +64,7 @@ final class StrictComparisonsTest extends WP_UnitTestCase {
 		$html = $this->pagination( 1, 3 );
 
 		$this->assertStringContainsString( '<li class="page-item disabled">&laquo;</li>', $html );
-				// Current behaviour: core now prints the current page as <span aria-current="page" class="page-numbers current">,
-		// which the theme's "active" branch (it expects <span class="page-numbers current">) no longer matches.
-		$this->assertStringContainsString( 'aria-current="page"', $html );
+				$this->assertStringContainsString( 'page-item active', $html );
 		$this->assertStringNotContainsString( '<li class="page-item disabled">&raquo;</li>', $html );
 	}
 
@@ -98,6 +96,34 @@ final class StrictComparisonsTest extends WP_UnitTestCase {
 		$html = $this->pagination( 2, 3, array( 'size' => $size ) );
 
 		$this->assertStringContainsString( '<ul class="pagination' . $suffix . '">', $html );
+	}
+
+	public static function current_pages(): array {
+		return array(
+			'first'  => array( 1, 3 ),
+			'middle' => array( 2, 3 ),
+			'last'   => array( 3, 3 ),
+		);
+	}
+
+	/** @dataProvider current_pages */
+	public function test_the_current_page_is_the_only_active_item_and_says_so_to_screen_readers( int $page, int $pages ): void {
+		$html = $this->pagination( $page, $pages );
+
+		$this->assertSame( 1, substr_count( $html, 'page-item active' ), 'exactly one active item' );
+		$this->assertMatchesRegularExpression(
+			'~<li class="page-item active"><a class="page-link" href="\#" aria-current="page">' . $page . '</a></li>~',
+			$html,
+			'the active item is a page-link holding the current page number'
+		);
+		$this->assertStringNotContainsString( '<span', $html, 'no span left over from core markup inside the pagination list' );
+	}
+
+	public function test_dots_between_page_ranges_are_disabled_items(): void {
+		$html = $this->pagination( 5, 10 );
+
+		$this->assertMatchesRegularExpression( '~<li class="page-item disabled"><a class="page-link" href="\#">&hellip;</a></li>~', $html );
+		$this->assertSame( 1, substr_count( $html, 'page-item active' ) );
 	}
 
 	/* ---- post_gallery filter ------------------------------------------------------------------------------ */

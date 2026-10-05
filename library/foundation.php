@@ -109,8 +109,10 @@ function hyperpress_get_the_comments_pagination( $args = array() ) {
 				$navigation .= '<li class="page-item">' . str_replace( 'next page-numbers', 'page-link', $link ) . '</li>';
 			} else {
 				$link = preg_replace( "/(class|href)='(.*)'/U", '$1="$2"', $link );
-				if ( 0 === strpos( $link, '<span class="page-numbers current' ) ) {
-					$navigation .= '<li class="page-item active">' . str_replace( array( '<span class="page-numbers current">', '</span>' ), array( '<a class="page-link" href="#">', '</a>' ), $link ) . '</li>';
+				// Core prints the current page as <span aria-current="page" class="page-numbers current">, so match the opening tag by
+				// its class instead of its exact text.
+				if ( preg_match( '/^<span\b[^>]*\bclass="page-numbers current"[^>]*>/', $link, $current_tag ) ) {
+					$navigation .= '<li class="page-item active">' . str_replace( array( $current_tag[0], '</span>' ), array( '<a class="page-link" href="#" aria-current="page">', '</a>' ), $link ) . '</li>';
 				} elseif ( 0 === strpos( $link, '<span class="page-numbers dots' ) ) {
 					$navigation .= '<li class="page-item disabled">' . str_replace( array( '<span class="page-numbers dots">', '</span>' ), array( '<a class="page-link" href="#">', '</a>' ), $link ) . '</li>';
 				} else {
