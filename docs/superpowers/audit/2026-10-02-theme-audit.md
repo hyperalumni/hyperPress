@@ -42,7 +42,7 @@ Status as of the last commit on this branch. **Fixed** means the code changed an
 | ID | Severity | Finding | Status |
 |---|---|---|---|
 | T1 | low | Meta Box download key in local git history | **Owner**: drop the key from commit `14566eb` with a rebase before pushing |
-| T2 | medium | `.env` is tracked by git | **Open**: the tracked environment file holds only one harmless key; untrack it and add an example file (owner's call) |
+| T2 | medium | `.env` is tracked by git | **Fixed**: the environment file is untracked (it stays on disk and in `.gitignore`), and an example file lists its one key, `NODE_OPTIONS`, with no value |
 | T3 | medium | `front-page.php` passes a WP_Post as the `content_template` default and includes it | **Fixed** |
 | T4 | medium | Unvalidated `include` of a filter-returned path | **Fixed** |
 | T5 | medium | Unescaped Customizer color mods printed into inline `<style>` | Accepted: every color setting uses `sanitize_hex_color`; downgraded |
@@ -85,7 +85,7 @@ Status as of the last commit on this branch. **Fixed** means the code changed an
 | T42 | low | `nggallery/gallery.php` is an empty template that shadows NextGEN's own | Decided: keep; it will be expanded (owner) |
 | T43 | info | Minor hygiene | Info, no action (open hygiene: duplicate `role="banner"`, unused WooCommerce supports) |
 
-Totals: 35 Fixed, 3 Owner, 2 Info, no action, 1 Open, 1 Accepted, 1 Decided.
+Totals: 36 Fixed, 3 Owner, 2 Info, no action, 0 Open, 1 Accepted, 1 Decided.
 
 ## Decisions needed
 
