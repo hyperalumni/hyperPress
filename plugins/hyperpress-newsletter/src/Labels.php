@@ -38,7 +38,7 @@ final class Labels {
 					'order'   => 'DESC',
 				)
 			);
-			if ( ! empty( $seasons ) ) {
+			if ( ! is_wp_error( $seasons ) && ! empty( $seasons ) ) {
 				$season = $seasons[0];
 
 				$labels[] = array(

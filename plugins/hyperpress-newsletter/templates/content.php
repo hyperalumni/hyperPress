@@ -15,7 +15,7 @@ $seasons      = wp_get_object_terms(
 		'order'   => 'DESC',
 	)
 );
-$season       = ! empty( $seasons ) ? $seasons[0] : null;
+$season       = ! is_wp_error( $seasons ) && ! empty( $seasons ) ? $seasons[0] : null;
 ?>
 
 <header>
