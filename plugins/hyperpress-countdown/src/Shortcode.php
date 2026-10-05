@@ -105,7 +105,9 @@ final class Shortcode {
 		wp_enqueue_script( 'hyperpress-countdown-timecircles' );
 		wp_enqueue_style( 'hyperpress-countdown-timecircles' );
 
-		// TimeCircles hands anything it cannot match to Date.parse(), which honors an ISO 8601 offset; without one it would use the visitor's time zone.
+		// The event is fixed in the site's time zone (Settings > General). The stored value is a wall-clock time with no zone,
+		// so read it in that zone and send its offset: TimeCircles hands this ISO 8601 form to Date.parse(), which honors the
+		// offset, so every visitor counts down to the same instant whatever their own time zone is.
 		$data_date  = ( new \DateTimeImmutable( $event_date, wp_timezone() ) )->format( 'c' );
 		$element_id = $slug . '-' . wp_unique_id();
 

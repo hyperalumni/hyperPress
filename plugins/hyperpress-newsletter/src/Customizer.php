@@ -31,7 +31,7 @@ final class Customizer {
 			'hyperpress_newsletter',
 			array(
 				'title'    => __( 'Newsletters', 'hyperpress' ),
-				'priority' => 107,
+				'priority' => 135,
 			)
 		);
 

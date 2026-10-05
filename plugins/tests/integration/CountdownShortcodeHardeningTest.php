@@ -63,22 +63,30 @@ final class CountdownShortcodeHardeningTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '$( "#' . $b[1] . '" ).TimeCircles', $js );
 	}
 
-	public function test_data_date_carries_the_site_time_zone_offset_for_the_same_instant(): void {
-		update_option( 'timezone_string', 'America/New_York' );
-		$id     = $this->countdown( array( 'hyperpress_countdown_event_date_time' => '2030-07-01 10:00' ) );
+	public static function site_zones(): array {
+		return array(
+			'utc'      => array( 'UTC', '+00:00' ),
+			'new york' => array( 'America/New_York', '-04:00' ),
+			'tokyo'    => array( 'Asia/Tokyo', '+09:00' ),
+		);
+	}
+
+	/**
+	 * The event is fixed in the SITE's time zone (Settings > General): the stored wall-clock value is read in that zone,
+	 * and data-date carries its offset, so visitors in any zone count down to the same instant.
+	 *
+	 * @dataProvider site_zones
+	 */
+	public function test_data_date_is_the_site_time_zone_instant_for_every_visitor( string $zone, string $offset ): void {
+		update_option( 'timezone_string', 'UTC' === $zone ? '' : $zone );
+		$id     = $this->countdown( array( 'hyperpress_countdown_event_date_time' => '2026-07-07 00:00' ) );
 		$output = $this->render( $id );
 
 		$this->assertSame( 1, preg_match( '/data-date="([^"]+)"/', $output, $m ) );
-		$this->assertStringEndsWith( '-04:00', $m[1] );
-		$stored = new \DateTimeImmutable( '2030-07-01 10:00', wp_timezone() );
-		$this->assertSame( $stored->getTimestamp(), ( new \DateTimeImmutable( $m[1] ) )->getTimestamp() );
+		$this->assertSame( '2026-07-07T00:00:00' . $offset, $m[1] );
+		$stored = new \DateTimeImmutable( '2026-07-07 00:00', wp_timezone() );
+		$this->assertSame( $stored->getTimestamp(), ( new \DateTimeImmutable( $m[1] ) )->getTimestamp(), 'same instant as the stored value in the site zone' );
 	}
-
-	public function test_data_date_offset_is_zero_on_a_utc_site(): void {
-		$this->assertSame( 1, preg_match( '/data-date="([^"]+)"/', $this->render( $this->countdown() ), $m ) );
-		$this->assertStringEndsWith( '+00:00', $m[1] );
-	}
-
 	public function test_stored_markup_is_escaped_in_output_and_inline_script(): void {
 		$name = '</script><script>alert(1)</script>';
 		$loc  = '"><img src=x onerror=1>';

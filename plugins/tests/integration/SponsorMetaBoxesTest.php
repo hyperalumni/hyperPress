@@ -23,6 +23,8 @@ final class SponsorMetaBoxesTest extends WP_UnitTestCase {
 
 		$control = $manager->get_control( 'hyperpress_sponsor_banner_subtitle' );
 		$this->assertNotNull( $control );
-		$this->assertNotNull( $manager->get_section( $control->section ), 'the control\'s section is registered' );
+		$section = $manager->get_section( $control->section );
+		$this->assertNotNull( $section, 'the control\'s section is registered' );
+		$this->assertSame( 135, $section->priority, 'same position in the Customizer as the Meta Box section this replaced' );
 	}
 }

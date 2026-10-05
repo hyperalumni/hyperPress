@@ -16,7 +16,7 @@ final class Customizer {
 			'hyperpress_sponsor',
 			array(
 				'title'    => __( 'Sponsors', 'hyperpress' ),
-				'priority' => 108,
+				'priority' => 135,
 			)
 		);
 

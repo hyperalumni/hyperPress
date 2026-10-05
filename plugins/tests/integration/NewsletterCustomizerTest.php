@@ -27,7 +27,7 @@ final class NewsletterCustomizerTest extends WP_UnitTestCase {
 
 		$this->assertNotNull( $section );
 		$this->assertSame( 'Newsletters', $section->title );
-		$this->assertSame( 107, $section->priority );
+		$this->assertSame( 135, $section->priority );
 		$this->assertSame( 'hyperpress_newsletter', $manager->get_control( self::MOD )->section );
 	}
 
