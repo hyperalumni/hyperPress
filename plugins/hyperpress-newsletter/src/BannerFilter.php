@@ -39,10 +39,16 @@ final class BannerFilter {
 			}
 		}
 
-		$banner['backgroundColor'] = Meta::get( 'hyperpress_banner_background_color' );
-		$blog_page_id              = get_option( 'page_for_posts' );
-		if ( empty( $banner['backgroundColor'] ) && $blog_page_id > 0 ) {
-			$banner['backgroundColor'] = Meta::get( 'hyperpress_banner_background_color', $blog_page_id );
+		// Keep the theme colour Banner::apply() set unless the post (or the Posts page) has its own.
+		$color = Meta::get( 'hyperpress_banner_background_color' );
+		if ( empty( $color ) ) {
+			$blog_page_id = get_option( 'page_for_posts' );
+			if ( $blog_page_id > 0 ) {
+				$color = Meta::get( 'hyperpress_banner_background_color', $blog_page_id );
+			}
+		}
+		if ( ! empty( $color ) ) {
+			$banner['backgroundColor'] = $color;
 		}
 
 		return $banner;

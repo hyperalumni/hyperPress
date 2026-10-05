@@ -39,13 +39,14 @@ final class Labels {
 				)
 			);
 			if ( ! is_wp_error( $seasons ) && ! empty( $seasons ) ) {
-				$season = $seasons[0];
+				$season      = $seasons[0];
+				$season_link = get_term_link( $season );
 
 				$labels[] = array(
 					'label'   => $season->name,
 					'title'   => 'Posted During',
 					'classes' => array( 'warning' ),
-					'url'     => get_category_link( $season->term_id ),
+					'url'     => is_wp_error( $season_link ) ? '' : $season_link,
 					'rel'     => '',
 				);
 			}

@@ -38,6 +38,19 @@ final class NewsletterBannerTest extends WP_UnitTestCase {
 		$this->assertSame( '#123456', $this->banner_for( $post_id )['backgroundColor'] );
 	}
 
+	public function test_singular_keeps_the_theme_colour_when_the_post_has_none(): void {
+		set_theme_mod( 'hyperpress_hyper_orange', '#ff8800' );
+		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter' ) );
+		$this->assertSame( '#ff8800', $this->banner_for( $post_id )['backgroundColor'] );
+	}
+
+	public function test_singular_keeps_the_theme_colour_when_neither_post_nor_posts_page_has_one(): void {
+		set_theme_mod( 'hyperpress_hyper_orange', '#ff8800' );
+		update_option( 'page_for_posts', self::factory()->post->create( array( 'post_type' => 'page' ) ) );
+		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter' ) );
+		$this->assertSame( '#ff8800', $this->banner_for( $post_id )['backgroundColor'] );
+	}
+
 	public function test_archive_title_is_always_set_and_season_uses_from(): void {
 		set_theme_mod( 'hyperpress_newsletter_banner_subtitle', 'News' );
 		$this->go_to( get_post_type_archive_link( 'hyper_newsletter' ) );
