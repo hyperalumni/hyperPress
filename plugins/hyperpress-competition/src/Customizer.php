@@ -7,7 +7,8 @@ use WP_Customize_Control;
 
 final class Customizer {
 
-	public const API_KEY_SETTING = 'hyperpress_competition_google_maps_api_key';
+	public const API_KEY_SETTING  = 'hyperpress_competition_google_maps_api_key';
+	public const SUBTITLE_SETTING = 'hyperpress_competition_banner_subtitle';
 
 	public static function register(): void {
 		add_action( 'customize_register', array( self::class, 'customize_competition' ) );
@@ -46,6 +47,29 @@ final class Customizer {
 					'label'       => __( 'Google Maps API key', 'hyperpress' ),
 					'description' => __( 'Used by the venue map on the competition edit screen. Restrict the key to your admin domain in the Google Cloud console.', 'hyperpress' ),
 					'settings'    => self::API_KEY_SETTING,
+					'section'     => 'hyperpress_competition',
+					'type'        => 'text',
+				)
+			)
+		);
+
+		$wp_customize->add_setting(
+			self::SUBTITLE_SETTING,
+			array(
+				'default'           => '',
+				'type'              => 'theme_mod',
+				'transport'         => 'refresh',
+				'sanitize_callback' => 'wp_kses_post',
+			)
+		);
+		$wp_customize->add_control(
+			new WP_Customize_Control(
+				$wp_customize,
+				self::SUBTITLE_SETTING,
+				array(
+					'label'       => __( 'Banner subtitle', 'hyperpress' ),
+					'description' => __( 'Shown under the title on the competitions pages.', 'hyperpress' ),
+					'settings'    => self::SUBTITLE_SETTING,
 					'section'     => 'hyperpress_competition',
 					'type'        => 'text',
 				)
