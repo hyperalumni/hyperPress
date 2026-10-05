@@ -54,7 +54,7 @@ class PostTypeDropdownControl extends WP_Customize_Control {
 
 		if ( ! empty( $this->description ) ) :
 			?>
-			<span class="description customize-control-description"><?php echo $this->description; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+			<span class="description customize-control-description"><?php echo wp_kses_post( $this->description ); ?></span>
 			<?php
 		endif;
 		?>

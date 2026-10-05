@@ -148,7 +148,7 @@ final class TimeRestrict {
 
 		$showit = 0; // Set some defaults.
 
-		// phpcs:disable WordPress.DateTime.RestrictedFunctions.date_date,WordPress.DateTime.CurrentTimeTimestamp.Requested -- date() on a site-offset timestamp yields the site-local weekday, which is what the schedule compares against
+		// phpcs:disable WordPress.DateTime.RestrictedFunctions.date_date,WordPress.DateTime.CurrentTimeTimestamp.Requested -- the schedule compares site-local wall-clock values: date() on a site-offset timestamp (current_time( 'timestamp' )) yields the site-local weekday, date and time
 		$onwday  = (int) date( 'w', strtotime( ucfirst( $onday ) ) ); // Convert day to PHP numerical representation of day (w).
 		$offwday = (int) date( 'w', strtotime( ucfirst( $offday ) ) );
 
