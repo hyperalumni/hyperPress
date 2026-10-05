@@ -8,7 +8,68 @@ use HyperPress\Utils\Controls\PostTypeDropdownControl;
 
 add_action( 'customize_register', 'hyperpress_customize_homepage' );
 
+/**
+ * Sanitise the homepage blog categories: existing category term ids only.
+ *
+ * The control is a multiple select, so the value is normally a list; a single id is accepted too.
+ *
+ * @param mixed $value The submitted value.
+ * @return int|int[] Existing category ids (0 for a single id that does not exist).
+ */
+function hyperpress_sanitize_home_categories( $value ) {
+	$existing = static function ( $id ): bool {
+		$id = absint( $id );
+		return $id > 0 && term_exists( $id, 'category' );
+	};
+
+	if ( is_array( $value ) ) {
+		return array_values( array_map( 'absint', array_filter( $value, $existing ) ) );
+	}
+
+	return $existing( $value ) ? absint( $value ) : 0;
+}
+
+/**
+ * Sanitise the homepage post types: registered, public post types only.
+ *
+ * @param mixed $value The submitted value.
+ * @return string[]
+ */
+function hyperpress_sanitize_home_post_types( $value ): array {
+	if ( ! is_array( $value ) ) {
+		return array();
+	}
+
+	$clean = array();
+	foreach ( $value as $post_type ) {
+		if ( ! is_string( $post_type ) || ! post_type_exists( $post_type ) ) {
+			continue;
+		}
+		$object = get_post_type_object( $post_type );
+		if ( $object && $object->public ) {
+			$clean[] = $post_type;
+		}
+	}
+
+	return array_values( array_unique( $clean ) );
+}
+
 function hyperpress_customize_homepage( $wp_customize ): void {
+	$wp_customize->add_section(
+		'hyperpress_homepage',
+		array(
+			'title'    => __( 'Homepage', 'hyperpress' ),
+			'priority' => 106,
+		)
+	);
+
+	$wp_customize->add_setting(
+		'hyperpress_home_banner_button_text',
+		array(
+			'type'              => 'theme_mod',
+			'sanitize_callback' => 'sanitize_text_field',
+		)
+	);
 	$wp_customize->add_control(
         new WP_Customize_Control(
         $wp_customize,
@@ -25,7 +86,7 @@ function hyperpress_customize_homepage( $wp_customize ): void {
         'hyperpress_home_blog_categories',
         array(
 			'type'              => 'theme_mod',
-			'sanitize_callback' => '',
+			'sanitize_callback' => 'hyperpress_sanitize_home_categories',
 		)
         );
 	// The control classes come from hyperpress-utils; without it the setting stays but has no control.
@@ -49,7 +110,7 @@ function hyperpress_customize_homepage( $wp_customize ): void {
         array(
 			'type'              => 'theme_mod',
 			'default'           => array( 'post' ),
-			'sanitize_callback' => '',
+			'sanitize_callback' => 'hyperpress_sanitize_home_post_types',
 		)
         );
 	// The control classes come from hyperpress-utils; without it the setting stays but has no control.
