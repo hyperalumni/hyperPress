@@ -116,8 +116,8 @@
     //box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
   }
 
-  .grey, .gray {
-    @include dropdown($hyper-gear-grey);
+  .gray {
+    @include dropdown($hyper-gear-gray);
   }
 
   .red {

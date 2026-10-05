@@ -47,7 +47,7 @@ function hyperpress_customize_gear_colors( $wp_customize ): void {
         )
         );
 	$wp_customize->add_setting(
-        'hyperpress_gear_grey',
+        'hyperpress_gear_gray',
 		array(
 			'default'           => '#222222',
 			'type'              => 'theme_mod',
@@ -58,10 +58,10 @@ function hyperpress_customize_gear_colors( $wp_customize ): void {
 	$wp_customize->add_control(
         new WP_Customize_Color_Control(
         $wp_customize,
-        'gear_grey',
+        'gear_gray',
 		array(
-			'label'    => __( 'HYPER Gear Grey', 'hyperpress' ),
-			'settings' => 'hyperpress_gear_grey',
+			'label'    => __( 'HYPER Gear Gray', 'hyperpress' ),
+			'settings' => 'hyperpress_gear_gray',
 			'section'  => 'colors',
 		)
         )

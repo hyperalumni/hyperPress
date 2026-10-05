@@ -8,7 +8,7 @@ function hyper_set_initial_theme_mod_values(): void {
 	$theme_mod_names = array(
 		'hyperpress_gear_blue'               => '#092238',
 		'hyperpress_gear_orange'             => '#F15622',
-		'hyperpress_gear_grey'               => '#222222',
+		'hyperpress_gear_gray'               => '#222222',
 		'hyperpress_hyper_red'               => '#C52026',
 		'hyperpress_hyper_orange'            => '#F15623',
 		'hyperpress_hyper_green'             => '#049655',
