@@ -14,6 +14,9 @@ final class ContentTemplateTest extends WP_UnitTestCase {
 
 	/** @dataProvider post_types */
 	public function test_plugin_supplies_a_readable_template_inside_its_plugin_directory( string $post_type ): void {
+		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
+			$this->markTestSkipped( 'Needs the HYPER plugins' );
+		}
 		$id = self::factory()->post->create( array( 'post_type' => $post_type ) );
 		$this->go_to( get_permalink( $id ) );
 

@@ -62,6 +62,9 @@ final class RenderTest extends WP_UnitTestCase {
 	}
 
 	public function test_sponsor_archive_renders_the_sponsor_banner_type(): void {
+		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
+			$this->markTestSkipped( 'Needs the HYPER plugins' );
+		}
 		set_theme_mod( 'hyperpress_hyper_red', '#cc0000' );
 		$html = $this->render( get_post_type_archive_link( 'hyper_sponsor' ) );
 		$this->assertStringContainsString( 'sponsor', $html );
@@ -69,6 +72,9 @@ final class RenderTest extends WP_UnitTestCase {
 	}
 
 	public function test_cpt_single_renders_breadcrumbs_without_debug_output(): void {
+		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
+			$this->markTestSkipped( 'Needs the HYPER plugins' );
+		}
 		$id   = self::factory()->post->create(
 			array(
 				'post_type'  => 'hyper_sponsor',

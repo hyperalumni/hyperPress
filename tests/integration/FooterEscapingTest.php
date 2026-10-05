@@ -5,6 +5,13 @@ use WP_UnitTestCase;
 
 final class FooterEscapingTest extends WP_UnitTestCase {
 
+	public function set_up(): void {
+		parent::set_up();
+		if ( ! class_exists( '\HyperPress\Socials\Links' ) ) {
+			$this->markTestSkipped( 'Needs the hyperpress-socials plugin' );
+		}
+	}
+
 	private function footer_html(): string {
 		$this->go_to( home_url( '/' ) );
 		// WordPress core still hooks the deprecated the_block_template_skip_link() on wp_footer, which trips the test case's deprecation check.
@@ -32,12 +39,12 @@ final class FooterEscapingTest extends WP_UnitTestCase {
 	}
 
 	public function test_the_link_targets_and_icons_are_plain_attribute_values(): void {
-		set_theme_mod( 'hyperpress_socials_github', 'https://example.org/repo' );
+		set_theme_mod( 'hyperpress_socials_github', 'https://github.com/hyper/repo' );
 		set_theme_mod( 'hyperpress_socials_youtube', get_site_url() . '/channel' );
 
 		$html = $this->footer_html();
 
-		$this->assertMatchesRegularExpression( '~target="_blank">\s*<i class="fa-brands fa-github fa-inverse"~', $html );
+		$this->assertMatchesRegularExpression( '~target="_blank" rel="noopener noreferrer">\s*<i class="fa-brands fa-github fa-inverse"~', $html );
 		$this->assertMatchesRegularExpression( '~target="_self">\s*<i class="fa-brands fa-youtube fa-inverse"~', $html );
 	}
 }

@@ -51,3 +51,18 @@ function hyperpress_nextgen_ratio( $width, $height ): float {
 
 	return (float) $width / (float) $height;
 }
+
+/**
+ * Social links configured in the Customizer, ready to print, or an empty array when hyperpress-socials is not active.
+ *
+ * Each item has `key`, `icon`, `title`, `url`, `target` and `rel`; the caller must escape them.
+ *
+ * @return array<int, array{key: string, icon: string, title: string, url: string, target: string, rel: string}>
+ */
+function hyperpress_social_links(): array {
+	if ( ! class_exists( '\HyperPress\Socials\Links' ) ) {
+		return array();
+	}
+
+	return \HyperPress\Socials\Links::all();
+}

@@ -24,6 +24,9 @@ final class ExtractedShortcodesTest extends WP_UnitTestCase {
 	}
 
 	public function test_with_the_plugins_active_every_tag_exists(): void {
+		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
+			$this->markTestSkipped( 'Needs the HYPER plugins' );
+		}
 		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_EXTRACTED' ) ) {
 			$this->markTestSkipped( 'Needs the extracted plugins' );
 		}

@@ -267,6 +267,7 @@ target="<?php echo $target; ?>"
 - Test: set the mods to `"><script>` strings and assert escaped output.
 - T19 update: mostly a false positive, downgraded to info. footer.php read in full. `$social['icon']` (line 104) is a hard-coded literal from the array at lines 36-94, never user data. `$target` (line 100) is always the literal `_self` or `_blank`. The `url` values are `esc_url()`'d (line 102) and come from the `hyperpress_socials_*` settings registered in `../plugins/hyperpress-socials/src/Customizer.php`. Only `$copyright_name` (line 29) is real: its setting has no sanitize_callback. That is now T29. Minor: `target="_blank"` with no `rel="noopener"` (modern browsers imply it).
 - **FIXED**: Escaped the remaining footer values at output (`esc_attr` for the target and icon class), dropped their phpcs:ignore comments and added FooterEscapingTest; the copyright name was already sanitized and escaped under T29.
+- Footer: now rendered from HyperPress\Socials\Links via hyperpress_social_links().
 
 ### T20 (low) Late-escaping gaps for trusted strings
 - Files: searchform.php:15, 404.php:35-36, header.php:35, template-parts/content-none.php:28-29, 36, 41, comments.php:57, 63, front-page.php:109

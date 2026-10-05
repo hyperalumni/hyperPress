@@ -51,6 +51,19 @@ final class NoPluginsTest extends WP_UnitTestCase {
 		$this->assertFalse( class_exists( 'HyperPress\Utils\Controls\PostTypeDropdownControl' ) );
 	}
 
+	public function test_the_footer_renders_without_social_icons(): void {
+		$this->assertFalse( class_exists( '\HyperPress\Socials\Links' ) );
+		set_theme_mod( 'hyperpress_socials_github', 'https://github.com/hyper' );
+
+		$this->go_to( home_url( '/' ) );
+		ob_start();
+		include get_template_directory() . '/footer.php';
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '<footer class="footer-container">', $html );
+		$this->assertStringNotContainsString( '<i class="fa-', $html );
+	}
+
 	public function test_a_page_renders(): void {
 		$id = self::factory()->post->create( array( 'post_type' => 'page', 'post_title' => 'About us' ) );
 		$this->assertStringContainsString( 'About us', $this->render( get_permalink( $id ) ) );

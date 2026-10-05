@@ -16,6 +16,9 @@ final class ExtractedMediaTest extends WP_UnitTestCase {
 	}
 
 	public function test_with_the_media_plugin_the_nextgen_integration_is_provided(): void {
+		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
+			$this->markTestSkipped( 'Needs the HYPER plugins' );
+		}
 		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_EXTRACTED' ) ) {
 			$this->markTestSkipped( 'Needs the media plugin' );
 		}

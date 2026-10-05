@@ -38,6 +38,9 @@ final class FrontPageContentTemplateTest extends WP_UnitTestCase {
 	}
 
 	public function test_front_page_lists_a_post_type_without_a_content_template_override(): void {
+		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
+			$this->markTestSkipped( 'Needs the HYPER plugins' );
+		}
 		set_theme_mod( 'hyperpress_home_blog_post_types', array( 'hyper_award' ) );
 		self::factory()->post->create(
 			array(

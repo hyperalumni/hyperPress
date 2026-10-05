@@ -28,81 +28,14 @@ defined( 'ABSPATH' ) || exit;
 					<?php endif; ?>
 				</section>
 				<section class="cell shrink">
-					<?php
-					$socials = array(
-						array(
-							'icon'  => 'fa-solid fa-robot',
-							'url'   => get_theme_mod( 'hyperpress_socials_firstinspires' ),
-							'title' => 'FIRST Inspires',
-						),
-						array(
-							'icon'  => 'fa-regular fa-lightbulb',
-							'url'   => get_theme_mod( 'hyperpress_socials_thebluealliance' ),
-							'title' => 'The Blue Alliance',
-						),
-						array(
-							'icon'  => 'fa-brands fa-github',
-							'url'   => get_theme_mod( 'hyperpress_socials_github' ),
-							'title' => 'GitHub',
-						),
-						array(
-							'icon'  => 'fa-brands fa-facebook-f',
-							'url'   => get_theme_mod( 'hyperpress_socials_facebook' ),
-							'title' => 'Facebook',
-						),
-						array(
-							'icon'  => 'fa-brands fa-instagram',
-							'url'   => get_theme_mod( 'hyperpress_socials_instagram' ),
-							'title' => 'Instagram',
-						),
-						array(
-							'icon'  => 'fa-brands fa-twitter',
-							'url'   => get_theme_mod( 'hyperpress_socials_twitter' ),
-							'title' => 'Twitter',
-						),
-						array(
-							'icon'  => 'fa-brands fa-youtube',
-							'url'   => get_theme_mod( 'hyperpress_socials_youtube' ),
-							'title' => 'YouTube',
-						),
-						array(
-							'icon'  => 'fa-brands fa-snapchat',
-							'url'   => get_theme_mod( 'hyperpress_socials_snapchat' ),
-							'title' => 'Snapchat',
-						),
-						array(
-							'icon'  => 'fa-brands fa-tiktok',
-							'url'   => get_theme_mod( 'hyperpress_socials_tiktok' ),
-							'title' => 'TikTok',
-						),
-						array(
-							'icon'  => 'fa-brands fa-discord',
-							'url'   => get_theme_mod( 'hyperpress_socials_discord' ),
-							'title' => 'Discord Server',
-						),
-						array(
-							'icon'  => 'fa-regular fa-envelope',
-							'url'   => ! empty( get_theme_mod( 'hyperpress_socials_contact' ) ) ? get_page_link( get_theme_mod( 'hyperpress_socials_contact' ) ) : '',
-							'title' => 'Contact Us',
-						),
-						array(
-							'icon'  => 'fa-regular fa-calendar',
-							'url'   => get_theme_mod( 'hyperpress_socials_add_calendar' ),
-							'title' => 'Add Our Calendar',
-						),
-					);
-					?>
 					<ul class="menu simple">
-						<?php foreach ( $socials as $social ) : ?>
-							<?php if ( ! empty( $social['url'] ) ) : ?>
-								<?php $target = str_contains( $social['url'], get_site_url() ) ? '_self' : '_blank'; ?>
-								<li>
-									<a href="<?php echo esc_url( $social['url'] ); ?>" title="<?php echo esc_attr( $social['title'] ); ?>"
-										target="<?php echo esc_attr( $target ); ?>">
-										<i class="<?php echo esc_attr( $social['icon'] ); ?> fa-inverse" aria-hidden="true"></i>
-									</a>
-								</li>
-							<?php endif; ?>
+						<?php foreach ( hyperpress_social_links() as $social_link ) : ?>
+							<li>
+								<a href="<?php echo esc_url( $social_link['url'] ); ?>" title="<?php echo esc_attr( $social_link['title'] ); ?>"
+									target="<?php echo esc_attr( $social_link['target'] ); ?>"<?php echo ! empty( $social_link['rel'] ) ? ' rel="' . esc_attr( $social_link['rel'] ) . '"' : ''; ?>>
+									<i class="<?php echo esc_attr( $social_link['icon'] ); ?> fa-inverse" aria-hidden="true"></i>
+								</a>
+							</li>
 						<?php endforeach; ?>
 					</ul>
 				</section>

@@ -12,6 +12,9 @@ final class BootTest extends WP_UnitTestCase {
 	}
 
 	public function test_plugins_are_loaded(): void {
+		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
+			$this->markTestSkipped( 'Needs the HYPER plugins' );
+		}
 		$this->assertTrue( class_exists( 'HyperPress\Utils\PostTypeRegistrar' ) );
 		$this->assertTrue( post_type_exists( 'hyper_sponsor' ) );
 	}
