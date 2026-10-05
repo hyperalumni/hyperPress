@@ -9,7 +9,7 @@ use HyperPress\Utils\Controls\PostTypeDropdownControl;
 add_action( 'customize_register', 'hyperpress_customize_homepage' );
 
 /**
- * Sanitise the homepage blog categories: existing category term ids only.
+ * Sanitize the homepage blog categories: existing category term ids only.
  *
  * The control is a multiple select, so the value is normally a list; a single id is accepted too.
  *
@@ -30,7 +30,7 @@ function hyperpress_sanitize_home_categories( $value ) {
 }
 
 /**
- * Sanitise the homepage post types: registered, public post types only.
+ * Sanitize the homepage post types: registered, public post types only.
  *
  * @param mixed $value The submitted value.
  * @return string[]
