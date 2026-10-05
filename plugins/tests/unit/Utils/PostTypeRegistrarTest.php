@@ -119,4 +119,14 @@ final class PostTypeRegistrarTest extends TestCase {
 		unset( $definition['slug'] );
 		PostTypeRegistrar::build( $definition );
 	}
+
+	public function test_invalid_key_is_escaped_in_the_exception_message(): void {
+		try {
+			PostTypeRegistrar::build( $this->definition( array( 'key' => 'hyper_<b>x' ) ) );
+			$this->fail( 'Expected InvalidArgumentException' );
+		} catch ( InvalidArgumentException $e ) {
+			$this->assertStringContainsString( '&lt;b&gt;', $e->getMessage() );
+			$this->assertStringNotContainsString( '<b>', $e->getMessage() );
+		}
+	}
 }

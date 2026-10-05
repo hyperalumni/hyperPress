@@ -121,4 +121,14 @@ final class TaxonomyRegistrarTest extends TestCase {
 		$this->expectException( InvalidArgumentException::class );
 		TaxonomyRegistrar::build( $this->definition( array( 'key' => "hyper_district\n" ) ) );
 	}
+
+	public function test_invalid_key_is_escaped_in_the_exception_message(): void {
+		try {
+			TaxonomyRegistrar::build( $this->definition( array( 'key' => 'hyper_<b>x' ) ) );
+			$this->fail( 'Expected InvalidArgumentException' );
+		} catch ( InvalidArgumentException $e ) {
+			$this->assertStringContainsString( '&lt;b&gt;', $e->getMessage() );
+			$this->assertStringNotContainsString( '<b>', $e->getMessage() );
+		}
+	}
 }

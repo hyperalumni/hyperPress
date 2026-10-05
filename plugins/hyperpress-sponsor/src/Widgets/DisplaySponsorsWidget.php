@@ -9,7 +9,6 @@ use WP_Widget;
 
 class DisplaySponsorsWidget extends WP_Widget {
 
-	private string $default_title  = 'Our Sponsors';
 	private int $default_max_count = 5;
 	private int $max_count_limit   = 100;
 
@@ -145,8 +144,7 @@ class DisplaySponsorsWidget extends WP_Widget {
 	}
 
 	public function form( $instance ): void {
-		// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- plugins audit
-		$title                 = ! empty( $instance['title'] ) ? $instance['title'] : __( $this->default_title, 'hyperpress' );
+		$title                 = ! empty( $instance['title'] ) ? $instance['title'] : __( 'Our Sponsors', 'hyperpress' );
 		$max_count             = ! empty( $instance['maxCount'] ) ? $instance['maxCount'] : $this->default_max_count;
 		$become_a_sponsor_page = ! empty( $instance['becomeASponsorPage'] ) ? $instance['becomeASponsorPage'] : '';
 
@@ -197,9 +195,8 @@ class DisplaySponsorsWidget extends WP_Widget {
 
 	public function update( $new_instance, $old_instance ): array {
 		// Process widget options to be saved.
-		$instance = array();
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- plugins audit
-		$instance['title']              = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+		$instance                       = array();
+		$instance['title']              = ( ! empty( $new_instance['title'] ) ) ? wp_strip_all_tags( $new_instance['title'] ) : '';
 		$instance['maxCount']           = $this->max_count( $new_instance['maxCount'] ?? null );
 		$become_a_sponsor_page          = $new_instance['becomeASponsorPage'] ?? '';
 		$instance['becomeASponsorPage'] = is_numeric( $become_a_sponsor_page ) ? $become_a_sponsor_page : '';

@@ -48,12 +48,12 @@ final class PostTypeRegistrar {
 	public static function build( array $definition ): array {
 		foreach ( array( 'key', 'singular', 'plural', 'slug' ) as $required ) {
 			if ( empty( $definition[ $required ] ) ) {
-				throw new InvalidArgumentException( "Post type definition is missing '$required'." ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plugins audit
+				throw new InvalidArgumentException( esc_html( "Post type definition is missing '$required'." ) );
 			}
 		}
 		$key = (string) $definition['key'];
 		if ( ! preg_match( self::KEY_PATTERN, $key ) ) {
-			throw new InvalidArgumentException( "Invalid post type key '$key': use hyper_ + lowercase letters, digits, underscores, max 20 characters." ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plugins audit
+			throw new InvalidArgumentException( esc_html( "Invalid post type key '$key': use hyper_ + lowercase letters, digits, underscores, max 20 characters." ) );
 		}
 
 		$rewrite = array(

@@ -72,7 +72,7 @@ final class TaxonomyRegistrar {
 	public static function build( array $definition ): array {
 		foreach ( array( 'key', 'singular', 'plural' ) as $required ) {
 			if ( empty( $definition[ $required ] ) ) {
-				throw new InvalidArgumentException( "Taxonomy definition is missing '$required'." ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plugins audit
+				throw new InvalidArgumentException( esc_html( "Taxonomy definition is missing '$required'." ) );
 			}
 		}
 		if ( ! array_key_exists( 'slug', $definition ) ) {
@@ -80,7 +80,7 @@ final class TaxonomyRegistrar {
 		}
 		$key = (string) $definition['key'];
 		if ( ! preg_match( PostTypeRegistrar::KEY_PATTERN, $key ) ) {
-			throw new InvalidArgumentException( "Invalid taxonomy key '$key': use hyper_ + lowercase letters, digits, underscores, max 20 characters." ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plugins audit
+			throw new InvalidArgumentException( esc_html( "Invalid taxonomy key '$key': use hyper_ + lowercase letters, digits, underscores, max 20 characters." ) );
 		}
 
 		$rewrite = null === $definition['slug']

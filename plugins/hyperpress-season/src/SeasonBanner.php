@@ -20,7 +20,7 @@ final class SeasonBanner {
 				$banner['title'] = __( 'Season', 'hyperpress' );
 				$season          = get_term( get_queried_object_id() )->name;
 				if ( ! empty( $season ) ) {
-					$banner['title'] = __( $season, 'hyperpress' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- plugins audit
+					$banner['title'] = $season;
 				}
 			}
 

@@ -9,6 +9,12 @@ if ( ! function_exists( '__' ) ) {
 	}
 }
 
+if ( ! function_exists( 'esc_html' ) ) {
+	function esc_html( $text ) { // phpcs:ignore
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
 $hyperpress_utils_autoload = dirname( __DIR__ ) . '/hyperpress-utils/src/';
 spl_autoload_register(
 	static function ( string $class_name ) use ( $hyperpress_utils_autoload ): void {

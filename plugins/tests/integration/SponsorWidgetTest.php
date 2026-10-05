@@ -201,4 +201,21 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 		$this->assertSame( get_term_link( $season ), $urls['Last Sponsored'] );
 		$this->assertStringNotContainsString( '/category/', $urls['Last Sponsored'] );
 	}
+
+	public function test_update_strips_script_tags_and_their_contents(): void {
+		$updated = ( new DisplaySponsorsWidget() )->update( array( 'title' => '<script>alert(1)</script>Hi' ), array() );
+
+		$this->assertSame( 'Hi', $updated['title'] );
+	}
+
+	public function test_form_uses_the_default_title_for_an_empty_instance(): void {
+		ob_start();
+		try {
+			( new DisplaySponsorsWidget() )->form( array() );
+		} finally {
+			$output = (string) ob_get_clean();
+		}
+
+		$this->assertStringContainsString( 'value="Our Sponsors"', $output );
+	}
 }
