@@ -8,7 +8,7 @@ use WP_UnitTestCase;
 final class MediaTest extends WP_UnitTestCase {
 
 	public function test_uploads_are_left_to_core_and_safe_svg(): void {
-		// AVIF is allowed by WordPress core; SVG (with sanitising) by the Safe SVG plugin.
+		// AVIF is allowed by WordPress core; SVG (with sanitizing) by the Safe SVG plugin.
 		$mimes = apply_filters( 'upload_mimes', get_allowed_mime_types() );
 		$this->assertSame( 'image/avif', $mimes['avif'] ?? null, 'core allows AVIF' );
 		$this->assertArrayNotHasKey( 'svg', $mimes, 'this plugin must not enable SVG' );

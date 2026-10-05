@@ -39,7 +39,7 @@ final class NewsletterCustomizerTest extends WP_UnitTestCase {
 		$this->assertSame( 'Custom subtitle', get_theme_mod( self::MOD ) );
 	}
 
-	public function test_the_setting_sanitises_scripts_away(): void {
+	public function test_the_setting_sanitizes_scripts_away(): void {
 		$setting = $this->customizer()->get_setting( self::MOD );
 
 		$sanitized = $setting->sanitize( '<script>x</script><b>ok</b>' );

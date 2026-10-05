@@ -5,7 +5,7 @@ use HyperPress\Newsletter\MetaBoxes;
 use WP_UnitTestCase;
 
 /**
- * Meta Box validates in the browser only; the field's HTML5 `pattern` must agree with the server-side sanitiser.
+ * Meta Box validates in the browser only; the field's HTML5 `pattern` must agree with the server-side sanitizer.
  */
 final class NewsletterCanvaFieldValidationTest extends WP_UnitTestCase {
 
@@ -32,7 +32,7 @@ final class NewsletterCanvaFieldValidationTest extends WP_UnitTestCase {
 		$this->assertTrue( $field['required'] );
 	}
 
-	public function test_pattern_accepts_what_the_sanitiser_keeps(): void {
+	public function test_pattern_accepts_what_the_sanitizer_keeps(): void {
 		$pattern = $this->field()['pattern'];
 		foreach ( array( 'https://www.canva.com/design/XYZ/view', 'https://canva.com/design/XYZ/view', 'https://my.canva.com/abc', 'https://www.canva.com' ) as $url ) {
 			$this->assertTrue( $this->pattern_matches( $pattern, $url ), "pattern accepts $url" );
@@ -40,7 +40,7 @@ final class NewsletterCanvaFieldValidationTest extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_pattern_rejects_what_the_sanitiser_clears(): void {
+	public function test_pattern_rejects_what_the_sanitizer_clears(): void {
 		$pattern = $this->field()['pattern'];
 		$bad     = array(
 			'javascript:alert(1)',

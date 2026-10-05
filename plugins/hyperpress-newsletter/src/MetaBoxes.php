@@ -48,7 +48,7 @@ final class MetaBoxes {
 	}
 
 	/**
-	 * Sanitiser for the Canva URL field: keeps only https URLs on canva.com or a subdomain, drops a trailing `?embed`,
+	 * Sanitizer for the Canva URL field: keeps only https URLs on canva.com or a subdomain, drops a trailing `?embed`,
 	 * and clears anything else.
 	 *
 	 * @param mixed $value Submitted value.

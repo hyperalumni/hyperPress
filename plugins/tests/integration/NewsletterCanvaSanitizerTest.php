@@ -45,7 +45,7 @@ final class NewsletterCanvaSanitizerTest extends WP_UnitTestCase {
 		$this->assertSame( '', MetaBoxes::canva_url( array( 'https://www.canva.com/x' ) ) );
 	}
 
-	public function test_the_field_uses_the_sanitiser(): void {
+	public function test_the_field_uses_the_sanitizer(): void {
 		foreach ( apply_filters( 'rwmb_meta_boxes', array() ) as $box ) {
 			foreach ( $box['fields'] ?? array() as $field ) {
 				if ( 'hyperpress_newsletter_canva_url' === ( $field['id'] ?? '' ) ) {

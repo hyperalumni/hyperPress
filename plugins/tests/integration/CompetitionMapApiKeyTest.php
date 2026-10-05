@@ -19,7 +19,7 @@ final class CompetitionMapApiKeyTest extends WP_UnitTestCase {
 		$this->fail( 'map field not found' );
 	}
 
-	public function test_customizer_has_a_sanitised_api_key_setting_and_matching_control(): void {
+	public function test_customizer_has_a_sanitized_api_key_setting_and_matching_control(): void {
 		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
 		$manager = new WP_Customize_Manager();
 		do_action( 'customize_register', $manager );

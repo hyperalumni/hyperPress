@@ -44,7 +44,7 @@ final class SeasonProgramCustomizerTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'post' ), $setting->sanitize( array( 'post', array( 'x' ), 5 ) ) );
 	}
 
-	public function test_the_banner_subtitle_sanitises_scripts_away(): void {
+	public function test_the_banner_subtitle_sanitizes_scripts_away(): void {
 		$setting = $this->customizer()->get_setting( 'hyperpress_season_banner_subtitle' );
 
 		$sanitized = $setting->sanitize( '<script>x</script><b>ok</b>' );
