@@ -91,9 +91,9 @@ function hyperpress_get_the_comments_pagination( $args = array() ) {
 	if ( $links ) {
 		$link_count       = count( $links );
 		$pagination_class = 'pagination';
-		if ( 'large' == $args['size'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+		if ( 'large' === $args['size'] ) {
 			$pagination_class .= ' pagination-lg';
-		} elseif ( 'small' == $args['size'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+		} elseif ( 'small' === $args['size'] ) {
 			$pagination_class .= ' pagination-sm';
 		}
 		$current     = get_query_var( 'cpage' ) ? intval( get_query_var( 'cpage' ) ) : 1;
@@ -103,9 +103,9 @@ function hyperpress_get_the_comments_pagination( $args = array() ) {
 			$navigation .= '<li class="page-item disabled">' . $args['prev_text'] . '</li>';
 		}
 		foreach ( $links as $index => $link ) {
-			if ( 0 == $index && 0 === strpos( $link, '<a class="prev' ) ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+			if ( 0 === $index && 0 === strpos( $link, '<a class="prev' ) ) {
 				$navigation .= '<li class="page-item">' . str_replace( 'prev page-numbers', 'page-link', $link ) . '</li>';
-			} elseif ( $link_count - 1 == $index && 0 === strpos( $link, '<a class="next' ) ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+			} elseif ( $link_count - 1 === $index && 0 === strpos( $link, '<a class="next' ) ) {
 				$navigation .= '<li class="page-item">' . str_replace( 'next page-numbers', 'page-link', $link ) . '</li>';
 			} else {
 				$link = preg_replace( "/(class|href)='(.*)'/U", '$1="$2"', $link );
@@ -118,7 +118,7 @@ function hyperpress_get_the_comments_pagination( $args = array() ) {
 				}
 			}
 		}
-		if ( $args['show_disabled'] && $current == $total ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+		if ( $args['show_disabled'] && $current === $total ) {
 			$navigation .= '<li class="page-item disabled">' . $args['next_text'] . '</li>';
 		}
 		$navigation .= '</ul>';
@@ -162,7 +162,8 @@ function hyperpress_menu_fallback() {
 add_filter( 'nav_menu_css_class', 'hyperpress_active_nav_class', 10, 2 );
 
 function hyperpress_active_nav_class( $classes, $item ) {
-	if ( 1 == $item->current || true == $item->current_item_ancestor ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+	// WordPress sets both flags to booleans on the items it has resolved; they are absent on items it has not.
+	if ( ! empty( $item->current ) || ! empty( $item->current_item_ancestor ) ) {
 		$classes[] = 'is-active';
 	}
 	return $classes;
@@ -223,7 +224,8 @@ function hyperpress_gallery( $attr ) {
 
 	// Allow plugins/themes to override the default gallery template.
 	$output = apply_filters('post_gallery', '', $attr, $instance);
-	if ( '' != $output ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- theme audit
+	// Same test as core's gallery_shortcode(): any non-empty result means a plugin or theme handled the gallery.
+	if ( ! empty( $output ) ) {
 		return $output;
     }
 
@@ -336,7 +338,7 @@ function hyperpress_gallery( $attr ) {
 	foreach ( $attachments as $id => $attachment ) {
 
 		// Check if destination is file, nothing or attachment page.
-		if ( isset($attr['link']) && 'file' == $attr['link'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+		if ( isset($attr['link']) && 'file' === $attr['link'] ) {
 			$link = wp_get_attachment_link(
                 $id,
                 $size_class,
@@ -352,7 +354,7 @@ function hyperpress_gallery( $attr ) {
 			// Edit this line to implement your html params in <a> tag with use a custom lightbox plugin.
 			$link = str_replace('<a href', '<a class="thumbnail fp-gallery-lightbox" data-gall="fp-gallery-' . ( $post ? (int) $post->ID : 0 ) . '" data-title="' . esc_attr( $attachment->post_excerpt ) . '" title="' . esc_attr( $attachment->post_excerpt ) . '" href', $link);
 
-		} elseif ( isset($attr['link']) && 'none' == $attr['link'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+		} elseif ( isset($attr['link']) && 'none' === $attr['link'] ) {
 			$link = wp_get_attachment_image(
                 $id,
                 $size_class,

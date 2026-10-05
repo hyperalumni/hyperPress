@@ -57,7 +57,7 @@ the_post();
                         function ( $post_type ) {
 						// filter out custom post types that do not exist
 						// filter out 'post' type as that is covered by the query above
-						return ! empty( $post_type ) && post_type_exists( $post_type ) && 'post' != $post_type; // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- theme audit
+						return ! empty( $post_type ) && post_type_exists( $post_type ) && 'post' !== $post_type;
 					}
                         );
 					if ( ! empty( $blog_custom_post_types ) ) {
@@ -89,7 +89,7 @@ the_post();
 						$the_query->the_post();
 						?>
 						<?php if ( ! empty( get_post_type() ) ) : ?>
-						<?php if ( get_post_type() != 'post' ) : // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- theme audit ?>
+						<?php if ( 'post' !== get_post_type() ) : ?>
 						<?php
 						$content_template = apply_filters( 'content_template', '' );
 						if ( is_string( $content_template ) && '' !== $content_template && is_readable( $content_template ) ) {

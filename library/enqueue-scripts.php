@@ -217,7 +217,8 @@ function hyperpress_admin_scripts(): void {
 
 	wp_register_style( 'wp-admin-svg-support', get_template_directory_uri() . '/dist/assets/css/' . hyperpress_asset_path( 'svg-wp-admin.css' ), array(), $hyper_press_version, 'screen' );
 	// only load svg support on a screen to edit a post/page/custom-post-type
-	if ( get_current_screen()->base == 'post' ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+	$screen = get_current_screen();
+	if ( $screen && 'post' === $screen->base ) {
 		wp_enqueue_style( 'wp-admin-svg-support' );
 	}
 }

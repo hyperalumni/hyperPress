@@ -49,8 +49,9 @@ function hyperpress_labels_post( $labels ) {
 				'rel'     => '',
 			);
 		}
-		$labels[] = array(
-			'label'   => get_comments_number() . ( get_comments_number() == 1 ? ' comment' : ' comments' ), // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
+		$comments_number = (int) get_comments_number();
+		$labels[]        = array(
+			'label'   => $comments_number . ( 1 === $comments_number ? ' comment' : ' comments' ),
 			'title'   => '',
 			'classes' => array( 'neutral' ),
 			'url'     => get_comments_link(),
