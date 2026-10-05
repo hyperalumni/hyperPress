@@ -221,6 +221,7 @@ style="aspect-ratio:<?php echo $album_settings['thumbnail_width'] / $album_setti
 - Impact: in PHP 8, `/ 0` throws DivisionByZeroError and a non-numeric string operand throws TypeError, so a zero or empty NextGen thumbnail-height option fatals the album page. Who can set it: NextGen admin. The unescaped echo is numeric but unvalidated.
 - Fix: `max( 1, (int) $h )` guard, print with `absint`/`(float)`.
 - Test: render the template with height `0` and with `''`; assert no exception.
+- **FIXED**: The album placeholder ratio now comes from hyperpress_nextgen_ratio() (library/helpers.php), which returns 1.0 unless both values are numeric and positive; the settings chain is read with ?? and the value printed through esc_attr(); covered by NextGenRatioTest (the template itself needs NextGen and is not rendered).
 
 ### T16 (low) nggallery: NextGen fields echoed unescaped (unverified)
 - File: nggallery/album-compact.php:29, 33, 53, 65, 71 (from grep; the file was not read)

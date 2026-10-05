@@ -36,3 +36,18 @@ function hyperpress_sorted_seasons(): array {
 
 	return (array) \HyperPress\Season\SortedSeasons::get();
 }
+
+/**
+ * Width / height ratio for the NextGen thumbnail placeholder, or 1.0 when either value is missing,
+ * non-numeric or not positive (avoids a DivisionByZeroError / TypeError on bad NextGen settings).
+ *
+ * @param mixed $width  Thumbnail width.
+ * @param mixed $height Thumbnail height.
+ */
+function hyperpress_nextgen_ratio( $width, $height ): float {
+	if ( ! is_numeric( $width ) || ! is_numeric( $height ) || (float) $width <= 0 || (float) $height <= 0 ) {
+		return 1.0;
+	}
+
+	return (float) $width / (float) $height;
+}

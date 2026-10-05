@@ -41,9 +41,9 @@ use Imagely\NGG\Util\Router;
 								<img src="<?php echo Router::esc_url( $gallery->previewurl ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>">
 							</a>
 						<?php else : ?>
-							<?php $album_settings = $album->display_type_settings['photocrati-nextgen_basic_compact_album']; ?>
+							<?php $album_settings = $album->display_type_settings['photocrati-nextgen_basic_compact_album'] ?? array(); ?>
 							<div
-								style="aspect-ratio:<?php echo $album_settings['thumbnail_width'] / $album_settings['thumbnail_height']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme audit ?>"></div>
+								style="aspect-ratio:<?php echo esc_attr( (string) hyperpress_nextgen_ratio( $album_settings['thumbnail_width'] ?? null, $album_settings['thumbnail_height'] ?? null ) ); ?>"></div>
 						<?php endif; ?>
 					</div>
 					<div class="cell card-section flex-child-auto">
