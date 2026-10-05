@@ -411,6 +411,7 @@ $seasons = \HyperPress\Season\SortedSeasons::get();                             
 - Impact: `body_class()` echoes `class="…"` so the `<html>` element gets the classes (`home`, `page-template-…`, `topbar`/`offcanvas` from custom-nav.php:66-75). Any CSS or JS that targets `body.offcanvas` or `body.home` does not match. There is no `wp_body_open()`, so plugins that inject at body start (consent banners, tag managers' noscript, skip links) are skipped.
 - Fix: `<html <?php language_attributes(); ?>>` and `<body <?php body_class(); ?>>` followed by `<?php wp_body_open(); ?>`. Check `src/assets/scss` for selectors that rely on the current, wrong placement before changing.
 - Test: integration test. Rendered header contains `<body class="…` and exactly one `class=` on `<html>` is absent; `did_action( 'wp_body_open' )` is 1.
+ - **FIXED**: PARTIAL: header.php now fires wp_body_open() right after <body>; the body_class() move was deliberately skipped because src/assets/scss/global/_wp-admin.scss targets html.admin-bar and html.admin-bar.topbar / html.admin-bar.offcanvas (admin-bar offsets for the sticky header and off-canvas menu), so moving the classes to <body> would break those rules; moving them needs a coordinated SCSS change (body.admin-bar) and is left as follow-up.
 
 ### T32 (low) Author banner title: operator precedence drops the prefix
 - File: library/banner/author.php:12
