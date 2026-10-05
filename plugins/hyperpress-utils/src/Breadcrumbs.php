@@ -32,14 +32,15 @@ final class Breadcrumbs {
 	 */
 	public static function build( array $breadcrumbs, array $ctx ): array {
 		$label = (string) $ctx['label'];
+		$class = sanitize_html_class( sanitize_title( $label ) );
 
 		if ( '' !== $label ) {
 			$breadcrumbs[] = array(
 				'title'   => $label,
 				'url'     => $ctx['archive_url'],
 				'classes' => array(
-					'li'    => array( 'item-archive-' . $label ),
-					'bread' => array( 'bread-archive-' . $label ),
+					'li'    => array( 'item-archive-' . $class ),
+					'bread' => array( 'bread-archive-' . $class ),
 				),
 			);
 		}
@@ -50,8 +51,8 @@ final class Breadcrumbs {
 				'title'   => $season['name'],
 				'url'     => $season['url'],
 				'classes' => array(
-					'li'    => array( 'item-' . $season['slug'] . '-' . $label ),
-					'bread' => array( 'bread-' . $season['slug'] . '-' . $label ),
+					'li'    => array( 'item-' . $season['slug'] . '-' . $class ),
+					'bread' => array( 'bread-' . $season['slug'] . '-' . $class ),
 				),
 			);
 		}

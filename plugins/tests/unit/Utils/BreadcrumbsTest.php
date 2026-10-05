@@ -34,8 +34,8 @@ final class BreadcrumbsTest extends TestCase {
 		$this->assertCount( 1, $trail );
 		$this->assertSame( 'Sponsors', $trail[0]['title'] );
 		$this->assertSame( 'https://example.org/sponsors/', $trail[0]['url'] );
-		$this->assertSame( array( 'item-archive-Sponsors' ), $trail[0]['classes']['li'] );
-		$this->assertSame( array( 'bread-archive-Sponsors' ), $trail[0]['classes']['bread'] );
+		$this->assertSame( array( 'item-archive-sponsors' ), $trail[0]['classes']['li'] );
+		$this->assertSame( array( 'bread-archive-sponsors' ), $trail[0]['classes']['bread'] );
 	}
 
 	public function test_season_archive_adds_the_season_crumb(): void {
@@ -43,8 +43,8 @@ final class BreadcrumbsTest extends TestCase {
 		$this->assertCount( 2, $trail );
 		$this->assertSame( '2026', $trail[1]['title'] );
 		$this->assertSame( 'https://example.org/seasons/2026/sponsors/', $trail[1]['url'] );
-		$this->assertSame( array( 'item-2026-Sponsors' ), $trail[1]['classes']['li'] );
-		$this->assertSame( array( 'bread-2026-Sponsors' ), $trail[1]['classes']['bread'] );
+		$this->assertSame( array( 'item-2026-sponsors' ), $trail[1]['classes']['li'] );
+		$this->assertSame( array( 'bread-2026-sponsors' ), $trail[1]['classes']['bread'] );
 	}
 
 	public function test_singular_adds_the_current_title_last_without_a_url(): void {
@@ -72,6 +72,21 @@ final class BreadcrumbsTest extends TestCase {
 	public function test_empty_label_skips_the_post_type_crumb(): void {
 		$trail = Breadcrumbs::build( array(), $this->ctx( array( 'label' => '' ) ) );
 		$this->assertSame( array(), $trail );
+	}
+
+	public function test_class_names_use_a_sanitized_slug_of_the_label(): void {
+		$trail = Breadcrumbs::build( array(), $this->ctx( array( 'label' => 'Our Team "HYPER" Robots', 'season' => $this->season() ) ) );
+
+		$this->assertSame( 'Our Team "HYPER" Robots', $trail[0]['title'] );
+		$this->assertSame( array( 'item-archive-our-team-hyper-robots' ), $trail[0]['classes']['li'] );
+		$this->assertSame( array( 'bread-archive-our-team-hyper-robots' ), $trail[0]['classes']['bread'] );
+		$this->assertSame( array( 'item-2026-our-team-hyper-robots' ), $trail[1]['classes']['li'] );
+		$this->assertSame( array( 'bread-2026-our-team-hyper-robots' ), $trail[1]['classes']['bread'] );
+		foreach ( $trail as $crumb ) {
+			foreach ( array_merge( $crumb['classes']['li'], $crumb['classes']['bread'] ) as $class ) {
+				$this->assertMatchesRegularExpression( '/^[a-z0-9_-]+$/', $class );
+			}
+		}
 	}
 
 	public function test_season_taxonomy_constant_is_the_new_key(): void {

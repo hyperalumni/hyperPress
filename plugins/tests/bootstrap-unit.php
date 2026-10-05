@@ -15,6 +15,21 @@ if ( ! function_exists( 'esc_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sanitize_title' ) ) {
+	// Minimal stand-in for core: lowercase, non [a-z0-9_-] become dashes, dashes collapse, ends trimmed.
+	function sanitize_title( $title ) { // phpcs:ignore
+		return trim( (string) preg_replace( '/-+/', '-', (string) preg_replace( '/[^a-z0-9_-]/', '-', strtolower( (string) $title ) ) ), '-' );
+	}
+}
+
+if ( ! function_exists( 'sanitize_html_class' ) ) {
+	// Minimal stand-in for core: keeps only [A-Za-z0-9_-].
+	function sanitize_html_class( $classname, $fallback = '' ) { // phpcs:ignore
+		$sanitized = (string) preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $classname );
+		return '' !== $sanitized ? $sanitized : $fallback;
+	}
+}
+
 $hyperpress_utils_autoload = dirname( __DIR__ ) . '/hyperpress-utils/src/';
 spl_autoload_register(
 	static function ( string $class_name ) use ( $hyperpress_utils_autoload ): void {
