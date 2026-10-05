@@ -78,4 +78,42 @@ final class SocialsTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'target="_self"', $html );
 		$this->assertStringNotContainsString( 'rel="noopener', $html );
 	}
-}
+
+	public static function lookalikes(): array {
+		$site = get_site_url();
+		return array(
+			'site url in the query'    => array( 'https://evil.example/?r=' . $site ),
+			'site url in the path'     => array( 'https://evil.example/' . $site ),
+			'site host as a subdomain' => array( 'https://' . wp_parse_url( $site, PHP_URL_HOST ) . '.evil.example/x' ),
+			'site url as the userinfo' => array( 'https://' . wp_parse_url( $site, PHP_URL_HOST ) . '@evil.example/x' ),
+			'scheme-relative other host' => array( '//evil.example/x' ),
+		);
+	}
+
+	/** @dataProvider lookalikes */
+	public function test_lookalike_urls_are_treated_as_external( string $url ): void {
+		set_theme_mod( 'hyperpress_socials_github', $url );
+
+		$html = $this->render();
+
+		$this->assertStringContainsString( 'target="_blank" rel="noopener noreferrer"', $html );
+		$this->assertStringNotContainsString( 'target="_self"', $html );
+	}
+
+	public function test_a_relative_url_is_internal(): void {
+		set_theme_mod( 'hyperpress_socials_github', '/about/' );
+
+		$html = $this->render();
+
+		$this->assertStringContainsString( 'target="_self"', $html );
+		$this->assertStringNotContainsString( 'rel="noopener', $html );
+	}
+
+	public function test_the_host_comparison_ignores_case(): void {
+		$site = get_site_url();
+		set_theme_mod( 'hyperpress_socials_github', strtoupper( $site ) . '/About/' );
+
+		$html = $this->render();
+
+		$this->assertStringContainsString( 'target="_self"', $html );
+	}}

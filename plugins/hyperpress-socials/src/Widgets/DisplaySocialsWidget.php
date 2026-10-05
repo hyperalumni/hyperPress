@@ -91,7 +91,7 @@ class DisplaySocialsWidget extends WP_Widget {
 
 		foreach ( $socials as $social ) {
 			if ( ! empty( $social['url'] ) ) {
-				$target = str_contains( $social['url'], get_site_url() ) ? '_self' : '_blank';
+				$target = self::is_internal( $social['url'] ) ? '_self' : '_blank';
 				$rel    = '_blank' === $target ? ' rel="noopener noreferrer"' : '';
 				echo '<div class="cell">';
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plugins audit
@@ -141,5 +141,22 @@ class DisplaySocialsWidget extends WP_Widget {
 		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
 
 		return $instance;
+	}
+
+	/**
+	 * True when the URL points at this site: a relative URL, or one whose host equals the site's host.
+	 * Comparing hosts (not substrings) stops `https://other.example/?r=<site url>` passing as internal.
+	 *
+	 * @param string $url Link URL.
+	 */
+	private static function is_internal( string $url ): bool {
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+
+		if ( null === $host || false === $host ) {
+			// No host: a relative URL (or an unparseable one, which esc_url() will reject).
+			return 0 === strpos( $url, '/' ) && 0 !== strpos( $url, '//' );
+		}
+
+		return strtolower( $host ) === strtolower( (string) wp_parse_url( get_site_url(), PHP_URL_HOST ) );
 	}
 }
