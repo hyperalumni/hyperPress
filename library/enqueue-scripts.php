@@ -38,6 +38,55 @@ $font_awesome_version   = '7.3.1';
 $jquery_version         = '3.7.1';
 $jquery_migrate_version = '3.6.0';
 
+/**
+ * Subresource Integrity hashes for the CDN assets, keyed by URL (without the version query).
+ * When a version above changes, the matching hash must change too (CdnAssetsTest fails otherwise).
+ *
+ * @return array<string,string>
+ */
+function hyperpress_cdn_integrity(): array {
+	global $font_awesome_version, $jquery_version, $jquery_migrate_version;
+	$base = 'https://cdnjs.cloudflare.com/ajax/libs/';
+
+	$hashes = array(
+		'3.7.1' => array( 'jquery/3.7.1/jquery.min.js' => 'sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==' ),
+		'3.6.0' => array( 'jquery-migrate/3.6.0/jquery-migrate.min.js' => 'sha512-85Bbg32a7HJvvMRk6u3alDbnbN6OmCBzjpUHTTLltd4dVtTMGod9HsvjqHZHwqEZGcRHmb1bGn8f1WcUoIBPBw==' ),
+		'7.3.1' => array(
+			'font-awesome/7.3.1/js/all.min.js'   => 'sha512-2+f4MxT8KwN4tUzw6/hv9kxKiix603S9kmBcix+0y0dBhd6zdaPOV1Thf1DM886pFZG+cAtmshBi8UBpo6m3JA==',
+			'font-awesome/7.3.1/css/all.min.css' => 'sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg==',
+		),
+	);
+
+	$map = array();
+	foreach ( array( $jquery_version, $jquery_migrate_version, $font_awesome_version ) as $version ) {
+		foreach ( $hashes[ $version ] ?? array() as $path => $hash ) {
+			$map[ $base . $path ] = $hash;
+		}
+	}
+
+	return $map;
+}
+
+/**
+ * Adds integrity and crossorigin to the CDN script and style tags.
+ *
+ * @param string $tag Rendered tag.
+ * @param string $handle Asset handle.
+ * @param string $src Asset URL.
+ */
+function hyperpress_add_integrity( $tag, $handle, $src ): string {
+	$url    = strtok( (string) $src, '?' );
+	$hashes = hyperpress_cdn_integrity();
+
+	if ( ! isset( $hashes[ $url ] ) ) {
+		return $tag;
+	}
+
+	return str_replace( ' src=', ' integrity="' . esc_attr( $hashes[ $url ] ) . '" crossorigin="anonymous" src=', str_replace( ' href=', ' integrity="' . esc_attr( $hashes[ $url ] ) . '" crossorigin="anonymous" href=', $tag ) );
+}
+add_filter( 'script_loader_tag', 'hyperpress_add_integrity', 10, 3 );
+add_filter( 'style_loader_tag', 'hyperpress_add_integrity', 10, 3 );
+
 add_action( 'wp_enqueue_scripts', 'hyperpress_scripts' );
 
 function hyperpress_scripts(): void {
@@ -94,20 +143,10 @@ function hyperpress_scripts(): void {
 add_action( 'admin_enqueue_scripts', 'hyperpress_admin_scripts' );
 
 function hyperpress_admin_scripts(): void {
-	global $hyper_press_version, $jquery_version, $jquery_migrate_version;
-	// Deregister the jquery version bundled with WordPress.
-	wp_deregister_script( 'jquery' );
-	// Deregister the jquery-migrate version bundled with WordPress.
-	wp_deregister_script( 'jquery-migrate' );
+	global $hyper_press_version;
 
-	// CDN hosted jQuery placed in the header, as some plugins require that jQuery is loaded in the header.
-	wp_enqueue_script( 'jquery', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/' . $jquery_version . '/jquery.min.js', array(), $jquery_version, false );
-
-	// CDN hosted jQuery migrate for compatibility with jQuery 3.x
-	wp_register_script( 'jquery-migrate', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/' . $jquery_migrate_version . '/jquery-migrate.min.js', array( 'jquery' ), $jquery_migrate_version, false );
-
-	// Enqueue jQuery migrate. Uncomment the line below to enable.
-	// wp_enqueue_script( 'jquery-migrate' );
+	// WordPress's own jQuery is left alone in wp-admin: replacing it drops jquery-core/jquery-migrate
+	// for core and plugin scripts and would run third-party CDN code in admin sessions.
 
 	wp_register_style( 'wp-admin-svg-support', get_template_directory_uri() . '/dist/assets/css/' . hyperpress_asset_path( 'svg-wp-admin.css' ), array(), $hyper_press_version, 'screen' );
 	// only load svg support on a screen to edit a post/page/custom-post-type
