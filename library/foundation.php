@@ -347,7 +347,7 @@ function hyperpress_gallery( $attr ) {
                 );
 
 			// Edit this line to implement your html params in <a> tag with use a custom lightbox plugin.
-			$link = str_replace('<a href', '<a class="thumbnail fp-gallery-lightbox" data-gall="fp-gallery-' . $post->ID . '" data-title="' . wptexturize($attachment->post_excerpt) . '" title="' . wptexturize($attachment->post_excerpt) . '" href', $link);
+			$link = str_replace('<a href', '<a class="thumbnail fp-gallery-lightbox" data-gall="fp-gallery-' . ( $post ? (int) $post->ID : 0 ) . '" data-title="' . esc_attr( $attachment->post_excerpt ) . '" title="' . esc_attr( $attachment->post_excerpt ) . '" href', $link);
 
 		} elseif ( isset($attr['link']) && 'none' == $attr['link'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- theme audit
 			$link = wp_get_attachment_image(
@@ -371,7 +371,7 @@ function hyperpress_gallery( $attr ) {
 					'id'    => "imageid-$id",
 				)
                 );
-			$link = str_replace('<a href', '<a class="thumbnail" title="' . wptexturize($attachment->post_excerpt) . '" href', $link);
+			$link = str_replace('<a href', '<a class="thumbnail" title="' . esc_attr( $attachment->post_excerpt ) . '" href', $link);
 		}
 
 		$image_meta  = wp_get_attachment_metadata( $id );
