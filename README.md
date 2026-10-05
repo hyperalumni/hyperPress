@@ -18,7 +18,7 @@ The integration suite mounts the theme at `/hp-themes/hyperpress` and `../plugin
 
 ## Plugins
 
-The theme expects the HYPER plugins in `../plugins` (`hyperpress-utils` and the content plugins). Content that uses the `time-restrict`, `hyper_emphasis`, `raw`, `hyper_banner` or `hyper_date_distance` shortcodes needs `hyperpress-shortcodes` active; SVG and AVIF uploads and NextGen gallery breadcrumbs come from `hyperpress-media`. Deploy the theme together with those plugins.
+The theme expects the HYPER plugins in `../plugins` (`hyperpress-utils` and the content plugins). Content that uses the `time-restrict`, `hyper_emphasis`, `raw`, `hyper_banner` or `hyper_date_distance` shortcodes needs `hyperpress-shortcodes` active; SVG and AVIF uploads and NextGen gallery breadcrumbs come from `hyperpress-media`. Deploy the theme together with those plugins. The footer social icons come from the hyperPress Socials widget: drag it into the "Footer socials" widget area, or leave the area empty to get the default inline list.
 
 ## Hooks for plugins
 

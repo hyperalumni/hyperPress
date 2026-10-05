@@ -53,16 +53,23 @@ function hyperpress_nextgen_ratio( $width, $height ): float {
 }
 
 /**
- * Social links configured in the Customizer, ready to print, or an empty array when hyperpress-socials is not active.
- *
- * Each item has `key`, `icon`, `title`, `url`, `target` and `rel`; the caller must escape them.
- *
- * @return array<int, array{key: string, icon: string, title: string, url: string, target: string, rel: string}>
+ * Prints the default content of the "Footer socials" widget area: the Customizer socials as an inline list, or nothing
+ * when hyperpress-socials is not active.
  */
-function hyperpress_social_links(): array {
-	if ( ! class_exists( '\HyperPress\Socials\Links' ) ) {
-		return array();
+function hyperpress_default_footer_socials(): void {
+	if ( ! class_exists( '\HyperPress\Socials\Widgets\DisplaySocialsWidget' ) ) {
+		return;
 	}
 
-	return \HyperPress\Socials\Links::all();
+	the_widget(
+		// Widget factory keys have no leading backslash (register_widget( Class::class )).
+		'HyperPress\Socials\Widgets\DisplaySocialsWidget',
+		\HyperPress\Socials\Widgets\DisplaySocialsWidget::default_instance(),
+		array(
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '',
+			'after_title'   => '',
+		)
+	);
 }

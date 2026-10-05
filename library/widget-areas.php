@@ -34,4 +34,16 @@ function hyperpress_sidebar_widgets() {
 			'after_title'   => '</h6>',
 		)
 	);
+
+	register_sidebar(
+		array(
+			'id'            => 'footer-socials',
+			'name'          => __( 'Footer socials', 'hyperpress' ),
+			'description'   => __( 'Drag the hyperPress Socials widget here. If the area is empty, the socials from the Customizer are shown as an inline list.', 'hyperpress' ),
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '',
+			'after_title'   => '',
+		)
+	);
 }

@@ -62,6 +62,7 @@ final class NoPluginsTest extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( '<footer class="footer-container">', $html );
 		$this->assertStringNotContainsString( '<i class="fa-', $html );
+		$this->assertStringNotContainsString( '<ul class="menu simple">', $html );
 	}
 
 	public function test_a_page_renders(): void {

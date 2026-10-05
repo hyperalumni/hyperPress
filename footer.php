@@ -28,16 +28,11 @@ defined( 'ABSPATH' ) || exit;
 					<?php endif; ?>
 				</section>
 				<section class="cell shrink">
-					<ul class="menu simple">
-						<?php foreach ( hyperpress_social_links() as $social_link ) : ?>
-							<li>
-								<a href="<?php echo esc_url( $social_link['url'] ); ?>" title="<?php echo esc_attr( $social_link['title'] ); ?>"
-									target="<?php echo esc_attr( $social_link['target'] ); ?>"<?php echo ! empty( $social_link['rel'] ) ? ' rel="' . esc_attr( $social_link['rel'] ) . '"' : ''; ?>>
-									<i class="<?php echo esc_attr( $social_link['icon'] ); ?> fa-inverse" aria-hidden="true"></i>
-								</a>
-							</li>
-						<?php endforeach; ?>
-					</ul>
+					<?php
+					if ( ! dynamic_sidebar( 'footer-socials' ) ) {
+						hyperpress_default_footer_socials();
+					}
+					?>
 				</section>
 			</div>
 		</div>
