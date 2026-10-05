@@ -55,4 +55,36 @@ final class CdnAssetsTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'jquery-migrate', wp_scripts()->registered, 'core jquery-migrate is still registered' );
 		$this->assertStringNotContainsString( 'cdnjs', (string) wp_scripts()->registered['jquery-migrate']->src );
 	}
+
+	public function test_cdn_urls_are_built_from_the_version_variables(): void {
+		global $jquery_version, $font_awesome_version;
+
+		$this->assertSame( "https://cdnjs.cloudflare.com/ajax/libs/jquery/{$jquery_version}/jquery.min.js", hyperpress_cdn_url( 'jquery', 'jquery.min.js' ) );
+		$this->assertSame( "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/{$font_awesome_version}/css/all.min.css", hyperpress_cdn_url( 'font-awesome', 'css/all.min.css' ) );
+	}
+
+	public function test_every_enqueued_cdn_url_has_a_known_hash(): void {
+		$this->front_end_markup();
+		$hashes = hyperpress_cdn_integrity();
+		foreach ( array_merge( wp_scripts()->registered, wp_styles()->registered ) as $asset ) {
+			if ( is_string( $asset->src ) && false !== strpos( $asset->src, 'cdnjs.cloudflare.com' ) ) {
+				$this->assertArrayHasKey( strtok( $asset->src, '?' ), $hashes, "no SRI hash for {$asset->src}" );
+			}
+		}
+	}
+
+	public function test_a_version_bump_without_a_new_hash_loses_integrity_instead_of_keeping_a_stale_one(): void {
+		global $jquery_version;
+		$original      = $jquery_version;
+		$jquery_version = '9.9.9';
+
+		try {
+			$hashes = hyperpress_cdn_integrity();
+			$this->assertArrayNotHasKey( hyperpress_cdn_url( 'jquery', 'jquery.min.js' ), $hashes );
+			$this->assertStringNotContainsString( '9.9.9', implode( ' ', array_keys( $hashes ) ) );
+			$this->assertSame( '<script src="x"></script>', hyperpress_add_integrity( '<script src="x"></script>', 'jquery', hyperpress_cdn_url( 'jquery', 'jquery.min.js' ) ) );
+		} finally {
+			$jquery_version = $original;
+		}
+	}
 }
