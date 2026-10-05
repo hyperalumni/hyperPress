@@ -230,6 +230,7 @@ remove_action( 'wp_print_styles', 'print_emoji_styles' );
 - `get_theme_mod( ... )` in the countdown loop is read twice (see T7).
 - Fix: call `wp_reset_postdata()` after the loop; coerce mods with `(array)`.
 - Test: integration test on the front page asserting `get_the_ID()` after the loop equals the queried page id.
+- **FIXED**: front-page.php now calls `wp_reset_postdata()` after the post loop, passes `category__in` only as a sanitized array of positive ids, and the countdown mod is read once.
 
 ### T15 (low) nggallery: DivisionByZeroError / TypeError on thumbnail aspect ratio (unverified source of settings)
 - File: nggallery/album-compact.php:48 (from grep)

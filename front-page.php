@@ -44,11 +44,12 @@ the_post();
 			<main class="main-content">
 				<?php
 				// query posts by the categories selected in the customizer
-				$the_query       = new WP_Query(
-                    array(
-						'category__in' => get_theme_mod( 'hyperpress_home_blog_categories' ),
-					)
-                    );
+				$blog_categories = array_values( array_filter( array_map( 'absint', (array) get_theme_mod( 'hyperpress_home_blog_categories' ) ) ) );
+				$query_args      = array( 'post_type' => 'post' );
+				if ( ! empty( $blog_categories ) ) {
+					$query_args['category__in'] = $blog_categories;
+				}
+				$the_query       = new WP_Query( $query_args );
 				$blog_post_types = get_theme_mod( 'hyperpress_home_blog_post_types' );
 
 				if ( ! empty( $blog_post_types ) ) {
@@ -112,6 +113,7 @@ get_template_part( 'template-parts/content', get_post_type() );
 						<hr/>
 					</div>
 				<?php endwhile; ?>
+				<?php wp_reset_postdata(); ?>
 				<div class="grid-x align-center">
 					<div class="cell small-12 medium-8 large-6 xlarge-4">
 						<a class="button hollow large expanded primary"
