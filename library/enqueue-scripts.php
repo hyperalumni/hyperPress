@@ -37,6 +37,7 @@ $foundation_version     = '6.9.0';
 $font_awesome_version   = '7.3.1';
 $jquery_version         = '3.7.1';
 $jquery_migrate_version = '3.6.0';
+$cdn_base               = 'https://cdnjs.cloudflare.com/ajax/libs/';
 
 /**
  * Subresource Integrity hashes for the CDN assets, keyed by URL (without the version query).
@@ -45,8 +46,7 @@ $jquery_migrate_version = '3.6.0';
  * @return array<string,string>
  */
 function hyperpress_cdn_integrity(): array {
-	global $font_awesome_version, $jquery_version, $jquery_migrate_version;
-	$base = 'https://cdnjs.cloudflare.com/ajax/libs/';
+	global $cdn_base, $font_awesome_version, $jquery_version, $jquery_migrate_version;
 
 	$hashes = array(
 		'3.7.1' => array( 'jquery/3.7.1/jquery.min.js' => 'sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==' ),
@@ -60,7 +60,7 @@ function hyperpress_cdn_integrity(): array {
 	$map = array();
 	foreach ( array( $jquery_version, $jquery_migrate_version, $font_awesome_version ) as $version ) {
 		foreach ( $hashes[ $version ] ?? array() as $path => $hash ) {
-			$map[ $base . $path ] = $hash;
+			$map[ $cdn_base . $path ] = $hash;
 		}
 	}
 
@@ -90,7 +90,7 @@ add_filter( 'style_loader_tag', 'hyperpress_add_integrity', 10, 3 );
 add_action( 'wp_enqueue_scripts', 'hyperpress_scripts' );
 
 function hyperpress_scripts(): void {
-	global $hyper_press_version, $foundation_version, $font_awesome_version, $jquery_version, $jquery_migrate_version;
+	global $cdn_base, $hyper_press_version, $foundation_version, $font_awesome_version, $jquery_version, $jquery_migrate_version;
 
 	// Deregister the jquery version bundled with WordPress.
 	wp_deregister_script( 'jquery' );
@@ -105,8 +105,8 @@ function hyperpress_scripts(): void {
 	// The official plugin is not active, so add FontAwesome from CDN.
 	if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
 		// Enqueue FontAwesome from CDN.
-		wp_enqueue_script( 'fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/' . $font_awesome_version . '/js/all.min.js', array(), $font_awesome_version, true );
-		wp_enqueue_style( 'fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/' . $font_awesome_version . '/css/all.min.css', array(), $font_awesome_version, true ); // needs the 'true' for media, or else the icons load funny
+		wp_enqueue_script( 'fontawesome', $cdn_base . 'font-awesome/' . $font_awesome_version . '/js/all.min.js', array(), $font_awesome_version, true );
+		wp_enqueue_style( 'fontawesome', $cdn_base . 'font-awesome/' . $font_awesome_version . '/css/all.min.css', array(), $font_awesome_version, true ); // needs the 'true' for media, or else the icons load funny
 	}
 
 	// Enqueue the main Stylesheet.
@@ -122,10 +122,10 @@ function hyperpress_scripts(): void {
         );
 
 	// CDN hosted jQuery placed in the header, as some plugins require that jQuery is loaded in the header.
-	wp_enqueue_script( 'jquery', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/' . $jquery_version . '/jquery.min.js', array(), $jquery_version, false );
+	wp_enqueue_script( 'jquery', $cdn_base . 'jquery/' . $jquery_version . '/jquery.min.js', array(), $jquery_version, false );
 
 	// CDN hosted jQuery migrate for compatibility with jQuery 4.x
-	wp_register_script( 'jquery-migrate', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/' . $jquery_migrate_version . '/jquery-migrate.min.js', array( 'jquery' ), $jquery_migrate_version, false );
+	wp_register_script( 'jquery-migrate', $cdn_base . 'jquery-migrate/' . $jquery_migrate_version . '/jquery-migrate.min.js', array( 'jquery' ), $jquery_migrate_version, false );
 
 	// Enqueue jQuery migrate. Uncomment the line below to enable.
 	// wp_enqueue_script( 'jquery-migrate' );
