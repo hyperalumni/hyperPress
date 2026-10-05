@@ -4,7 +4,7 @@ namespace HyperPress\ThemeTests\Integration;
 use WP_UnitTestCase;
 
 /**
- * Pins the behaviour of code that used loose comparisons, so switching to strict ones changes nothing visible.
+ * Pins the behavior of code that used loose comparisons, so switching to strict ones changes nothing visible.
  */
 final class StrictComparisonsTest extends WP_UnitTestCase {
 

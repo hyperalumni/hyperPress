@@ -4,7 +4,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [x]`) syntax.
 
-**Goal:** Delete, from the theme, the shortcodes, upload support, NextGen integration and HYPER plugin recommendations that now live in plugins, without losing any behaviour.
+**Goal:** Delete, from the theme, the shortcodes, upload support, NextGen integration and HYPER plugin recommendations that now live in plugins, without losing any behavior.
 
 **Prerequisite:** theme-02-renames-and-breadcrumbs complete. plugins-03-core-plugins (season shortcode) and plugins-04-remaining-plugins Tasks 6 and 7 (`hyperpress-shortcodes`, `hyperpress-media`) complete with their parity tests passing. **Do not start a task here until its plugin counterpart exists and passes**; otherwise the site loses a feature.
 **Followed by:** theme-04-cleanup.

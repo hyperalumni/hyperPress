@@ -4,7 +4,7 @@ Date: 2026-10-04. Scope: the theme at branch `cleanup/convention-and-tests` afte
 
 ## Counts (reviewer-reported, after corrections)
 
-critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43). Severity corrections already applied by the reviewer: T2 (`.env` tracked) medium to info (one key, `NODE_OPTIONS`), T5 (colour theme mods) medium to low (all eight settings use `sanitize_hex_color`).
+critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43). Severity corrections already applied by the reviewer: T2 (`.env` tracked) medium to info (one key, `NODE_OPTIONS`), T5 (color theme mods) medium to low (all eight settings use `sanitize_hex_color`).
 
 ## Priority list
 
@@ -26,12 +26,12 @@ critical 0 | high 0 | medium 9 | low 26 | info 8 (43 findings, T1-T43). Severity
 
 - Plain strings: `_e()` became `esc_html_e()` (`esc_attr_e()` for the header aria-label) in `404.php`, `comments.php`, `header.php`, `library/class-hyperpress-comments.php` and `template-parts/content-none.php`; the strings that carry links (404 home/back, content-none, the `library/foundation.php` menu notice) now go through `wp_kses()` allowing only `<a href>`, with the URLs wrapped in `esc_url()`, and only the theme-controlled "Back" link gets the `javascript` protocol.
 - URLs and attributes: `searchform.php`, `front-page.php` and the comment walker now use `esc_url()` / `esc_attr( get_comment_date( 'c' ) )`, the walker's date link text is `esc_html( get_comment_date() )` (the old `printf( get_comment_date(), get_comment_time() )` only ever printed the date), and the `get_comment_author_link()` ignore now says why it is safe.
-- `template-parts/banner.php` (T8): type, background colour, title, button link and button text are escaped with `esc_attr`, `esc_attr` (printed only for a valid `sanitize_hex_color()`), `wp_kses_post`, `esc_url` and `esc_html`; the title is no longer flattened by `sanitize_text_field()` so that harmless markup such as `<em>` survives.
-- Trusted output: the pagination ignores in `library/foundation.php` and the `library/root-colors.php` disable now give specific reasons (every colour theme mod is registered with `sanitize_hex_color`), and `nggallery/album-compact.php` escapes its plain-text and numeric values, runs the NextGen descriptions through `wp_kses_post` and documents the `Router::esc_url()` ones.
+- `template-parts/banner.php` (T8): type, background color, title, button link and button text are escaped with `esc_attr`, `esc_attr` (printed only for a valid `sanitize_hex_color()`), `wp_kses_post`, `esc_url` and `esc_html`; the title is no longer flattened by `sanitize_text_field()` so that harmless markup such as `<em>` survives.
+- Trusted output: the pagination ignores in `library/foundation.php` and the `library/root-colors.php` disable now give specific reasons (every color theme mod is registered with `sanitize_hex_color`), and `nggallery/album-compact.php` escapes its plain-text and numeric values, runs the NextGen descriptions through `wp_kses_post` and documents the `Router::esc_url()` ones.
 - `library/enqueue-scripts.php` reads the asset manifest with `wp_json_file_decode()` instead of `file_get_contents()`.
 - `comments.php` uses the plain `defined( 'ABSPATH' ) || exit;` guard instead of `die( __() )`.
 
-- Loose comparisons (13 `StrictComparisons` suppressions): all replaced by strict ones. The nav walker test uses `! empty()` on the two flags, because WordPress leaves them unset on items it has not resolved (an undefined-property warning before). `get_current_screen()->base` no longer fatals when there is no current screen. The `post_gallery` test now matches core (`! empty( $output )`), so a filter returning `null` or `false` falls through to the theme gallery as before. `StrictComparisonsTest` pins the previous behaviour for the other sites.
+- Loose comparisons (13 `StrictComparisons` suppressions): all replaced by strict ones. The nav walker test uses `! empty()` on the two flags, because WordPress leaves them unset on items it has not resolved (an undefined-property warning before). `get_current_screen()->base` no longer fatals when there is no current screen. The `post_gallery` test now matches core (`! empty( $output )`), so a filter returning `null` or `false` falls through to the theme gallery as before. `StrictComparisonsTest` pins the previous behavior for the other sites.
 - Found while testing and **FIXED**: `hyperpress_get_the_comments_pagination()` expected the current page as `<span class="page-numbers current">`, but WordPress prints `<span aria-current="page" class="page-numbers current">`, so the current page never got the `active` class. The opening tag is now matched by its class, and the generated link carries `aria-current="page"`.
 - Remaining suppressions: `template-parts/content.php` and `content-page.php` no longer overwrite WordPress's `$tag` global (the local is `$post_tags`); the `FP Small/Medium/Large/XLarge` image size labels in `library/responsive-images.php` and the `template-parts/post-navigation.php` prev/next labels now pass the `hyperpress` text domain (they were being translated with `default`). The comment walker's `GlobalVariablesOverride` ignores and the `remove_thumbnail_dimensions()` unused-parameter ignore now state why they are intentional (the walker mirrors `Walker_Comment`, which sets those globals; the filter signature is fixed by `post_thumbnail_html`). The dead-code ignores (`library/class-hyperpress-protocol-relative-theme-assets.php` unused parameters and the `CommentedOutCode` ignores in `functions.php`, `library/foundation.php`, `library/plugins.php`, `library/theme-activation.php`) remain, pending the decision to delete that code.
 
@@ -115,7 +115,7 @@ if ( ! empty( $content_template ) ) {
 - Test: unit test. Filter returns `'/etc/passwd'`, `'../x.php'`, an array and a WP_Post: none is included and the fallback part is used. A valid in-theme path is included.
 - T4 update: the callbacks I could find (`../plugins/hyperpress-sponsor/src/Content.php:19-21`, the newsletter equivalent per `tests/integration/NewsletterContentTemplateTest.php`) return `dirname( __DIR__ ) . '/templates/content.php'` guarded by `file_exists`, a fixed path with no tainted input. Not exploitable today; keep as hardening. Severity stays medium only because of the include-of-arbitrary-string contract. Arguably low.
 
-### T5 (medium) Unescaped Customizer colour mods printed into inline `<style>`
+### T5 (medium) Unescaped Customizer color mods printed into inline `<style>`
 - File: library/root-colors.php:13-20 (blanket `phpcs:disable` at line 10)
 ```php
 echo '<style id="hyper-colors-css">' . ':root {
@@ -127,7 +127,7 @@ echo '<style id="hyper-colors-css">' . ':root {
 - A separate correctness problem: unset mods print `--x: ;`. That is a valid empty custom property and defeats `var(--x, fallback)`.
 - Fix: at output, `$c = sanitize_hex_color( get_theme_mod( $key ) )` and emit only non-empty values. Add `'sanitize_callback' => 'sanitize_hex_color'` to each setting. Remove the blanket phpcs disable.
 - Test: unit test with `set_theme_mod('hyperpress_gear_blue', 'red;}</style><script>x</script>')` and capture `wp_head` output. Assert no `<script` and no `</style>` other than the closing tag, and that unset mods emit no variable.
-- T5 update: RESOLVED to low. All 8 colour settings (3 in `library/customize/gear-colors.php:17,37,57`, 5 in `library/customize/hyper-colors.php:17,38,59,80,101`) set `'sanitize_callback' => 'sanitize_hex_color'` and use `WP_Customize_Color_Control`. A Customizer save can therefore only store `#rgb`/`#rrggbb` or an empty string, so the Customizer path is not an XSS vector. What remains: (a) `root-colors.php:10` is a blanket disable on unescaped output, which is safe only while that invariant holds; a direct `set_theme_mod()` or DB write bypasses the sanitizer; (b) unset mods still print `--x: ;` (theme-activation.php sets defaults only on theme switch). Fix as proposed (sanitize at output, skip empties).
+- T5 update: RESOLVED to low. All 8 color settings (3 in `library/customize/gear-colors.php:17,37,57`, 5 in `library/customize/hyper-colors.php:17,38,59,80,101`) set `'sanitize_callback' => 'sanitize_hex_color'` and use `WP_Customize_Color_Control`. A Customizer save can therefore only store `#rgb`/`#rrggbb` or an empty string, so the Customizer path is not an XSS vector. What remains: (a) `root-colors.php:10` is a blanket disable on unescaped output, which is safe only while that invariant holds; a direct `set_theme_mod()` or DB write bypasses the sanitizer; (b) unset mods still print `--x: ;` (theme-activation.php sets defaults only on theme switch). Fix as proposed (sanitize at output, skip empties).
 
 ### T6 (medium) jQuery and FontAwesome JS from a CDN with no SRI, and WP jQuery deregistered in wp-admin
 - File: library/enqueue-scripts.php:49-51, 61, 78, 98-106
@@ -361,7 +361,7 @@ $banner['subtitle'] = sanitize_text_field( $banner['subtitle'] );               
 <h4 class="subtitle"><?php echo do_shortcode( $banner['subtitle'] ); ?></h4>                                              // banner.php:50
 ```
 - Impact: `get_search_query()` is `esc_attr()`'d, which escapes `<>&"'` but not `[` or `]`. `sanitize_text_field` leaves brackets too. So `GET /?s=[any_registered_shortcode a=b]` is executed on the search page by an unauthenticated visitor. Impact depends on the installed shortcodes (every shortcode that echoes an attribute unescaped, loads a URL, or queries data becomes a reflected injection sink; the HYPER plugins register several). Not executed at runtime. Same pattern, with lower trust (editors), for category/tag names (banner/category.php:12, tag.php:12) and author names (author.php:13), which are also concatenated into the subtitle.
-- Fix: run `do_shortcode()` only on subtitles that come from Meta Box content (page.php/post.php/blog.php routers), not on router-generated text. Or neutralise brackets in the untrusted parts: `str_replace( array( '[', ']' ), array( '&#91;', '&#93;' ), $value )`. Escape once, at output, with `wp_kses( ..., array( 'span' => array( 'class' => true ) ) )` (see T25).
+- Fix: run `do_shortcode()` only on subtitles that come from Meta Box content (page.php/post.php/blog.php routers), not on router-generated text. Or neutralize brackets in the untrusted parts: `str_replace( array( '[', ']' ), array( '&#91;', '&#93;' ), $value )`. Escape once, at output, with `wp_kses( ..., array( 'span' => array( 'class' => true ) ) )` (see T25).
 - Test: integration test. Request `/?s=[hyperpress_countdown id="1"]` (or a test shortcode that records calls). Assert the shortcode callback is NOT invoked and the banner contains the literal text `[hyperpress_countdown`.
 
 ### T25 (low) `sanitize_text_field` strips the `<span class="emphasis">` markup every banner router produces
@@ -591,7 +591,7 @@ Counts verified with `git grep` (33+11+10+6+6+5+4+3+2+1+1+1+1 = 84).
 ### Rejected candidates (second pass)
 
 - `.env` holding secrets (row 7 follow-up): rejected. It contains one key, `NODE_OPTIONS` (T2 update).
-- Root-colors stored XSS as a Customizer-reachable bug (row 5): rejected as medium. All eight colour settings have `sanitize_hex_color` (T5 update, now low).
+- Root-colors stored XSS as a Customizer-reachable bug (row 5): rejected as medium. All eight color settings have `sanitize_hex_color` (T5 update, now low).
 - `footer.php` `$target` and `$social['icon']` attribute breakout (T19): rejected. Both values are literals or derived from literals.
 - AJAX / nonce / capability gaps on `save_post` or custom endpoints: rejected. The theme registers no `wp_ajax_*`, REST route, `admin_post_*` or form handler and reads no superglobal; the Meta Box fields and the Customizer handle their own nonces and capability checks.
 - `eval`/`unserialize`/`exec`/`wp_remote_*` and tainted `include`: rejected. None exist. The only variable includes are T3/T4.

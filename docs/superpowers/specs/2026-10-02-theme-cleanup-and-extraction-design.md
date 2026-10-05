@@ -13,7 +13,7 @@ Make the theme presentation-only. Functionality that should survive a theme swit
 
 In scope: moving code out of the theme into plugins (including two new plugins); updating the theme for the Spec 1 identifier renames; removing moved code and dead guards; coding standards, header and prefix cleanup; a Docker test toolchain; a theme audit.
 
-Out of scope: redesigning templates or CSS; converting to a block theme; replacing Foundation; changing the Customizer colour system; moving the banner system or the core page-type breadcrumb trails (404, author, category, date, search, tag, page, post, paged) out of the theme.
+Out of scope: redesigning templates or CSS; converting to a block theme; replacing Foundation; changing the Customizer color system; moving the banner system or the core page-type breadcrumb trails (404, author, category, date, search, tag, page, post, paged) out of the theme.
 
 Non-goals: no compatibility shims for old plugin keys; no migration of stored content (the dev database is reset, as in Spec 1).
 
@@ -23,7 +23,7 @@ Non-goals: no compatibility shims for old plugin keys; no migration of stored co
 - `style.css`: Version 2026.0.0, Requires PHP 8.3, Requires at least 6.9, Text Domain `hyperpress`, contains a `GitHub Theme URI` header field.
 - Function prefixes: `hyperpress_` (45), `foundationpress_` (37), `hyper_` (9). 84 `function_exists` guards in `library/`.
 - Tooling present but unused: `phpunit.xml.dist` (bootstrap `tests/bootstrap.php`, which does not exist), `codesniffer.ruleset.xml`, composer dev dependencies for phpcs. No tests.
-- The theme does not register post types, taxonomies, widgets, or Customizer colour controls on behalf of plugins. It registers nav menus, sidebars, image sizes, theme supports, six shortcodes (plus `gallery`), and Customizer sections (colours, homepage, copyright, nggallery).
+- The theme does not register post types, taxonomies, widgets, or Customizer color controls on behalf of plugins. It registers nav menus, sidebars, image sizes, theme supports, six shortcodes (plus `gallery`), and Customizer sections (colors, homepage, copyright, nggallery).
 - Plugin-facing hooks the theme fires or consumes: `hyperpress_banner_content` (filter, `template-parts/banner.php:7`; implemented by 14 files under `library/banner/` plus the plugins), `hyperpress_breadcrumbs_content` (filter, `template-parts/breadcrumbs.php:7`; implemented by 12 files under `library/breadcrumbs/` plus the plugins), `content_template` (filter, used by `single.php:22`, `template-parts/posts.php:12`, `front-page.php:74`, and hooked by `plugins/hyperpress-sponsor/sponsor.php:52` and `plugins/hyperpress-newsletter/newsletter.php:43`), and `hyperpress_labels_content` (consumed by the theme's labels template part, hooked by the newsletter and sponsor plugins).
 - The theme has no `single-*.php`, `archive-*.php` or `taxonomy-*.php` for plugin types. Plugin types render through `template-parts/content-{post_type}` fallbacks and the `content_template` filter.
 - `library/plugins.php` registers 38 plugins with TGM. Seven are HYPER plugins with `'source' => '#'` (a placeholder), so TGM can never install them; the list omits competition, program, label and student.
@@ -37,7 +37,7 @@ Non-goals: no compatibility shims for old plugin keys; no migration of stored co
 | From the theme | To | Rules |
 |---|---|---|
 | `hyperpress_breadcrumbs_custom_post_type()` | `hyperpress-utils` `Breadcrumbs` (section 5) | Logic moves, not just the call. Debug output removed, archive bug fixed, default taxonomy `hyper_season`. |
-| Shortcodes `time-restrict`, `time-restrict-repeat`, `time-restrict-repeat-1/2/3` (`show-hide-content.php`), `hyper_date_distance`, `raw`, `hyper_emphasis`, `hyper_banner` | new plugin `hyperpress-shortcodes` | **Tags unchanged** (they are stored in post content). Behaviour unchanged by the move; defects go to the audit. |
+| Shortcodes `time-restrict`, `time-restrict-repeat`, `time-restrict-repeat-1/2/3` (`show-hide-content.php`), `hyper_date_distance`, `raw`, `hyper_emphasis`, `hyper_banner` | new plugin `hyperpress-shortcodes` | **Tags unchanged** (they are stored in post content). Behavior unchanged by the move; defects go to the audit. |
 | `hyper_season_count` | `hyperpress-season` | Tag unchanged. It calls `hyper_date_distance`, so season gains a soft dependency on `hyperpress-shortcodes` (section 6). |
 | `supports/svg.php`, `supports/avif.php`, `customize/nggallery.php`, `breadcrumbs/nggallery.php` | new plugin `hyperpress-media` | NextGen code only loads when NextGen is active. |
 | HYPER entries in `library/plugins.php` | deleted | Dependencies are declared by `Requires Plugins`. |
@@ -47,7 +47,7 @@ The `gallery` shortcode override in `library/foundation.php:225` is presentation
 
 ### 4.1 Stays in the theme
 
-Banner router and its renderers, core page-type breadcrumb trails, `template-parts/*`, templates, Customizer colour and homepage sections, assets and build, navigation, widget areas, image sizes, theme support, Gutenberg editor support, cleanup hooks, comment and nav walkers, the `foundationpress` protocol-relative asset class.
+Banner router and its renderers, core page-type breadcrumb trails, `template-parts/*`, templates, Customizer color and homepage sections, assets and build, navigation, widget areas, image sizes, theme support, Gutenberg editor support, cleanup hooks, comment and nav walkers, the `foundationpress` protocol-relative asset class.
 
 ## 5. The CPT breadcrumb builder in `hyperpress-utils`
 
@@ -67,7 +67,7 @@ Both follow Spec 1 exactly: folder `hyperpress-{name}/`, main file `hyperpress-{
 ### `hyperpress-shortcodes`
 - Requires Plugins: none.
 - One class per shortcode under `src/Shortcodes/`, registered on `init` through a `Shortcodes::register()` loader. Classes: `TimeRestrict` (both `time-restrict` and the `time-restrict-repeat*` family), `DateDistance`, `Raw`, `Emphasis`, `Banner`.
-- The behaviour of each shortcode is pinned by characterisation tests written before the move (section 8).
+- The behavior of each shortcode is pinned by characterization tests written before the move (section 8).
 
 ### `hyperpress-media`
 - Requires Plugins: none. NextGen is optional (`class_exists` checks remain because this is a real optional dependency).
@@ -81,7 +81,7 @@ Both follow Spec 1 exactly: folder `hyperpress-{name}/`, main file `hyperpress-{
 
 - `library/customize/homepage.php`: imports become `HyperPress\Utils\Controls\PostTypeDropdownControl` and `CategoryDropdownControl`. The `class_exists` guards go; if utils is missing, the Customizer section fails loudly instead of silently disappearing.
 - `library/metaboxes/homepage-customize.php:69`: `'countdown'` becomes `'hyper_countdown'`.
-- Renamed theme mods and meta keys the theme reads are listed in section 11 of this spec's implementation plan; the known ones are `hyperpress_banner_background_color` and `hyperpress_banner_subtitle` (theme-owned, unchanged) and the four colour theme mods (theme-owned, unchanged).
+- Renamed theme mods and meta keys the theme reads are listed in section 11 of this spec's implementation plan; the known ones are `hyperpress_banner_background_color` and `hyperpress_banner_subtitle` (theme-owned, unchanged) and the four color theme mods (theme-owned, unchanged).
 - The `content_template` filter contract is kept: a plugin returns a file path, the theme includes it. The newsletter and sponsor migrations (plugins-04-remaining-plugins) must keep their callbacks hooked and returning a path; a test for that is added there. The `include` of a filter-returned path is an audit item.
 - Any theme code that calls a plugin function or reads a plugin post type is guarded by a presence check that reflects a real optional dependency, not by a redeclaration guard.
 - `library/plugins.php`: HYPER entries and the API-key URL are removed; the remaining third-party recommendations stay. `class-tgm-plugin-activation.php` stays as vendored code.
@@ -96,7 +96,7 @@ Both follow Spec 1 exactly: folder `hyperpress-{name}/`, main file `hyperpress-{
 - **Tests:**
   - Unit: theme header lint; a static check that no file defines or calls a removed function; the plugin-facing hook list (`hyperpress_banner_content`, `hyperpress_breadcrumbs_content`, `content_template`, `hyperpress_labels_content`) still exists.
   - Integration (WordPress + the plugins loaded, theme active): the theme renders `/`, a single post, an archive, a 404 and the search page without PHP errors; a CPT single and archive render a banner and the expected breadcrumbs; the Customizer loads; and the same pages render with the extracted plugins deactivated (shortcodes then appear as literal text, which is the accepted degradation).
-  - Characterisation tests for each shortcode before it moves, run against both the theme version and the plugin version.
+  - Characterization tests for each shortcode before it moves, run against both the theme version and the plugin version.
 - No browser or visual tests.
 
 ## 9. Theme audit (candidates to confirm or reject by reading the code)
@@ -108,7 +108,7 @@ Both follow Spec 1 exactly: folder `hyperpress-{name}/`, main file `hyperpress-{
 5. `front-page.php` builds `do_shortcode( '[hyperpress_countdown id="' . $countdown_id . '" /]' )` from a theme mod: confirm IDs are cast to integers.
 6. Output escaping in `template-parts/*` and `library/banner/*`, `library/breadcrumbs/*`.
 7. Customizer settings without `sanitize_callback`.
-8. Enqueue handling (versioning, handle names, vendored assets), `cleanup.php` behaviours that remove core features.
+8. Enqueue handling (versioning, handle names, vendored assets), `cleanup.php` behaviors that remove core features.
 9. The `.idea` directory, the root `.env` file and other non-source files tracked or present in the repo (check `git ls-files .env .idea` and the contents of `.env` for secrets, without printing them).
 
 The audit follows the Spec 2 method: findings verified in source, written to `theme/docs/superpowers/audit/`, approved by the user, then fixed test-first, one commit per finding.
@@ -116,9 +116,9 @@ The audit follows the Spec 2 method: findings verified in source, written to `th
 ## 10. Sequencing
 
 1. **Plugins first** (plans already written, plus amendments in section 11): toolchain, shared utils (now including the real `Breadcrumbs` builder), migrations, the two new plugins, `hyper_season_count`.
-2. **Theme plans:** theme-01-tooling-and-baseline tooling and baseline tests; theme-02-renames-and-breadcrumbs theme updates for the renames and moved breadcrumb builder, with the shortcode characterisation tests written first; theme-03-remove-extracted-code remove moved code once the plugin copies are verified; theme-04-cleanup cleanup (prefixes, guards, header, standards); theme audit and fixes.
+2. **Theme plans:** theme-01-tooling-and-baseline tooling and baseline tests; theme-02-renames-and-breadcrumbs theme updates for the renames and moved breadcrumb builder, with the shortcode characterization tests written first; theme-03-remove-extracted-code remove moved code once the plugin copies are verified; theme-04-cleanup cleanup (prefixes, guards, header, standards); theme audit and fixes.
 
-The theme never loses a feature in between: code is removed from the theme only after the plugin version exists and its characterisation tests pass.
+The theme never loses a feature in between: code is removed from the theme only after the plugin version exists and its characterization tests pass.
 
 ## 11. Effect on the existing plugin plans
 
@@ -131,7 +131,7 @@ The theme never loses a feature in between: code is removed from the theme only 
 
 ## 12. Risks
 
-- **Shortcode behaviour drift when moved.** Mitigated by characterisation tests written first, and tags unchanged.
+- **Shortcode behavior drift when moved.** Mitigated by characterization tests written first, and tags unchanged.
 - **Content switching to plain-text shortcodes if `hyperpress-shortcodes` is inactive.** Accepted; `Requires Plugins` on the theme is not available, so the README and TGM recommendation list `hyperpress-shortcodes` and `hyperpress-media` as recommended.
 - **Breadcrumb CSS class names.** Preserved; verified against theme CSS before any change.
 - **Prefix rename breaking an unseen child theme or custom code.** Checked in the plan before the rename.

@@ -11,7 +11,7 @@ final class CustomizerTest extends WP_UnitTestCase {
 		do_action( 'customize_register', $manager );
 
 		foreach ( array( 'hyperpress_hyper_green', 'hyperpress_hyper_orange', 'hyperpress_hyper_red', 'hyperpress_gear_blue' ) as $setting ) {
-			$this->assertNotNull( $manager->get_setting( $setting ), "colour setting $setting is registered" );
+			$this->assertNotNull( $manager->get_setting( $setting ), "color setting $setting is registered" );
 		}
 		$this->assertNotNull( $manager->get_setting( 'hyperpress_home_blog_post_types' ) );
 	}

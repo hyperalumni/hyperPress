@@ -69,7 +69,7 @@
 		<exclude name="WordPress.WhiteSpace.ControlStructureSpacing.NoSpaceBeforeCloseParenthesis)" />
 
 		<!-- Mandatory docblock presence (file/class/function/variable) is documentation churn with no
-		     behavioural value across legacy template code. Existing docblocks are still validated. -->
+		     behavioral value across legacy template code. Existing docblocks are still validated. -->
 		<exclude name="Squiz.Commenting.FileComment.Missing" />
 		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag" />
 		<exclude name="Squiz.Commenting.VariableComment.Missing" />

@@ -1,6 +1,6 @@
 # hyperPress theme
 
-A classic WordPress theme forked from FoundationPress (Foundation 6), for the Team HYPER sites. It is presentation-only: templates, the banner and breadcrumb routers, the Customizer colour and homepage settings, navigation and assets. The sections below headed FoundationPress are the upstream starter documentation and describe the front-end build.
+A classic WordPress theme forked from FoundationPress (Foundation 6), for the Team HYPER sites. It is presentation-only: templates, the banner and breadcrumb routers, the Customizer color and homepage settings, navigation and assets. The sections below headed FoundationPress are the upstream starter documentation and describe the front-end build.
 
 ## Development (PHP)
 

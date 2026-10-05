@@ -4,7 +4,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [x]`) syntax.
 
-**Goal:** Give the theme a Docker PHP 8.5 toolchain, a WordPress integration bootstrap that activates the theme and loads the plugins, and baseline render tests that pin current behaviour before any theme code changes.
+**Goal:** Give the theme a Docker PHP 8.5 toolchain, a WordPress integration bootstrap that activates the theme and loads the plugins, and baseline render tests that pin current behavior before any theme code changes.
 
 **Prerequisite:** plugins-01 to plugins-04 complete (the plugins exist in their final form and `../plugins` has the `vendor/` toolchain).
 **Followed by:** theme-02-renames-and-breadcrumbs (renames and moved breadcrumb builder), theme-03-remove-extracted-code (remove moved code), theme-04-cleanup (cleanup), theme-05-audit (audit).
@@ -525,7 +525,7 @@ final class CustomizerTest extends WP_UnitTestCase {
 		do_action( 'customize_register', $manager );
 
 		foreach ( array( 'hyperpress_hyper_green', 'hyperpress_hyper_orange', 'hyperpress_hyper_red', 'hyperpress_gear_blue' ) as $setting ) {
-			$this->assertNotNull( $manager->get_setting( $setting ), "colour setting $setting is registered" );
+			$this->assertNotNull( $manager->get_setting( $setting ), "color setting $setting is registered" );
 		}
 		$this->assertNotNull( $manager->get_setting( 'hyperpress_home_blog_post_types' ) );
 	}

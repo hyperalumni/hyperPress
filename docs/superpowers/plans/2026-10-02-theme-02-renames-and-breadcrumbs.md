@@ -123,7 +123,7 @@ Change `'post_type' => [ 'countdown' ]` to `'post_type' => [ 'hyper_countdown' ]
 
 Delete lines 20 to 108 (the whole `if ( ! function_exists( 'hyperpress_breadcrumbs_custom_post_type' ) ) : ... endif;` block). The twelve `require_once` lines at the top stay (they are the core page-type trails and the router).
 
-- [x] **Step 3b: Season helper callers.** The plugin consumer audit found two theme callers of the season plugin's helper: `library/labels/post.php` (line 2 `use HYPER_Press_Season\get_sorted_seasons;` and the call near line 29) and `library/breadcrumbs/post.php` (the call near line 13). Replace each import and call with `\HyperPress\Season\SortedSeasons::get(...)` (same arguments), guarded only if the season plugin is a real optional dependency of that template (it is required by the theme's plugins, so no `function_exists`/`class_exists` guard). Read both files first and keep the surrounding behaviour unchanged.
+- [x] **Step 3b: Season helper callers.** The plugin consumer audit found two theme callers of the season plugin's helper: `library/labels/post.php` (line 2 `use HYPER_Press_Season\get_sorted_seasons;` and the call near line 29) and `library/breadcrumbs/post.php` (the call near line 13). Replace each import and call with `\HyperPress\Season\SortedSeasons::get(...)` (same arguments), guarded only if the season plugin is a real optional dependency of that template (it is required by the theme's plugins, so no `function_exists`/`class_exists` guard). Read both files first and keep the surrounding behavior unchanged.
 
 - [x] **Step 4: Run**
 
@@ -186,7 +186,7 @@ final class ContentTemplateTest extends WP_UnitTestCase {
 - [x] **Step 2: Run**
 
 Run: `docker compose run --rm php composer test:integration -- --filter ContentTemplateTest`
-Expected: PASS. If `test_plugin_supplies_...` fails because the plugin callback returns a path to a theme file or a different request shape, the plugin migration (plugins-04-remaining-plugins) lost the behaviour: fix the plugin, not this test. If the paths legitimately point elsewhere, record where in the notes and relax only the directory assertion with a comment.
+Expected: PASS. If `test_plugin_supplies_...` fails because the plugin callback returns a path to a theme file or a different request shape, the plugin migration (plugins-04-remaining-plugins) lost the behavior: fix the plugin, not this test. If the paths legitimately point elsewhere, record where in the notes and relax only the directory assertion with a comment.
 
 - [x] **Step 3: Commit**
 

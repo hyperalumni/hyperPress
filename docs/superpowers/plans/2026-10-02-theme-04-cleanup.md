@@ -4,13 +4,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [x]`) syntax.
 
-**Goal:** Remove the updater header, rename `foundationpress_` identifiers to `hyperpress_`, remove redundant `function_exists` guards, bring the theme to the coding-standards baseline, and document the extracted plugins. Behaviour does not change; theme-01-tooling-and-baseline render baselines and the theme-02 and theme-03 tests must stay green throughout.
+**Goal:** Remove the updater header, rename `foundationpress_` identifiers to `hyperpress_`, remove redundant `function_exists` guards, bring the theme to the coding-standards baseline, and document the extracted plugins. Behavior does not change; theme-01-tooling-and-baseline render baselines and the theme-02 and theme-03 tests must stay green throughout.
 
 **Prerequisite:** theme-03-remove-extracted-code complete.
 **Followed by:** theme-05-audit.
 **Spec:** `docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md` (section 8).
 
-**Conventions:** as in theme-01-tooling-and-baseline. Commit per task with an explicit pathspec. Security-class findings (escaping, sanitizing, nonces, `extract`, the `include` of a filter return) are NOT fixed here; they are suppressed with `// phpcs:ignore <Sniff> -- theme audit` so the baseline reaches zero without changing behaviour, and theme-05-audit finds them with `grep -rn 'theme audit'`.
+**Conventions:** as in theme-01-tooling-and-baseline. Commit per task with an explicit pathspec. Security-class findings (escaping, sanitizing, nonces, `extract`, the `include` of a filter return) are NOT fixed here; they are suppressed with `// phpcs:ignore <Sniff> -- theme audit` so the baseline reaches zero without changing behavior, and theme-05-audit finds them with `grep -rn 'theme audit'`.
 
 ---
 
@@ -146,7 +146,7 @@ Run; expected FAIL. (The regex matches the guard-then-same-named-function shape.
 ## Task 4: Coding-standards baseline to zero, then gate it
 
 - [x] **Step 1: Measure:** `docker compose run --rm php vendor/bin/phpcs --report=summary`. Record counts per directory.
-- [x] **Step 2: Auto-fix a directory at a time:** `docker compose run --rm php vendor/bin/phpcbf library/<dir>` then run `composer test:unit` and `composer test:integration`. plugins-01-test-toolchain failing test means the fixer changed behaviour: `git checkout -- <those files>` is NOT acceptable here because the repo has unrelated uncommitted work in the same files. Instead restore from the copy you took first: before each phpcbf run, `cp -r library/<dir> /tmp/opencode/<dir>.bak`, and restore from it if needed.
+- [x] **Step 2: Auto-fix a directory at a time:** `docker compose run --rm php vendor/bin/phpcbf library/<dir>` then run `composer test:unit` and `composer test:integration`. plugins-01-test-toolchain failing test means the fixer changed behavior: `git checkout -- <those files>` is NOT acceptable here because the repo has unrelated uncommitted work in the same files. Instead restore from the copy you took first: before each phpcbf run, `cp -r library/<dir> /tmp/opencode/<dir>.bak`, and restore from it if needed.
 - [x] **Step 3: Fix the remainder by hand.** Security-class findings get `// phpcs:ignore <Sniff> -- theme audit` (see the conventions above), nothing else. If a sniff is impractical for the whole theme, exclude it in `codesniffer.ruleset.xml` with an XML comment giving the reason, in its own commit.
 - [x] **Step 4: Gate:** `docker compose run --rm php composer lint` exits 0.
 - [x] **Step 5: Commit per directory** with explicit pathspecs.

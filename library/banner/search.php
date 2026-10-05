@@ -6,7 +6,7 @@ add_filter( 'hyperpress_banner_content', 'hyperpress_banner_search' );
 
 function hyperpress_banner_search( $banner ) {
 	if ( is_search() ) {
-		// banner.php runs do_shortcode() on the subtitle, so neutralise shortcode brackets in the visitor's query.
+		// banner.php runs do_shortcode() on the subtitle, so neutralize shortcode brackets in the visitor's query.
 		$query = str_replace( array( '[', ']' ), array( '&#91;', '&#93;' ), esc_html( get_search_query() ) );
 
 		$banner['type']     = 'search';

@@ -47,7 +47,7 @@ final class BannerEscapingTest extends WP_UnitTestCase {
 		$header = $dom->getElementsByTagName( 'header' )->item( 0 );
 		$this->assertNotNull( $header );
 		$this->assertFalse( $header->hasAttribute( 'onmouseover' ), 'the type must not break out of the class attribute' );
-		$this->assertFalse( $header->hasAttribute( 'style' ), 'an invalid colour prints no style attribute' );
+		$this->assertFalse( $header->hasAttribute( 'style' ), 'an invalid color prints no style attribute' );
 		$this->assertStringNotContainsString( 'url(x)', $html );
 		$this->assertStringNotContainsString( '<script', $html );
 		$this->assertStringContainsString( '<em>ok</em>', $html, 'harmless markup in the title is kept' );

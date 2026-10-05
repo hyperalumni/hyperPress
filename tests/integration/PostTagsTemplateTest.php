@@ -4,7 +4,7 @@ namespace HyperPress\ThemeTests\Integration;
 use WP_UnitTestCase;
 
 /**
- * Characterisation test: the tag list in the footer of the content templates.
+ * Characterization test: the tag list in the footer of the content templates.
  * It must behave the same whatever the local variable holding get_the_tags() is called.
  */
 final class PostTagsTemplateTest extends WP_UnitTestCase {

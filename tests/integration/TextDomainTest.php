@@ -55,8 +55,8 @@ final class TextDomainTest extends WP_UnitTestCase {
 		get_template_part( 'template-parts/post-navigation' );
 		$html = ob_get_clean();
 
-		$this->assertStringContainsString( get_permalink( $first ), $html, 'has a previous neighbour' );
-		$this->assertStringContainsString( get_permalink( $third ), $html, 'has a next neighbour' );
+		$this->assertStringContainsString( get_permalink( $first ), $html, 'has a previous neighbor' );
+		$this->assertStringContainsString( get_permalink( $third ), $html, 'has a next neighbor' );
 		$this->assert_only_theme_domain( array( '&laquo; %title', '%title &raquo;' ) );
 	}
 }
