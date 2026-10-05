@@ -26,7 +26,7 @@
 | `hyperpress-utils/src/Controls/PostTypeDropdownControl.php`, `CategoryDropdownControl.php` | Moved and renamed Customizer controls |
 | `hyperpress-utils/lib/` | Deleted when empty |
 | `tests/unit/Utils/*Test.php` | Pure unit tests |
-| `tests/integration/Utils/*Test.php` | Hook and role behaviour tests |
+| `tests/integration/Utils/*Test.php` | Hook and role behavior tests |
 
 ---
 
@@ -389,7 +389,7 @@ final class Labels {
 }
 ```
 
-Note on the guard line `defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );`: the unit bootstrap runs without WordPress and defines `HYPERPRESS_TESTING` (Step 1). Use the same guard line in every file under `hyperpress-utils/src/`. Class files only define classes and have no side effects, so this guard is defence in depth, not security.
+Note on the guard line `defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );`: the unit bootstrap runs without WordPress and defines `HYPERPRESS_TESTING` (Step 1). Use the same guard line in every file under `hyperpress-utils/src/`. Class files only define classes and have no side effects, so this guard is defense in depth, not security.
 
 - [x] **Step 5: Write `hyperpress-utils/src/PostTypeRegistrar.php`**
 
@@ -612,7 +612,7 @@ Run: `docker compose run --rm php composer test:unit -- --filter TaxonomyRegistr
 
 - [x] **Step 3: Write `hyperpress-utils/src/TaxonomyRegistrar.php`**
 
-The default `slug` behaviour: a missing `slug` key is an error; an explicit `null` disables rewrite.
+The default `slug` behavior: a missing `slug` key is an error; an explicit `null` disables rewrite.
 
 ```php
 <?php
@@ -1253,7 +1253,7 @@ Theme follow-up (handled by the theme plans, not here): once this class is in us
 
 ## Task 6: `Banner` (TDD)
 
-Replaces the three near-identical `banner.php` copies (competition, newsletter, sponsor). Legacy differences are preserved as arguments: newsletter always overwrites the archive title (`always_set_archive_title`) and joins the season with "from"; competition and sponsor only set an empty title and use "in". Newsletter's season-aware singular title and per-post colour move into a `hyperpress_banner_args` filter in the newsletter plugin (plugins-04-remaining-plugins).
+Replaces the three near-identical `banner.php` copies (competition, newsletter, sponsor). Legacy differences are preserved as arguments: newsletter always overwrites the archive title (`always_set_archive_title`) and joins the season with "from"; competition and sponsor only set an empty title and use "in". Newsletter's season-aware singular title and per-post color move into a `hyperpress_banner_args` filter in the newsletter plugin (plugins-04-remaining-plugins).
 
 **Files:**
 - Create: `hyperpress-utils/src/Banner.php`, `tests/unit/Utils/BannerTest.php`, `tests/integration/Utils/BannerRegisterTest.php`
@@ -1300,7 +1300,7 @@ final class BannerTest extends TestCase {
 		$this->assertSame( array( 'title' => 'T' ), Banner::apply( array( 'title' => 'T' ), $this->args(), $this->ctx() ) );
 	}
 
-	public function test_singular_sets_type_subtitle_and_colour_but_keeps_title(): void {
+	public function test_singular_sets_type_subtitle_and_color_but_keeps_title(): void {
 		$banner = Banner::apply( array( 'title' => 'Acme' ), $this->args(), $this->ctx( array( 'is_singular' => true ) ) );
 		$this->assertSame( 'sponsor', $banner['type'] );
 		$this->assertSame( 'Thank you', $banner['subtitle'] );
@@ -1750,5 +1750,5 @@ git commit -m "docs(plans): complete plugins-02-shared-utils" -- docs/superpower
 ### Theme checklist (OUT OF SCOPE here, for the theme plans)
 - Plugin identifiers the theme must learn: post types `hyper_award`, `hyper_competition`, `hyper_countdown`, `hyper_newsletter`, `hyper_robot`, `hyper_sponsor`; taxonomies `hyper_season`, `hyper_program`, `hyper_district`, `hyper_week`, `hyper_tier`.
 - The theme's `hyperpress_breadcrumbs_custom_post_type()` is replaced by `HyperPress\Utils\Breadcrumbs` and becomes dead code; theme-02-renames-and-breadcrumbs removes it.
-- Undeclared plugin-to-theme dependency: banner colour theme mods `hyperpress_hyper_green`, `hyperpress_hyper_orange`, `hyperpress_hyper_red`, `hyperpress_gear_blue`, and the theme meta field `hyperpress_banner_background_color`.
+- Undeclared plugin-to-theme dependency: banner color theme mods `hyperpress_hyper_green`, `hyperpress_hyper_orange`, `hyperpress_hyper_red`, `hyperpress_gear_blue`, and the theme meta field `hyperpress_banner_background_color`.
 - Filters the theme fires: `hyperpress_breadcrumbs_content`, `hyperpress_banner_content`.

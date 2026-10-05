@@ -6,14 +6,14 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Shortcodes to show or hide content on a one-off basis or on a recurring schedule.
  *
- * Moved from the theme (library/shortcodes/show-hide-content.php). Behaviour is unchanged except for audit fixes
+ * Moved from the theme (library/shortcodes/show-hide-content.php). Behavior is unchanged except for audit fixes
  * (S24: the annual same-month branch read an undefined variable; S25: attribute validation).
  *
  * Attribute validation: a date or time attribute that cannot be parsed counts as if it was not set.
  * - time-restrict: an unparsable `on` or `off` is ignored, so the content shows whenever the other condition allows.
  * - time-restrict-repeat: an unparsable month name counts as a missing month (annually shows the content when
  *   a required attribute is missing), an unparsable `ontime` or `offtime` falls back to its default, and dates
- *   and times are normalised (`05` is 5, `9:00` is 09:00:00) before they are compared.
+ *   and times are normalized (`05` is 5, `9:00` is 09:00:00) before they are compared.
  *
  * @author Dave Clements
  */
@@ -101,7 +101,7 @@ final class TimeRestrict {
 	 * @param string $time     The attribute value.
 	 * @param string $fallback The H:i:s to use when the value is not a time.
 	 */
-	private static function normalise_time( string $time, string $fallback ): string {
+	private static function normalize_time( string $time, string $fallback ): string {
 		$timestamp = strtotime( $time );
 		if ( false === $timestamp ) {
 			return $fallback;
@@ -152,7 +152,7 @@ final class TimeRestrict {
 		$onwday  = (int) date( 'w', strtotime( ucfirst( $onday ) ) ); // Convert day to PHP numerical representation of day (w).
 		$offwday = (int) date( 'w', strtotime( ucfirst( $offday ) ) );
 
-		// Check what was set before normalising: a missing or unparsable month counts as missing.
+		// Check what was set before normalizing: a missing or unparsable month counts as missing.
 		$ondate_set   = ! empty( $ondate );
 		$offdate_set  = ! empty( $offdate );
 		$ontime_set   = ! empty( $ontime );
@@ -166,8 +166,8 @@ final class TimeRestrict {
 		$offmonth = $offmonth_set ? (int) date( 'n', $offmonth_ts ) : 0;
 		$ondate   = (int) $ondate; // Dates are compared as numbers: '05' is 5.
 		$offdate  = (int) $offdate;
-		$ontime   = self::normalise_time( $ontime, '00:00:00' ); // Times are compared as zero padded H:i:s strings.
-		$offtime  = self::normalise_time( $offtime, '23:59:59' );
+		$ontime   = self::normalize_time( $ontime, '00:00:00' ); // Times are compared as zero padded H:i:s strings.
+		$offtime  = self::normalize_time( $offtime, '23:59:59' );
 
 		$todaysday   = (int) date( 'w', self::now() ); // What's the time, Mr. Wolf?
 		$todaysdate  = (int) date( 'j', self::now() );

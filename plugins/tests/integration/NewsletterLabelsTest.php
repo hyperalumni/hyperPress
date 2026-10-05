@@ -31,7 +31,7 @@ final class NewsletterLabelsTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Characterisation: the season label links to the term archive, as get_term_link() builds it.
+	 * Characterization: the season label links to the term archive, as get_term_link() builds it.
 	 */
 	public function test_season_label_url_is_the_term_link(): void {
 		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter' ) );

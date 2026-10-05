@@ -184,7 +184,7 @@ git commit -m "test: add registration parity test against the legacy snapshot" -
 
 - [x] **Step 1: Read every legacy file**
 
-Read each legacy file listed above so the conversion keeps hook names, priorities and behaviour. Also re-read the Task 0 consumer list from plugins-02-shared-utils for callers of `get_sorted_seasons`.
+Read each legacy file listed above so the conversion keeps hook names, priorities and behavior. Also re-read the Task 0 consumer list from plugins-02-shared-utils for callers of `get_sorted_seasons`.
 
 - [x] **Step 2: R1 and R2** for `hyperpress-season.php`.
 

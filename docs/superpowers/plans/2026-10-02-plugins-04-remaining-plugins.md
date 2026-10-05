@@ -89,9 +89,9 @@ git commit -m "refactor(countdown): migrate to hyper_countdown and the shared st
 
 - [x] **Step 1: Read the legacy files** (notably `labels.php`, `content.php`, `shortcodes.php`, which this plan has not seen) and print the legacy rewrite flags: newsletter's legacy rewrite is `{with_front:false, slug:newsletter, hierarchical:true}`.
 
-- [x] **Step 2: R1 and R2** for `hyperpress-newsletter.php`. Header fixes: add `Plugin URI`, `License` and `License URI` (copy from `hyperpress-award`). **Before replacing the body**, read it: the legacy main file hooks the theme's `content_template` filter (`newsletter.php:43`, callback `hyperpress_add_newsletter_content_template`). That hook and callback move into `src/Content.php` (registered by `Plugin::boot()`), they are not deleted. The theme includes the path this filter returns, so the behaviour must survive.
+- [x] **Step 2: R1 and R2** for `hyperpress-newsletter.php`. Header fixes: add `Plugin URI`, `License` and `License URI` (copy from `hyperpress-award`). **Before replacing the body**, read it: the legacy main file hooks the theme's `content_template` filter (`newsletter.php:43`, callback `hyperpress_add_newsletter_content_template`). That hook and callback move into `src/Content.php` (registered by `Plugin::boot()`), they are not deleted. The theme includes the path this filter returns, so the behavior must survive.
 
-- [x] **Step 3: Write the regression test FIRST** `tests/integration/NewsletterBannerTest.php` (it documents current behaviour, including the colour quirk):
+- [x] **Step 3: Write the regression test FIRST** `tests/integration/NewsletterBannerTest.php` (it documents current behavior, including the color quirk):
 
 ```php
 <?php
@@ -127,7 +127,7 @@ final class NewsletterBannerTest extends WP_UnitTestCase {
 		$this->assertSame( 'Newsletter', $this->banner_for( $post_id )['title'] );
 	}
 
-	public function test_singular_colour_comes_from_the_per_post_meta_box(): void {
+	public function test_singular_color_comes_from_the_per_post_meta_box(): void {
 		$GLOBALS['hyperpress_test_rwmb']['hyperpress_banner_background_color'] = '#123456';
 		set_theme_mod( 'hyperpress_hyper_orange', '#ff8800' );
 		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter' ) );
@@ -203,7 +203,7 @@ It fails until Step 6 is done. If the legacy callback only returns a path for a 
 	}
 ```
 
-- [x] **Step 5: Write `src/BannerFilter.php`** (moves the season-aware singular logic out of the shared code; behaviour copied from legacy `lib/banner.php`, including that the per-post colour overwrites the theme-mod colour even when empty):
+- [x] **Step 5: Write `src/BannerFilter.php`** (moves the season-aware singular logic out of the shared code; behavior copied from legacy `lib/banner.php`, including that the per-post color overwrites the theme-mod color even when empty):
 
 ```php
 <?php
@@ -401,7 +401,7 @@ git commit -m "refactor(socials): migrate to the shared structure and hyperpress
 
 ## Task 5: Migrate `hyperpress-label` and `hyperpress-student` (placeholders)
 
-**Requires Plugins:** none for both. They have no behaviour and stay that way.
+**Requires Plugins:** none for both. They have no behavior and stay that way.
 
 - [x] **Step 1: Read `hyperpress-label/label.php` and `hyperpress-student/student.php`.**
 - [x] **Step 2: Label.** `git mv hyperpress-label/label.php hyperpress-label/hyperpress-label.php`. Apply R1 header edits (no `Requires Plugins`). Make the Description say it is a placeholder, for example `Placeholder for a future HYPERpress label feature. Does nothing yet.` Body after the header is only `defined( 'ABSPATH' ) || exit;`.
@@ -424,7 +424,7 @@ git commit -m "refactor(label,student): rename main files, fix headers, mark as 
 
 **Requires Plugins:** none. **Namespace:** `HyperPress\Shortcodes`. **Source (read-only here; the theme copies are removed later by the theme plans):** `theme/library/shortcodes/{show-hide-content,date-distance,raw,emphasis,banner}.php`.
 
-Shortcode **tags do not change**: they are stored in post content. Behaviour does not change either; defects such as `extract()` are left for the audit. Characterisation fixtures are captured from the theme code first, so the move is checked against what the theme actually does.
+Shortcode **tags do not change**: they are stored in post content. Behavior does not change either; defects such as `extract()` are left for the audit. Characterization fixtures are captured from the theme code first, so the move is checked against what the theme actually does.
 
 **Target files:** `hyperpress-shortcodes/hyperpress-shortcodes.php`, `src/Plugin.php`, `src/Shortcodes/TimeRestrict.php` (registers `time-restrict`, `time-restrict-repeat`, `time-restrict-repeat-1`, `-2`, `-3`), `src/Shortcodes/DateDistance.php` (`hyper_date_distance`), `src/Shortcodes/Raw.php` (`raw`), `src/Shortcodes/Emphasis.php` (`hyper_emphasis`), `src/Shortcodes/Banner.php` (`hyper_banner`).
 
@@ -560,7 +560,7 @@ Run it: `docker compose run --rm php composer test:integration -- --filter Short
 - [x] **Step 8: Run**
 
 Run: `docker compose run --rm php composer test:integration -- --filter ShortcodeParityTest`
-Expected: PASS for every case. plugins-01-test-toolchain mismatch means the move changed behaviour: fix the plugin, never the fixture.
+Expected: PASS for every case. plugins-01-test-toolchain mismatch means the move changed behavior: fix the plugin, never the fixture.
 Run: `docker compose run --rm php composer test:unit -- --filter 'PluginHeadersTest.*shortcodes'` PASS; `composer lint:syntax` exit 0.
 
 - [x] **Step 9: Commit**
@@ -658,13 +658,13 @@ git commit -m "docs(plans): complete plugins-04-remaining-plugins" -- docs/super
 ## Execution notes
 
 - Final state: unit 121 tests OK; integration 147 tests OK with 4 skipped (snapshot writers and non-public URL cases); `lint:syntax` exit 0. All contract tests (keys, URLs, capabilities, attachment, identifiers, headers, legacy-key scan) are green.
-- The theme's shortcodes and media code are mirrored in `hyperpress-shortcodes` (66 characterisation cases, fixture captured from the theme code) and `hyperpress-media`. The theme still loads its own copies: do not deploy both with NextGen active until theme-03 removes the theme files, or album/gallery breadcrumbs are appended twice.
+- The theme's shortcodes and media code are mirrored in `hyperpress-shortcodes` (66 characterization cases, fixture captured from the theme code) and `hyperpress-media`. The theme still loads its own copies: do not deploy both with NextGen active until theme-03 removes the theme files, or album/gallery breadcrumbs are appended twice.
 - The test image now has ext-intl (needed for the ordinal `suffix` path of `hyper_date_distance`); `composer.json` requires `ext-intl`.
 - `content_template` and `archive_template` hooks moved with their templates to `templates/` in newsletter and sponsor (the theme `include`s the returned path). Added `NewsletterContentTemplateTest` and `SponsorContentTemplateTest`.
 - Socials: the Customizer section and all 12 control ids now follow the convention. Media: the NextGen control used to point at a section that never existed (so it never displayed); it now has its own section `hyperpress_media_nextgen` and appears.
 - Sponsor labels now use `SortedSeasons::get`. The theme callers of `get_sorted_seasons` are handled in theme-02-renames-and-breadcrumbs.
 - New audit candidates: SVG upload sanitizing and the dead WP 4.7.1 branch (media), unsanitized `$_SERVER['REQUEST_URI']` and unguarded array indexes in NextGen breadcrumbs, widget `update()` reading undefined keys (sponsor), `content_template` callbacks typed `string` while the theme passes a `WP_Post` on the front page (theme-05).
 - Test-isolation fix: `SeasonCountTest` removed the real `hyper_date_distance` shortcode in tear_down; it now restores it.
-- Deferred minors: weekly/monthly/annual `time-restrict-repeat` branches are date-dependent (parity only shows stable output); several thin tests (newsletter archive/colour fallback, media gating); existing data is not migrated (dev DB reset by design).
+- Deferred minors: weekly/monthly/annual `time-restrict-repeat` branches are date-dependent (parity only shows stable output); several thin tests (newsletter archive/color fallback, media gating); existing data is not migrated (dev DB reset by design).
 - Update (audit S20): the SVG upload filter was removed from `hyperpress-media`; SVG uploads now come from the Safe SVG plugin, declared as `Requires Plugins: safe-svg`. `Uploads\Svg` no longer exists, and `MediaTest` asserts the SVG MIME type is not added by this plugin.
 - Update (audit S30): `Uploads\Avif` was removed too; WordPress core already allows and detects AVIF. `hyperpress-media` now only carries the NextGen integration.

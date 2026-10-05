@@ -27,7 +27,7 @@ final class Shortcode {
 	}
 
 	/**
-	 * JSON-encoded colour for one TimeCircles unit: the Customizer value, or TimeCircles' own default when unset or invalid.
+	 * JSON-encoded color for one TimeCircles unit: the Customizer value, or TimeCircles' own default when unset or invalid.
 	 *
 	 * @param string $unit days|hours|minutes|seconds.
 	 */

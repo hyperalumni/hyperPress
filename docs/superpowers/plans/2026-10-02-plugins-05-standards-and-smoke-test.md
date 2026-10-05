@@ -28,12 +28,12 @@ For each plugin `P` in `hyperpress-*`:
 
 Run: `docker compose run --rm php vendor/bin/phpcbf hyperpress-P`
 Then: `docker compose run --rm php composer test:unit && docker compose run --rm php composer test:integration`
-Expected: still green. phpcbf only reformats, so a failing test means the fixer changed behaviour: revert that plugin (`git checkout -- hyperpress-P`) and fix it by hand instead.
+Expected: still green. phpcbf only reformats, so a failing test means the fixer changed behavior: revert that plugin (`git checkout -- hyperpress-P`) and fix it by hand instead.
 
 - [x] **Step 3: Fix what phpcbf cannot**
 
 Run: `docker compose run --rm php vendor/bin/phpcs hyperpress-P`
-Fix each remaining error by hand. Do NOT fix security-class findings (escaping, sanitizing, nonces, `extract`) here: those are plugins-06-audit. Suppress them with an inline `// phpcs:ignore <Sniff> -- plugins audit` comment naming the sniff, so the baseline reaches zero without changing behaviour, and the audit finds every suppression with `grep -rn 'plugins audit' hyperpress-*`.
+Fix each remaining error by hand. Do NOT fix security-class findings (escaping, sanitizing, nonces, `extract`) here: those are plugins-06-audit. Suppress them with an inline `// phpcs:ignore <Sniff> -- plugins audit` comment naming the sniff, so the baseline reaches zero without changing behavior, and the audit finds every suppression with `grep -rn 'plugins audit' hyperpress-*`.
 
 - [x] **Step 4: Commit per plugin**
 
@@ -88,7 +88,7 @@ Expected: WordPress loads with all 14 plugins. Use WP-CLI inside the environment
   - `wp post-type list --fields=name,public` shows the six `hyper_*` types; `wp taxonomy list` shows the five `hyper_*` taxonomies.
   - For each public type, create one post and request its singular URL and archive URL (`curl -sI`): both 200 at the unchanged paths (`/award/...`, `/awards/`, and so on).
   - WP admin: each type's menu is visible to an Administrator and an Editor and NOT to a Subscriber account.
-  - Customizer opens without PHP errors and shows the renamed controls (season/program dropdowns, socials, newsletter/sponsor subtitles, countdown colours).
+  - Customizer opens without PHP errors and shows the renamed controls (season/program dropdowns, socials, newsletter/sponsor subtitles, countdown colors).
   - plugins-01-test-toolchain page containing the `hyperpress_countdown` shortcode renders, and a page using `[time-restrict]`, `[hyper_emphasis]` and `[hyper_season_count]` renders with `hyperpress-shortcodes` active (and as literal text with it deactivated).
   - An SVG and an AVIF file upload in the media library.
   - PHP error log is clean on these pages.
@@ -119,7 +119,7 @@ git commit -m "docs: close out convention and test-toolchain plans" -- docs/supe
 
 ## Execution notes
 
-- phpcs baseline: 755 errors / 24 warnings down to 0 across all 14 plugins (one commit per plugin after one ruleset commit). `composer lint` now gates. Five docblock-presence sniffs are excluded (`Squiz.Commenting.{FileComment.Missing,FileComment.MissingPackageTag,ClassComment.Missing,FunctionComment.Missing,VariableComment.Missing}`). Long `array()` syntax is kept (WPCS). A review of the style commits found no behaviour change.
+- phpcs baseline: 755 errors / 24 warnings down to 0 across all 14 plugins (one commit per plugin after one ruleset commit). `composer lint` now gates. Five docblock-presence sniffs are excluded (`Squiz.Commenting.{FileComment.Missing,FileComment.MissingPackageTag,ClassComment.Missing,FunctionComment.Missing,VariableComment.Missing}`). Long `array()` syntax is kept (WPCS). A review of the style commits found no behavior change.
 - About 60 inline `// phpcs:ignore ... -- plugins audit` suppressions mark security-class findings and a few quality items; they are candidates 16 to 18 in plugins-06-audit (find them with `grep -rn 'plugins audit' hyperpress-*`).
 - README and AGENTS.md rewritten for the new toolchain and conventions.
 - Smoke test (throwaway WordPress 6.9 / PHP 8.4 stack with a Meta Box stub and the theme mounted, torn down afterwards): all 15 plugins activate without "requires" problems; the six `hyper_*` post types and all five taxonomies register (`hyper_season` and `hyper_program` attach to nothing by default); archive and single URLs for award, competition, robot, sponsor, newsletter return 200 at the unchanged paths, as do `/seasons/2026/{awards,sponsors}/`; Administrator and Editor hold the edit capability of every type, Subscriber none; 23 `hyperpress_*` Customizer controls plus the `hyperpress_socials` and `hyperpress_media_nextgen` sections load; SVG and AVIF mimes are allowed; `hyperpress_countdown`, `time-restrict`, `hyper_emphasis`, `raw` and `hyper_date_distance` render. A direct `wp media import` of an SVG could not be done from the CLI container (file not shared), so the upload path was checked only through the allowed mimes.

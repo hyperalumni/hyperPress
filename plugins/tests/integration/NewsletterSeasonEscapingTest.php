@@ -9,7 +9,7 @@ final class NewsletterSeasonEscapingTest extends WP_UnitTestCase {
 		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter' ) );
 		$term    = wp_insert_term( 'placeholder', 'hyper_season' );
 		$this->assertIsArray( $term );
-		// Term names are sanitised on save; write the markup straight to the row to test the output side only.
+		// Term names are sanitized on save; write the markup straight to the row to test the output side only.
 		global $wpdb;
 		$wpdb->update( $wpdb->terms, array( 'name' => '<b>2026</b>' ), array( 'term_id' => $term['term_id'] ) );
 		clean_term_cache( $term['term_id'], 'hyper_season' );

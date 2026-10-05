@@ -37,7 +37,7 @@ final class BannerTest extends TestCase {
 		$this->assertSame( array( 'title' => 'T' ), Banner::apply( array( 'title' => 'T' ), $this->args(), $this->ctx() ) );
 	}
 
-	public function test_singular_sets_type_subtitle_and_colour_but_keeps_title(): void {
+	public function test_singular_sets_type_subtitle_and_color_but_keeps_title(): void {
 		$banner = Banner::apply( array( 'title' => 'Acme' ), $this->args(), $this->ctx( array( 'is_singular' => true ) ) );
 		$this->assertSame( 'sponsor', $banner['type'] );
 		$this->assertSame( 'Thank you', $banner['subtitle'] );

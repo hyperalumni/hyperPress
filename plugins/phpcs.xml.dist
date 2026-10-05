@@ -31,7 +31,7 @@
 
     <rule ref="WordPress">
         <!-- Mandatory docblock presence (file/class/function/variable) is documentation churn: ~250 boilerplate
-             blocks across legacy code with no behavioural value. Existing docblocks are still validated. -->
+             blocks across legacy code with no behavioral value. Existing docblocks are still validated. -->
         <exclude name="Squiz.Commenting.FileComment.Missing"/>
         <exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
         <exclude name="Squiz.Commenting.ClassComment.Missing"/>

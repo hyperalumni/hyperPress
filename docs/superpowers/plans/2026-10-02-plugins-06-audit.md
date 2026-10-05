@@ -36,7 +36,7 @@
 | 4 | `extract()` in the show/hide shortcodes | search `grep -rn "extract(" hyperpress-*` |
 | 5 | Socials widget echoes `$args` values | `hyperpress-socials/src/Widgets/DisplaySocialsWidget.php` (legacy `display-socials.php:89,91,114`), likely fine |
 | 6 | `PostTypeDropdownControl` calls `esc_attr( $this->id )` without `echo`, so the `for`/`name`/`id` attributes are empty; `selected()` compares an array value to a string | `hyperpress-utils/src/Controls/PostTypeDropdownControl.php` |
-| 7 | Newsletter banner overwrites the theme-mod colour with the per-post meta value even when that is empty | `hyperpress-newsletter/src/BannerFilter.php` (behaviour pinned by `NewsletterBannerTest`) |
+| 7 | Newsletter banner overwrites the theme-mod color with the per-post meta value even when that is empty | `hyperpress-newsletter/src/BannerFilter.php` (behavior pinned by `NewsletterBannerTest`) |
 | 8 | Competition banner reads theme mod `hyperpress_competition_banner_subtitle`, but no Customizer control defines it | `hyperpress-competition/src/Plugin.php` |
 | 9 | Season rewrite rule: confirm `$matches[2]` can only be a registered post type key | `hyperpress-season/src/Rewrite.php` |
 | 10 | REST API. DECIDED: `show_in_rest` is false for every post type and taxonomy (nothing in the repo uses the routes; Classic Editor is a required plugin). Consequence: the block editor is unavailable for these types and term pickers use the classic UI. Revisit only if an external consumer or the block editor is wanted | `PostTypeRegistrar` and `TaxonomyRegistrar` defaults |
@@ -46,7 +46,7 @@
 | 14 | A Google Maps `api_key` is hard-coded in the map field (committed secret; the value must never be reproduced in notes or reports). Needs rotation/restriction by the owner and moving to a constant or option | `hyperpress-competition/src/MetaBoxes.php` (map field), `git log -S'api_key'` for history |
 | 15 | `__( '', 'hyperpress' )` on an empty string (gettext misuse) carried over from the legacy label description | `hyperpress-competition/src/MetaBoxes.php` |
 | 16 | ~60 inline `// phpcs:ignore ... -- plugins audit` suppressions. Security-class (27 `EscapeOutput.OutputNotEscaped`, 4 `_e`, 4 exception messages, 4 `extract()`, 1 unsanitized `$_SERVER['REQUEST_URI']`) must become real fixes; find all with `grep -rn 'plugins audit' hyperpress-*` | all plugins, notably `hyperpress-newsletter/templates/content.php`, both widgets |
-| 17 | Suppressed non-security quality items that need a decision: `__( '' )` returns the .po header in translated locales (competition and countdown MetaBoxes), dynamic `__( $var )` (SeasonBanner, sponsor widget), `strip_tags` in both widgets' `update()` (consider `wp_strip_all_tags`), `json_encode` (consider `wp_json_encode`), loose `==` in media `Avif.php`, `current_time('timestamp')` and `date()` in countdown/time-restrict (timezone behaviour) | see item 16 grep |
+| 17 | Suppressed non-security quality items that need a decision: `__( '' )` returns the .po header in translated locales (competition and countdown MetaBoxes), dynamic `__( $var )` (SeasonBanner, sponsor widget), `strip_tags` in both widgets' `update()` (consider `wp_strip_all_tags`), `json_encode` (consider `wp_json_encode`), loose `==` in media `Avif.php`, `current_time('timestamp')` and `date()` in countdown/time-restrict (timezone behavior) | see item 16 grep |
 | 18 | `SlowDBQuery` (`tax_query`, `meta_query`) in sponsor queries; phpcs exclusion comment for `FileComment.MissingPackageTag` says existing docblocks are still validated but that sniff is excluded | `hyperpress-sponsor`, `phpcs.xml.dist` |
 
 - [ ] **Step 3: Commit nothing** (read-only).
@@ -57,7 +57,7 @@
 
 - [ ] **Step 1: Dispatch read-only reviewers**, one per group of plugins, so each reads its files in full against the Task 1 checklist and returns findings as structured items (file:line, what, why it matters, suggested fix). Suggested groups: (utils, season, program), (competition, robot, award), (countdown, newsletter), (sponsor, socials, label, student). Give each reviewer the exact checklist and candidate rows for its plugins. Reviewers do not edit files.
 
-- [ ] **Step 2: Verify every finding yourself in the source.** Open the cited file:line and confirm the code does what the finding says, and that the data really is user-controlled or the behaviour really is wrong. Discard anything that does not hold up; downgrade anything exaggerated. plugins-01-test-toolchain reviewer's claim is a lead, not evidence.
+- [ ] **Step 2: Verify every finding yourself in the source.** Open the cited file:line and confirm the code does what the finding says, and that the data really is user-controlled or the behavior really is wrong. Discard anything that does not hold up; downgrade anything exaggerated. plugins-01-test-toolchain reviewer's claim is a lead, not evidence.
 
 ---
 

@@ -85,7 +85,7 @@ final class CountdownShortcodeHardeningTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'alert(1)', $js, 'payload should remain, but only inside a JSON string' );
 	}
 
-	public function test_hostile_colour_theme_mods_cannot_break_out_of_the_inline_script(): void {
+	public function test_hostile_color_theme_mods_cannot_break_out_of_the_inline_script(): void {
 		foreach ( array( 'days', 'hours', 'minutes', 'seconds' ) as $unit ) {
 			set_theme_mod( 'hyperpress_countdown_' . $unit . '_color', 'red"};alert(1);//' );
 		}
@@ -97,10 +97,10 @@ final class CountdownShortcodeHardeningTest extends WP_UnitTestCase {
 		foreach ( $m[1] as $json ) {
 			$this->assertIsString( json_decode( $json ), "not valid JSON: $json" );
 		}
-		$this->assertSame( array( '"#FC6"', '"#9CF"', '"#BFB"', '"#F99"' ), $m[1], 'invalid colours fall back to the TimeCircles defaults' );
+		$this->assertSame( array( '"#FC6"', '"#9CF"', '"#BFB"', '"#F99"' ), $m[1], 'invalid colors fall back to the TimeCircles defaults' );
 	}
 
-	public function test_valid_colour_theme_mods_are_used(): void {
+	public function test_valid_color_theme_mods_are_used(): void {
 		set_theme_mod( 'hyperpress_countdown_days_color', '#123456' );
 		set_theme_mod( 'hyperpress_countdown_seconds_color', '#abc' );
 		$this->render( $this->countdown() );
@@ -108,7 +108,7 @@ final class CountdownShortcodeHardeningTest extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( '"color": "#123456"', $js );
 		$this->assertStringContainsString( '"color": "#abc"', $js );
-		$this->assertStringContainsString( '"color": "#9CF"', $js, 'unset colours use the default' );
+		$this->assertStringContainsString( '"color": "#9CF"', $js, 'unset colors use the default' );
 	}
 
 	public function test_asset_urls_have_no_double_slash_after_the_scheme(): void {

@@ -31,20 +31,20 @@ final class NewsletterBannerTest extends WP_UnitTestCase {
 		$this->assertSame( 'Newsletter', $this->banner_for( $post_id )['title'] );
 	}
 
-	public function test_singular_colour_comes_from_the_per_post_meta_box(): void {
+	public function test_singular_color_comes_from_the_per_post_meta_box(): void {
 		$GLOBALS['hyperpress_test_rwmb']['hyperpress_banner_background_color'] = '#123456';
 		set_theme_mod( 'hyperpress_hyper_orange', '#ff8800' );
 		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter' ) );
 		$this->assertSame( '#123456', $this->banner_for( $post_id )['backgroundColor'] );
 	}
 
-	public function test_singular_keeps_the_theme_colour_when_the_post_has_none(): void {
+	public function test_singular_keeps_the_theme_color_when_the_post_has_none(): void {
 		set_theme_mod( 'hyperpress_hyper_orange', '#ff8800' );
 		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter' ) );
 		$this->assertSame( '#ff8800', $this->banner_for( $post_id )['backgroundColor'] );
 	}
 
-	public function test_singular_keeps_the_theme_colour_when_neither_post_nor_posts_page_has_one(): void {
+	public function test_singular_keeps_the_theme_color_when_neither_post_nor_posts_page_has_one(): void {
 		set_theme_mod( 'hyperpress_hyper_orange', '#ff8800' );
 		update_option( 'page_for_posts', self::factory()->post->create( array( 'post_type' => 'page' ) ) );
 		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter' ) );

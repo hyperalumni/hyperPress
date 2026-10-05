@@ -8,7 +8,7 @@ use HyperPress\Sponsor\Widgets\DisplaySponsorsWidget;
 use WP_UnitTestCase;
 
 /**
- * Characterisation: the admin forms print field ids and names through esc_attr(), which must not change them.
+ * Characterization: the admin forms print field ids and names through esc_attr(), which must not change them.
  */
 final class WidgetFormEscapingTest extends WP_UnitTestCase {
 

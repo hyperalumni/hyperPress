@@ -29,7 +29,7 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 	}
 
 	/** @return array<string, array{0: string, 1: string, 2: string}> key => key, icon, title */
-	public static function catalogue(): array {
+	public static function catalog(): array {
 		return array(
 			'firstinspires'   => array( 'firstinspires', 'fa-solid fa-robot', 'FIRST Inspires' ),
 			'thebluealliance' => array( 'thebluealliance', 'fa-regular fa-lightbulb', 'The Blue Alliance' ),
@@ -55,7 +55,7 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 		$this->assertSame( array(), Links::all() );
 	}
 
-	/** @dataProvider catalogue */
+	/** @dataProvider catalog */
 	public function test_each_social_has_its_key_icon_and_title( string $key, string $icon, string $title ): void {
 		set_theme_mod( 'hyperpress_socials_' . $key, 'https://example.test/x' );
 

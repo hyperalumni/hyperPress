@@ -39,7 +39,7 @@ final class BannerFilter {
 			}
 		}
 
-		// Keep the theme colour Banner::apply() set unless the post (or the Posts page) has its own.
+		// Keep the theme color Banner::apply() set unless the post (or the Posts page) has its own.
 		$color = Meta::get( 'hyperpress_banner_background_color' );
 		if ( empty( $color ) ) {
 			$blog_page_id = get_option( 'page_for_posts' );
