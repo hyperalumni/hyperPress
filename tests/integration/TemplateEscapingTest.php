@@ -48,7 +48,7 @@ final class TemplateEscapingTest extends WP_UnitTestCase {
 		$html = (string) ob_get_clean();
 
 		$this->assertNotContains( 'onmouseover', $this->attribute_names( $html ) );
-		$this->assertStringContainsString( '<form role="search" method="get" id="searchform" action="http', $html );
+		$this->assertStringContainsString( '<form role="search" method="get" action="http', $html );
 	}
 
 	public function test_nothing_found_links_the_new_post_screen_for_editors_on_the_blog_home(): void {

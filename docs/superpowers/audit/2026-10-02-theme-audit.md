@@ -532,6 +532,8 @@ placeholder="
 - Test: unit test. Render `get_search_form( false )` twice; assert unique ids and a trimmed placeholder.
 - **FIXED**: the placeholder is now a one-line `esc_attr_x` value with no surrounding whitespace; the ids `searchform`, `s` and `searchsubmit` were kept because TemplateEscapingTest asserts `id="searchform"` (so they are still duplicated if the form renders twice).
 
+- **FIXED (ids)**: the fixed ids `searchform`, `s` and `searchsubmit` are removed. Nothing in the theme's SCSS or JS, the plugins or the tests selected them, and the field is still labeled through `aria-label`, so the form can appear more than once without duplicate ids.
+
 ### T40 (info) Relative `require_once` paths resolve through `include_path` first
 - Files: functions.php:22-77; library/banner.php:7-20; library/breadcrumbs.php:7-17; library/labels.php:7; library/metaboxes.php:7-9; library/customize.php:7-11 (contrast library/plugins.php:38 which uses `get_template_directory()`)
 ```php

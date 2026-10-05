@@ -25,4 +25,16 @@ final class SearchFormTest extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( 'placeholder="Find &quot;it&quot;"', $html );
 	}
+
+	public function test_the_form_has_no_fixed_ids_so_it_can_appear_twice(): void {
+		$one = get_search_form( array( 'echo' => false ) );
+		$two = get_search_form( array( 'echo' => false ) );
+
+		$this->assertStringNotContainsString( ' id="', $one, 'no fixed ids: nothing in the theme styles or scripts them' );
+		$this->assertStringContainsString( 'name="s"', $one );
+		$this->assertStringContainsString( 'aria-label="Search"', $one, 'the field is still labeled for assistive technology' );
+
+		preg_match_all( '/\sid="([^"]+)"/', $one . $two, $m );
+		$this->assertSame( array_unique( $m[1] ), $m[1], 'no duplicate ids when the form is rendered twice' );
+	}
 }
