@@ -430,6 +430,7 @@ return '<button class="hollow button medium-down-expanded more-link" href="' . g
 - Impact: `href` is not a valid attribute on `<button>`; clicking does nothing (a `<button>` outside a form submits nothing). The read-more link is dead UI on any post using `<!--more-->`. The permalink is also not passed through `esc_url()` and the label is not translatable.
 - Fix: `<a class="hollow button … more-link" href="' . esc_url( get_permalink() . '#more-' . get_the_ID() ) . '">' . esc_html__( 'Continue Reading', 'hyperpress' ) . '</a>'`.
 - Test: integration test. `the_content()` for a post with a more tag; parse the DOM and assert an `a.more-link[href]`.
+ - **FIXED**: the read-more filter now returns an <a class="hollow button medium-down-expanded more-link"> with an esc_url()'d permalink#more-ID href and a translatable label instead of a dead <button href>.
 
 ### T34 (low) Translated identifiers, and an unsanitized theme setting
 - Files: library/navigation.php:50; library/custom-nav.php:40-45

@@ -75,5 +75,5 @@ function hyperpress_add_menuclass( $ulclass ): array|string|null {
 add_filter( 'the_content_more_link', 'hyperpress_customize_the_read_more_link' );
 
 function hyperpress_customize_the_read_more_link(): string {
-	return '<button class="hollow button medium-down-expanded more-link" href="' . get_permalink() . '#more-' . get_the_ID() . '">Continue Reading</button>';
+	return '<a class="hollow button medium-down-expanded more-link" href="' . esc_url( get_permalink() . '#more-' . get_the_ID() ) . '">' . esc_html__( 'Continue Reading', 'hyperpress' ) . '</a>';
 }
