@@ -81,6 +81,7 @@ final class SeasonLabelTest extends WP_UnitTestCase {
 		$this->assertSame( 'Season', $definition['group'] );
 		$this->assertSame( 'Posted During', $definition['title'] );
 		$this->assertSame( 30, $definition['priority'] );
+		// Holds because set_up attaches the taxonomy to `post`.
 		$this->assertSame( array( 'post' ), $definition['default_post_types'] );
 	}
 

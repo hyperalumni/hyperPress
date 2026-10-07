@@ -48,4 +48,11 @@ final class TaxonomyPostTypesTest extends WP_UnitTestCase {
 
 		$this->assertSame( array( 'hp_test_b' ), TaxonomyPostTypes::for_taxonomy( 'hp_test_tax' ) );
 	}
+
+	public function test_non_string_and_empty_entries_are_dropped(): void {
+		register_taxonomy( 'hp_test_tax', array() );
+		$GLOBALS['wp_taxonomies']['hp_test_tax']->object_type = array( 'post', null, array( 'x' ), 5, '', 'page' );
+
+		$this->assertSame( array( 'post', 'page' ), TaxonomyPostTypes::for_taxonomy( 'hp_test_tax' ) );
+	}
 }

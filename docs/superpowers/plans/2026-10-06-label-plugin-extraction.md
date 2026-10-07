@@ -208,7 +208,7 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 
 - Resolved 2026-10-07 (theme commit 87a8811): the season crumb in `theme/library/breadcrumbs/post.php` uses `get_term_link()` (WP_Error becomes `''`), and `theme/README.md`'s hooks table lists `hyperpress_label_register` and `hyperpress_label_default_post_types`.
 
-- 2026-10-07: season label defaults now follow the taxonomy's attached post types via Utils\TaxonomyPostTypes.
+- 2026-10-07: season label defaults now follow the taxonomy's attached post types via Utils\TaxonomyPostTypes. Consequence: the taxonomy attaches only via the `hyperpress_season_post_types` theme mod (default `array()`), so until it is saved the label defaults to no post types, though the Customizer control shows `post`.
 
 ### Deferred (minor)
 

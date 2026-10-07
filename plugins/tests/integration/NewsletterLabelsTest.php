@@ -15,6 +15,7 @@ final class NewsletterLabelsTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		remove_all_filters( 'hyperpress_labels_content' );
+		unregister_taxonomy_for_object_type( 'hyper_season', 'hyper_newsletter' );
 		Registry::reset( true );
 		parent::tear_down();
 	}
@@ -101,7 +102,6 @@ final class NewsletterLabelsTest extends WP_UnitTestCase {
 
 		$types = Registry::instance()->default_post_types( 'season.posted_during' );
 
-		unregister_taxonomy_for_object_type( 'hyper_season', 'hyper_newsletter' );
 		$this->assertSame( 1, count( array_keys( $types, 'hyper_newsletter', true ) ) );
 	}
 }

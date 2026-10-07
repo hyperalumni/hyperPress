@@ -20,6 +20,11 @@ final class TaxonomyPostTypes {
 			return array();
 		}
 
-		return array_values( array_map( 'strval', $object->object_type ) );
+		return array_values(
+			array_filter(
+				$object->object_type,
+				static fn ( $type ) => is_string( $type ) && '' !== $type
+			)
+		);
 	}
 }
