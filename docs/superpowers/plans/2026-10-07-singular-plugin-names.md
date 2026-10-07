@@ -60,10 +60,10 @@
 **Interfaces:**
 - Consumes: Task 1's class names, widget base id and theme-mod keys.
 
-- [ ] **Step 1:** Update the tests first to the new names and run `composer test:integration` in `theme/`; expected FAIL where the theme still uses old names (RED evidence).
-- [ ] **Step 2:** Update `helpers.php` and remaining references. Keep theme-owned sidebar ids (`socials`, `footer-socials`) unchanged.
-- [ ] **Step 3:** Run `composer test:unit`, `composer test:integration`, `composer lint` in `theme/` and the plugins integration suite; all pass.
-- [ ] **Step 4:** Commit in `theme/`: `refactor: use hyperpress-social`.
+- [x] **Step 1:** Update the tests first to the new names and run `composer test:integration` in `theme/`; expected FAIL where the theme still uses old names (RED evidence).
+- [x] **Step 2:** Update `helpers.php` and remaining references. Keep theme-owned sidebar ids (`socials`, `footer-socials`) unchanged.
+- [x] **Step 3:** Run `composer test:unit`, `composer test:integration`, `composer lint` in `theme/` and the plugins integration suite; all pass.
+- [x] **Step 4:** Commit in `theme/`: `refactor: use hyperpress-social`.
 
 ### Task 3: Rename hyperpress-shortcodes to hyperpress-shortcode
 
