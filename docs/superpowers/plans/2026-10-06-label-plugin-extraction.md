@@ -206,9 +206,9 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 
 - Follow-up: `Renderer::normalize()` now coerces `label`, `title`, `url` and `rel` to strings (non-scalars become `''`); the labels Customizer control has a description hint; `LabelHooksContractTest` pins that `hyperpress-label` owns `hyperpress_labels` and `hyperpress_labels_content`.
 
+- Resolved 2026-10-07 (theme commit 87a8811): the season crumb in `theme/library/breadcrumbs/post.php` uses `get_term_link()` (WP_Error becomes `''`), and `theme/README.md`'s hooks table lists `hyperpress_label_register` and `hyperpress_label_default_post_types`.
+
 ### Deferred (minor)
 
 - Saved selections are explicit lists, and post types registered after `customize_register` get no Customizer controls (they render with default labels).
-- `theme/README.md`'s hooks table does not list `hyperpress_label_default_post_types`.
 - `Renderer::render()` returns early when there are no labels, so a theme override template is never called with an empty list.
-- `theme/library/breadcrumbs/post.php` still uses `get_category_link()` for the season term crumb (line 16); it should use `get_term_link()`.
