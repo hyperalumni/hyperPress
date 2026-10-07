@@ -24,6 +24,17 @@ final class PluginHooksContractTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/apply_filters\(\s*[\'"]' . preg_quote( $filter, '/' ) . '[\'"]/', self::theme_source(), "The theme no longer fires '$filter'" );
 	}
 
+	/** @dataProvider fired_actions */
+	public function test_the_theme_fires_the_plugin_facing_actions( string $action ): void {
+		$this->assertMatchesRegularExpression( '/do_action\(\s*[\'"]' . preg_quote( $action, '/' ) . '[\'"]/', self::theme_source(), "The theme no longer fires '$action'" );
+	}
+
+	public static function fired_actions(): array {
+		return array(
+			'labels' => array( 'hyperpress_labels' ),
+		);
+	}
+
 	public static function fired_filters(): array {
 		return array(
 			'banner'           => array( 'hyperpress_banner_content' ),

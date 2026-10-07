@@ -29,6 +29,8 @@ The theme expects the HYPER plugins in `../plugins` (`hyperpress-utils` and the 
 | `content_template` | filter | A plugin returns the path of a template the theme `include`s for single and list views |
 | `hyperpress_labels` | action | Templates call it where labels show; `hyperpress-label` renders them (it must be active) |
 | `hyperpress_labels_content` | filter | Applied by `hyperpress-label` on the label list, not by the theme (prefer the `hyperpress_label_register` action to add labels) |
+| `hyperpress_label_register` | action | Provided by `hyperpress-label`. Plugins register a label: the callback receives `HyperPress\Label\Registry`, call `$registry->add( $id, $args )` |
+| `hyperpress_label_default_post_types` | filter | Provided by `hyperpress-label`. `array $types, string $label_id`: a plugin opts its post type into an existing label's defaults |
 
 ## Upgrading
 

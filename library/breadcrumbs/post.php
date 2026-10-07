@@ -11,9 +11,10 @@ function hyperpress_breadcrumbs_post( $breadcrumbs ) {
 		if ( ! empty( $seasons ) ) {
 			$season = $seasons[0];
 			if ( ! empty( $season ) ) {
+				$season_url    = get_term_link( $season );
 				$breadcrumbs[] = array(
 					'title'   => $season->name,
-					'url'     => get_category_link( $season->term_id ),
+					'url'     => is_wp_error( $season_url ) ? '' : $season_url,
 					'classes' => array(
 						'li'    => array(
 							'item-' . $season->slug,
