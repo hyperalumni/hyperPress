@@ -39,9 +39,6 @@ final class LabelsBreadcrumbsGuardTest extends WP_UnitTestCase {
 	}
 
 	public function test_post_season_crumb_links_to_the_season_term_not_a_category(): void {
-		if ( ! taxonomy_exists( 'hyper_season' ) ) {
-			register_taxonomy( 'hyper_season', 'post', array( 'public' => true ) );
-		}
 		$term_id = self::factory()->term->create(
 			array(
 				'taxonomy' => 'hyper_season',
@@ -65,6 +62,37 @@ final class LabelsBreadcrumbsGuardTest extends WP_UnitTestCase {
 		$this->assertNotNull( $season, 'The season crumb is missing' );
 		$this->assertSame( get_term_link( $term ), $season['url'] );
 		$this->assertStringNotContainsString( '/category/', $season['url'] );
+	}
+
+	public function test_post_season_crumb_has_an_empty_url_when_the_term_link_errors(): void {
+		$term_id = self::factory()->term->create(
+			array(
+				'taxonomy' => 'hyper_season',
+				'name'     => 'Linkless Season',
+			)
+		);
+		$post_id = self::factory()->post->create();
+		wp_set_object_terms( $post_id, array( $term_id ), 'hyper_season' );
+		$this->go_to( get_permalink( $post_id ) );
+		$this->assertTrue( is_singular( 'post' ) );
+		add_filter(
+			'term_link',
+			static function () {
+				return new WP_Error( 'forced', 'forced' );
+			}
+		);
+		$this->assertInstanceOf( WP_Error::class, get_term_link( get_term( $term_id, 'hyper_season' ) ) );
+
+		$crumbs = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$season = null;
+		foreach ( $crumbs as $crumb ) {
+			if ( 'Linkless Season' === $crumb['title'] ) {
+				$season = $crumb;
+			}
+		}
+
+		$this->assertNotNull( $season, 'The season crumb is missing' );
+		$this->assertSame( '', $season['url'] );
 	}
 
 	public function test_category_archive_yields_a_category_crumb(): void {
