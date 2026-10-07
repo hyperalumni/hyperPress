@@ -31,7 +31,7 @@ $season       = ! is_wp_error( $seasons ) && ! empty( $seasons ) ? $seasons[0] :
 		</h2>
 
 	<?php endif; ?>
-	<?php get_template_part( 'template-parts/labels' ); ?>
+	<?php do_action( 'hyperpress_labels' ); ?>
 </header>
 <div class="entry-content">
 	<?php

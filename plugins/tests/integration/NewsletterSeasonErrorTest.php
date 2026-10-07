@@ -8,6 +8,8 @@ final class NewsletterSeasonErrorTest extends WP_UnitTestCase {
 
 	public function set_up(): void {
 		parent::set_up();
+		\HyperPress\Label\Registry::reset();
+		\HyperPress\Label\Renderer::register();
 		// Simulate the season taxonomy being unregistered (season plugin off).
 		add_filter(
 			'get_object_terms',
@@ -19,6 +21,12 @@ final class NewsletterSeasonErrorTest extends WP_UnitTestCase {
 		);
 	}
 
+	public function tear_down(): void {
+		remove_all_filters( 'hyperpress_labels_content' );
+		\HyperPress\Label\Registry::reset( true );
+		parent::tear_down();
+	}
+
 	private function go_to_newsletter(): int {
 		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter' ) );
 		$this->go_to( get_permalink( $post_id ) );
@@ -28,7 +36,7 @@ final class NewsletterSeasonErrorTest extends WP_UnitTestCase {
 
 	public function test_labels_omit_the_season_label_when_terms_are_a_wp_error(): void {
 		$this->go_to_newsletter();
-		$labels = apply_filters( 'hyperpress_labels_content', array() );
+		$labels = \HyperPress\Label\Renderer::labels();
 		$this->assertNotEmpty( $labels );
 		$this->assertNotContains( 'Posted During', array_column( $labels, 'title' ) );
 	}

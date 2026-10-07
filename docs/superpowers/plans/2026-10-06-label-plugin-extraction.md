@@ -166,10 +166,10 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 **Interfaces:**
 - Produces: `Labels::register(): void` adds filter `hyperpress_label_default_post_types` → `default_post_types( array $types, string $label_id ): array`, which appends `Plugin::POST_TYPE` when `$label_id` is one of `post.date`, `post.author`, `post.comments`, `season.posted_during`. The raw `labels_newsletter` filter and its body are deleted. Template line 34 becomes `<?php do_action( 'hyperpress_labels' ); ?>`.
 
-- [ ] **Step 1: Update `NewsletterLabelsTest`** to read `\HyperPress\Label\Renderer::labels()` instead of `apply_filters`, and add `test_newsletter_gets_date_author_season_comments_in_order` (titles `Posted At`, `Posted By`, `Posted During`, `''`) and `test_newsletter_has_no_category_label`. Run `--filter NewsletterLabelsTest`; expected FAIL before the implementation.
-- [ ] **Step 2: Implement** `Labels`, delete the old provider, switch the template.
-- [ ] **Step 3: Run** `--filter Newsletter`, then `composer lint`.
-- [ ] **Step 4: Commit** `refactor(newsletter): take labels from hyperpress-label`.
+- [x] **Step 1: Update `NewsletterLabelsTest`** to read `\HyperPress\Label\Renderer::labels()` instead of `apply_filters`, and add `test_newsletter_gets_date_author_season_comments_in_order` (titles `Posted At`, `Posted By`, `Posted During`, `''`) and `test_newsletter_has_no_category_label`. Run `--filter NewsletterLabelsTest`; expected FAIL before the implementation.
+- [x] **Step 2: Implement** `Labels`, delete the old provider, switch the template.
+- [x] **Step 3: Run** `--filter Newsletter`, then `composer lint`.
+- [x] **Step 4: Commit** `refactor(newsletter): take labels from hyperpress-label`.
 
 ### Task 9: Theme switch and removal (`theme/` repo)
 
