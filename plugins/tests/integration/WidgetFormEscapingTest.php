@@ -3,7 +3,7 @@ namespace HyperPress\Tests\Integration;
 
 use DOMDocument;
 use DOMXPath;
-use HyperPress\Socials\Widgets\DisplaySocialsWidget;
+use HyperPress\Social\Widgets\DisplaySocialWidget;
 use HyperPress\Sponsor\Widgets\DisplaySponsorsWidget;
 use WP_UnitTestCase;
 
@@ -14,7 +14,7 @@ final class WidgetFormEscapingTest extends WP_UnitTestCase {
 
 	public static function widgets(): array {
 		return array(
-			'socials' => array( DisplaySocialsWidget::class, array( 'title', 'layout' ) ),
+			'socials' => array( DisplaySocialWidget::class, array( 'title', 'layout' ) ),
 			'sponsor' => array( DisplaySponsorsWidget::class, array( 'title', 'maxCount', 'becomeASponsorPage' ) ),
 		);
 	}

@@ -1,16 +1,16 @@
 <?php
-namespace HyperPress\Socials\Widgets;
+namespace HyperPress\Social\Widgets;
 
 defined( 'ABSPATH' ) || exit;
 
-use HyperPress\Socials\Links;
+use HyperPress\Social\Links;
 use WP_Widget;
 
-class DisplaySocialsWidget extends WP_Widget {
+class DisplaySocialWidget extends WP_Widget {
 
 	public function __construct() {
 		parent::__construct(
-			'hyperpress_socials',
+			'hyperpress_social',
 			__( 'hyperPress Socials', 'hyperpress' ),
 			array( 'description' => __( 'Display the socials defined in the theme Customizer Socials section', 'hyperpress' ) )
 		);

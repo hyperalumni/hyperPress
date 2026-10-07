@@ -46,11 +46,11 @@
 **Interfaces:**
 - Produces: `HyperPress\Social\Plugin::boot()`, `HyperPress\Social\Links`, `HyperPress\Social\Widgets\DisplaySocialWidget`, widget base id `hyperpress_social`, theme mods `hyperpress_social_<field>`. Task 2 (theme) consumes these exact names.
 
-- [ ] **Step 1:** `git mv` the folder, main file and widget class file; run the full integration suite and confirm it fails because of the old names (RED evidence).
-- [ ] **Step 2:** Replace namespace, autoload prefix, class names, header name and the identifiers listed in Decisions inside the plugin; update `Convention.php` and the plugin tests. Add or extend a test that asserts the widget base id is `hyperpress_social`, that every theme-mod key the Customizer registers starts with `hyperpress_social_`, and that none of the old `hyperpress_socials` strings remain in the plugin source.
-- [ ] **Step 3:** Update `README.md` and `AGENTS.md` mentions; add a dated amendment note (not a rewrite) to the 2026-10-02 convention spec plugin tables.
-- [ ] **Step 4:** Run `composer test:integration`, `composer test:unit`, `composer lint` in `plugins/`; expected all pass, lint exit 0. The theme suite is expected to fail on the socials tests until Task 2; note the failures.
-- [ ] **Step 5:** Commit in `plugins/`: `refactor(social): rename hyperpress-socials to hyperpress-social`, with every renamed and modified path listed explicitly.
+- [x] **Step 1:** `git mv` the folder, main file and widget class file; run the full integration suite and confirm it fails because of the old names (RED evidence).
+- [x] **Step 2:** Replace namespace, autoload prefix, class names, header name and the identifiers listed in Decisions inside the plugin; update `Convention.php` and the plugin tests. Add or extend a test that asserts the widget base id is `hyperpress_social`, that every theme-mod key the Customizer registers starts with `hyperpress_social_`, and that none of the old `hyperpress_socials` strings remain in the plugin source.
+- [x] **Step 3:** Update `README.md` and `AGENTS.md` mentions; add a dated amendment note (not a rewrite) to the 2026-10-02 convention spec plugin tables.
+- [x] **Step 4:** Run `composer test:integration`, `composer test:unit`, `composer lint` in `plugins/`; expected all pass, lint exit 0. The theme suite is expected to fail on the socials tests until Task 2; note the failures.
+- [x] **Step 5:** Commit in `plugins/`: `refactor(social): rename hyperpress-socials to hyperpress-social`, with every renamed and modified path listed explicitly.
 
 ### Task 2: Point the theme at hyperpress-social (theme repo)
 

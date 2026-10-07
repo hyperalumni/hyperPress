@@ -1,5 +1,5 @@
 <?php
-namespace HyperPress\Socials;
+namespace HyperPress\Social;
 
 defined( 'ABSPATH' ) || exit;
 

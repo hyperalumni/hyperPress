@@ -1,9 +1,9 @@
 <?php
-namespace HyperPress\Socials;
+namespace HyperPress\Social;
 
 defined( 'ABSPATH' ) || exit;
 
-use HyperPress\Socials\Widgets\DisplaySocialsWidget;
+use HyperPress\Social\Widgets\DisplaySocialWidget;
 
 final class Widgets {
 
@@ -12,6 +12,6 @@ final class Widgets {
 	}
 
 	public static function load_widgets(): void {
-		register_widget( DisplaySocialsWidget::class );
+		register_widget( DisplaySocialWidget::class );
 	}
 }

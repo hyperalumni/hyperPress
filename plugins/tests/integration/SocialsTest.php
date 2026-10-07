@@ -29,9 +29,9 @@ final class SocialsTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		foreach ( self::URL_SETTINGS as $name ) {
-			remove_theme_mod( 'hyperpress_socials_' . $name );
+			remove_theme_mod( 'hyperpress_social_' . $name );
 		}
-		remove_theme_mod( 'hyperpress_socials_contact' );
+		remove_theme_mod( 'hyperpress_social_contact' );
 		parent::tear_down();
 	}
 
@@ -39,7 +39,7 @@ final class SocialsTest extends WP_UnitTestCase {
 		$manager = $this->customizer();
 
 		foreach ( self::URL_SETTINGS as $name ) {
-			$setting = $manager->get_setting( 'hyperpress_socials_' . $name );
+			$setting = $manager->get_setting( 'hyperpress_social_' . $name );
 			$this->assertNotNull( $setting, $name );
 			$this->assertSame( '', $setting->sanitize( 'javascript:alert(1)' ), $name );
 		}
@@ -51,7 +51,7 @@ final class SocialsTest extends WP_UnitTestCase {
 		foreach ( self::URL_SETTINGS as $name ) {
 			$this->assertSame(
 				'https://github.com/x',
-				$manager->get_setting( 'hyperpress_socials_' . $name )->sanitize( 'https://github.com/x' ),
+				$manager->get_setting( 'hyperpress_social_' . $name )->sanitize( 'https://github.com/x' ),
 				$name
 			);
 		}
@@ -59,12 +59,12 @@ final class SocialsTest extends WP_UnitTestCase {
 
 	private function render(): string {
 		ob_start();
-		the_widget( 'HyperPress\Socials\Widgets\DisplaySocialsWidget', array( 'title' => 'Follow' ) );
+		the_widget( 'HyperPress\Social\Widgets\DisplaySocialWidget', array( 'title' => 'Follow' ) );
 		return (string) ob_get_clean();
 	}
 
 	public function test_external_links_carry_rel_noopener_noreferrer(): void {
-		set_theme_mod( 'hyperpress_socials_github', 'https://github.com/x' );
+		set_theme_mod( 'hyperpress_social_github', 'https://github.com/x' );
 
 		$html = $this->render();
 
@@ -72,7 +72,7 @@ final class SocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_internal_links_open_in_self_without_rel(): void {
-		set_theme_mod( 'hyperpress_socials_github', get_site_url() . '/about/' );
+		set_theme_mod( 'hyperpress_social_github', get_site_url() . '/about/' );
 
 		$html = $this->render();
 
@@ -93,7 +93,7 @@ final class SocialsTest extends WP_UnitTestCase {
 
 	/** @dataProvider lookalikes */
 	public function test_lookalike_urls_are_treated_as_external( string $url ): void {
-		set_theme_mod( 'hyperpress_socials_github', $url );
+		set_theme_mod( 'hyperpress_social_github', $url );
 
 		$html = $this->render();
 
@@ -102,7 +102,7 @@ final class SocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_a_relative_url_is_internal(): void {
-		set_theme_mod( 'hyperpress_socials_github', '/about/' );
+		set_theme_mod( 'hyperpress_social_github', '/about/' );
 
 		$html = $this->render();
 
@@ -112,7 +112,7 @@ final class SocialsTest extends WP_UnitTestCase {
 
 	public function test_the_host_comparison_ignores_case(): void {
 		$site = get_site_url();
-		set_theme_mod( 'hyperpress_socials_github', strtoupper( $site ) . '/About/' );
+		set_theme_mod( 'hyperpress_social_github', strtoupper( $site ) . '/About/' );
 
 		$html = $this->render();
 
@@ -121,14 +121,14 @@ final class SocialsTest extends WP_UnitTestCase {
 
 	public function test_the_widget_renders_the_default_title_for_an_empty_instance(): void {
 		ob_start();
-		the_widget( 'HyperPress\Socials\Widgets\DisplaySocialsWidget', array() );
+		the_widget( 'HyperPress\Social\Widgets\DisplaySocialWidget', array() );
 		$html = (string) ob_get_clean();
 
 		$this->assertStringContainsString( 'Stalk Us', $html );
 	}
 
 	public function test_update_turns_an_array_title_into_an_empty_string(): void {
-		$widget = new \HyperPress\Socials\Widgets\DisplaySocialsWidget();
+		$widget = new \HyperPress\Social\Widgets\DisplaySocialWidget();
 
 		$this->assertSame( array( 'title' => '', 'layout' => 'grid' ), $widget->update( array( 'title' => array( 'x' ) ), array() ) );
 		$this->assertSame( array( 'title' => 'Hi', 'layout' => 'grid' ), $widget->update( array( 'title' => '<b>Hi</b>' ), array() ) );
@@ -148,11 +148,61 @@ final class SocialsTest extends WP_UnitTestCase {
 
 		$this->render();
 
-		$this->assertSame( array( array( 'title' => 'Follow' ), 'hyperpress_socials' ), $received );
+		$this->assertSame( array( array( 'title' => 'Follow' ), 'hyperpress_social' ), $received );
+	}
+
+	public function test_the_widget_base_id_is_hyperpress_social(): void {
+		$widget = new \HyperPress\Social\Widgets\DisplaySocialWidget();
+
+		$this->assertSame( 'hyperpress_social', $widget->id_base );
+		$this->assertArrayHasKey( 'HyperPress\\Social\\Widgets\\DisplaySocialWidget', $GLOBALS['wp_widget_factory']->widgets );
+	}
+
+	public function test_every_customizer_setting_in_the_social_section_uses_the_hyperpress_social_prefix(): void {
+		$manager = $this->customizer();
+
+		$this->assertNotNull( $manager->get_section( 'hyperpress_social' ) );
+		$this->assertNull( $manager->get_section( 'hyperpress_socials' ) );
+
+		$ids = array();
+		foreach ( $manager->controls() as $control ) {
+			if ( 'hyperpress_social' !== $control->section ) {
+				continue;
+			}
+			foreach ( $control->settings as $setting ) {
+				$ids[] = $setting->id;
+			}
+		}
+
+		$this->assertNotEmpty( $ids );
+		foreach ( $ids as $id ) {
+			$this->assertStringStartsWith( 'hyperpress_social_', $id );
+		}
+		foreach ( array_merge( self::URL_SETTINGS, array( 'contact' ) ) as $name ) {
+			$this->assertContains( 'hyperpress_social_' . $name, $ids, $name );
+		}
+	}
+
+	public function test_no_plugin_source_file_uses_the_old_plural_identifiers(): void {
+		$files = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( dirname( __DIR__, 2 ) . '/hyperpress-social', \FilesystemIterator::SKIP_DOTS ) );
+
+		$count = 0;
+		foreach ( $files as $file ) {
+			if ( 'php' !== $file->getExtension() ) {
+				continue;
+			}
+			++$count;
+			$source = (string) file_get_contents( $file->getPathname() );
+			$this->assertStringNotContainsString( 'hyperpress_socials', $source, $file->getFilename() );
+			$this->assertStringNotContainsString( 'hyperpress-socials', $source, $file->getFilename() );
+			$this->assertStringNotContainsString( 'HyperPress\\Socials', $source, $file->getFilename() );
+			$this->assertStringNotContainsString( 'DisplaySocialsWidget', $source, $file->getFilename() );
+		}
+		$this->assertGreaterThan( 0, $count );
 	}
 
 	public function test_the_contact_page_setting_is_an_absolute_integer(): void {
-		$setting = $this->customizer()->get_setting( 'hyperpress_socials_contact' );
+		$setting = $this->customizer()->get_setting( 'hyperpress_social_contact' );
 
 		$this->assertSame( 5, $setting->sanitize( '5abc' ) );
 		$this->assertSame( 3, $setting->sanitize( -3 ) );
@@ -160,20 +210,20 @@ final class SocialsTest extends WP_UnitTestCase {
 
 	public function test_the_contact_link_shows_for_a_published_page(): void {
 		$page_id = self::factory()->post->create( array( 'post_type' => 'page', 'post_status' => 'publish' ) );
-		set_theme_mod( 'hyperpress_socials_contact', $page_id );
+		set_theme_mod( 'hyperpress_social_contact', $page_id );
 
 		$this->assertStringContainsString( 'title="Contact Us"', $this->render() );
 	}
 
 	public function test_the_contact_link_is_omitted_when_the_page_does_not_exist(): void {
-		set_theme_mod( 'hyperpress_socials_contact', 999999 );
+		set_theme_mod( 'hyperpress_social_contact', 999999 );
 
 		$this->assertStringNotContainsString( 'Contact Us', $this->render() );
 	}
 
 	public function test_the_contact_link_is_omitted_for_an_unpublished_page(): void {
 		$page_id = self::factory()->post->create( array( 'post_type' => 'page', 'post_status' => 'draft' ) );
-		set_theme_mod( 'hyperpress_socials_contact', $page_id );
+		set_theme_mod( 'hyperpress_social_contact', $page_id );
 
 		$this->assertStringNotContainsString( 'Contact Us', $this->render() );
 	}

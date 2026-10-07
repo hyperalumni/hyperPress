@@ -47,7 +47,7 @@ Fixes, all verified against the current files:
 | label, student | Descriptions describe behavior that does not exist. Mark as placeholders. (Amended 2026-10-06: label now has behavior.) |
 | competition | Meta box queries the `robot` CPT (`lib/metaboxes/information.php:32`). Add `hyperpress-robot`. |
 | award, robot | Register no meta boxes. Drop `meta-box-aio`. |
-| socials | Customizer plus widget only. Drop `meta-box-aio`. |
+| socials | Customizer plus widget only. Drop `meta-box-aio`. (Amended 2026-10-07: plugin renamed `hyperpress-social`; see `2026-10-07-singular-plugin-names.md`.) |
 | label, student | No behavior. `Requires Plugins` is empty until behavior lands. (Amended 2026-10-06: label now has behavior; its `Requires Plugins` stays empty by design, see `2026-10-06-label-plugin-extraction-design.md`.) |
 | season, program | Both register Meta Box panels (`rwmb_meta_boxes`). Keep `meta-box-aio`. |
 
@@ -62,7 +62,7 @@ Resulting `Requires Plugins`:
 | robot | hyperpress-utils, hyperpress-season |
 | sponsor | hyperpress-utils, hyperpress-season, meta-box-aio |
 | season, program | hyperpress-utils, meta-box-aio |
-| socials, label, student | none |
+| socials, label, student | none (Amended 2026-10-07: `socials` is now `social`.) |
 | media (added later) | safe-svg (SVG uploads and their sanitizing come from Safe SVG) |
 | utils | none |
 
@@ -125,8 +125,8 @@ control IDs change to match their setting ID exactly:
 | `season_banner_subtitle`, `season_post_types` | `hyperpress_season_banner_subtitle`, `hyperpress_season_post_types` |
 | `program_post_types` | `hyperpress_program_post_types` |
 | `countdown_{days,hours,minutes,seconds}_color` | `hyperpress_countdown_{...}_color` |
-| `socials_{firstinspires,thebluealliance,facebook,instagram,youtube,twitter,github,snapchat,tiktok,discord,contact,add_calendar}` | `hyperpress_socials_{...}` |
-| section `socials` | `hyperpress_socials` |
+| `socials_{firstinspires,thebluealliance,facebook,instagram,youtube,twitter,github,snapchat,tiktok,discord,contact,add_calendar}` | `hyperpress_socials_{...}` (Amended 2026-10-07: now `hyperpress_social_{...}`) |
+| section `socials` | `hyperpress_socials` (Amended 2026-10-07: now `hyperpress_social`) |
 
 Script and style handle `timecircles` becomes `hyperpress-countdown-timecircles`.
 

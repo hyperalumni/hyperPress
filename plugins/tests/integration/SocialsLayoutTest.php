@@ -1,7 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration;
 
-use HyperPress\Socials\Widgets\DisplaySocialsWidget;
+use HyperPress\Social\Widgets\DisplaySocialWidget;
 use WP_UnitTestCase;
 
 final class SocialsLayoutTest extends WP_UnitTestCase {
@@ -22,22 +22,22 @@ final class SocialsLayoutTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		foreach ( array( 'github', 'facebook', 'instagram' ) as $key ) {
-			remove_theme_mod( 'hyperpress_socials_' . $key );
+			remove_theme_mod( 'hyperpress_social_' . $key );
 		}
 		parent::tear_down();
 	}
 
 	private function set_three_links(): void {
-		set_theme_mod( 'hyperpress_socials_github', 'https://github.com/x' );
-		set_theme_mod( 'hyperpress_socials_facebook', 'https://facebook.com/x' );
-		set_theme_mod( 'hyperpress_socials_instagram', '/about/' );
+		set_theme_mod( 'hyperpress_social_github', 'https://github.com/x' );
+		set_theme_mod( 'hyperpress_social_facebook', 'https://facebook.com/x' );
+		set_theme_mod( 'hyperpress_social_instagram', '/about/' );
 	}
 
 	/** @param array<string, mixed> $instance */
 	private function render( array $instance, string $before_title = '', string $after_title = '' ): string {
 		ob_start();
 		the_widget(
-			DisplaySocialsWidget::class,
+			DisplaySocialWidget::class,
 			$instance,
 			array(
 				'before_widget' => '',
@@ -98,7 +98,7 @@ final class SocialsLayoutTest extends WP_UnitTestCase {
 	}
 
 	public function test_the_inline_layout_prints_no_title_when_the_title_is_empty(): void {
-		$html = $this->render( DisplaySocialsWidget::default_instance(), '<h2>', '</h2>' );
+		$html = $this->render( DisplaySocialWidget::default_instance(), '<h2>', '</h2>' );
 
 		$this->assertSame( '<ul class="menu simple"></ul>', $html );
 	}
@@ -112,7 +112,7 @@ final class SocialsLayoutTest extends WP_UnitTestCase {
 	public function test_the_widget_wrappers_surround_the_inline_list(): void {
 		ob_start();
 		the_widget(
-			DisplaySocialsWidget::class,
+			DisplaySocialWidget::class,
 			array( 'title' => '', 'layout' => 'inline' ),
 			array(
 				'before_widget' => '<aside>',
@@ -144,7 +144,7 @@ final class SocialsLayoutTest extends WP_UnitTestCase {
 	 * @param array<string, mixed> $submitted
 	 */
 	public function test_update_stores_inline_only_for_the_exact_value( array $submitted, string $expected ): void {
-		$widget = new DisplaySocialsWidget();
+		$widget = new DisplaySocialWidget();
 
 		$this->assertSame(
 			array( 'title' => 'Hi', 'layout' => $expected ),
@@ -153,7 +153,7 @@ final class SocialsLayoutTest extends WP_UnitTestCase {
 	}
 
 	private function form( array $instance ): string {
-		$widget = new DisplaySocialsWidget();
+		$widget = new DisplaySocialWidget();
 		$widget->_set( 1 );
 
 		ob_start();
@@ -165,7 +165,7 @@ final class SocialsLayoutTest extends WP_UnitTestCase {
 		$html = $this->form( array( 'title' => 'x', 'layout' => 'grid' ) );
 
 		$this->assertStringContainsString( '<select', $html );
-		$this->assertStringContainsString( 'name="widget-hyperpress_socials[1][layout]"', $html );
+		$this->assertStringContainsString( 'name="widget-hyperpress_social[1][layout]"', $html );
 		$this->assertMatchesRegularExpression( '#<option value="grid"[^>]*>Grid \(large icons\)</option>#', $html );
 		$this->assertMatchesRegularExpression( '#<option value="inline"[^>]*>Inline list \(small icons\)</option>#', $html );
 	}
@@ -198,6 +198,6 @@ final class SocialsLayoutTest extends WP_UnitTestCase {
 	}
 
 	public function test_default_instance_is_an_untitled_inline_widget(): void {
-		$this->assertSame( array( 'title' => '', 'layout' => 'inline' ), DisplaySocialsWidget::default_instance() );
+		$this->assertSame( array( 'title' => '', 'layout' => 'inline' ), DisplaySocialWidget::default_instance() );
 	}
 }

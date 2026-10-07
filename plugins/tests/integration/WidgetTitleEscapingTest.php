@@ -1,7 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration;
 
-use HyperPress\Socials\Widgets\DisplaySocialsWidget;
+use HyperPress\Social\Widgets\DisplaySocialWidget;
 use HyperPress\Sponsor\Widgets\DisplaySponsorsWidget;
 use WP_UnitTestCase;
 
@@ -9,7 +9,7 @@ final class WidgetTitleEscapingTest extends WP_UnitTestCase {
 
 	public static function widgets(): array {
 		return array(
-			'socials' => array( DisplaySocialsWidget::class ),
+			'socials' => array( DisplaySocialWidget::class ),
 			'sponsor' => array( DisplaySponsorsWidget::class ),
 		);
 	}

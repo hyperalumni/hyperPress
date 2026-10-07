@@ -1,9 +1,9 @@
 <?php
 /**
- * The hyperPress Socials plugin.
+ * The hyperPress Social plugin.
  *
  * @wordpress-plugin
- * Plugin Name:         hyperPress Socials
+ * Plugin Name:         hyperPress Social
  * Plugin URI:          https://hyperalumni.org
  * Description:         Customize options and widget for Socials for hyperPress
  * Version:             2026.0.0
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
 
 spl_autoload_register(
 	static function ( string $class_name ): void {
-		$prefix = 'HyperPress\\Socials\\';
+		$prefix = 'HyperPress\\Social\\';
 		if ( 0 !== strpos( $class_name, $prefix ) ) {
 			return;
 		}
@@ -35,4 +35,4 @@ spl_autoload_register(
 );
 
 // Boot after every plugin file is loaded.
-add_action( 'plugins_loaded', array( \HyperPress\Socials\Plugin::class, 'boot' ) );
+add_action( 'plugins_loaded', array( \HyperPress\Social\Plugin::class, 'boot' ) );

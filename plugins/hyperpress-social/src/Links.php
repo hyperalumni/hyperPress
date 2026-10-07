@@ -1,5 +1,5 @@
 <?php
-namespace HyperPress\Socials;
+namespace HyperPress\Social;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -11,7 +11,7 @@ final class Links {
 	/**
 	 * Every social with a non-empty URL, in display order.
 	 *
-	 * Each item is `key` (the suffix after `hyperpress_socials_`), `icon` (Font Awesome classes), `title`, `url`,
+	 * Each item is `key` (the suffix after `hyperpress_social_`), `icon` (Font Awesome classes), `title`, `url`,
 	 * `target` (`_self` for links to this site, else `_blank`) and `rel` (`noopener noreferrer` for `_blank`, else '').
 	 *
 	 * @return array<int, array{key: string, icon: string, title: string, url: string, target: string, rel: string}>
@@ -83,7 +83,7 @@ final class Links {
 		$links = array();
 
 		foreach ( $socials as $social ) {
-			$url = 'contact' === $social['key'] ? self::contact_url() : get_theme_mod( 'hyperpress_socials_' . $social['key'] );
+			$url = 'contact' === $social['key'] ? self::contact_url() : get_theme_mod( 'hyperpress_social_' . $social['key'] );
 
 			if ( empty( $url ) ) {
 				continue;
@@ -109,7 +109,7 @@ final class Links {
 	 * Permalink of the Customizer contact page, or an empty string when none is set or it is not published.
 	 */
 	private static function contact_url(): string {
-		$page_id = absint( get_theme_mod( 'hyperpress_socials_contact' ) );
+		$page_id = absint( get_theme_mod( 'hyperpress_social_contact' ) );
 
 		if ( 0 === $page_id || 'publish' !== get_post_status( $page_id ) ) {
 			return '';
