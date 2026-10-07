@@ -18,5 +18,6 @@ final class Plugin {
 	 * Boot the plugin on `plugins_loaded`.
 	 */
 	public static function boot(): void {
+		Renderer::register();
 	}
 }
