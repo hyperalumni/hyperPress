@@ -48,7 +48,7 @@ Fixes, all verified against the current files:
 | competition | Meta box queries the `robot` CPT (`lib/metaboxes/information.php:32`). Add `hyperpress-robot`. |
 | award, robot | Register no meta boxes. Drop `meta-box-aio`. |
 | socials | Customizer plus widget only. Drop `meta-box-aio`. |
-| label, student | No behavior. `Requires Plugins` is empty until behavior lands. |
+| label, student | No behavior. `Requires Plugins` is empty until behavior lands. (Amended 2026-10-06: label now has behavior; its `Requires Plugins` stays empty by design, see `2026-10-06-label-plugin-extraction-design.md`.) |
 | season, program | Both register Meta Box panels (`rwmb_meta_boxes`). Keep `meta-box-aio`. |
 
 Resulting `Requires Plugins`:

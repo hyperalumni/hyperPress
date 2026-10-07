@@ -4,7 +4,7 @@
 
 > **STATUS: ✅ COMPLETED** (2026-10-06). Tasks 1–10 implemented and reviewed; commit range 97415ee..10bddf2 (plugins, plus the final docs commit that contains this banner) and 0e35b7d..0452672 (theme). Pending: manual stack check (Task 10 step 3).
 
-**Goal:** Move the theme's label renderer and post labels into `hyperpress-label`, let `hyperpress-season`, `-newsletter` and `-sponsor` register their own labels, and add per-post-type Customizer settings that choose which labels show (or turn labels off).
+**Goal:** Move the theme's label renderer and post labels into `hyperpress-label`, let `hyperpress-season` and `-sponsor` register their own labels (and `-newsletter` opt its post type in), and add per-post-type Customizer settings that choose which labels show (or turn labels off).
 
 **Architecture:** `hyperpress-label` owns a `Registry` of label definitions (filled lazily through the `hyperpress_label_register` action), a `Resolver` that reads two `theme_mod`s per post type, a `Renderer` on the `hyperpress_labels` action, and a `Customizer` section. Templates call `do_action( 'hyperpress_labels' )`. `hyperpress_labels_content` stays as the final filter.
 
@@ -35,7 +35,7 @@
 
 ## Preflight
 
-- [ ] **Step 1: Commit the spec and this plan on their own**
+- [x] **Step 1: Commit the spec and this plan on their own**
 
 From `plugins/`: `git add docs/superpowers/specs/2026-10-06-label-plugin-extraction-design.md docs/superpowers/plans/2026-10-06-label-plugin-extraction.md` then `git commit -m "docs(plans): label plugin extraction" -- docs/superpowers/specs/2026-10-06-label-plugin-extraction-design.md docs/superpowers/plans/2026-10-06-label-plugin-extraction.md`.
 

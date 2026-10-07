@@ -28,7 +28,7 @@ Nothing here is live, so the old theme entry points are removed rather than shim
 | Settings UI | A "Labels" section in the Customizer, with `theme_mod` settings, like the other plugins. No separate admin page. |
 | Defaults | Each label declares the post types it applies to. With no saved settings the output matches today. |
 | Rendering hand-off | Templates call `do_action( 'hyperpress_labels' )`. No-op when the plugin is inactive. |
-| Who registers labels | The plugin that owns the data: `hyperpress-label` (post labels), `-season`, `-newsletter`, `-sponsor`. Season is not a hard dependency of `hyperpress-label`. |
+| Who registers labels | The plugin that owns the data: `hyperpress-label` (post labels), `-season`, `-sponsor`; `-newsletter` registers none and only opts `hyper_newsletter` into the shared labels. Season is not a hard dependency of `hyperpress-label`. |
 | Stable hook | `hyperpress_labels_content` stays as the final filter on the resolved list. |
 | Markup | Unchanged (`.entry-meta > .grid-x > .cell.shrink.label`). The styling stays in the theme. |
 
