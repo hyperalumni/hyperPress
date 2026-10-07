@@ -51,9 +51,20 @@ final class PluginIdentifiersTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'hyperpress_shortcodes_', $source );
 	}
 
-	public function test_the_now_hook_still_drives_time_restrict(): void {
-		add_filter( 'hyperpress_shortcode_now', static fn() => strtotime( '2050-06-01 12:00:00' ) );
-		$this->assertSame( 'SHOWN', do_shortcode( '[time-restrict on="2000-01-01" off="2100-01-01"]SHOWN[/time-restrict]' ) );
+	public function tear_down(): void {
 		remove_all_filters( 'hyperpress_shortcode_now' );
+		parent::tear_down();
+	}
+
+	public function test_a_frozen_now_outside_the_window_hides_the_content(): void {
+		// The real current date is inside this window, so only the filter can make the block hide.
+		add_filter( 'hyperpress_shortcode_now', static fn() => strtotime( '2150-01-01 12:00:00' ) );
+		$this->assertSame( 'HIDDEN', do_shortcode( '[time-restrict on="2000-01-01" off="2100-01-01" else="HIDDEN"]SHOWN[/time-restrict]' ) );
+	}
+
+	public function test_a_frozen_now_inside_a_past_window_shows_the_content(): void {
+		// The real current date is outside this window, so only the filter can make the block show.
+		add_filter( 'hyperpress_shortcode_now', static fn() => strtotime( '2000-06-01 12:00:00' ) );
+		$this->assertSame( 'SHOWN', do_shortcode( '[time-restrict on="2000-01-01" off="2001-01-01" else="HIDDEN"]SHOWN[/time-restrict]' ) );
 	}
 }
