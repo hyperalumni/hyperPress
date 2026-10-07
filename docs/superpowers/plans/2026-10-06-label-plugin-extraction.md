@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-> **STATUS: ✅ COMPLETED** (2026-10-06). Tasks 1–10 implemented and reviewed; commit range 97415ee..da7af77 (plugins) and 0e35b7d..0452672 (theme); the final whole-branch review fixes landed in da7af77. Verified at da7af77: plugins integration 493 tests OK (4 skipped), unit 126 OK, lint exit 0. Pending: manual stack check (Task 10 step 3).
+> **STATUS: ✅ COMPLETED** (2026-10-06). Tasks 1–10 implemented and reviewed; commit range 97415ee..da7af77 (plugins) and 0e35b7d..0452672 (theme); the final whole-branch review fixes landed in da7af77. Verified at da7af77: plugins integration 493 tests OK (4 skipped), unit 126 OK, lint exit 0. Manual stack check (Task 10 step 3) done 2026-10-07; later additions (program, district and week labels, taxonomy-derived defaults) are in the Outcome notes.
 
 **Goal:** Move the theme's label renderer and post labels into `hyperpress-label`, let `hyperpress-season` and `-sponsor` register their own labels (and `-newsletter` opt its post type in), and add per-post-type Customizer settings that choose which labels show (or turn labels off).
 
@@ -192,7 +192,7 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 
 - [x] **Step 1:** Make the doc edits; add an "Outcome / execution notes" line to this plan.
 - [x] **Step 2:** `docker compose --profile local config` in `hyperalumni/` succeeds.
-- [ ] **Step 3:** Manual check in a running stack (`hyperalumni`): a single post shows date, author, category and comments labels (season appears only with `hyperpress-season` mounted and a season assigned); in Customizer > Labels, unchecking "Show labels on Posts" removes them in the preview; reselecting a subset shows only that subset.
+- [x] **Step 3:** Manual check in a running stack (`hyperalumni`): a single post shows date, author, category and comments labels (season appears only with `hyperpress-season` mounted and a season assigned); in Customizer > Labels, unchecking "Show labels on Posts" removes them in the preview; reselecting a subset shows only that subset.
 - [x] **Step 4: Commit** in each repo: `docs: label plugin extraction notes` (theme) and `docs: mark hyperpress-label as implemented` (plugins), with this plan's checkboxes ticked and a `> **STATUS: ✅ COMPLETED**` banner added.
 
 ## Outcome / execution notes
@@ -200,7 +200,7 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 - Deliberate behavior change: with `hyperpress-label` inactive the theme shows no labels at all (templates only call `do_action( 'hyperpress_labels' )`; the theme no longer renders or fires `hyperpress_labels_content`).
 - `hyperalumni/compose.main.yaml` (untracked) now mounts `hyperpress-label`; `hyperonline` already did. `docker compose --profile local config` parses. The stack was not started.
 - Docs updated: `theme/AGENTS.md`, `theme/README.md`, the theme cleanup spec (amendment notes), `plugins/AGENTS.md`, `plugins/README.md`, and the plugins convention spec (amendment notes).
-- Task 10 step 3 (manual check in a running stack) is not done and stays unticked.
+- Task 10 step 3 (manual check) done 2026-10-07: the post label bar (date, author, category, comments) was fetched read-only from the running `hyperonline` site with no warnings; the Customizer behaviour (unchecking "Show labels on Posts" removes the labels; unselecting one label leaves only the rest) was confirmed by hand. The program, district and week labels have not been seen on a live page (the dev site has no competition, program or week content); they are covered by the integration tests.
 
 - Final whole-branch review (da7af77): `Renderer::labels()` now normalizes entries added through the `hyperpress_labels_content` filter; `Registry::all()` called before `init` is flagged with `_doing_it_wrong` and does not lock in an incomplete list (spec section 1 updated to match); a few small tests were added and vacuous assertions removed.
 
