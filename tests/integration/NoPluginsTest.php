@@ -52,8 +52,8 @@ final class NoPluginsTest extends WP_UnitTestCase {
 	}
 
 	public function test_the_footer_renders_without_social_icons(): void {
-		$this->assertFalse( class_exists( '\HyperPress\Socials\Links' ) );
-		set_theme_mod( 'hyperpress_socials_github', 'https://github.com/hyper' );
+		$this->assertFalse( class_exists( '\HyperPress\Social\Links' ) );
+		set_theme_mod( 'hyperpress_social_github', 'https://github.com/hyper' );
 
 		$this->go_to( home_url( '/' ) );
 		ob_start();

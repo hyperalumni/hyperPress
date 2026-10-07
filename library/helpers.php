@@ -54,17 +54,17 @@ function hyperpress_nextgen_ratio( $width, $height ): float {
 
 /**
  * Prints the default content of the "Footer socials" widget area: the Customizer socials as an inline list, or nothing
- * when hyperpress-socials is not active.
+ * when hyperpress-social is not active.
  */
 function hyperpress_default_footer_socials(): void {
-	if ( ! class_exists( '\HyperPress\Socials\Widgets\DisplaySocialsWidget' ) ) {
+	if ( ! class_exists( '\HyperPress\Social\Widgets\DisplaySocialWidget' ) ) {
 		return;
 	}
 
 	the_widget(
 		// Widget factory keys have no leading backslash (register_widget( Class::class )).
-		'HyperPress\Socials\Widgets\DisplaySocialsWidget',
-		\HyperPress\Socials\Widgets\DisplaySocialsWidget::default_instance(),
+		'HyperPress\Social\Widgets\DisplaySocialWidget',
+		\HyperPress\Social\Widgets\DisplaySocialWidget::default_instance(),
 		array(
 			'before_widget' => '',
 			'after_widget'  => '',
