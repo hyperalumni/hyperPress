@@ -37,9 +37,6 @@ require_once get_template_directory() . '/library/breadcrumbs.php';
 /** Add Banner */
 require_once get_template_directory() . '/library/banner.php';
 
-/** Add Labels */
-require_once get_template_directory() . '/library/labels.php';
-
 /** Add menu walkers for top-bar and off-canvas */
 require_once get_template_directory() . '/library/class-hyperpress-top-bar-walker.php';
 require_once get_template_directory() . '/library/class-hyperpress-mobile-walker.php';

@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 		the_title( '<h2 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
 		}
 	?>
-	<?php get_template_part( 'template-parts/labels' ); ?>
+	<?php do_action( 'hyperpress_labels' ); ?>
 	</header>
 	<div class="entry-content">
 		<?php if ( has_post_thumbnail() ) : ?>

@@ -29,7 +29,6 @@ final class PluginHooksContractTest extends TestCase {
 			'banner'           => array( 'hyperpress_banner_content' ),
 			'breadcrumbs'      => array( 'hyperpress_breadcrumbs_content' ),
 			'content template' => array( 'content_template' ),
-			'labels'           => array( 'hyperpress_labels_content' ),
 		);
 	}
 }

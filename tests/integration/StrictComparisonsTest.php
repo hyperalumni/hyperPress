@@ -181,28 +181,6 @@ final class StrictComparisonsTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'fp-gallery-lightbox', $page );
 	}
 
-	/* ---- Comment count label ------------------------------------------------------------------------------ */
-
-	public static function comment_counts(): array {
-		return array(
-			'none'  => array( 0, '0 comments' ),
-			'one'   => array( 1, '1 comment' ),
-			'two'   => array( 2, '2 comments' ),
-		);
-	}
-
-	/** @dataProvider comment_counts */
-	public function test_comment_count_label( int $count, string $expected ): void {
-		$post_id = self::factory()->post->create();
-		self::factory()->comment->create_many( $count, array( 'comment_post_ID' => $post_id, 'comment_approved' => 1 ) );
-		$this->go_to( get_permalink( $post_id ) );
-
-		$labels = apply_filters( 'hyperpress_labels_content', array() );
-		$found  = array_column( $labels, 'label' );
-
-		$this->assertContains( $expected, $found );
-	}
-
 	/* ---- Admin screen ------------------------------------------------------------------------------------- */
 
 	public function test_admin_scripts_tolerate_a_missing_screen(): void {
