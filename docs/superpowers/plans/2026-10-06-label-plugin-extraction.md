@@ -210,9 +210,11 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 
 - 2026-10-07: season label defaults now follow the taxonomy's attached post types via Utils\TaxonomyPostTypes. Consequence: the taxonomy attaches only via the `hyperpress_season_post_types` theme mod (default `array()`), so until it is saved the label defaults to no post types, though the Customizer control shows `post`.
 
+- Added 2026-10-07: `hyperpress-program` (`program.programs`, 35, one label per term) and `hyperpress-competition` (`district.district`, 36, single unlinked label) register labels whose defaults come from `TaxonomyPostTypes::for_taxonomy()`; see spec section 5.
+
+- Added 2026-10-07: `hyperpress-competition` also registers `week.week` (37, single unlinked `alert` label from the first `hyper_week` term, taxonomy-derived default); see spec section 5.
+
 ### Deferred (minor)
 
 - Saved selections are explicit lists, and post types registered after `customize_register` get no Customizer controls (they render with default labels).
 - `Renderer::render()` returns early when there are no labels, so a theme override template is never called with an empty list.
-
-- Added 2026-10-07: `hyperpress-program` (`program.programs`, 35, one label per term) and `hyperpress-competition` (`district.district`, 36, single unlinked label) register labels whose defaults come from `TaxonomyPostTypes::for_taxonomy()`; see spec section 5.
