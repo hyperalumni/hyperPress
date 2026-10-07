@@ -26,7 +26,7 @@ final class Labels {
 				'group'              => 'Season',
 				'title'              => 'Posted During',
 				'callback'           => array( self::class, 'season_label' ),
-				'default_post_types' => array( 'post' ),
+				'default_post_types' => \HyperPress\Utils\TaxonomyPostTypes::for_taxonomy( Plugin::TAXONOMY ),
 				'priority'           => 30,
 			)
 		);

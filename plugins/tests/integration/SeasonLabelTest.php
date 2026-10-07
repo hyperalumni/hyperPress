@@ -20,12 +20,15 @@ final class SeasonLabelTest extends WP_UnitTestCase {
 
 	public function set_up(): void {
 		parent::set_up();
+		register_taxonomy_for_object_type( 'hyper_season', 'post' );
 		Registry::reset();
 		Renderer::register();
 	}
 
 	public function tear_down(): void {
 		remove_theme_mod( Resolver::enabled_key( 'post' ) );
+		unregister_taxonomy_for_object_type( 'hyper_season', 'post' );
+		unregister_taxonomy_for_object_type( 'hyper_season', 'page' );
 		remove_all_filters( 'hyperpress_labels_content' );
 		remove_all_filters( 'term_link' );
 		Registry::reset( true );
@@ -79,6 +82,24 @@ final class SeasonLabelTest extends WP_UnitTestCase {
 		$this->assertSame( 'Posted During', $definition['title'] );
 		$this->assertSame( 30, $definition['priority'] );
 		$this->assertSame( array( 'post' ), $definition['default_post_types'] );
+	}
+
+	public function test_defaults_follow_the_taxonomys_attached_post_types(): void {
+		register_taxonomy_for_object_type( 'hyper_season', 'page' );
+		Registry::reset();
+
+		$definition = Registry::instance()->all()['season.posted_during'];
+
+		$this->assertEqualsCanonicalizing( array( 'post', 'page' ), $definition['default_post_types'] );
+		$this->assertTrue( Resolver::default_enabled( 'page' ) );
+		$this->assertContains( 'season.posted_during', Resolver::default_labels( 'page' ) );
+	}
+
+	public function test_unattached_post_types_do_not_get_the_label(): void {
+		Registry::reset();
+
+		$this->assertFalse( Resolver::default_enabled( 'page' ) );
+		$this->assertNotContains( 'season.posted_during', Resolver::default_labels( 'page' ) );
 	}
 
 	public function test_season_label_links_to_the_term(): void {

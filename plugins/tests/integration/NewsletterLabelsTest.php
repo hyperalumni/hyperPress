@@ -94,4 +94,14 @@ final class NewsletterLabelsTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'hyper_newsletter' ), \HyperPress\Newsletter\Labels::default_post_types( 'bad', 'post.date' ) );
 		$this->assertSame( array( 'x' ), \HyperPress\Newsletter\Labels::default_post_types( array( 'x' ), 'sponsor.tier' ) );
 	}
+
+	public function test_season_label_has_no_duplicate_when_taxonomy_is_attached_to_newsletters(): void {
+		register_taxonomy_for_object_type( 'hyper_season', 'hyper_newsletter' );
+		Registry::reset();
+
+		$types = Registry::instance()->default_post_types( 'season.posted_during' );
+
+		unregister_taxonomy_for_object_type( 'hyper_season', 'hyper_newsletter' );
+		$this->assertSame( 1, count( array_keys( $types, 'hyper_newsletter', true ) ) );
+	}
 }

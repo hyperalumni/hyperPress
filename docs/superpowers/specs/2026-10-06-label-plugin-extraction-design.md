@@ -79,7 +79,7 @@ Per post type `T`, two `theme_mod`s exist (section 4): `hyperpress_label_{T}_ena
 
 ## 5. Labels registered by other plugins
 
-- `hyperpress-season` (new `src/Labels.php`, registered from `Plugin::boot`, hooks `hyperpress_label_register`): `season.posted_during` ("Posted During"), group "Season", priority 30, default `[ 'post' ]`. Uses `SortedSeasons::get()` and `get_term_link()`. The theme version used `get_category_link()`, which builds a category URL for a `hyper_season` term; this is corrected by the move.
+- `hyperpress-season` (new `src/Labels.php`, registered from `Plugin::boot`, hooks `hyperpress_label_register`): `season.posted_during` ("Posted During"), group "Season", priority 30, defaults to the post types `hyper_season` is attached to (read from the taxonomy at registration time). Amended 2026-10-07: was the fixed `[ 'post' ]`. Uses `SortedSeasons::get()` and `get_term_link()`. The theme version used `get_category_link()`, which builds a category URL for a `hyper_season` term; this is corrected by the move.
 - `hyperpress-newsletter`: `Labels.php` becomes a `hyperpress_label_default_post_types` filter that adds `hyper_newsletter` to `post.date`, `post.author`, `post.comments` and `season.posted_during`. Its own copies of those labels are deleted. Output for newsletters is unchanged (same four labels, same order). Newsletter has no category label today, so `post.category` is not extended.
 - `hyperpress-sponsor`: registers `sponsor.last_sponsored` (10), `sponsor.tier` (20), `sponsor.season_count` (30), group "Sponsor", default `[ 'hyper_sponsor' ]`. Callbacks are a port of the current `Labels.php`.
 
