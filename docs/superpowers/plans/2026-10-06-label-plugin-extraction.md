@@ -136,11 +136,11 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 - Consumes: `HyperPress\Label\Registry::add` (received through the action argument; no class_exists guard needed because the callback only runs when the label plugin fires it), `SortedSeasons::get()`.
 - Produces: `HyperPress\Season\Labels::register(): void`, `register_labels( \HyperPress\Label\Registry $registry ): void` adding `season.posted_during` (group "Season", title "Posted During", priority 30, defaults `['post']`), and `season_label(): array` returning zero or one label: name of the newest season, title `Posted During`, classes `warning`, url `get_term_link()` or `''` on `WP_Error`, `rel ''`.
 
-- [ ] **Step 1: Write failing tests**: `test_season_label_links_to_the_term` (ported from `NewsletterLabelsTest::test_season_label_url_is_the_term_link`, on a `post`, read through `Renderer::labels()`); `test_no_seasons_means_no_label`; `test_newest_season_wins` (`2025` and `2026` → `2026`); `test_a_term_link_error_gives_an_empty_url` (filter `term_link` to return a `WP_Error`).
-- [ ] **Step 2: Run** `--filter SeasonLabelTest`; expected FAIL.
-- [ ] **Step 3: Implement** `Labels` and the boot call.
-- [ ] **Step 4: Run** the filter and `--filter Season`, then `composer lint`.
-- [ ] **Step 5: Commit** `feat(season): register the Posted During label`.
+- [x] **Step 1: Write failing tests**: `test_season_label_links_to_the_term` (ported from `NewsletterLabelsTest::test_season_label_url_is_the_term_link`, on a `post`, read through `Renderer::labels()`); `test_no_seasons_means_no_label`; `test_newest_season_wins` (`2025` and `2026` → `2026`); `test_a_term_link_error_gives_an_empty_url` (filter `term_link` to return a `WP_Error`).
+- [x] **Step 2: Run** `--filter SeasonLabelTest`; expected FAIL.
+- [x] **Step 3: Implement** `Labels` and the boot call.
+- [x] **Step 4: Run** the filter and `--filter Season`, then `composer lint`.
+- [x] **Step 5: Commit** `feat(season): register the Posted During label`.
 
 ### Task 7: Sponsor labels (`hyperpress-sponsor`)
 

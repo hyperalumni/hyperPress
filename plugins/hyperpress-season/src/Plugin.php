@@ -18,6 +18,7 @@ final class Plugin {
 		MetaBoxes::register();
 		Rewrite::register();
 		SeasonCount::register();
+		Labels::register();
 	}
 
 	public static function register(): void {
