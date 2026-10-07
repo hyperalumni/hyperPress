@@ -28,20 +28,20 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 		parent::tear_down();
 	}
 
-	/** @return array<string, array{0: string, 1: string, 2: string, 3: string}> key => key, icon, svg, title */
+	/** @return array<string, array{0: string, 1: string, 2: string, 3: string, 4: string}> key => key, icon, svg, title, svg_width */
 	public static function catalog(): array {
 		return array(
-			'firstinspires'   => array( 'firstinspires', '', 'firstinspires', 'FIRST Inspires' ),
-			'thebluealliance' => array( 'thebluealliance', '', 'thebluealliance', 'The Blue Alliance' ),
-			'github'          => array( 'github', 'fa-brands fa-github', '', 'GitHub' ),
-			'facebook'        => array( 'facebook', 'fa-brands fa-facebook-f', '', 'Facebook' ),
-			'instagram'       => array( 'instagram', 'fa-brands fa-instagram', '', 'Instagram' ),
-			'twitter'         => array( 'twitter', 'fa-brands fa-twitter', '', 'Twitter' ),
-			'youtube'         => array( 'youtube', 'fa-brands fa-youtube', '', 'YouTube' ),
-			'snapchat'        => array( 'snapchat', 'fa-brands fa-snapchat', '', 'Snapchat' ),
-			'tiktok'          => array( 'tiktok', 'fa-brands fa-tiktok', '', 'TikTok' ),
-			'discord'         => array( 'discord', 'fa-brands fa-discord', '', 'Discord Server' ),
-			'add_calendar'    => array( 'add_calendar', 'fa-regular fa-calendar', '', 'Add Our Calendar' ),
+			'firstinspires'   => array( 'firstinspires', '', 'firstinspires', 'FIRST Inspires', '1.45em' ),
+			'thebluealliance' => array( 'thebluealliance', '', 'thebluealliance', 'The Blue Alliance', '' ),
+			'github'          => array( 'github', 'fa-brands fa-github', '', 'GitHub', '' ),
+			'facebook'        => array( 'facebook', 'fa-brands fa-facebook-f', '', 'Facebook', '' ),
+			'instagram'       => array( 'instagram', 'fa-brands fa-instagram', '', 'Instagram', '' ),
+			'twitter'         => array( 'twitter', 'fa-brands fa-twitter', '', 'Twitter', '' ),
+			'youtube'         => array( 'youtube', 'fa-brands fa-youtube', '', 'YouTube', '' ),
+			'snapchat'        => array( 'snapchat', 'fa-brands fa-snapchat', '', 'Snapchat', '' ),
+			'tiktok'          => array( 'tiktok', 'fa-brands fa-tiktok', '', 'TikTok', '' ),
+			'discord'         => array( 'discord', 'fa-brands fa-discord', '', 'Discord Server', '' ),
+			'add_calendar'    => array( 'add_calendar', 'fa-regular fa-calendar', '', 'Add Our Calendar', '' ),
 		);
 	}
 
@@ -56,19 +56,20 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 	}
 
 	/** @dataProvider catalog */
-	public function test_each_social_has_its_key_icon_svg_and_title( string $key, string $icon, string $svg, string $title ): void {
+	public function test_each_social_has_its_key_icon_svg_and_title( string $key, string $icon, string $svg, string $title, string $svg_width ): void {
 		set_theme_mod( 'hyperpress_social_' . $key, 'https://example.test/x' );
 
 		$this->assertSame(
 			array(
 				array(
-					'key'    => $key,
-					'icon'   => $icon,
-					'svg'    => $svg,
-					'title'  => $title,
-					'url'    => 'https://example.test/x',
-					'target' => '_blank',
-					'rel'    => 'noopener noreferrer',
+					'key'       => $key,
+					'icon'      => $icon,
+					'svg'       => $svg,
+					'svg_width' => $svg_width,
+					'title'     => $title,
+					'url'       => 'https://example.test/x',
+					'target'    => '_blank',
+					'rel'       => 'noopener noreferrer',
 				),
 			),
 			Links::all()
@@ -116,8 +117,19 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 		$this->set_all_urls();
 
 		foreach ( Links::all() as $item ) {
-			$this->assertSame( array( 'key', 'icon', 'svg', 'title', 'url', 'target', 'rel' ), array_keys( $item ) );
+			$this->assertSame( array( 'key', 'icon', 'svg', 'svg_width', 'title', 'url', 'target', 'rel' ), array_keys( $item ) );
 		}
+	}
+
+	public function test_only_the_first_logo_has_a_svg_width(): void {
+		$this->set_all_urls();
+
+		$widths = array_column( Links::all(), 'svg_width', 'key' );
+
+		$this->assertSame( '1.45em', $widths['firstinspires'] );
+		unset( $widths['firstinspires'] );
+		$this->assertSame( array( '' ), array_values( array_unique( $widths ) ) );
+		$this->assertSame( '', $widths['thebluealliance'] );
 	}
 
 	public function test_an_external_url_opens_in_a_new_tab_with_rel(): void {

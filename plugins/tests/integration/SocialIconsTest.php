@@ -106,6 +106,61 @@ final class SocialIconsTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'class="a&quot; onclick=&quot;x"', $svg );
 	}
 
+	/** @return array<string, array{0: string}> */
+	public static function valid_widths(): array {
+		return array(
+			'decimal' => array( '1.45em' ),
+			'integer' => array( '2em' ),
+		);
+	}
+
+	/** @dataProvider valid_widths */
+	public function test_a_valid_width_sets_the_fa_width_variable_on_the_root( string $width ): void {
+		$svg = Icons::svg( 'firstinspires', 'x', $width );
+
+		$this->assertStringContainsString( 'style="--fa-width:' . $width . '"', $svg );
+		$this->assertStringStartsWith( '<svg class="x" style="--fa-width:' . $width . '" aria-hidden="true" focusable="false"', $svg );
+		$this->assertSame( 1, substr_count( $svg, 'style=' ) );
+		$this->assertTrue( ( new \DOMDocument() )->loadXML( $svg ) );
+	}
+
+	public function test_a_width_works_without_classes(): void {
+		$this->assertStringStartsWith( '<svg style="--fa-width:1.45em" aria-hidden="true"', Icons::svg( 'firstinspires', '', '1.45em' ) );
+	}
+
+	/** @return array<string, array{0: string}> */
+	public static function invalid_widths(): array {
+		return array(
+			'empty'       => array( '' ),
+			'no unit'     => array( '1.45' ),
+			'px'          => array( '1.45px' ),
+			'calc'        => array( 'calc(1em)' ),
+			'negative'    => array( '-1em' ),
+			'newline'     => array( "1.45em\n" ),
+			'declaration' => array( '1.45em;color:red' ),
+			'attribute'   => array( '1em" onload="x' ),
+		);
+	}
+
+	/** @dataProvider invalid_widths */
+	public function test_an_invalid_width_is_ignored( string $width ): void {
+		$svg = Icons::svg( 'firstinspires', 'x', $width );
+
+		$this->assertStringNotContainsString( 'style=', $svg );
+		$this->assertStringNotContainsString( 'onload', $svg );
+		$this->assertSame( Icons::svg( 'firstinspires', 'x' ), $svg );
+	}
+
+	public function test_an_icon_without_a_width_has_no_style_attribute(): void {
+		$this->assertStringNotContainsString( 'style=', Icons::svg( 'thebluealliance', 'x' ) );
+	}
+
+	public function test_a_width_does_not_leak_into_later_calls(): void {
+		Icons::svg( 'firstinspires', 'x', '1.45em' );
+
+		$this->assertStringNotContainsString( 'style=', Icons::svg( 'firstinspires', 'x' ) );
+	}
+
 	public function test_no_classes_gives_no_class_attribute(): void {
 		$this->assertStringNotContainsString( 'class=', Icons::svg( 'firstinspires' ) );
 	}
@@ -186,13 +241,17 @@ final class SocialIconsTest extends WP_UnitTestCase {
 
 		$html = $this->render( 'grid' );
 
-		foreach ( array( 'firstinspires', 'thebluealliance' ) as $name ) {
+		$widths = array( 'firstinspires' => '1.45em', 'thebluealliance' => '' );
+		foreach ( $widths as $name => $width ) {
 			$this->assertStringContainsString(
 				'<span class="fa-stack fa-2x"><i class="fa-solid fa-square fa-stack-2x"></i>'
-				. Icons::svg( $name, 'svg-inline--fa fa-stack-1x fa-inverse' ) . '</span>',
+				. Icons::svg( $name, 'svg-inline--fa fa-stack-1x fa-inverse', $width ) . '</span>',
 				$html
 			);
 		}
+		$this->assertSame( 1, substr_count( $html, '--fa-width:1.45em' ) );
+		$this->assertSame( 1, substr_count( $html, 'style=' ) );
+		$this->assertStringContainsString( '<svg class="svg-inline--fa fa-stack-1x fa-inverse" style="--fa-width:1.45em"', $html );
 		$this->assertStringContainsString( '<i class="fa-brands fa-github fa-stack-1x fa-inverse"></i>', $html );
 		$this->assertStringNotContainsString( 'fa-robot', $html );
 		$this->assertStringNotContainsString( 'fa-lightbulb', $html );
@@ -203,12 +262,16 @@ final class SocialIconsTest extends WP_UnitTestCase {
 
 		$html = $this->render( 'inline' );
 
-		foreach ( array( 'firstinspires', 'thebluealliance' ) as $name ) {
+		$widths = array( 'firstinspires' => '1.45em', 'thebluealliance' => '' );
+		foreach ( $widths as $name => $width ) {
 			$this->assertStringContainsString(
-				'target="_blank" rel="noopener noreferrer">' . Icons::svg( $name, 'svg-inline--fa fa-inverse' ) . '</a></li>',
+				'target="_blank" rel="noopener noreferrer">' . Icons::svg( $name, 'svg-inline--fa fa-inverse', $width ) . '</a></li>',
 				$html
 			);
 		}
+		$this->assertSame( 1, substr_count( $html, '--fa-width:1.45em' ) );
+		$this->assertSame( 1, substr_count( $html, 'style=' ) );
+		$this->assertStringContainsString( '<svg class="svg-inline--fa fa-inverse" style="--fa-width:1.45em"', $html );
 		$this->assertStringContainsString( '<i class="fa-brands fa-github fa-inverse" aria-hidden="true"></i>', $html );
 		$this->assertStringNotContainsString( '<i class="fa-solid fa-robot', $html );
 		$this->assertStringNotContainsString( 'fa-lightbulb', $html );

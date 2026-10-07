@@ -13,16 +13,18 @@ final class Links {
 	 *
 	 * Each item is `key` (the suffix after `hyperpress_social_`), `icon` (Font Awesome classes, '' for an SVG social),
 	 * `svg` (name of an `assets/icons/<name>.svg` file printed by {@see Icons::svg()}, '' for a Font Awesome social),
+	 * `svg_width` (optional CSS width in em for an SVG social, e.g. `1.45em`, '' when not set, see {@see Icons}),
 	 * `title`, `url`, `target` (`_self` for links to this site, else `_blank`) and `rel` (`noopener noreferrer` for `_blank`, else '').
 	 *
-	 * @return array<int, array{key: string, icon: string, svg: string, title: string, url: string, target: string, rel: string}>
+	 * @return array<int, array{key: string, icon: string, svg: string, svg_width: string, title: string, url: string, target: string, rel: string}>
 	 */
 	public static function all(): array {
 		$socials = array(
 			array(
-				'key'   => 'firstinspires',
-				'svg'   => 'firstinspires',
-				'title' => 'FIRST Inspires',
+				'key'       => 'firstinspires',
+				'svg'       => 'firstinspires',
+				'svg_width' => '1.45em',
+				'title'     => 'FIRST Inspires',
 			),
 			array(
 				'key'   => 'thebluealliance',
@@ -94,13 +96,14 @@ final class Links {
 			$target = self::is_internal( $url ) ? '_self' : '_blank';
 
 			$links[] = array(
-				'key'    => $social['key'],
-				'icon'   => $social['icon'] ?? '',
-				'svg'    => $social['svg'] ?? '',
-				'title'  => $social['title'],
-				'url'    => $url,
-				'target' => $target,
-				'rel'    => '_blank' === $target ? 'noopener noreferrer' : '',
+				'key'       => $social['key'],
+				'icon'      => $social['icon'] ?? '',
+				'svg'       => $social['svg'] ?? '',
+				'svg_width' => $social['svg_width'] ?? '',
+				'title'     => $social['title'],
+				'url'       => $url,
+				'target'    => $target,
+				'rel'       => '_blank' === $target ? 'noopener noreferrer' : '',
 			);
 		}
 

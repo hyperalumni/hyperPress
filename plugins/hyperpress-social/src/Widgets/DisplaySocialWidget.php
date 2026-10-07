@@ -45,7 +45,7 @@ class DisplaySocialWidget extends WP_Widget {
 			echo '<i class="fa-solid fa-square fa-stack-2x"></i>';
 			if ( '' !== $link['svg'] ) {
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icons::svg() returns markup already sanitized with wp_kses()
-				echo Icons::svg( $link['svg'], 'svg-inline--fa fa-stack-1x fa-inverse' );
+				echo Icons::svg( $link['svg'], 'svg-inline--fa fa-stack-1x fa-inverse', $link['svg_width'] );
 			} else {
 				echo '<i class="' . esc_attr( $link['icon'] ) . ' fa-stack-1x fa-inverse"></i>';
 			}
@@ -68,7 +68,7 @@ class DisplaySocialWidget extends WP_Widget {
 			echo '>';
 			if ( '' !== $link['svg'] ) {
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icons::svg() returns markup already sanitized with wp_kses()
-				echo Icons::svg( $link['svg'], 'svg-inline--fa fa-inverse' );
+				echo Icons::svg( $link['svg'], 'svg-inline--fa fa-inverse', $link['svg_width'] );
 			} else {
 				echo '<i class="' . esc_attr( $link['icon'] ) . ' fa-inverse" aria-hidden="true"></i>';
 			}

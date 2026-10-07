@@ -8,7 +8,9 @@ defined( 'ABSPATH' ) || exit;
  *
  * To add another custom icon: drop a single-colour `assets/icons/<name>.svg` (lowercase letters, digits, `-` and `_`;
  * a `viewBox`, no fixed width/height, every fill `currentColor`), then set `'svg' => '<name>'` (and no `icon`) on the
- * social in {@see Links::all()}. Only a minimal set of SVG elements and attributes survives sanitizing, see ALLOWED_HTML.
+ * social in {@see Links::all()}. Font Awesome 7 gives every icon a fixed width (`var(--fa-width, 1.25em)`), so a wide logo
+ * is squeezed into it: add an optional `'svg_width' => '<n>em'` (e.g. `1.45em`) on the social to widen it, which is
+ * printed as `--fa-width` on the `<svg>`. Only a minimal set of SVG elements and attributes survives sanitizing, see ALLOWED_HTML.
  */
 final class Icons {
 
@@ -56,8 +58,9 @@ final class Icons {
 	 *
 	 * @param string $name    Icon file name without extension.
 	 * @param string $classes Space separated CSS classes for the root `<svg>`.
+	 * @param string $width   Optional icon width as a number of em (`1.45em`), set as `--fa-width`; anything else is ignored.
 	 */
-	public static function svg( string $name, string $classes = '' ): string {
+	public static function svg( string $name, string $classes = '', string $width = '' ): string {
 		if ( 1 !== preg_match( '/^[a-z0-9_-]+\z/', $name ) ) {
 			return '';
 		}
@@ -72,7 +75,13 @@ final class Icons {
 			return '';
 		}
 
-		$attributes  = '' === $classes ? '' : ' class="' . esc_attr( $classes ) . '"';
+		$attributes = '' === $classes ? '' : ' class="' . esc_attr( $classes ) . '"';
+
+		// Added after sanitizing: only digits, an optional decimal part and `em` pass, so the value cannot carry anything else.
+		if ( 1 === preg_match( '/^\d+(\.\d+)?em\z/', $width ) ) {
+			$attributes .= ' style="--fa-width:' . esc_attr( $width ) . '"';
+		}
+
 		$attributes .= ' aria-hidden="true" focusable="false"';
 
 		// load() guarantees the markup starts with `<svg`; a plain string splice keeps `$1` or `\0` in the classes literal.
