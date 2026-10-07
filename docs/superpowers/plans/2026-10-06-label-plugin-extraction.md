@@ -151,11 +151,11 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 **Interfaces:**
 - Produces: `Labels::register(): void` now adds the `hyperpress_label_register` action instead of the raw filter; `register_labels( \HyperPress\Label\Registry $registry ): void` adds `sponsor.last_sponsored` (10), `sponsor.tier` (20), `sponsor.season_count` (30), group "Sponsor", defaults `['hyper_sponsor']`; callbacks `last_sponsored()`, `tier()`, `season_count()` each return zero or one label (bodies are ports of the current `labels_sponsor`, minus the post-type condition). The template line becomes `<?php do_action( 'hyperpress_labels' ); ?>`.
 
-- [ ] **Step 1: Write failing tests** on a `hyper_sponsor` post via `Renderer::labels()`: `test_three_labels_in_order` (season name titled `Last Sponsored`, tier, `N Seasons`), `test_season_count_singular` (`1 Season`), `test_no_seasons_and_no_tier_means_no_labels`, `test_tier_title_includes_the_description`, `test_sponsor_labels_do_not_show_on_posts`.
-- [ ] **Step 2: Run** `--filter SponsorLabelsTest`; expected FAIL.
-- [ ] **Step 3: Implement** the changes; remove `labels_sponsor` and its `add_filter`.
-- [ ] **Step 4: Run** the filter and `--filter Sponsor`, then `composer lint`.
-- [ ] **Step 5: Commit** `feat(sponsor): register sponsor labels and render through the label action`.
+- [x] **Step 1: Write failing tests** on a `hyper_sponsor` post via `Renderer::labels()`: `test_three_labels_in_order` (season name titled `Last Sponsored`, tier, `N Seasons`), `test_season_count_singular` (`1 Season`), `test_no_seasons_and_no_tier_means_no_labels`, `test_tier_title_includes_the_description`, `test_sponsor_labels_do_not_show_on_posts`.
+- [x] **Step 2: Run** `--filter SponsorLabelsTest`; expected FAIL.
+- [x] **Step 3: Implement** the changes; remove `labels_sponsor` and its `add_filter`.
+- [x] **Step 4: Run** the filter and `--filter Sponsor`, then `composer lint`.
+- [x] **Step 5: Commit** `feat(sponsor): register sponsor labels and render through the label action`.
 
 ### Task 8: Newsletter defaults (`hyperpress-newsletter`)
 

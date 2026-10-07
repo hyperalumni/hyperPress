@@ -194,7 +194,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 		$this->go_to( get_permalink( $id ) );
 		$GLOBALS['post'] = get_post( $id );
 
-		$labels = apply_filters( 'hyperpress_labels_content', array() );
+		$labels = \HyperPress\Sponsor\Labels::last_sponsored();
 		$urls   = wp_list_pluck( $labels, 'url', 'title' );
 
 		$this->assertArrayHasKey( 'Last Sponsored', $urls );

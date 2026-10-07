@@ -3,58 +3,110 @@ namespace HyperPress\Sponsor;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Label\Registry;
 use HyperPress\Season\SortedSeasons;
 use HyperPress\Utils\Meta;
 
+/**
+ * Registers the sponsor labels with hyperpress-label, when that plugin is active.
+ */
 final class Labels {
 
 	public static function register(): void {
-		add_filter( 'hyperpress_labels_content', array( self::class, 'labels_sponsor' ) );
+		add_action( 'hyperpress_label_register', array( self::class, 'register_labels' ) );
 	}
 
-	public static function labels_sponsor( $labels ) {
-		$hyper_sponsor = Plugin::POST_TYPE;
-		if ( is_singular( $hyper_sponsor ) || is_post_type_archive( $hyper_sponsor ) || ( is_main_query() && get_post_type() === $hyper_sponsor ) ) {
-			// Get season information.
-			$seasons = SortedSeasons::get();
-			if ( ! empty( $seasons ) ) {
-				$season = $seasons[0];
-				$count  = count( $seasons );
-			}
+	/**
+	 * Add the sponsor labels to the registry.
+	 *
+	 * @param Registry $registry Label registry.
+	 */
+	public static function register_labels( Registry $registry ): void {
+		$labels = array(
+			'sponsor.last_sponsored' => array( 'Last Sponsored', 'last_sponsored', 10 ),
+			'sponsor.tier'           => array( 'Sponsorship Tier', 'tier', 20 ),
+			'sponsor.season_count'   => array( 'Sponsored For', 'season_count', 30 ),
+		);
+		foreach ( $labels as $id => list( $title, $method, $priority ) ) {
+			$registry->add(
+				$id,
+				array(
+					'group'              => 'Sponsor',
+					'title'              => $title,
+					'callback'           => array( self::class, $method ),
+					'default_post_types' => array( Plugin::POST_TYPE ),
+					'priority'           => $priority,
+				)
+			);
+		}
+	}
 
-			if ( ! empty( $season ) ) {
-				$season_link = get_term_link( $season );
-				$labels[]    = array(
-					'label'   => $season->name,
-					'title'   => 'Last Sponsored',
-					'classes' => array( 'warning' ),
-					'url'     => is_wp_error( $season_link ) ? '' : $season_link,
-					'rel'     => '',
-				);
-			}
+	/**
+	 * Label for the newest season of the current sponsor; empty when it has none.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function last_sponsored(): array {
+		$seasons = SortedSeasons::get();
+		if ( empty( $seasons ) ) {
+			return array();
+		}
+		$season      = $seasons[0];
+		$season_link = get_term_link( $season );
 
-			$level = Meta::get( 'hyperpress_sponsor_tier' );
-			if ( ! empty( $level ) ) {
-				$labels[] = array(
-					'label'   => $level->name,
-					'title'   => 'Sponsorship Tier' . ( $level->description ? ': ' . $level->description : '' ),
-					'classes' => array( 'info' ),
-					'url'     => '',
-					'rel'     => '',
-				);
-			}
+		return array(
+			array(
+				'label'   => $season->name,
+				'title'   => 'Last Sponsored',
+				'classes' => array( 'warning' ),
+				'url'     => is_wp_error( $season_link ) ? '' : $season_link,
+				'rel'     => '',
+			),
+		);
+	}
 
-			if ( ! empty( $count ) ) {
-				$labels[] = array(
-					'label'   => $count . ' Season' . ( $count > 1 ? 's' : '' ),
-					'title'   => 'Sponsored For',
-					'classes' => array( 'primary' ),
-					'url'     => '',
-					'rel'     => '',
-				);
-			}
+	/**
+	 * Label for the sponsorship tier; empty when none is set.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function tier(): array {
+		$level = Meta::get( 'hyperpress_sponsor_tier' );
+		if ( empty( $level ) ) {
+			return array();
 		}
 
-		return $labels;
+		return array(
+			array(
+				'label'   => $level->name,
+				'title'   => 'Sponsorship Tier' . ( $level->description ? ': ' . $level->description : '' ),
+				'classes' => array( 'info' ),
+				'url'     => '',
+				'rel'     => '',
+			),
+		);
+	}
+
+	/**
+	 * Label counting the seasons sponsored; empty when there are none.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function season_count(): array {
+		$seasons = SortedSeasons::get();
+		if ( empty( $seasons ) ) {
+			return array();
+		}
+		$count = count( $seasons );
+
+		return array(
+			array(
+				'label'   => $count . ' Season' . ( $count > 1 ? 's' : '' ),
+				'title'   => 'Sponsored For',
+				'classes' => array( 'primary' ),
+				'url'     => '',
+				'rel'     => '',
+			),
+		);
 	}
 }

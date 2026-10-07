@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 			</a>
 		</h2>
 	<?php endif; ?>
-	<?php get_template_part( 'template-parts/labels' ); ?>
+	<?php do_action( 'hyperpress_labels' ); ?>
 </header>
 <div class="entry-content">
 	<?php if ( has_post_thumbnail() ) : ?>
