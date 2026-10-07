@@ -37,7 +37,7 @@ Nothing here is live, so the old theme entry points are removed rather than shim
 | Unit | Responsibility |
 |---|---|
 | `Plugin` | `boot()` on `plugins_loaded`; wires the units below. |
-| `Registry` | Collects definitions. Fires `do_action( 'hyperpress_label_register', $registry )` on `init`, once. `Registry::add( $id, $args )` takes `group` (display name), `title`, `callback`, `default_post_types` (array), `priority` (int, default 10). The callback returns a list of label arrays (zero or more). |
+| `Registry` | Collects definitions. The first call to `all()` after `init` fires `do_action( 'hyperpress_label_register', $registry )` once; earlier calls return what has registered so far and are flagged as incorrect usage. `Registry::add( $id, $args )` takes `group` (display name), `title`, `callback`, `default_post_types` (array), `priority` (int, default 10). The callback returns a list of label arrays (zero or more). |
 | `Resolver` | `is_enabled( $post_type, $label_id ): bool`. Rules in section 3. |
 | `Renderer` | Hooks the `hyperpress_labels` action; see section 2. |
 | `Customizer` | The Customizer section, settings and sanitizers; see section 4. |

@@ -70,6 +70,17 @@ final class SeasonLabelTest extends WP_UnitTestCase {
 		);
 	}
 
+	public function test_registration_metadata(): void {
+		Registry::reset();
+
+		$definition = Registry::instance()->all()['season.posted_during'];
+
+		$this->assertSame( 'Season', $definition['group'] );
+		$this->assertSame( 'Posted During', $definition['title'] );
+		$this->assertSame( 30, $definition['priority'] );
+		$this->assertSame( array( 'post' ), $definition['default_post_types'] );
+	}
+
 	public function test_season_label_links_to_the_term(): void {
 		list( $term_id ) = $this->go_to_post_with_seasons( array( '2026' ) );
 

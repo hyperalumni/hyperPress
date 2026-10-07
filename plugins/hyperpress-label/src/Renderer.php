@@ -57,19 +57,9 @@ final class Renderer {
 				continue;
 			}
 			foreach ( $result as $entry ) {
-				if ( ! is_array( $entry ) ) {
-					continue;
+				if ( is_array( $entry ) ) {
+					$labels[] = self::normalize( $entry );
 				}
-				$labels[] = wp_parse_args(
-					$entry,
-					array(
-						'label'   => '',
-						'title'   => '',
-						'classes' => array(),
-						'url'     => '',
-						'rel'     => '',
-					)
-				);
 			}
 		}
 
@@ -79,7 +69,40 @@ final class Renderer {
 		 * @param array $labels Normalized label arrays.
 		 */
 		$filtered = apply_filters( 'hyperpress_labels_content', $labels );
-		return is_array( $filtered ) ? $filtered : array();
+		if ( ! is_array( $filtered ) ) {
+			return array();
+		}
+		$normalized = array();
+		foreach ( $filtered as $entry ) {
+			if ( is_array( $entry ) ) {
+				$normalized[] = self::normalize( $entry );
+			}
+		}
+		return $normalized;
+	}
+
+	/**
+	 * Fill defaults and coerce `classes` to a list of strings.
+	 *
+	 * @param array<string,mixed> $entry Raw label entry.
+	 * @return array{label:string,title:string,classes:array<int,string>,url:string,rel:string}
+	 */
+	private static function normalize( array $entry ): array {
+		$entry = wp_parse_args(
+			$entry,
+			array(
+				'label'   => '',
+				'title'   => '',
+				'classes' => array(),
+				'url'     => '',
+				'rel'     => '',
+			)
+		);
+
+		$classes          = is_array( $entry['classes'] ) ? $entry['classes'] : array( $entry['classes'] );
+		$entry['classes'] = array_values( array_map( 'strval', array_filter( $classes, 'is_scalar' ) ) );
+
+		return $entry;
 	}
 
 	/**

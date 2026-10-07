@@ -81,8 +81,16 @@ final class Registry {
 	 */
 	public function all(): array {
 		if ( ! $this->collected ) {
-			$this->collected = true;
-			do_action( 'hyperpress_label_register', $this );
+			if ( ! did_action( 'init' ) ) {
+				_doing_it_wrong(
+					__METHOD__,
+					esc_html__( 'Labels are collected on the first call after init. Call this on or after the init action; earlier results are incomplete.', 'hyperpress' ),
+					'2026.0.0'
+				);
+			} else {
+				$this->collected = true;
+				do_action( 'hyperpress_label_register', $this );
+			}
 		}
 		$items = $this->items;
 		uasort(

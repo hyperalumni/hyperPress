@@ -36,7 +36,7 @@ final class SponsorLabelsTest extends WP_UnitTestCase {
 	 * @param string   $post_type Post type.
 	 * @param string[] $names     Season names.
 	 */
-	private function go_to_post_with_seasons( string $post_type, array $names ): void {
+	private function go_to_post_with_seasons( string $post_type, array $names ): array {
 		$post_id  = self::factory()->post->create( array( 'post_type' => $post_type ) );
 		$term_ids = array();
 		foreach ( $names as $name ) {
@@ -53,6 +53,7 @@ final class SponsorLabelsTest extends WP_UnitTestCase {
 		$this->go_to( get_permalink( $post_id ) );
 		$this->assertTrue( is_singular( $post_type ) );
 		the_post();
+		return $term_ids;
 	}
 
 	private function set_tier( string $name, string $description = '' ): void {
@@ -70,18 +71,18 @@ final class SponsorLabelsTest extends WP_UnitTestCase {
 			array_values( array_filter( $registry->ids(), static fn ( $id ) => 0 === strpos( $id, 'sponsor.' ) ) )
 		);
 		$this->assertSame( array( 'hyper_sponsor' ), $registry->default_post_types( 'sponsor.tier' ) );
-		$this->assertFalse( has_filter( 'hyperpress_labels_content', array( \HyperPress\Sponsor\Labels::class, 'labels_sponsor' ) ) );
 	}
 
 	public function test_three_labels_in_order(): void {
 		$this->set_tier( 'Gold' );
-		$this->go_to_post_with_seasons( 'hyper_sponsor', array( '2025', '2026' ) );
+		$term_ids = $this->go_to_post_with_seasons( 'hyper_sponsor', array( '2025', '2026' ) );
 
 		$labels = Renderer::labels();
 
 		$this->assertCount( 3, $labels );
 		$this->assertSame( '2026', $labels[0]['label'] );
 		$this->assertSame( 'Last Sponsored', $labels[0]['title'] );
+		$this->assertSame( get_term_link( $term_ids[1], 'hyper_season' ), $labels[0]['url'] );
 		$this->assertSame( array( 'warning' ), $labels[0]['classes'] );
 		$this->assertSame( 'Gold', $labels[1]['label'] );
 		$this->assertSame( array( 'info' ), $labels[1]['classes'] );

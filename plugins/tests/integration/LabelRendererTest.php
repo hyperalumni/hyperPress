@@ -229,6 +229,45 @@ final class LabelRendererTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '>', $this->output() );
 	}
 
+	public function test_entries_added_by_the_content_filter_are_normalized(): void {
+		$this->add( 'a', self::named( 'A' ) );
+		add_filter(
+			'hyperpress_labels_content',
+			static function ( array $labels ): array {
+				$labels[] = array( 'label' => 'Only label' );
+				$labels[] = array(
+					'label'   => 'String class',
+					'classes' => 'primary',
+				);
+				$labels[] = array(
+					'label'   => 'Junk class',
+					'classes' => new \stdClass(),
+				);
+				$labels[] = 'not an entry';
+				return $labels;
+			}
+		);
+
+		$labels = Renderer::labels();
+
+		$this->assertSame( array( 'A', 'Only label', 'String class', 'Junk class' ), array_column( $labels, 'label' ) );
+		$this->assertSame(
+			array(
+				'label'   => 'Only label',
+				'title'   => '',
+				'classes' => array(),
+				'url'     => '',
+				'rel'     => '',
+			),
+			$labels[1]
+		);
+		$this->assertSame( array( 'primary' ), $labels[2]['classes'] );
+		$this->assertSame( array(), $labels[3]['classes'] );
+		$html = $this->output();
+		$this->assertStringContainsString( 'label primary', $html );
+		$this->assertStringContainsString( 'Only label', $html );
+	}
+
 	public function test_markup_matches_the_old_template(): void {
 		$this->add( 'a', array( self::class, 'linked' ) );
 

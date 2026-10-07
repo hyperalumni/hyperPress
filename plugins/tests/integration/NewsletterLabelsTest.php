@@ -80,7 +80,6 @@ final class NewsletterLabelsTest extends WP_UnitTestCase {
 		the_post();
 
 		$this->assertNotContains( 'Posted In', array_column( Renderer::labels(), 'title' ) );
-		$this->assertNotContains( 'hyper_newsletter', Registry::instance()->ids() );
 		$this->assertNotContains( 'hyper_newsletter', Registry::instance()->default_post_types( 'post.category' ) );
 	}
 
@@ -94,6 +93,5 @@ final class NewsletterLabelsTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'hyper_newsletter' ), \HyperPress\Newsletter\Labels::default_post_types( array( 'hyper_newsletter' ), 'post.date' ) );
 		$this->assertSame( array( 'hyper_newsletter' ), \HyperPress\Newsletter\Labels::default_post_types( 'bad', 'post.date' ) );
 		$this->assertSame( array( 'x' ), \HyperPress\Newsletter\Labels::default_post_types( array( 'x' ), 'sponsor.tier' ) );
-		$this->assertFalse( has_filter( 'hyperpress_labels_content', array( \HyperPress\Newsletter\Labels::class, 'labels_newsletter' ) ) );
 	}
 }

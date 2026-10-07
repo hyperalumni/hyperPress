@@ -13,7 +13,7 @@ use HyperPress\Label\Resolver;
 use WP_UnitTestCase;
 
 /**
- * @covers \HyperPress\Label\PostLabels
+ * @covers \HyperPress\Label\Labels\PostLabels
  */
 final class PostLabelsTest extends WP_UnitTestCase {
 

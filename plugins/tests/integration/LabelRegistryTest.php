@@ -24,6 +24,63 @@ final class LabelRegistryTest extends WP_UnitTestCase {
 		return array();
 	}
 
+	/**
+	 * Saved `init` action count, restored in tear_down().
+	 *
+	 * @var int|null
+	 */
+	private ?int $saved_init = null;
+
+	public function tear_down(): void {
+		if ( null !== $this->saved_init ) {
+			$GLOBALS['wp_actions']['init'] = $this->saved_init; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring test state.
+			$this->saved_init              = null;
+		}
+		Registry::reset( true );
+		parent::tear_down();
+	}
+
+	/**
+	 * Simulate a request where `init` has not fired yet.
+	 */
+	private function pretend_before_init(): void {
+		$this->saved_init = (int) $GLOBALS['wp_actions']['init'];
+		unset( $GLOBALS['wp_actions']['init'] );
+	}
+
+	public function test_all_before_init_is_flagged_and_does_not_collect(): void {
+		Registry::reset();
+		$calls = 0;
+		add_action(
+			'hyperpress_label_register',
+			static function () use ( &$calls ): void {
+				++$calls;
+			}
+		);
+		Registry::instance()->add( 'x.early', array( 'callback' => array( self::class, 'noop' ) ) );
+
+		$this->pretend_before_init();
+		$this->setExpectedIncorrectUsage( 'HyperPress\\Label\\Registry::all' );
+		$early = Registry::instance()->ids();
+
+		$this->assertSame( array( 'x.early' ), $early );
+		$this->assertSame( 0, $calls );
+
+		$GLOBALS['wp_actions']['init'] = $this->saved_init; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring test state.
+		$this->saved_init              = null;
+
+		$this->assertContains( 'x.early', Registry::instance()->ids() );
+		$this->assertSame( 1, $calls );
+	}
+
+	public function test_collected_registry_is_not_flagged_before_init(): void {
+		Registry::reset( true );
+		Registry::instance()->add( 'x.one', array( 'callback' => array( self::class, 'noop' ) ) );
+		$this->pretend_before_init();
+
+		$this->assertSame( array( 'x.one' ), Registry::instance()->ids() );
+	}
+
 	public function test_add_fills_defaults(): void {
 		Registry::reset( true );
 		Registry::instance()->add( 'x.one', array( 'callback' => array( self::class, 'noop' ) ) );

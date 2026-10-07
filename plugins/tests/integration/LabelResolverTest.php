@@ -94,6 +94,12 @@ final class LabelResolverTest extends WP_UnitTestCase {
 		$this->assertFalse( Resolver::is_enabled( 'post', 'gone' ) );
 	}
 
+	public function test_disabled_without_saved_labels_shows_nothing(): void {
+		set_theme_mod( Resolver::enabled_key( 'post' ), false );
+
+		$this->assertFalse( Resolver::is_enabled( 'post', 'a' ) );
+	}
+
 	public function test_empty_saved_list_shows_nothing(): void {
 		set_theme_mod( Resolver::labels_key( 'post' ), array() );
 
