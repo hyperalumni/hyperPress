@@ -214,3 +214,5 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 
 - Saved selections are explicit lists, and post types registered after `customize_register` get no Customizer controls (they render with default labels).
 - `Renderer::render()` returns early when there are no labels, so a theme override template is never called with an empty list.
+
+- Added 2026-10-07: `hyperpress-program` (`program.programs`, 35, one label per term) and `hyperpress-competition` (`district.district`, 36, single unlinked label) register labels whose defaults come from `TaxonomyPostTypes::for_taxonomy()`; see spec section 5.
