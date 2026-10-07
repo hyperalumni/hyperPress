@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-> **STATUS: ✅ COMPLETED** (2026-10-06). Tasks 1–10 implemented and reviewed; commit range 97415ee..10bddf2 (plugins, plus the final docs commit that contains this banner) and 0e35b7d..0452672 (theme). Pending: manual stack check (Task 10 step 3).
+> **STATUS: ✅ COMPLETED** (2026-10-06). Tasks 1–10 implemented and reviewed; commit range 97415ee..da7af77 (plugins) and 0e35b7d..0452672 (theme); the final whole-branch review fixes landed in da7af77. Verified at da7af77: plugins integration 493 tests OK (4 skipped), unit 126 OK, lint exit 0. Pending: manual stack check (Task 10 step 3).
 
 **Goal:** Move the theme's label renderer and post labels into `hyperpress-label`, let `hyperpress-season` and `-sponsor` register their own labels (and `-newsletter` opt its post type in), and add per-post-type Customizer settings that choose which labels show (or turn labels off).
 
@@ -202,8 +202,12 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 - Docs updated: `theme/AGENTS.md`, `theme/README.md`, the theme cleanup spec (amendment notes), `plugins/AGENTS.md`, `plugins/README.md`, and the plugins convention spec (amendment notes).
 - Task 10 step 3 (manual check in a running stack) is not done and stays unticked.
 
+- Final whole-branch review (da7af77): `Renderer::labels()` now normalizes entries added through the `hyperpress_labels_content` filter; `Registry::all()` called before `init` is flagged with `_doing_it_wrong` and does not lock in an incomplete list (spec section 1 updated to match); a few small tests were added and vacuous assertions removed.
+
 ### Deferred (minor)
 
-- Entries added through the `hyperpress_labels_content` filter are not re-normalized by `Renderer`; a sparse entry would raise warnings in the template.
+- `Renderer::normalize()` only coerces `classes`; non-scalar `label`, `title`, `url` or `rel` from a filter are not coerced.
+- Saved selections are explicit lists, and post types registered after `customize_register` get no Customizer controls (they render with default labels).
+- `theme/README.md`'s hooks table does not list `hyperpress_label_default_post_types`.
 - `Renderer::render()` returns early when there are no labels, so a theme override template is never called with an empty list.
 - `theme/library/breadcrumbs/post.php` still uses `get_category_link()` for the season term crumb (line 16); it should use `get_term_link()`.
