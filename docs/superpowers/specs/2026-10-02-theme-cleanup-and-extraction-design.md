@@ -1,5 +1,7 @@
 # Theme Cleanup and Extraction: Design
 
+> *Amended 2026-10-07: the plugin `hyperpress-shortcodes` named below is now `hyperpress-shortcode` (shortcode tags unchanged); see `plugins/docs/superpowers/plans/2026-10-07-singular-plugin-names.md`. The text below is kept as written.*
+
 Date: 2026-10-02
 Status: Draft for review
 Repo: `theme/` (classic FoundationPress-derived theme, Foundation 6)

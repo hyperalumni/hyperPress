@@ -33,7 +33,7 @@ tests_add_filter(
 	'muplugins_loaded',
 	static function (): void {
 		$first = array( 'hyperpress-utils', 'hyperpress-season', 'hyperpress-program', 'hyperpress-robot' );
-		$skip  = getenv( 'HYPERPRESS_TEST_WITHOUT_EXTRACTED' ) ? array( 'hyperpress-shortcodes', 'hyperpress-media' ) : array();
+		$skip  = getenv( 'HYPERPRESS_TEST_WITHOUT_EXTRACTED' ) ? array( 'hyperpress-shortcode', 'hyperpress-media' ) : array();
 
 		$all = array_map( 'basename', glob( '/plugins/hyperpress-*', GLOB_ONLYDIR ) );
 		sort( $all );

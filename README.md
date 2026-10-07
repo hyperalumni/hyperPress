@@ -11,14 +11,14 @@ docker compose run --rm php composer install
 docker compose run --rm php composer lint              # php -l and phpcs (codesniffer.ruleset.xml)
 docker compose run --rm php composer test:unit         # header lint, hook contract, static checks
 docker compose run --rm php composer test:integration  # boots WordPress with the theme and ../plugins
-HYPERPRESS_TEST_WITHOUT_EXTRACTED=1 ... composer test:integration   # same, without hyperpress-shortcodes and hyperpress-media
+HYPERPRESS_TEST_WITHOUT_EXTRACTED=1 ... composer test:integration   # same, without hyperpress-shortcode and hyperpress-media
 ```
 
 The integration suite mounts the theme at `/hp-themes/hyperpress` and `../plugins` at `/plugins`.
 
 ## Plugins
 
-The theme expects the HYPER plugins in `../plugins` (`hyperpress-utils` and the content plugins). Content that uses the `time-restrict`, `hyper_emphasis`, `raw`, `hyper_banner` or `hyper_date_distance` shortcodes needs `hyperpress-shortcodes` active; SVG and AVIF uploads and NextGen gallery breadcrumbs come from `hyperpress-media`. Deploy the theme together with those plugins. The footer social icons come from the hyperPress Socials widget: drag it into the "Footer socials" widget area, or leave the area empty to get the default inline list.
+The theme expects the HYPER plugins in `../plugins` (`hyperpress-utils` and the content plugins). Content that uses the `time-restrict`, `hyper_emphasis`, `raw`, `hyper_banner` or `hyper_date_distance` shortcodes needs `hyperpress-shortcode` active; SVG and AVIF uploads and NextGen gallery breadcrumbs come from `hyperpress-media`. Deploy the theme together with those plugins. The footer social icons come from the hyperPress Socials widget: drag it into the "Footer socials" widget area, or leave the area empty to get the default inline list.
 
 ## Hooks for plugins
 
