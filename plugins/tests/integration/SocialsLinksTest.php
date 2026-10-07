@@ -28,20 +28,20 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 		parent::tear_down();
 	}
 
-	/** @return array<string, array{0: string, 1: string, 2: string}> key => key, icon, title */
+	/** @return array<string, array{0: string, 1: string, 2: string, 3: string}> key => key, icon, svg, title */
 	public static function catalog(): array {
 		return array(
-			'firstinspires'   => array( 'firstinspires', 'fa-solid fa-robot', 'FIRST Inspires' ),
-			'thebluealliance' => array( 'thebluealliance', 'fa-regular fa-lightbulb', 'The Blue Alliance' ),
-			'github'          => array( 'github', 'fa-brands fa-github', 'GitHub' ),
-			'facebook'        => array( 'facebook', 'fa-brands fa-facebook-f', 'Facebook' ),
-			'instagram'       => array( 'instagram', 'fa-brands fa-instagram', 'Instagram' ),
-			'twitter'         => array( 'twitter', 'fa-brands fa-twitter', 'Twitter' ),
-			'youtube'         => array( 'youtube', 'fa-brands fa-youtube', 'YouTube' ),
-			'snapchat'        => array( 'snapchat', 'fa-brands fa-snapchat', 'Snapchat' ),
-			'tiktok'          => array( 'tiktok', 'fa-brands fa-tiktok', 'TikTok' ),
-			'discord'         => array( 'discord', 'fa-brands fa-discord', 'Discord Server' ),
-			'add_calendar'    => array( 'add_calendar', 'fa-regular fa-calendar', 'Add Our Calendar' ),
+			'firstinspires'   => array( 'firstinspires', '', 'firstinspires', 'FIRST Inspires' ),
+			'thebluealliance' => array( 'thebluealliance', '', 'thebluealliance', 'The Blue Alliance' ),
+			'github'          => array( 'github', 'fa-brands fa-github', '', 'GitHub' ),
+			'facebook'        => array( 'facebook', 'fa-brands fa-facebook-f', '', 'Facebook' ),
+			'instagram'       => array( 'instagram', 'fa-brands fa-instagram', '', 'Instagram' ),
+			'twitter'         => array( 'twitter', 'fa-brands fa-twitter', '', 'Twitter' ),
+			'youtube'         => array( 'youtube', 'fa-brands fa-youtube', '', 'YouTube' ),
+			'snapchat'        => array( 'snapchat', 'fa-brands fa-snapchat', '', 'Snapchat' ),
+			'tiktok'          => array( 'tiktok', 'fa-brands fa-tiktok', '', 'TikTok' ),
+			'discord'         => array( 'discord', 'fa-brands fa-discord', '', 'Discord Server' ),
+			'add_calendar'    => array( 'add_calendar', 'fa-regular fa-calendar', '', 'Add Our Calendar' ),
 		);
 	}
 
@@ -56,7 +56,7 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 	}
 
 	/** @dataProvider catalog */
-	public function test_each_social_has_its_key_icon_and_title( string $key, string $icon, string $title ): void {
+	public function test_each_social_has_its_key_icon_svg_and_title( string $key, string $icon, string $svg, string $title ): void {
 		set_theme_mod( 'hyperpress_social_' . $key, 'https://example.test/x' );
 
 		$this->assertSame(
@@ -64,6 +64,7 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 				array(
 					'key'    => $key,
 					'icon'   => $icon,
+					'svg'    => $svg,
 					'title'  => $title,
 					'url'    => 'https://example.test/x',
 					'target' => '_blank',
@@ -107,6 +108,7 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 		$this->assertCount( 1, $items );
 		$this->assertSame( 'contact', $items[0]['key'] );
 		$this->assertSame( 'fa-regular fa-envelope', $items[0]['icon'] );
+		$this->assertSame( '', $items[0]['svg'] );
 		$this->assertSame( 'Contact Us', $items[0]['title'] );
 	}
 
@@ -114,7 +116,7 @@ final class SocialsLinksTest extends WP_UnitTestCase {
 		$this->set_all_urls();
 
 		foreach ( Links::all() as $item ) {
-			$this->assertSame( array( 'key', 'icon', 'title', 'url', 'target', 'rel' ), array_keys( $item ) );
+			$this->assertSame( array( 'key', 'icon', 'svg', 'title', 'url', 'target', 'rel' ), array_keys( $item ) );
 		}
 	}
 

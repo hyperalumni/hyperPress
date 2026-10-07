@@ -11,21 +11,22 @@ final class Links {
 	/**
 	 * Every social with a non-empty URL, in display order.
 	 *
-	 * Each item is `key` (the suffix after `hyperpress_social_`), `icon` (Font Awesome classes), `title`, `url`,
-	 * `target` (`_self` for links to this site, else `_blank`) and `rel` (`noopener noreferrer` for `_blank`, else '').
+	 * Each item is `key` (the suffix after `hyperpress_social_`), `icon` (Font Awesome classes, '' for an SVG social),
+	 * `svg` (name of an `assets/icons/<name>.svg` file printed by {@see Icons::svg()}, '' for a Font Awesome social),
+	 * `title`, `url`, `target` (`_self` for links to this site, else `_blank`) and `rel` (`noopener noreferrer` for `_blank`, else '').
 	 *
-	 * @return array<int, array{key: string, icon: string, title: string, url: string, target: string, rel: string}>
+	 * @return array<int, array{key: string, icon: string, svg: string, title: string, url: string, target: string, rel: string}>
 	 */
 	public static function all(): array {
 		$socials = array(
 			array(
 				'key'   => 'firstinspires',
-				'icon'  => 'fa-solid fa-robot',
+				'svg'   => 'firstinspires',
 				'title' => 'FIRST Inspires',
 			),
 			array(
 				'key'   => 'thebluealliance',
-				'icon'  => 'fa-regular fa-lightbulb',
+				'svg'   => 'thebluealliance',
 				'title' => 'The Blue Alliance',
 			),
 			array(
@@ -94,7 +95,8 @@ final class Links {
 
 			$links[] = array(
 				'key'    => $social['key'],
-				'icon'   => $social['icon'],
+				'icon'   => $social['icon'] ?? '',
+				'svg'    => $social['svg'] ?? '',
 				'title'  => $social['title'],
 				'url'    => $url,
 				'target' => $target,

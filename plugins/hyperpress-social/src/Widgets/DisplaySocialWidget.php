@@ -3,6 +3,7 @@ namespace HyperPress\Social\Widgets;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Social\Icons;
 use HyperPress\Social\Links;
 use WP_Widget;
 
@@ -42,7 +43,12 @@ class DisplaySocialWidget extends WP_Widget {
 			// echo '<i class="fa-solid fa-square fa-stack-2x" style="font-size: 2rem;"></i>';
 			// The "font-size: 2rem;" is needed or else the icons are too big, as it uses "font-size: 2em;".
 			echo '<i class="fa-solid fa-square fa-stack-2x"></i>';
-			echo '<i class="' . esc_attr( $link['icon'] ) . ' fa-stack-1x fa-inverse"></i>';
+			if ( '' !== $link['svg'] ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icons::svg() returns markup already sanitized with wp_kses()
+				echo Icons::svg( $link['svg'], 'svg-inline--fa fa-stack-1x fa-inverse' );
+			} else {
+				echo '<i class="' . esc_attr( $link['icon'] ) . ' fa-stack-1x fa-inverse"></i>';
+			}
 			echo '</span>';
 			echo '</a>';
 			echo '</div>';
@@ -60,7 +66,12 @@ class DisplaySocialWidget extends WP_Widget {
 				echo ' rel="' . esc_attr( $link['rel'] ) . '"';
 			}
 			echo '>';
-			echo '<i class="' . esc_attr( $link['icon'] ) . ' fa-inverse" aria-hidden="true"></i>';
+			if ( '' !== $link['svg'] ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Icons::svg() returns markup already sanitized with wp_kses()
+				echo Icons::svg( $link['svg'], 'svg-inline--fa fa-inverse' );
+			} else {
+				echo '<i class="' . esc_attr( $link['icon'] ) . ' fa-inverse" aria-hidden="true"></i>';
+			}
 			echo '</a></li>';
 		}
 
