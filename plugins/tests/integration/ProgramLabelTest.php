@@ -42,9 +42,8 @@ final class ProgramLabelTest extends WP_UnitTestCase {
 	 *
 	 * @param string[] $names    Program names.
 	 * @param string[] $seasons  Season names.
-	 * @return int[] Program term IDs.
 	 */
-	private function go_to_post_with_programs( array $names, array $seasons = array() ): array {
+	private function go_to_post_with_programs( array $names, array $seasons = array() ): void {
 		$post_id  = self::factory()->post->create();
 		$term_ids = array();
 		foreach ( $names as $name ) {
@@ -64,7 +63,6 @@ final class ProgramLabelTest extends WP_UnitTestCase {
 		$this->go_to( get_permalink( $post_id ) );
 		$this->assertTrue( is_singular( 'post' ) );
 		the_post();
-		return $term_ids;
 	}
 
 	/**
@@ -104,19 +102,18 @@ final class ProgramLabelTest extends WP_UnitTestCase {
 	}
 
 	public function test_one_label_per_program_sorted_by_name(): void {
-		$term_ids = $this->go_to_post_with_programs( array( 'FTC', 'FLL 10', 'FLL 2' ) );
+		$this->go_to_post_with_programs( array( 'FTC', 'FLL 10', 'FLL 2', 'fll 5' ) );
 
 		$programs = $this->program_labels();
 
-		$this->assertCount( 3, $programs );
-		$this->assertSame( array( 'FLL 2', 'FLL 10', 'FTC' ), array_column( $programs, 'label' ) );
+		$this->assertCount( 4, $programs );
+		$this->assertSame( array( 'FLL 2', 'fll 5', 'FLL 10', 'FTC' ), array_column( $programs, 'label' ) );
 		foreach ( $programs as $program ) {
 			$this->assertSame( array( 'success' ), $program['classes'] );
 			$this->assertSame( 'Program', $program['title'] );
 		}
 		$ftc = get_term_by( 'name', 'FTC', 'hyper_program' );
-		$this->assertContains( $ftc->term_id, $term_ids );
-		$this->assertSame( get_term_link( $ftc ), $programs[2]['url'] );
+		$this->assertSame( get_term_link( $ftc ), $programs[3]['url'] );
 	}
 
 	public function test_no_programs_means_no_label(): void {

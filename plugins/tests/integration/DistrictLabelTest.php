@@ -106,7 +106,10 @@ final class DistrictLabelTest extends WP_UnitTestCase {
 	public function test_only_one_label_when_a_post_has_two_districts(): void {
 		$this->go_to_post_with_districts( 'hyper_competition', array( 'Ontario', 'Michigan' ) );
 
-		$this->assertCount( 1, $this->district_labels() );
+		$district = $this->district_labels();
+
+		$this->assertCount( 1, $district );
+		$this->assertSame( 'Michigan', $district[0]['label'] );
 	}
 
 	public function test_label_is_not_shown_on_a_post(): void {
