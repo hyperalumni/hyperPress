@@ -1,7 +1,7 @@
 # hyperPress plugins: convention and shared code (Spec 1 of 2)
 
 Date: 2026-10-02
-Scope: the 12 original plugins in `plugins/`, plus the two plugins (`hyperpress-shortcodes`, `hyperpress-media`) created by the theme extraction. `theme/` changes are specified separately in `theme/docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md`. Those two new plugins follow this convention in full.
+Scope: the 12 original plugins in `plugins/`, plus the two plugins (`hyperpress-shortcodes`, `hyperpress-media`) created by the theme extraction. `theme/` changes are specified separately in `theme/docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md`. Those two new plugins follow this convention in full. *Amended 2026-10-07: `hyperpress-shortcodes` is renamed `hyperpress-shortcode` (namespace `HyperPress\Shortcode`, hooks `hyperpress_shortcode_now` and `hyperpress_shortcode_ordinals`); see `2026-10-07-singular-plugin-names.md`.*
 Companion: Spec 2 (tests and audit), written separately.
 
 ## Goal

@@ -13,12 +13,12 @@ final class TimeRestrictValidationTest extends WP_UnitTestCase {
 	private function freeze( string $when ): void {
 		$timestamp   = (int) strtotime( $when . ' UTC' );
 		$this->clock = static fn (): int => $timestamp;
-		add_filter( 'hyperpress_shortcodes_now', $this->clock );
+		add_filter( 'hyperpress_shortcode_now', $this->clock );
 	}
 
 	public function tear_down(): void {
 		if ( isset( $this->clock ) ) {
-			remove_filter( 'hyperpress_shortcodes_now', $this->clock );
+			remove_filter( 'hyperpress_shortcode_now', $this->clock );
 		}
 		parent::tear_down();
 	}

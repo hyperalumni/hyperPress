@@ -1,5 +1,5 @@
 <?php
-namespace HyperPress\Shortcodes;
+namespace HyperPress\Shortcode;
 
 defined( 'ABSPATH' ) || exit;
 

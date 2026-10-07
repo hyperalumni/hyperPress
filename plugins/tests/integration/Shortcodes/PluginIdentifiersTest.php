@@ -1,0 +1,59 @@
+<?php
+namespace HyperPress\Tests\Integration\Shortcodes;
+
+use HyperPress\Tests\Support\Convention;
+use WP_UnitTestCase;
+
+/**
+ * The plugin is `hyperpress-shortcode`: the shortcode tags do not change, the hook names follow the plugin slug.
+ */
+final class PluginIdentifiersTest extends WP_UnitTestCase {
+
+	public static function tags(): array {
+		return array(
+			'hyper_banner'         => array( 'hyper_banner' ),
+			'hyper_emphasis'       => array( 'hyper_emphasis' ),
+			'hyper_date_distance'  => array( 'hyper_date_distance' ),
+			'raw'                  => array( 'raw' ),
+			'time-restrict'        => array( 'time-restrict' ),
+			'time-restrict-repeat' => array( 'time-restrict-repeat' ),
+			'time-restrict-repeat-1' => array( 'time-restrict-repeat-1' ),
+			'time-restrict-repeat-2' => array( 'time-restrict-repeat-2' ),
+			'time-restrict-repeat-3' => array( 'time-restrict-repeat-3' ),
+		);
+	}
+
+	/**
+	 * @dataProvider tags
+	 */
+	public function test_the_shortcode_tags_are_still_registered( string $tag ): void {
+		$this->assertTrue( shortcode_exists( $tag ) );
+	}
+
+	public function test_the_classes_live_in_the_singular_namespace(): void {
+		$this->assertTrue( class_exists( '\HyperPress\Shortcode\Plugin' ) );
+		$this->assertFalse( class_exists( '\HyperPress\Shortcodes\Plugin' ) );
+		foreach ( array( 'Banner', 'DateDistance', 'TimeRestrict', 'Raw', 'Emphasis' ) as $class_name ) {
+			$this->assertTrue( class_exists( '\HyperPress\Shortcode\Shortcodes\\' . $class_name ), $class_name );
+		}
+	}
+
+	public function test_the_hooks_use_the_singular_names_and_the_old_ones_are_gone(): void {
+		$source = '';
+		$files  = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( Convention::root() . '/hyperpress-shortcode', \FilesystemIterator::SKIP_DOTS ) );
+		foreach ( $files as $file ) {
+			if ( 'php' === $file->getExtension() ) {
+				$source .= file_get_contents( $file->getPathname() );
+			}
+		}
+		$this->assertStringContainsString( "'hyperpress_shortcode_now'", $source );
+		$this->assertStringContainsString( "'hyperpress_shortcode_ordinals'", $source );
+		$this->assertStringNotContainsString( 'hyperpress_shortcodes_', $source );
+	}
+
+	public function test_the_now_hook_still_drives_time_restrict(): void {
+		add_filter( 'hyperpress_shortcode_now', static fn() => strtotime( '2050-06-01 12:00:00' ) );
+		$this->assertSame( 'SHOWN', do_shortcode( '[time-restrict on="2000-01-01" off="2100-01-01"]SHOWN[/time-restrict]' ) );
+		remove_all_filters( 'hyperpress_shortcode_now' );
+	}
+}

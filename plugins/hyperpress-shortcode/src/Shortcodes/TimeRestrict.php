@@ -1,5 +1,5 @@
 <?php
-namespace HyperPress\Shortcodes\Shortcodes;
+namespace HyperPress\Shortcode\Shortcodes;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -34,7 +34,7 @@ final class TimeRestrict {
 	 */
 	private static function now(): int {
 		// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- compared with user-entered site-local times, so the site-offset timestamp is intended
-		return (int) apply_filters( 'hyperpress_shortcodes_now', current_time( 'timestamp' ) );
+		return (int) apply_filters( 'hyperpress_shortcode_now', current_time( 'timestamp' ) );
 	}
 
 	/**

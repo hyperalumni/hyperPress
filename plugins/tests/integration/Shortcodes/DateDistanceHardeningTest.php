@@ -1,7 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration\Shortcodes;
 
-use HyperPress\Shortcodes\Shortcodes\DateDistance;
+use HyperPress\Shortcode\Shortcodes\DateDistance;
 use WP_UnitTestCase;
 
 final class DateDistanceHardeningTest extends WP_UnitTestCase {
@@ -37,7 +37,7 @@ final class DateDistanceHardeningTest extends WP_UnitTestCase {
 	}
 
 	public function test_suffix_returns_the_plain_number_when_ordinals_are_unsupported(): void {
-		add_filter( 'hyperpress_shortcodes_ordinals', '__return_false' );
+		add_filter( 'hyperpress_shortcode_ordinals', '__return_false' );
 
 		$this->assertFalse( DateDistance::supports_ordinals() );
 		$this->assertSame( '5', do_shortcode( '[hyper_date_distance date="' . $this->years_ago( 5 ) . '" format="%y" suffix="true"]' ) );

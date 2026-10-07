@@ -16,7 +16,7 @@ final class Convention {
 		'hyperpress-program',
 		'hyperpress-robot',
 		'hyperpress-season',
-		'hyperpress-shortcodes',
+		'hyperpress-shortcode',
 		'hyperpress-social',
 		'hyperpress-sponsor',
 		'hyperpress-student',
@@ -37,7 +37,7 @@ final class Convention {
 		'hyperpress-sponsor',
 		'hyperpress-label',
 		'hyperpress-student',
-		'hyperpress-shortcodes',
+		'hyperpress-shortcode',
 		'hyperpress-media',
 	);
 
@@ -57,7 +57,7 @@ final class Convention {
 		'hyperpress-social'     => array(),
 		'hyperpress-label'       => array(),
 		'hyperpress-student'     => array(),
-		'hyperpress-shortcodes' => array(),
+		'hyperpress-shortcode' => array(),
 		'hyperpress-media'      => array( 'safe-svg' ),
 		'hyperpress-utils'       => array(),
 	);

@@ -13,7 +13,7 @@ final class CaptureLegacyShortcodesTest extends WP_UnitTestCase {
 			$this->markTestSkipped( 'Set HYPERPRESS_WRITE_SNAPSHOT=1 to regenerate (theme code only).' );
 		}
 
-		// The hyperpress-shortcodes plugin registers the same tags on init: drop them so the theme code is what gets captured.
+		// The hyperpress-shortcode plugin registers the same tags on init: drop them so the theme code is what gets captured.
 		remove_all_shortcodes();
 
 		foreach ( array( 'show-hide-content', 'date-distance', 'raw', 'emphasis', 'banner' ) as $file ) {

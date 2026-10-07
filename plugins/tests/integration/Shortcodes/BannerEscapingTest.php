@@ -6,7 +6,7 @@ use WP_UnitTestCase;
 final class BannerEscapingTest extends WP_UnitTestCase {
 
 	public function test_anchor_cannot_break_out_of_the_id_attribute(): void {
-		$output = \HyperPress\Shortcodes\Shortcodes\Banner::render(
+		$output = \HyperPress\Shortcode\Shortcodes\Banner::render(
 			array(
 				'anchor' => 'x"><script>alert(1)</script>',
 				'title'  => 'Title',
@@ -19,20 +19,20 @@ final class BannerEscapingTest extends WP_UnitTestCase {
 	}
 
 	public function test_title_loses_event_handlers(): void {
-		$output = \HyperPress\Shortcodes\Shortcodes\Banner::render( array( 'title' => '<img src=x onerror=alert(1)>' ) );
+		$output = \HyperPress\Shortcode\Shortcodes\Banner::render( array( 'title' => '<img src=x onerror=alert(1)>' ) );
 
 		$this->assertStringNotContainsString( 'onerror', $output );
 	}
 
 	public function test_subtitle_loses_scripts_and_event_handlers(): void {
-		$output = \HyperPress\Shortcodes\Shortcodes\Banner::render( array( 'subtitle' => '<img src=x onerror=alert(1)><script>alert(2)</script>' ) );
+		$output = \HyperPress\Shortcode\Shortcodes\Banner::render( array( 'subtitle' => '<img src=x onerror=alert(1)><script>alert(2)</script>' ) );
 
 		$this->assertStringNotContainsString( 'onerror', $output );
 		$this->assertStringNotContainsString( '<script', $output );
 	}
 
 	public function test_normal_post_markup_survives_in_title_and_subtitle(): void {
-		$output = \HyperPress\Shortcodes\Shortcodes\Banner::render(
+		$output = \HyperPress\Shortcode\Shortcodes\Banner::render(
 			array(
 				'title'    => '<em>ok</em>',
 				'subtitle' => '<strong>fine</strong>',
@@ -44,7 +44,7 @@ final class BannerEscapingTest extends WP_UnitTestCase {
 	}
 
 	public function test_plain_text_output_is_unchanged(): void {
-		$output = \HyperPress\Shortcodes\Shortcodes\Banner::render(
+		$output = \HyperPress\Shortcode\Shortcodes\Banner::render(
 			array(
 				'anchor'   => 'about-us',
 				'title'    => 'Hello world',

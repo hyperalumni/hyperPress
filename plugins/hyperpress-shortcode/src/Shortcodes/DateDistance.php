@@ -1,5 +1,5 @@
 <?php
-namespace HyperPress\Shortcodes\Shortcodes;
+namespace HyperPress\Shortcode\Shortcodes;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -15,7 +15,7 @@ final class DateDistance {
 	 * The filter lets tests (and sites that want plain numbers) force this off.
 	 */
 	public static function supports_ordinals(): bool {
-		return (bool) apply_filters( 'hyperpress_shortcodes_ordinals', class_exists( '\NumberFormatter' ) );
+		return (bool) apply_filters( 'hyperpress_shortcode_ordinals', class_exists( '\NumberFormatter' ) );
 	}
 
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress always passes $content to shortcode callbacks; the signature matches the other shortcodes

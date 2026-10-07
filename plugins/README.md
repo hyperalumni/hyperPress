@@ -8,7 +8,7 @@ Companion WordPress plugins for the hyperPress theme. Each `hyperpress-*/` direc
 | `hyperpress-season`, `hyperpress-program` | Taxonomies that other content attaches to (`hyper_season`, `hyper_program`) |
 | `hyperpress-award`, `-competition`, `-countdown`, `-newsletter`, `-robot`, `-sponsor` | Custom post types (`hyper_*`) |
 | `hyperpress-social` | Social links (Customizer section and widget) |
-| `hyperpress-shortcodes` | Content shortcodes moved out of the theme (time-restrict, date distance, raw, emphasis, banner) |
+| `hyperpress-shortcode` | Content shortcodes moved out of the theme (time-restrict, date distance, raw, emphasis, banner) |
 | `hyperpress-media` | NextGen Gallery integration, moved out of the theme. SVG uploads come from the required Safe SVG plugin, which sanitizes them; AVIF is handled by WordPress core |
 | `hyperpress-label` | Post labels (date, author, category, comments; season, program, competition (district, week) and sponsor register their own; newsletter opts its post type in): registry, Customizer "Labels" section and renderer for the theme's `hyperpress_labels` action |
 | `hyperpress-student` | Placeholder with no behavior yet |
@@ -36,7 +36,7 @@ The plugin headers keep `Requires PHP: 8.3` as the floor and `Requires at least:
 
 ## Extracted plugins
 
-`hyperpress-shortcodes` and `hyperpress-media` were moved out of the theme. Sites whose content uses the `time-restrict`, `hyper_emphasis`, `raw`, `hyper_banner` or `hyper_date_distance` shortcodes must activate `hyperpress-shortcodes`.
+`hyperpress-shortcode` and `hyperpress-media` were moved out of the theme. Sites whose content uses the `time-restrict`, `hyper_emphasis`, `raw`, `hyper_banner` or `hyper_date_distance` shortcodes must activate `hyperpress-shortcode`.
 
 ## Upgrading from the pre-`hyper_` keys
 

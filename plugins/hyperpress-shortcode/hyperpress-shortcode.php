@@ -1,9 +1,9 @@
 <?php
 /**
- * The hyperPress Shortcodes plugin.
+ * The hyperPress Shortcode plugin.
  *
  * @wordpress-plugin
- * Plugin Name:         hyperPress Shortcodes
+ * Plugin Name:         hyperPress Shortcode
  * Plugin URI:          https://hyperalumni.org
  * Description:         Content shortcodes for hyperPress: time restricted content, date distance, raw output, emphasis and banners
  * Version:             2026.0.0
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
 
 spl_autoload_register(
 	static function ( string $class_name ): void {
-		$prefix = 'HyperPress\\Shortcodes\\';
+		$prefix = 'HyperPress\\Shortcode\\';
 		if ( 0 !== strpos( $class_name, $prefix ) ) {
 			return;
 		}
@@ -35,4 +35,4 @@ spl_autoload_register(
 );
 
 // Boot after every plugin file is loaded.
-add_action( 'plugins_loaded', array( \HyperPress\Shortcodes\Plugin::class, 'boot' ) );
+add_action( 'plugins_loaded', array( \HyperPress\Shortcode\Plugin::class, 'boot' ) );

@@ -55,7 +55,7 @@ tests_add_filter(
 	'muplugins_loaded',
 	static function (): void {
 		foreach ( Convention::LOAD_ORDER as $plugin ) {
-			// hyperpress-shortcodes and hyperpress-media are created later (plugins-04-remaining-plugins); skip folders that do not exist yet.
+			// hyperpress-shortcode and hyperpress-media are created later (plugins-04-remaining-plugins); skip folders that do not exist yet.
 			if ( ! is_dir( Convention::root() . '/' . $plugin ) ) {
 				continue;
 			}

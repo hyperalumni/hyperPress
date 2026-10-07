@@ -74,11 +74,11 @@
 **Interfaces:**
 - Produces: `HyperPress\Shortcode\Plugin::boot()`, `HyperPress\Shortcode\Shortcodes\{Banner,DateDistance,TimeRestrict,Raw,Emphasis}`, hooks `hyperpress_shortcode_now`, `hyperpress_shortcode_ordinals`. The five shortcode tags are unchanged.
 
-- [ ] **Step 1:** `git mv`; run the integration suite; confirm RED.
-- [ ] **Step 2:** Rename namespace, classes' references, header, hooks; update `Convention.php` and tests. Add a test asserting the five shortcode tags are still registered and the old hook names are gone.
-- [ ] **Step 3:** README/AGENTS/convention-spec amendment note in `plugins/`; `theme/README.md` and any theme references in `theme/` (own commit `docs: use hyperpress-shortcode`).
-- [ ] **Step 4:** Run suites and lint in both repos; all pass.
-- [ ] **Step 5:** Commit in `plugins/`: `refactor(shortcode): rename hyperpress-shortcodes to hyperpress-shortcode`.
+- [x] **Step 1:** `git mv`; run the integration suite; confirm RED.
+- [x] **Step 2:** Rename namespace, classes' references, header, hooks; update `Convention.php` and tests. Add a test asserting the five shortcode tags are still registered and the old hook names are gone.
+- [x] **Step 3:** README/AGENTS/convention-spec amendment note in `plugins/`; `theme/README.md` and any theme references in `theme/` (own commit `docs: use hyperpress-shortcode`).
+- [x] **Step 4:** Run suites and lint in both repos; all pass.
+- [x] **Step 5:** Commit in `plugins/`: `refactor(shortcode): rename hyperpress-shortcodes to hyperpress-shortcode`.
 
 ### Task 4: Docker mounts and plan notes
 
