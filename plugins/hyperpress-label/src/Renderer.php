@@ -82,7 +82,7 @@ final class Renderer {
 	}
 
 	/**
-	 * Fill defaults and coerce `classes` to a list of strings.
+	 * Fill defaults, coerce `label`, `title`, `url` and `rel` to strings and `classes` to a list of strings.
 	 *
 	 * @param array<string,mixed> $entry Raw label entry.
 	 * @return array{label:string,title:string,classes:array<int,string>,url:string,rel:string}
@@ -98,6 +98,10 @@ final class Renderer {
 				'rel'     => '',
 			)
 		);
+
+		foreach ( array( 'label', 'title', 'url', 'rel' ) as $field ) {
+			$entry[ $field ] = is_scalar( $entry[ $field ] ) ? strval( $entry[ $field ] ) : '';
+		}
 
 		$classes          = is_array( $entry['classes'] ) ? $entry['classes'] : array( $entry['classes'] );
 		$entry['classes'] = array_values( array_map( 'strval', array_filter( $classes, 'is_scalar' ) ) );

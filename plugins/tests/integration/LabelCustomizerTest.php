@@ -73,6 +73,15 @@ final class LabelCustomizerTest extends WP_UnitTestCase {
 		$this->assertNull( $manager->get_control( Resolver::labels_key( 'attachment' ) ) );
 	}
 
+	public function test_labels_control_explains_the_empty_selection(): void {
+		$control = $this->customizer()->get_control( Resolver::labels_key( 'post' ) );
+
+		$this->assertSame(
+			'Labels selected here appear on this post type. Select none to show no labels.',
+			$control->description
+		);
+	}
+
 	public function test_defaults_match_the_resolver(): void {
 		$manager = $this->customizer();
 

@@ -104,9 +104,10 @@ final class Customizer {
 					$manager,
 					$labels_key,
 					array(
-						'section' => 'hyperpress_label',
+						'section'     => 'hyperpress_label',
 						/* translators: %s: plural post type name. */
-						'label'   => sprintf( __( 'Labels on %s', 'hyperpress' ), $plural ),
+						'label'       => sprintf( __( 'Labels on %s', 'hyperpress' ), $plural ),
+						'description' => __( 'Labels selected here appear on this post type. Select none to show no labels.', 'hyperpress' ),
 					)
 				)
 			);

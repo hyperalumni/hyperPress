@@ -204,9 +204,10 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 
 - Final whole-branch review (da7af77): `Renderer::labels()` now normalizes entries added through the `hyperpress_labels_content` filter; `Registry::all()` called before `init` is flagged with `_doing_it_wrong` and does not lock in an incomplete list (spec section 1 updated to match); a few small tests were added and vacuous assertions removed.
 
+- Follow-up: `Renderer::normalize()` now coerces `label`, `title`, `url` and `rel` to strings (non-scalars become `''`); the labels Customizer control has a description hint; `LabelHooksContractTest` pins that `hyperpress-label` owns `hyperpress_labels` and `hyperpress_labels_content`.
+
 ### Deferred (minor)
 
-- `Renderer::normalize()` only coerces `classes`; non-scalar `label`, `title`, `url` or `rel` from a filter are not coerced.
 - Saved selections are explicit lists, and post types registered after `customize_register` get no Customizer controls (they render with default labels).
 - `theme/README.md`'s hooks table does not list `hyperpress_label_default_post_types`.
 - `Renderer::render()` returns early when there are no labels, so a theme override template is never called with an empty list.

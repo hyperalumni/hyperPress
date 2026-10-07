@@ -268,6 +268,43 @@ final class LabelRendererTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'Only label', $html );
 	}
 
+	public function test_non_scalar_filter_fields_are_coerced_to_empty_strings(): void {
+		$this->add( 'a', self::named( 'A' ) );
+		add_filter(
+			'hyperpress_labels_content',
+			static function (): array {
+				return array(
+					array(
+						'label' => array( 'x' ),
+						'title' => new \stdClass(),
+						'url'   => null,
+						'rel'   => array(),
+					),
+					array(
+						'label' => 5,
+						'title' => 1.5,
+						'url'   => true,
+						'rel'   => 'nofollow',
+					),
+				);
+			}
+		);
+
+		$labels = Renderer::labels();
+
+		$this->assertSame( '', $labels[0]['label'] );
+		$this->assertSame( '', $labels[0]['title'] );
+		$this->assertSame( '', $labels[0]['url'] );
+		$this->assertSame( '', $labels[0]['rel'] );
+		$this->assertSame( '5', $labels[1]['label'] );
+		$this->assertSame( '1.5', $labels[1]['title'] );
+		$this->assertSame( '1', $labels[1]['url'] );
+		$this->assertSame( 'nofollow', $labels[1]['rel'] );
+
+		// Rendering must not raise warnings or TypeErrors (the test fails on any PHP notice).
+		$this->assertNotSame( '', $this->output() );
+	}
+
 	public function test_markup_matches_the_old_template(): void {
 		$this->add( 'a', array( self::class, 'linked' ) );
 
