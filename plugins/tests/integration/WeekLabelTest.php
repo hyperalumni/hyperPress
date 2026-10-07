@@ -117,12 +117,18 @@ final class WeekLabelTest extends WP_UnitTestCase {
 		$week = $this->week_labels();
 
 		$this->assertCount( 1, $week );
+		// First = alphabetical by name (get_the_terms order).
 		$this->assertSame( 'Week 1', $week[0]['label'] );
 	}
 
 	public function test_label_is_not_shown_on_a_post(): void {
+		Registry::reset();
+		$this->assertArrayHasKey( 'week.week', Registry::instance()->all() );
+		$this->assertNotContains( 'week.week', Resolver::default_labels( 'post' ) );
+
 		$this->go_to_post_with_terms( 'post', array( 'Week 1' ) );
 
+		$this->assertNotContains( 'Week', array_column( Renderer::labels(), 'title' ) );
 		$this->assertSame( array(), $this->week_labels() );
 	}
 

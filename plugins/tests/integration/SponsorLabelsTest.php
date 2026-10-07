@@ -9,6 +9,7 @@ namespace HyperPress\Tests\Integration;
 
 use HyperPress\Label\Registry;
 use HyperPress\Label\Renderer;
+use HyperPress\Label\Resolver;
 use WP_UnitTestCase;
 
 /**
@@ -116,6 +117,13 @@ final class SponsorLabelsTest extends WP_UnitTestCase {
 	}
 
 	public function test_sponsor_labels_do_not_show_on_posts(): void {
+		Registry::reset();
+		$ids = array( 'sponsor.last_sponsored', 'sponsor.tier', 'sponsor.season_count' );
+		foreach ( $ids as $id ) {
+			$this->assertArrayHasKey( $id, Registry::instance()->all() );
+			$this->assertNotContains( $id, Resolver::default_labels( 'post' ) );
+		}
+
 		$this->set_tier( 'Gold' );
 		$this->go_to_post_with_seasons( 'post', array( '2026' ) );
 

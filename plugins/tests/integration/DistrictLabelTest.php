@@ -109,12 +109,18 @@ final class DistrictLabelTest extends WP_UnitTestCase {
 		$district = $this->district_labels();
 
 		$this->assertCount( 1, $district );
+		// First = alphabetical by name (get_the_terms order).
 		$this->assertSame( 'Michigan', $district[0]['label'] );
 	}
 
 	public function test_label_is_not_shown_on_a_post(): void {
+		Registry::reset();
+		$this->assertArrayHasKey( 'district.district', Registry::instance()->all() );
+		$this->assertNotContains( 'district.district', Resolver::default_labels( 'post' ) );
+
 		$this->go_to_post_with_districts( 'post', array( 'Ontario' ) );
 
+		$this->assertNotContains( 'District', array_column( Renderer::labels(), 'title' ) );
 		$this->assertSame( array(), $this->district_labels() );
 	}
 }
