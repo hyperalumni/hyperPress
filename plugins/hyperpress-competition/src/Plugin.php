@@ -24,6 +24,7 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'register_banner' ) );
 		Customizer::register();
 		MetaBoxes::register();
+		Labels::register();
 	}
 
 	public static function register_banner(): void {
