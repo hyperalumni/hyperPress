@@ -13,6 +13,7 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'register' ) );
 		Customizer::register();
 		MetaBoxes::register();
+		Labels::register();
 	}
 
 	public static function register(): void {
