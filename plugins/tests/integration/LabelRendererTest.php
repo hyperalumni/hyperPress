@@ -302,7 +302,13 @@ final class LabelRendererTest extends WP_UnitTestCase {
 		$this->assertSame( 'nofollow', $labels[1]['rel'] );
 
 		// Rendering must not raise warnings or TypeErrors (the test fails on any PHP notice).
-		$this->assertNotSame( '', $this->output() );
+		$html = $this->output();
+		$this->assertSame( 2, substr_count( $html, '<div class="cell shrink label ' ) );
+		$this->assertSame( 1, substr_count( $html, '<span title="">' ) );
+		$this->assertMatchesRegularExpression( '/<span title="1\.5">\s*5\s*<\/span>/', $html );
+		$this->assertStringContainsString( 'rel="nofollow"', $html );
+		$this->assertStringNotContainsString( 'Array', $html );
+		$this->assertStringNotContainsString( 'stdClass', $html );
 	}
 
 	public function test_markup_matches_the_old_template(): void {

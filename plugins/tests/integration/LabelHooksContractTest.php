@@ -19,7 +19,6 @@ final class LabelHooksContractTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		Registry::reset( true );
-		Renderer::register();
 	}
 
 	public function tear_down(): void {
