@@ -18,7 +18,7 @@ services:
         condition: service_healthy
 
   db:
-    image: mariadb:11
+    image: mariadb:11.4
     environment:
       MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: wordpress_test
