@@ -127,6 +127,34 @@ final class SocialIconsTest extends WP_UnitTestCase {
 		$this->assertSame( '', Icons::svg( $name, 'x' ) );
 	}
 
+	public function test_a_trailing_newline_is_rejected_even_when_the_file_exists(): void {
+		$this->write_temp_icon( 'zz-newline-check', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path d="M0 0h2v2z" fill="currentColor"/></svg>' );
+
+		$this->assertSame( '', Icons::svg( "zz-newline-check\n" ) );
+		$this->assertStringStartsWith( '<svg', Icons::svg( 'zz-newline-check' ) );
+
+		// The name must fail validation itself, not merely miss a file: a name that passed would have been looked up and cached.
+		$cache = ( new ReflectionClass( Icons::class ) )->getProperty( 'cache' );
+		$cache->setAccessible( true );
+		$this->assertArrayNotHasKey( "zz-newline-check\n", $cache->getValue() );
+	}
+
+	public function test_backreference_like_sequences_in_classes_appear_literally(): void {
+		$svg = Icons::svg( 'firstinspires', 'a$1 b\\0 c${1}' );
+
+		$this->assertStringContainsString( 'class="a$1 b\\0 c${1}"', $svg );
+		$this->assertStringStartsWith( '<svg class="a$1 b\\0 c${1}" aria-hidden="true" focusable="false"', $svg );
+	}
+
+	public function test_fixed_dimensions_and_role_on_the_root_are_stripped(): void {
+		$this->write_temp_icon( 'tmp-sized-icon', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2" width="20" height="20" role="img"><path d="M0 0h2v2z" fill="currentColor"/></svg>' );
+
+		$svg = Icons::svg( 'tmp-sized-icon' );
+
+		$this->assertStringStartsWith( '<svg', $svg );
+		$this->assertDoesNotMatchRegularExpression( '/^<svg[^>]*\s(width|height|role)=/', $svg );
+	}
+
 	public function test_a_missing_file_gives_nothing_without_warnings(): void {
 		$this->assertSame( '', Icons::svg( 'no-such-icon-file', 'x' ) );
 	}

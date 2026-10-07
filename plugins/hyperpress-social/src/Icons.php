@@ -22,9 +22,6 @@ final class Icons {
 			'class'       => true,
 			'aria-hidden' => true,
 			'focusable'   => true,
-			'height'      => true,
-			'width'       => true,
-			'role'        => true,
 		),
 		'g'    => array(
 			'transform' => true,
@@ -61,7 +58,7 @@ final class Icons {
 	 * @param string $classes Space separated CSS classes for the root `<svg>`.
 	 */
 	public static function svg( string $name, string $classes = '' ): string {
-		if ( 1 !== preg_match( '/^[a-z0-9_-]+$/', $name ) ) {
+		if ( 1 !== preg_match( '/^[a-z0-9_-]+\z/', $name ) ) {
 			return '';
 		}
 
@@ -78,7 +75,8 @@ final class Icons {
 		$attributes  = '' === $classes ? '' : ' class="' . esc_attr( $classes ) . '"';
 		$attributes .= ' aria-hidden="true" focusable="false"';
 
-		return (string) preg_replace( '/^<svg\b/', '<svg' . $attributes, $svg, 1 );
+		// load() guarantees the markup starts with `<svg`; a plain string splice keeps `$1` or `\0` in the classes literal.
+		return substr_replace( $svg, '<svg' . $attributes, 0, 4 );
 	}
 
 	/**
