@@ -82,10 +82,22 @@
 
 ### Task 4: Docker mounts and plan notes
 
+> **STATUS: ✅ COMPLETED** (2026-10-07). Plugins repo commits `96b55b2`, `6aaa7c0`, `e63536d` (plus the plan-tick commits); theme repo commits `34099a8`, `e897be0`. Final state: plugins integration 541 tests / 1715 assertions (4 skipped, as before), unit 126 tests / 305 assertions, lint exit 0; both compose stacks `config` exit 0.
+
 **Files:**
 - Modify (untracked): `hyperonline/compose.main.yaml` (lines ~27-28), `hyperalumni/compose.main.yaml` (line ~21): source paths and target paths for the two renamed plugins, keeping the lists alphabetical.
 - Modify: this plan (tick checkboxes, STATUS banner, Outcome notes incl. the dev-site consequence above).
 
-- [ ] **Step 1:** Edit both compose files; run `docker compose --profile local config >/dev/null; echo exit=$?` in each stack dir (do not start or read `.env*`); both exit 0.
-- [ ] **Step 2:** Final grep across `plugins/`, `theme/`, `hyperalumni/`, `hyperonline/` for the old slugs, namespaces and identifiers (excluding history docs); nothing stale.
-- [ ] **Step 3:** Update this plan and commit in `plugins/`: `docs(plans): record the singular plugin rename`.
+- [x] **Step 1:** Edit both compose files; run `docker compose --profile local config >/dev/null; echo exit=$?` in each stack dir (do not start or read `.env*`); both exit 0.
+- [x] **Step 2:** Final grep across `plugins/`, `theme/`, `hyperalumni/`, `hyperonline/` for the old slugs, namespaces and identifiers (excluding history docs); nothing stale.
+- [x] **Step 3:** Update this plan and commit in `plugins/`: `docs(plans): record the singular plugin rename`.
+
+## Outcome / execution notes
+
+- **Identifiers renamed:** plugin folders/slugs `hyperpress-social`, `hyperpress-shortcode`; namespaces `HyperPress\Social`, `HyperPress\Shortcode`; widget class `DisplaySocialWidget`; widget base id `hyperpress_social` (option `widget_hyperpress_social`); theme mods `hyperpress_social_<field>`; hooks `hyperpress_shortcode_now` and `hyperpress_shortcode_ordinals`. Docker mounts in `hyperonline` and `hyperalumni` now use the new folder names (alphabetical order unchanged).
+- **Consequence for dev sites:** WordPress deactivates a plugin whose folder moved, so both plugins are deactivated until reactivated; values saved under the old theme-mod keys and the old widget option are not read any more. Recreate the containers with the new mounts, reactivate the plugins and re-enter or copy the old values.
+- **Shortcode tags unchanged (nine):** `hyper_banner`, `hyper_emphasis`, `hyper_date_distance`, `raw`, `time-restrict`, `time-restrict-repeat`, `time-restrict-repeat-1`, `time-restrict-repeat-2`, `time-restrict-repeat-3`.
+- **Display labels kept:** the widget title "hyperPress Socials", the Customizer title 'Socials' and the `customize_socials` method name are user-facing/internal labels, not plugin identifiers, and were left as they are. Theme-owned sidebar ids `socials` and `footer-socials` are unchanged.
+- **Theme bootstrap skip-list fix:** the theme bootstrap skip-list that names the extracted plugin code was updated to the new names in the theme commits, so the theme does not load duplicate code or silently drop the footer socials.
+- **Test fix:** `PluginIdentifiersTest` now freezes the clock outside the 2000-2100 window (year 2150, expects the else branch) and inside a past window (expects the shown branch); both fail when the filter name in `TimeRestrict.php` is broken (RED verified, then restored).
+- **Final grep:** remaining old-slug hits are only historical dated docs under `docs/superpowers/{specs,plans,audit}` in both repos, the negative assertions in `SocialsTest.php` and `PluginIdentifiersTest.php`, and the git-ignored `.idea/workspace.xml`.
