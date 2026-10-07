@@ -64,11 +64,11 @@ From `plugins/`: `git add docs/superpowers/specs/2026-10-06-label-plugin-extract
 - Consumes: `Registry::instance()->all()`, `Registry::default_post_types()`.
 - Produces: `Resolver::enabled_key( string $post_type ): string`, `labels_key( string $post_type ): string`, `default_enabled( string $post_type ): bool` (true when any registered label lists the type in its default post types), `default_labels( string $post_type ): array` (IDs), `is_enabled( string $post_type, string $label_id ): bool`.
 
-- [ ] **Step 1: Write failing tests** (registry seeded with `Registry::reset( true )` plus `add()` of labels `a` defaulting to `['post']` and `b` defaulting to `['page']`): `test_defaults_apply_with_nothing_saved` (`a` on post true, `b` on post false, `default_enabled('post')` true, `default_enabled('attachment')` false); `test_saved_list_overrides_defaults` (`set_theme_mod( labels_key('post'), ['b'] )` → `b` true, `a` false); `test_disabled_post_type_shows_nothing` (`_enabled` false, labels still saved → both false; re-enabling restores the saved list); `test_stale_ids_are_ignored` (saved list `['gone','a']` → `a` true, no error, `is_enabled('post','gone')` false); `test_empty_saved_list_shows_nothing`; `test_default_types_filter_is_honoured` (filter adds `page` to `a`).
-- [ ] **Step 2: Run** `--filter LabelResolverTest`; expected FAIL.
-- [ ] **Step 3: Implement** `Resolver` with `get_theme_mod( key, default )`; cast `_enabled` to bool and `_labels` to an array of strings. Tear down with `remove_theme_mod` for touched keys.
-- [ ] **Step 4: Run** the filter, then `composer lint`.
-- [ ] **Step 5: Commit** `feat(label): resolve enabled labels per post type`.
+- [x] **Step 1: Write failing tests** (registry seeded with `Registry::reset( true )` plus `add()` of labels `a` defaulting to `['post']` and `b` defaulting to `['page']`): `test_defaults_apply_with_nothing_saved` (`a` on post true, `b` on post false, `default_enabled('post')` true, `default_enabled('attachment')` false); `test_saved_list_overrides_defaults` (`set_theme_mod( labels_key('post'), ['b'] )` → `b` true, `a` false); `test_disabled_post_type_shows_nothing` (`_enabled` false, labels still saved → both false; re-enabling restores the saved list); `test_stale_ids_are_ignored` (saved list `['gone','a']` → `a` true, no error, `is_enabled('post','gone')` false); `test_empty_saved_list_shows_nothing`; `test_default_types_filter_is_honoured` (filter adds `page` to `a`).
+- [x] **Step 2: Run** `--filter LabelResolverTest`; expected FAIL.
+- [x] **Step 3: Implement** `Resolver` with `get_theme_mod( key, default )`; cast `_enabled` to bool and `_labels` to an array of strings. Tear down with `remove_theme_mod` for touched keys.
+- [x] **Step 4: Run** the filter, then `composer lint`.
+- [x] **Step 5: Commit** `feat(label): resolve enabled labels per post type`.
 
 ### Task 3: Renderer and template
 
