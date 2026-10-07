@@ -22,5 +22,6 @@ final class Plugin {
 	public static function boot(): void {
 		Renderer::register();
 		PostLabels::register();
+		Customizer::register();
 	}
 }

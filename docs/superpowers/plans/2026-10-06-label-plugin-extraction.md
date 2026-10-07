@@ -119,11 +119,11 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 - Produces: `Customizer::register(): void` (hooks `customize_register` → `customize( WP_Customize_Manager $manager ): void`), `Customizer::post_types(): array` (name => plural label; public types except `attachment`, plus any type in a label's default types), `Customizer::sanitize_labels( $value ): array`. `LabelDropdownControl extends WP_Customize_Control`, `$type = 'dropdown-labels'`, multi-select of registry labels with option text `"{group}: {title}"`, modelled on `HyperPress\Utils\Controls\PostTypeDropdownControl` but without depending on Utils.
 - Per post type: setting `hyperpress_label_{T}_enabled` (`theme_mod`, `transport refresh`, default `Resolver::default_enabled`, sanitize `rest_sanitize_boolean`) with a core `checkbox` control labelled `Show labels on {plural}`; setting `hyperpress_label_{T}_labels` (default `Resolver::default_labels`, sanitize `Customizer::sanitize_labels`) with the dropdown control. Section `hyperpress_label`, title `Labels`, priority 140.
 
-- [ ] **Step 1: Write failing tests**: `test_section_exists_with_priority_140`; `test_each_public_post_type_has_both_settings_and_controls_in_the_section` (`post`, `page`, no `attachment`); `test_defaults_match_the_resolver` (`post` enabled true with the post label IDs; `page` enabled false); `test_sanitize_labels_keeps_only_registered_ids` (`array( 'post.date', 'nope', 'post.date', 5 )` → `array( 'post.date' )`); `test_sanitize_labels_rejects_non_arrays` (`'x'`, `null` → `array()`); `test_stale_saved_ids_do_not_break_registration` (`set_theme_mod( labels_key('post'), array( 'gone' ) )` then building the manager raises nothing); `test_a_post_type_named_only_in_label_defaults_gets_controls` (register a label defaulting to a non-public type `hyper_x`).
-- [ ] **Step 2: Run** `--filter LabelCustomizerTest`; expected FAIL.
-- [ ] **Step 3: Implement** both classes and wire `Customizer::register()`.
-- [ ] **Step 4: Run** the filter, then `composer lint`.
-- [ ] **Step 5: Commit** `feat(label): add the Labels Customizer section`.
+- [x] **Step 1: Write failing tests**: `test_section_exists_with_priority_140`; `test_each_public_post_type_has_both_settings_and_controls_in_the_section` (`post`, `page`, no `attachment`); `test_defaults_match_the_resolver` (`post` enabled true with the post label IDs; `page` enabled false); `test_sanitize_labels_keeps_only_registered_ids` (`array( 'post.date', 'nope', 'post.date', 5 )` → `array( 'post.date' )`); `test_sanitize_labels_rejects_non_arrays` (`'x'`, `null` → `array()`); `test_stale_saved_ids_do_not_break_registration` (`set_theme_mod( labels_key('post'), array( 'gone' ) )` then building the manager raises nothing); `test_a_post_type_named_only_in_label_defaults_gets_controls` (register a label defaulting to a non-public type `hyper_x`).
+- [x] **Step 2: Run** `--filter LabelCustomizerTest`; expected FAIL.
+- [x] **Step 3: Implement** both classes and wire `Customizer::register()`.
+- [x] **Step 4: Run** the filter, then `composer lint`.
+- [x] **Step 5: Commit** `feat(label): add the Labels Customizer section`.
 
 ### Task 6: Season label (`hyperpress-season`)
 
