@@ -177,10 +177,10 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 - Modify: `theme/template-parts/content.php:24`, `theme/functions.php:41` (remove the require), `theme/tests/unit/PluginHooksContractTest.php` (remove the `'labels'` row), `theme/tests/integration/LabelsBreadcrumbsGuardTest.php` (delete the two label tests, keep the breadcrumb tests), `theme/tests/integration/StrictComparisonsTest.php` (delete the comment-count label test and its provider if unused elsewhere)
 - Delete: `theme/template-parts/labels.php`, `theme/library/labels.php`, `theme/library/labels/post.php`
 
-- [ ] **Step 1:** Replace `get_template_part( 'template-parts/labels' )` in `content.php` with `do_action( 'hyperpress_labels' )`; run `grep -rn 'template-parts/labels' theme plugins --include=*.php` and confirm nothing is left.
-- [ ] **Step 2:** Delete the three files and the `functions.php` require; apply the test edits above.
-- [ ] **Step 3: Run** from `theme/`: `docker compose run --rm php composer test:unit`, `composer test:integration`, `composer lint`; expected all PASS. Rerun the plugins integration suite from `plugins/`.
-- [ ] **Step 4: Commit** (in `theme/`) `refactor: move labels to hyperpress-label`.
+- [x] **Step 1:** Replace `get_template_part( 'template-parts/labels' )` in `content.php` with `do_action( 'hyperpress_labels' )`; run `grep -rn 'template-parts/labels' theme plugins --include=*.php` and confirm nothing is left.
+- [x] **Step 2:** Delete the three files and the `functions.php` require; apply the test edits above.
+- [x] **Step 3: Run** from `theme/`: `docker compose run --rm php composer test:unit`, `composer test:integration`, `composer lint`; expected all PASS. Rerun the plugins integration suite from `plugins/`.
+- [x] **Step 4: Commit** (in `theme/`) `refactor: move labels to hyperpress-label`.
 
 ### Task 10: Docs, AGENTS and Docker mounts
 
