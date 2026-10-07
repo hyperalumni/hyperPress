@@ -101,11 +101,11 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 - Produces: `PostLabels::register(): void` (adds `hyperpress_label_register` → `register_labels( Registry $registry ): void`), and static callbacks `date(): array`, `author(): array`, `category(): array`, `comments(): array`, each returning a list of label arrays. Registered with group "Post", defaults `['post']`, IDs and priorities from Global Constraints.
 - Callback bodies are ports of `theme/library/labels/post.php` without the post-type condition: date `'%1$s @ %2$s'` with title `Posted At`, classes `dark`; author title `Posted By`, classes `primary byline author`, `rel => 'author'`, url `get_author_posts_url`; category = first category, title `Posted In`, class `info`, url `get_category_link`, and an empty list when the post has none; comments `N comment(s)`, class `neutral`, url `get_comments_link()`, empty title.
 
-- [ ] **Step 1: Write failing tests**, ported from `theme/tests/integration/LabelsBreadcrumbsGuardTest.php` (first two tests) and `StrictComparisonsTest.php::test_comment_count_label`, but reading `Renderer::labels()`: `test_post_without_categories_has_no_category_label` (titles contain `Posted At`, not `Posted In`; no label is `''`), `test_post_with_a_category_gets_it` (`Posted In`, `Guard Cat`), `test_comment_count_label` with the `0 comments` / `1 comment` / `2 comments` provider, `test_order_is_date_author_category_comments`, `test_labels_do_not_appear_on_a_page` (type `page`, default off).
-- [ ] **Step 2: Run** `--filter PostLabelsTest`; expected FAIL.
-- [ ] **Step 3: Implement** `PostLabels` and wire it.
-- [ ] **Step 4: Run** the filter and `--filter 'Label'`, then `composer lint`.
-- [ ] **Step 5: Commit** `feat(label): add the post labels`.
+- [x] **Step 1: Write failing tests**, ported from `theme/tests/integration/LabelsBreadcrumbsGuardTest.php` (first two tests) and `StrictComparisonsTest.php::test_comment_count_label`, but reading `Renderer::labels()`: `test_post_without_categories_has_no_category_label` (titles contain `Posted At`, not `Posted In`; no label is `''`), `test_post_with_a_category_gets_it` (`Posted In`, `Guard Cat`), `test_comment_count_label` with the `0 comments` / `1 comment` / `2 comments` provider, `test_order_is_date_author_category_comments`, `test_labels_do_not_appear_on_a_page` (type `page`, default off).
+- [x] **Step 2: Run** `--filter PostLabelsTest`; expected FAIL.
+- [x] **Step 3: Implement** `PostLabels` and wire it.
+- [x] **Step 4: Run** the filter and `--filter 'Label'`, then `composer lint`.
+- [x] **Step 5: Commit** `feat(label): add the post labels`.
 
 ### Task 5: Customizer and control
 

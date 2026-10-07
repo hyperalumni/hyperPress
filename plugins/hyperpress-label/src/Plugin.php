@@ -7,6 +7,8 @@
 
 namespace HyperPress\Label;
 
+use HyperPress\Label\Labels\PostLabels;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -19,5 +21,6 @@ final class Plugin {
 	 */
 	public static function boot(): void {
 		Renderer::register();
+		PostLabels::register();
 	}
 }
