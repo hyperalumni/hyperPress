@@ -25,7 +25,7 @@ are not preserved and no backwards-compatibility shims are added.
 | Main file | Named after the folder (`hyperpress-award/hyperpress-award.php`). |
 | Capabilities | Per-CPT, granted to Administrator and Editor. |
 | Season | `hyperpress-season` is a hard requirement for the public CPT plugins. |
-| `label`, `student` | Kept as placeholders: fixed header and new structure, no behavior. |
+| `label`, `student` | Kept as placeholders: fixed header and new structure, no behavior. *Amended 2026-10-06: `label` is implemented (see `2026-10-06-label-plugin-extraction-design.md`); only `student` is a placeholder.* |
 
 The mixed prefixes are deliberate. `hyper_` is for registered WordPress object
 keys (short, under the length limit). `hyperpress_` is for everything stored or
@@ -44,7 +44,7 @@ Fixes, all verified against the current files:
 | newsletter | Missing Plugin URI, License, License URI. Add them. |
 | all | `GitHub Plugin URI` is only read by GitHub Updater, which is not used. Remove it from all headers. |
 | student | Missing Author. Add it. |
-| label, student | Descriptions describe behavior that does not exist. Mark as placeholders. |
+| label, student | Descriptions describe behavior that does not exist. Mark as placeholders. (Amended 2026-10-06: label now has behavior.) |
 | competition | Meta box queries the `robot` CPT (`lib/metaboxes/information.php:32`). Add `hyperpress-robot`. |
 | award, robot | Register no meta boxes. Drop `meta-box-aio`. |
 | socials | Customizer plus widget only. Drop `meta-box-aio`. |

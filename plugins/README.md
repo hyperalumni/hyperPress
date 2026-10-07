@@ -10,7 +10,8 @@ Companion WordPress plugins for the hyperPress theme. Each `hyperpress-*/` direc
 | `hyperpress-socials` | Social links (Customizer section and widget) |
 | `hyperpress-shortcodes` | Content shortcodes moved out of the theme (time-restrict, date distance, raw, emphasis, banner) |
 | `hyperpress-media` | NextGen Gallery integration, moved out of the theme. SVG uploads come from the required Safe SVG plugin, which sanitizes them; AVIF is handled by WordPress core |
-| `hyperpress-label`, `hyperpress-student` | Placeholders with no behavior yet |
+| `hyperpress-label` | Post labels (date, author, category, comments; season, newsletter and sponsor register their own): registry, Customizer "Labels" section and renderer for the theme's `hyperpress_labels` action |
+| `hyperpress-student` | Placeholder with no behavior yet |
 
 ## Development
 

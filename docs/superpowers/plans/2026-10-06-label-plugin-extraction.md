@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **STATUS: ✅ COMPLETED** (2026-10-06). Tasks 1–10 implemented and reviewed; commit range 97415ee..10bddf2 (plugins, plus the final docs commit that contains this banner) and 0e35b7d..0452672 (theme). Pending: manual stack check (Task 10 step 3).
+
 **Goal:** Move the theme's label renderer and post labels into `hyperpress-label`, let `hyperpress-season`, `-newsletter` and `-sponsor` register their own labels, and add per-post-type Customizer settings that choose which labels show (or turn labels off).
 
 **Architecture:** `hyperpress-label` owns a `Registry` of label definitions (filled lazily through the `hyperpress_label_register` action), a `Resolver` that reads two `theme_mod`s per post type, a `Renderer` on the `hyperpress_labels` action, and a `Customizer` section. Templates call `do_action( 'hyperpress_labels' )`. `hyperpress_labels_content` stays as the final filter.
@@ -188,7 +190,20 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 - Modify: `theme/docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md` (labels are now extracted to `hyperpress-label`; `hyperpress_labels_content` is produced by the plugin), `theme/AGENTS.md:31` (drop `hyperpress_labels_content` from the hooks the theme fires; add that templates call `do_action( 'hyperpress_labels' )`), `plugins/AGENTS.md` (`hyperpress-label` is no longer a placeholder; only `hyperpress-student` is), `plugins/docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md` (label row no longer "placeholder")
 - Modify (untracked stacks): `hyperalumni/compose.main.yaml` (add `- ../plugins/hyperpress-label/:/var/www/html/wp-content/plugins/hyperpress-label` after the countdown line, keeping the list alphabetical). `hyperonline/compose.main.yaml:21` already mounts it.
 
-- [ ] **Step 1:** Make the doc edits; add an "Outcome / execution notes" line to this plan.
-- [ ] **Step 2:** `docker compose --profile local config` in `hyperalumni/` succeeds.
+- [x] **Step 1:** Make the doc edits; add an "Outcome / execution notes" line to this plan.
+- [x] **Step 2:** `docker compose --profile local config` in `hyperalumni/` succeeds.
 - [ ] **Step 3:** Manual check in a running stack (`hyperalumni`): a single post shows date, author, category and comments labels (season appears only with `hyperpress-season` mounted and a season assigned); in Customizer > Labels, unchecking "Show labels on Posts" removes them in the preview; reselecting a subset shows only that subset.
-- [ ] **Step 4: Commit** in each repo: `docs: label plugin extraction notes` (theme) and `docs: mark hyperpress-label as implemented` (plugins), with this plan's checkboxes ticked and a `> **STATUS: ✅ COMPLETED**` banner added.
+- [x] **Step 4: Commit** in each repo: `docs: label plugin extraction notes` (theme) and `docs: mark hyperpress-label as implemented` (plugins), with this plan's checkboxes ticked and a `> **STATUS: ✅ COMPLETED**` banner added.
+
+## Outcome / execution notes
+
+- Deliberate behavior change: with `hyperpress-label` inactive the theme shows no labels at all (templates only call `do_action( 'hyperpress_labels' )`; the theme no longer renders or fires `hyperpress_labels_content`).
+- `hyperalumni/compose.main.yaml` (untracked) now mounts `hyperpress-label`; `hyperonline` already did. `docker compose --profile local config` parses. The stack was not started.
+- Docs updated: `theme/AGENTS.md`, `theme/README.md`, the theme cleanup spec (amendment notes), `plugins/AGENTS.md`, `plugins/README.md`, and the plugins convention spec (amendment notes).
+- Task 10 step 3 (manual check in a running stack) is not done and stays unticked.
+
+### Deferred (minor)
+
+- Entries added through the `hyperpress_labels_content` filter are not re-normalized by `Renderer`; a sparse entry would raise warnings in the template.
+- `Renderer::render()` returns early when there are no labels, so a theme override template is never called with an empty list.
+- `theme/library/breadcrumbs/post.php` still uses `get_category_link()` for the season term crumb (line 16); it should use `get_term_link()`.
