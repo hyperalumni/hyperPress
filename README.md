@@ -27,7 +27,8 @@ The theme expects the HYPER plugins in `../plugins` (`hyperpress-utils` and the 
 | `hyperpress_banner_content` | filter | Plugins adjust the banner array (`type`, `title`, `subtitle`, `backgroundColor`) |
 | `hyperpress_breadcrumbs_content` | filter | Plugins append breadcrumb arrays (`title`, `url`, `classes`) |
 | `content_template` | filter | A plugin returns the path of a template the theme `include`s for single and list views |
-| `hyperpress_labels_content` | filter | Plugins add labels below a post title |
+| `hyperpress_labels` | action | Templates call it where labels show; `hyperpress-label` renders them (it must be active) |
+| `hyperpress_labels_content` | filter | Applied by `hyperpress-label` on the label list, not by the theme (prefer the `hyperpress_label_register` action to add labels) |
 
 ## Upgrading
 

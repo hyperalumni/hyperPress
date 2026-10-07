@@ -28,7 +28,9 @@ Per `docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md`, 
 presentation-only. Shortcodes, SVG/AVIF support, NextGen code and HYPER plugin recommendations move to
 plugins in `../plugins`. Banner router, core breadcrumb trails, Customizer, nav, walkers and templates stay.
 - Keep shortcode tags and plugin-facing hooks unchanged: `hyperpress_banner_content`,
-  `hyperpress_breadcrumbs_content`, `content_template`, `hyperpress_labels_content`.
+  `hyperpress_breadcrumbs_content`, `content_template`. Labels moved to `hyperpress-label`: templates
+  call `do_action( 'hyperpress_labels' )`, and `hyperpress-label` must be active for labels to show
+  (the plugin applies the `hyperpress_labels_content` filter, the theme no longer fires it).
 - Use the `hyperpress_` prefix for new code. Legacy `foundationpress_` and `hyper_` names are being renamed.
 
 ## Gotchas
