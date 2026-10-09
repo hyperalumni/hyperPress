@@ -224,6 +224,22 @@ function hyperpress_custom_logo_fallback( string $html ): string {
 	);
 }
 
+/**
+ * Print an SVG favicon link while the bundled default site icon is in effect.
+ */
+function hyperpress_default_icon_svg_link(): void {
+	$default_id = hyperpress_default_branding_id( 'icon' );
+
+	if ( $default_id <= 0 || (int) get_option( 'site_icon' ) !== $default_id ) {
+		return;
+	}
+
+	printf(
+		'<link rel="icon" type="image/svg+xml" href="%s">' . "\n",
+		esc_url( get_theme_file_uri( 'library/branding-assets/icon.svg' ) )
+	);
+}
+
 add_action( 'admin_init', 'hyperpress_maybe_seed_default_branding' );
 add_action( 'after_switch_theme', 'hyperpress_maybe_seed_default_branding' );
 add_filter( 'theme_mod_custom_logo', 'hyperpress_default_logo_fallback' );
@@ -231,3 +247,5 @@ add_filter( 'theme_mod_custom_logo', 'hyperpress_default_logo_fallback' );
 add_filter( 'option_site_icon', 'hyperpress_default_icon_fallback' );
 add_filter( 'default_option_site_icon', 'hyperpress_default_icon_fallback' );
 add_filter( 'get_custom_logo', 'hyperpress_custom_logo_fallback' );
+add_action( 'wp_head', 'hyperpress_default_icon_svg_link', 20 );
+add_action( 'login_head', 'hyperpress_default_icon_svg_link', 20 );

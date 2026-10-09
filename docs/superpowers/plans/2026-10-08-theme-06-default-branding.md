@@ -128,14 +128,14 @@ git commit -m "feat: fall back to the default logo and site icon" -- library/def
 - Consumes: `hyperpress_default_branding_id( string $key ): int`.
 - Produces: `hyperpress_default_icon_svg_link(): void`, which echoes `<link rel="icon" type="image/svg+xml" href="…">` (URL from `get_theme_file_uri( 'library/branding-assets/icon.svg' )`, escaped with `esc_url`) only when `(int) get_option( 'site_icon' )` equals the non-zero default icon ID. Hooked to `wp_head` (priority 20) and `login_head` (priority 20).
 
-- [ ] **Step 1: Write the failing tests** (output captured with `ob_start()` around `hyperpress_default_icon_svg_link()`):
+- [x] **Step 1: Write the failing tests** (output captured with `ob_start()` around `hyperpress_default_icon_svg_link()`):
   - `test_link_printed_while_default_icon_in_effect`: seed, `delete_option( 'site_icon' )`; output contains `type="image/svg+xml"` and `branding-assets/icon.svg`.
   - `test_link_omitted_when_user_icon_set`: seed, `update_option( 'site_icon', $other_id )`; output is an empty string.
   - `test_link_omitted_when_not_seeded`: output is an empty string.
   - `test_link_hooked_to_head_actions`: `has_action( 'wp_head', 'hyperpress_default_icon_svg_link' )` and the same for `login_head` are not false.
-- [ ] **Step 2: Run to verify failure,** then **Step 3: Implement** the function and the two `add_action` calls.
-- [ ] **Step 4: Run to verify pass** (both modes) and **lint.** Expected: PASS, exit 0.
-- [ ] **Step 5: Commit**
+- [x] **Step 2: Run to verify failure,** then **Step 3: Implement** the function and the two `add_action` calls.
+- [x] **Step 4: Run to verify pass** (both modes) and **lint.** Expected: PASS, exit 0.
+- [x] **Step 5: Commit**
 
 ```bash
 git add library/default-branding.php tests/integration/DefaultBrandingFaviconTest.php docs/superpowers/plans/2026-10-08-theme-06-default-branding.md
