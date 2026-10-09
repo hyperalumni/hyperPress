@@ -50,6 +50,9 @@ require_once get_template_directory() . '/library/enqueue-scripts.php';
 /** Add theme support */
 require_once get_template_directory() . '/library/theme-support.php';
 
+/** Seed default logo and site icon */
+require_once get_template_directory() . '/library/default-branding.php';
+
 /** Add Nav Options to Customer */
 require_once get_template_directory() . '/library/custom-nav.php';
 

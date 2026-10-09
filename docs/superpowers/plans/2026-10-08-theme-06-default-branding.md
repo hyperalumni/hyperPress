@@ -57,8 +57,8 @@
   - `hyperpress_seed_default_branding(): bool`, takes the lock, seeds both, stores the IDs, sets `hyperpress_branding_version` only if both IDs are non-zero, releases the lock, returns success. A lock younger than 300 seconds makes it return `false` without doing anything; an older lock is stale and is taken over.
   - `hyperpress_maybe_seed_default_branding(): void`, returns early when the stored version equals the current one and both IDs are valid; otherwise calls the seeder. Hooked to `admin_init` and `after_switch_theme`.
 
-- [ ] **Step 1: Place the three owner-supplied files** at `library/branding-assets/logo.svg`, `icon.svg` and `icon.png` (icon PNG at least 512×512 if possible). Stop and ask if any is missing.
-- [ ] **Step 2: Write the failing tests** in `tests/integration/DefaultBrandingSeedTest.php` (`final class DefaultBrandingSeedTest extends WP_UnitTestCase`, namespace `HyperPress\ThemeTests\Integration`):
+- [x] **Step 1: Place the three owner-supplied files** at `library/branding-assets/logo.svg`, `icon.svg` and `icon.png` (icon PNG at least 512×512 if possible). Stop and ask if any is missing.
+- [x] **Step 2: Write the failing tests** in `tests/integration/DefaultBrandingSeedTest.php` (`final class DefaultBrandingSeedTest extends WP_UnitTestCase`, namespace `HyperPress\ThemeTests\Integration`):
   - `test_seed_creates_tagged_attachments`: after `hyperpress_seed_default_branding()` returns true, both IDs are > 0, `get_post_mime_type()` is `image/svg+xml` and `image/png`, and `get_post_meta( $id, '_hyperpress_default', true )` is `logo` / `icon`.
   - `test_seed_is_idempotent`: seed twice; same IDs, and `get_posts( [ 'post_type' => 'attachment', 'meta_key' => '_hyperpress_default', 'fields' => 'ids', 'numberposts' => -1 ] )` has exactly 2 items.
   - `test_fresh_lock_blocks_seeding`: `add_option( 'hyperpress_branding_lock', (string) time() )`, then seeding returns false and `hyperpress_default_branding_id( 'logo' )` is 0.
@@ -66,13 +66,13 @@
   - `test_unwritable_uploads_fails_quietly`: add a filter on `upload_dir` returning `array_merge( $dirs, [ 'error' => 'blocked' ] )`; seeding returns false, no attachment exists, `get_option( 'hyperpress_branding_version' )` is false.
   - `test_deleted_default_is_detected_and_reseeded`: seed, `wp_delete_attachment( $id, true )`, assert `hyperpress_default_branding_id( 'logo' )` is 0, run `hyperpress_maybe_seed_default_branding()`, assert a valid non-zero ID again.
   - `test_maybe_seed_skips_when_current`: after a seed, wrap a counter on `upload_dir`; `hyperpress_maybe_seed_default_branding()` does not trigger it.
-- [ ] **Step 3: Run to verify failure:** `docker compose run --rm php composer test:integration -- --filter DefaultBrandingSeedTest`. Expected: FAIL (functions not defined).
-- [ ] **Step 4: Implement** the functions above in `library/default-branding.php`. Approach: copy the bundled file into `wp_upload_dir()` under `wp_unique_filename()`; bail with `0` if `wp_upload_dir()['error']` is truthy or `copy()` fails; call `wp_insert_attachment()` with `post_mime_type` from `hyperpress_default_branding_files()`; for the PNG only, `require_once ABSPATH . 'wp-admin/includes/image.php'` and `wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $file ) )`. Take the lock with `add_option( 'hyperpress_branding_lock', (string) time(), '', false )` and release with `delete_option` in a `finally`. If PHPCS flags `copy()`, add `// phpcs:ignore WordPress.WP.AlternativeFunctions -- copying a bundled theme file`.
-- [ ] **Step 5: Add the hooks** at the bottom of the file: `add_action( 'admin_init', 'hyperpress_maybe_seed_default_branding' )` and `add_action( 'after_switch_theme', 'hyperpress_maybe_seed_default_branding' )`. Add the `require_once` to `functions.php`.
-- [ ] **Step 6: Run to verify pass,** both modes:
+- [x] **Step 3: Run to verify failure:** `docker compose run --rm php composer test:integration -- --filter DefaultBrandingSeedTest`. Expected: FAIL (functions not defined).
+- [x] **Step 4: Implement** the functions above in `library/default-branding.php`. Approach: copy the bundled file into `wp_upload_dir()` under `wp_unique_filename()`; bail with `0` if `wp_upload_dir()['error']` is truthy or `copy()` fails; call `wp_insert_attachment()` with `post_mime_type` from `hyperpress_default_branding_files()`; for the PNG only, `require_once ABSPATH . 'wp-admin/includes/image.php'` and `wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $file ) )`. Take the lock with `add_option( 'hyperpress_branding_lock', (string) time(), '', false )` and release with `delete_option` in a `finally`. If PHPCS flags `copy()`, add `// phpcs:ignore WordPress.WP.AlternativeFunctions -- copying a bundled theme file`.
+- [x] **Step 5: Add the hooks** at the bottom of the file: `add_action( 'admin_init', 'hyperpress_maybe_seed_default_branding' )` and `add_action( 'after_switch_theme', 'hyperpress_maybe_seed_default_branding' )`. Add the `require_once` to `functions.php`.
+- [x] **Step 6: Run to verify pass,** both modes:
   `docker compose run --rm php composer test:integration -- --filter DefaultBrandingSeedTest` and the same with `-e HYPERPRESS_TEST_WITHOUT_EXTRACTED=1`. Expected: PASS.
-- [ ] **Step 7: Lint:** `docker compose run --rm php composer lint`. Expected: exit 0.
-- [ ] **Step 8: Commit**
+- [x] **Step 7: Lint:** `docker compose run --rm php composer lint`. Expected: exit 0.
+- [x] **Step 8: Commit**
 
 ```bash
 git add library/branding-assets library/default-branding.php functions.php tests/integration/DefaultBrandingSeedTest.php docs/superpowers/plans/2026-10-08-theme-06-default-branding.md
