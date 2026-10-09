@@ -35,6 +35,7 @@ plugins in `../plugins`. Banner router, core breadcrumb trails, Customizer, nav,
 ## Gotchas
 - `pnpm-workspace.yaml` `allowBuilds` whitelists native build scripts (only `mozjpeg` is enabled).
 - The working tree usually has unrelated uncommitted changes. Commit with explicit pathspecs, never `git add -A`.
+- Gulp 5 `gulp.src` needs `{ encoding: false }` for any binary files (PNG, .mo, fonts), otherwise they are corrupted; `PackageConfigTest` guards the package, copy and images tasks.
 - Never put secrets in the repo. `library/plugins.php` once held an API-key URL; do not reproduce it.
 
 ## Implementation plans

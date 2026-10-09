@@ -36,6 +36,29 @@ final class PackageConfigTest extends TestCase {
 	/**
 	 * @return array<string, array{string}>
 	 */
+	public static function binary_sources(): array {
+		return array(
+			'package' => array( 'PATHS.package' ),
+			'copy'    => array( 'PATHS.assets' ),
+			'images'  => array( "'src/assets/images/**/*'" ),
+		);
+	}
+
+	/**
+	 * @dataProvider binary_sources
+	 */
+	public function test_binary_sources_are_read_without_utf8_decoding( string $source ): void {
+		$pattern = '/gulp\.src\(\s*' . preg_quote( $source, '/' ) . '\s*,\s*\{[^}]*\bencoding\s*:\s*false\b[^}]*\}\s*\)/';
+		$this->assertMatchesRegularExpression(
+			$pattern,
+			self::read( 'gulpfile.mjs' ),
+			"gulp.src({$source}) needs { encoding: false }: Gulp 5 decodes files as UTF-8 otherwise and corrupts binary files (PNG, .mo, fonts)."
+		);
+	}
+
+	/**
+	 * @return array<string, array{string}>
+	 */
 	public static function excluded_paths(): array {
 		$paths = array(
 			'vendor/**',

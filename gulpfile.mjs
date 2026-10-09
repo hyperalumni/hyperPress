@@ -87,7 +87,7 @@ async function clean() {
 // Copy files out of the assets folder
 // This task skips over the "images", "js", and "scss" folders, which are parsed separately
 function copy() {
-  return gulp.src(PATHS.assets)
+  return gulp.src(PATHS.assets, { encoding: false })
     .pipe(gulp.dest(PATHS.dist + '/assets'));
 }
 
@@ -178,7 +178,7 @@ function webpackWatch() {
 // Copy images to the "dist" folder
 // In production, the images are compressed
 function images() {
-  return gulp.src('src/assets/images/**/*')
+  return gulp.src('src/assets/images/**/*', { encoding: false })
     .pipe(gulpIf(PRODUCTION, imagemin([
       imageminJpegtran({progressive: true}),
       imageminOptipng({optimizationLevel: 5}),
@@ -198,7 +198,8 @@ const THEME_SLUG = 'hyperPress';
 function archive() {
   const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
   const title = `${THEME_SLUG}-${pkg.version}-${dateFormat(new Date(), 'yyyy-mm-dd')}.zip`;
-  return gulp.src(PATHS.package)
+  // encoding: false, because Gulp 5 decodes files as UTF-8 by default, which corrupts binary files (PNG, .mo).
+  return gulp.src(PATHS.package, { encoding: false })
     .pipe(rename((file) => {
       file.dirname = posix.join(THEME_SLUG, file.dirname);
     }))
