@@ -14,6 +14,8 @@ import imageminGifsicle from 'imagemin-gifsicle';
 import imageminSvgo from 'imagemin-svgo';
 import uglify from 'gulp-uglify';
 import zip from 'gulp-zip';
+import rename from 'gulp-rename';
+import dateFormat from 'dateformat';
 import phpcs from 'gulp-phpcs';
 import phpcbf from 'gulp-phpcbf';
 import browser from 'browser-sync';
@@ -21,6 +23,7 @@ import gulp from 'gulp';
 import {rimraf} from 'rimraf';
 import {load as yamlLoad} from 'js-yaml';
 import {accessSync, constants as fsConstants, readFileSync} from 'fs';
+import {posix} from 'node:path';
 import webpackStream from 'webpack-stream';
 import webpack2 from 'webpack';
 import named from 'vinyl-named';
@@ -187,13 +190,19 @@ function images() {
     .pipe(gulp.dest(PATHS.dist + '/assets/images'));
 }
 
-// WordPress derives the installed theme folder from the zip file name, so it must equal the theme slug.
+// Wrapper folder inside the zip. WordPress installs an uploaded theme into the folder the zip contains,
+// so this must equal the theme slug whatever the zip file is called.
 const THEME_SLUG = 'hyperPress';
 
-// Create a .zip archive of the theme
+// Create a .zip archive of the theme: packaged/hyperPress-<version>-<yyyy-mm-dd>.zip
 function archive() {
+  const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+  const title = `${THEME_SLUG}-${pkg.version}-${dateFormat(new Date(), 'yyyy-mm-dd')}.zip`;
   return gulp.src(PATHS.package)
-    .pipe(zip(THEME_SLUG + '.zip'))
+    .pipe(rename((file) => {
+      file.dirname = posix.join(THEME_SLUG, file.dirname);
+    }))
+    .pipe(zip(title))
     .pipe(gulp.dest('packaged'));
 }
 

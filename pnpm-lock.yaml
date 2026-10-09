@@ -231,6 +231,9 @@ importers:
       gulp-phpcs:
         specifier: ^3.1.0
         version: 3.1.0
+      gulp-rename:
+        specifier: ^2.1.0
+        version: 2.1.0
       gulp-rev:
         specifier: ^12.0.0
         version: 12.0.0(gulp@5.0.1)
@@ -2279,6 +2282,10 @@ packages:
   gulp-plugin-extras@1.1.0:
     resolution: {integrity: sha512-T0AXOEVoKYzLIBlwEZ7LtAx2w4ExIozIoxVeYEVLFbdxI7i0sWvFDq0F8mm47djixDF3vAqDPoyGwh3Sg/PWtQ==}
     engines: {node: '>=18'}
+
+  gulp-rename@2.1.0:
+    resolution: {integrity: sha512-dGuzuH8jQGqCMqC544IEPhs5+O2l+IkdoSZsgd4kY97M1CxQeI3qrmweQBIrxLBbjbe/8uEWK8HHcNBc3OCy4g==}
+    engines: {node: '>=4'}
 
   gulp-rev@12.0.0:
     resolution: {integrity: sha512-MU3IASTTx+XZQrmz5WdhoflA2AIir815b/ItpRBFWkIP8kWSInU1IFRSvdX36AvIDRxR9izFqod/PXdjSw7tXw==}
@@ -6719,6 +6726,8 @@ snapshots:
       '@types/vinyl': 2.0.12
       chalk: 5.6.2
       easy-transform-stream: 1.0.1
+
+  gulp-rename@2.1.0: {}
 
   gulp-rev@12.0.0(gulp@5.0.1):
     dependencies:

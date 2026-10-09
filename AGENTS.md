@@ -10,7 +10,7 @@ Text domain `hyperpress`. `README.md` keeps the upstream FoundationPress text be
 - `pnpm start`: gulp dev server with Browsersync (needs `BROWSERSYNC.url` in a local `config.yml`)
 - `pnpm dev` / `pnpm build`: gulp build `--dev` (sourcemaps) / `--production` (minify, optional revisioning)
 - `pnpm phpcs` / `pnpm phpcbf`: PHPCS via `codesniffer.ruleset.xml` (WordPress standard, many exclusions)
-- `pnpm package`: build, then write `packaged/hyperPress.zip` (fixed name = theme slug; WordPress names the theme folder after the zip). Dev files are excluded via `PATHS.package`; a local `config.yml` replaces that list, so keep it in sync
+- `pnpm package`: build, then write `packaged/hyperPress-<version>-<yyyy-mm-dd>.zip` (version from `package.json`; same-day runs overwrite). Every entry sits in a `hyperPress/` wrapper folder, so the zip is for WordPress admin upload only (it installs to `wp-content/themes/hyperPress/` whatever the zip is called; do not unzip it into `themes/`). Dev files are excluded via `PATHS.package`; a local `config.yml` replaces that list, so keep it in sync
 - PHP tooling runs in Docker from this dir (never composer on the host): `docker compose run --rm php composer lint|test:unit|test:integration`. Set `HYPERPRESS_TEST_WITHOUT_EXTRACTED=1` to run the integration suite without hyperpress-shortcode and hyperpress-media. `lint` is gating (0 violations); security findings carry `// phpcs:ignore ... -- theme audit` comments.
 
 ## Layout
