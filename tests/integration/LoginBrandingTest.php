@@ -17,6 +17,36 @@ class LoginBrandingTest extends WP_UnitTestCase {
 		$this->assertSame( wp_get_attachment_image_url( $id, 'full' ), hyperpress_login_logo_url() );
 	}
 
+	public function test_logo_url_for_svg_attachment_without_metadata(): void {
+		$uploads = wp_upload_dir();
+		$file    = trailingslashit( $uploads['path'] ) . 'login-branding-test-logo.svg';
+		copy( get_template_directory() . '/library/branding-assets/logo.svg', $file );
+		$id = wp_insert_attachment(
+			array(
+				'post_mime_type' => 'image/svg+xml',
+				'post_title'     => 'Login branding test logo',
+				'post_status'    => 'inherit',
+			),
+			$file
+		);
+		set_theme_mod( 'custom_logo', $id );
+
+		$url = hyperpress_login_logo_url();
+
+		$this->assertNotSame( '', $url );
+		$this->assertSame( wp_get_attachment_url( $id ), $url );
+	}
+
+	public function test_css_cannot_break_out_of_the_declaration(): void {
+		$css = hyperpress_login_logo_css( 'https://example.org/x.svg);}</style><script>alert(1)</script>' );
+
+		$this->assertStringNotContainsString( '</style>', $css );
+		$this->assertStringNotContainsString( '<script', $css );
+		$this->assertStringNotContainsString( ');}', $css );
+		$this->assertSame( 1, substr_count( $css, '{' ) );
+		$this->assertSame( 1, substr_count( $css, '}' ) );
+	}
+
 	public function test_logo_url_falls_back_to_bundled_svg_when_unseeded(): void {
 		remove_theme_mod( 'custom_logo' );
 
