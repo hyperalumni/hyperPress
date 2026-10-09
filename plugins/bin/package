@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# Zip hyperPress plugins from their committed files (git archive of HEAD).
+set -euo pipefail
+
+usage() {
+	cat <<'EOF'
+Usage: bin/package [plugin-dir ...]
+
+Zips each plugin from its committed files (HEAD) into
+packaged/<plugin>-<version>.zip. With no arguments, packages every
+hyperpress-*/ directory that has a tracked main file.
+Needs git and unzip (or zipinfo). Uncommitted changes are not included.
+EOF
+}
+
+die() {
+	echo "error: $*" >&2
+	exit 1
+}
+
+case "${1:-}" in -h | --help) usage; exit 0 ;; esac
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+plugins=()
+if (($# > 0)); then
+	for arg in "$@"; do
+		plugins+=("${arg%/}")
+	done
+else
+	for dir in hyperpress-*/; do
+		dir=${dir%/}
+		if git ls-files --error-unmatch "$dir/$dir.php" >/dev/null 2>&1; then
+			plugins+=("$dir")
+		fi
+	done
+fi
+((${#plugins[@]} > 0)) || die "no plugins to package"
+
+# Validate every plugin before creating any zip.
+versions=()
+for dir in "${plugins[@]}"; do
+	[[ -d $dir ]] || die "$dir: no such plugin directory"
+	git ls-files --error-unmatch "$dir/$dir.php" >/dev/null 2>&1 \
+		|| die "$dir: main file $dir/$dir.php is not tracked by git"
+	version=$(git show "HEAD:$dir/$dir.php" \
+		| sed -nE 's/^[[:space:]]*\*[[:space:]]*Version:[[:space:]]*([^[:space:]]+).*/\1/p' | head -n1)
+	[[ -n $version ]] || die "$dir: no 'Version:' header in committed $dir/$dir.php"
+	versions+=("$version")
+done
+
+lister=()
+if command -v unzip >/dev/null 2>&1; then
+	lister=(unzip -Z1)
+elif command -v zipinfo >/dev/null 2>&1; then
+	lister=(zipinfo -1)
+else
+	echo "notice: neither unzip nor zipinfo found; zip verification skipped" >&2
+fi
+
+mkdir -p packaged
+mtime=$(git log -1 --format=%cI HEAD) # fixed entry times: same commit, same zip
+zips=()
+for i in "${!plugins[@]}"; do
+	dir=${plugins[$i]}
+	zip="packaged/$dir-${versions[$i]}.zip"
+	if [[ -n $(git status --porcelain -- "$dir") ]]; then
+		echo "warning: uncommitted changes in $dir are not included in the zip (only HEAD is archived)" >&2
+	fi
+	git archive --format=zip --mtime="$mtime" --prefix="$dir/" -o "$zip" "HEAD:$dir"
+	if ((${#lister[@]} > 0)); then
+		entries=$("${lister[@]}" "$zip")
+		if grep -qv "^$dir/" <<<"$entries" || ! grep -qxF "$dir/$dir.php" <<<"$entries"; then
+			rm -f "$zip"
+			die "$zip failed verification (entry outside $dir/ or missing $dir/$dir.php); removed"
+		fi
+	fi
+	zips+=("$zip")
+done
+
+for zip in "${zips[@]}"; do
+	echo "$zip $(du -h "$zip" | cut -f1)"
+done

@@ -292,3 +292,6 @@ wp-config.php
 # End of https://www.toptal.com/developers/gitignore/api/jetbrains+all,node,wordpress,phpunit
 
 vendor/
+
+# Generated plugin zips (bin/package)
+/packaged/
