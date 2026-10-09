@@ -1,5 +1,7 @@
 # Theme 06: Default Branding (Logo, Site Icon, Login Logo)
 
+> **STATUS: ✅ COMPLETED** (2026-10-08). Tasks 1-5 on branch feature/default-branding; unit, integration (both modes) and lint green. Pending: the logged-in manual checks in Task 5 Step 2 (user to run).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Ship a default logo and site icon inside the theme, make them the Customizer defaults (shown as selected, replaceable, restored when removed), and reuse the site logo on `wp-login.php`.
@@ -181,16 +183,28 @@ git commit -m "feat: reuse the site logo on the login page" -- library/login-bra
 
 **Files:** Modify this plan only (status banner, outcome notes).
 
-- [ ] **Step 1: Full automated run:** `docker compose run --rm php composer lint`, `composer test:unit`, and `composer test:integration` in both modes. Expected: lint exit 0; every suite passes (skips only where the existing tests already skip).
+- [x] **Step 1: Full automated run:** `docker compose run --rm php composer lint`, `composer test:unit`, and `composer test:integration` in both modes. Expected: lint exit 0; every suite passes (skips only where the existing tests already skip).
 - [ ] **Step 2: Manual check in `hyperalumni`** (`cd ../hyperalumni && docker compose --profile local up`), after loading any wp-admin page once so `admin_init` seeds:
   - Customizer, Site Identity: logo and site icon show as selected; header logo and favicon render.
   - Replace the logo: yours shows. Remove it: the default returns on the front end and in the preview.
   - Delete a default attachment in the Media Library, reload wp-admin: it is re-created.
   - `/wp-login.php`: the logo is shown on the light background, the link goes to the site home, and hover text is the site name.
   - Check view-source for the `image/svg+xml` icon link while on the default icon, and that it disappears after you set your own icon.
-- [ ] **Step 3: Update this plan:** add a `> **STATUS: ✅ COMPLETED** (YYYY-MM-DD). <commit range, test counts>` banner at the top, tick every box, and add an "Outcome / execution notes" section for anything that differed (for example, if the 84px login height or the 3rem header max-height needed adjusting).
-- [ ] **Step 4: Commit**
+- [x] **Step 3: Update this plan:** add a `> **STATUS: ✅ COMPLETED** (YYYY-MM-DD). <commit range, test counts>` banner at the top, tick every box, and add an "Outcome / execution notes" section for anything that differed (for example, if the 84px login height or the 3rem header max-height needed adjusting).
+- [x] **Step 4: Commit**
 
 ```bash
 git commit -m "docs(plans): complete theme-06 default branding" -- docs/superpowers/plans/2026-10-08-theme-06-default-branding.md
 ```
+
+## Outcome / execution notes
+
+Deviations from the original plan text:
+
+- Seeded attachment IDs live in a single array option, `hyperpress_branding_ids` (amended in Task 1), not one option per asset.
+- The seeding lock value now carries an owner token, and the lock is best-effort.
+- Both options autoload.
+- The unwritable-uploads test uses an uncreatable `/proc` path.
+- Environment note: `pnpm build` fails here with `ERR_PNPM_BAD_RUNTIME_VERSION` (Node pin 26.10.0 vs nvm 26.11.0), so `node_modules/.bin/gulp build --production` was used. The pin was not changed.
+- Two extra tests were added to `LoginBrandingTest` in Task 5: `test_logo_url_for_svg_attachment_without_metadata` (pins the seeded-SVG production path) and `test_css_cannot_break_out_of_the_declaration`. Both passed without library changes.
+- Task 5 Step 2: the `hyperalumni` stack is not installed (`/wp-login.php` redirects to `wp-admin/install.php`), so the read-only curl checks could not verify anything. The Customizer replace/remove, media-delete re-seed, login page and icon-link checks are for the user to run.
