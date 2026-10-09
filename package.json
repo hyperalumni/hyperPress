@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@hyper/press",
   "title": "HYPER Press",
-  "version": "2.11.1",
+  "version": "2026.0.0",
   "description": "hyperPress is a fork of FoundationPress (based on Foundation 6 by Zurb) for HYPER WordPress sites",
   "homepage": "https://hyperpress.idesign.co",
   "license": "MIT",
