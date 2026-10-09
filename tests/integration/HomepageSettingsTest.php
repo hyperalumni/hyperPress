@@ -27,8 +27,9 @@ final class HomepageSettingsTest extends WP_UnitTestCase {
 		$this->assertSame( 'Homepage', $section->title );
 	}
 
-	public function test_the_banner_button_text_setting_is_registered_and_sanitized(): void {
-		$this->assertSame( 'Go', $this->sanitize( 'hyperpress_home_banner_button_text', '<b>Go</b><script>x</script>' ) );
+	public function test_the_unused_banner_button_text_setting_is_not_registered(): void {
+		$this->assertNull( $this->manager->get_setting( 'hyperpress_home_banner_button_text' ) );
+		$this->assertNull( $this->manager->get_control( 'home_banner_button_text' ) );
 	}
 
 	public function test_post_types_drop_non_public_and_unknown_types(): void {

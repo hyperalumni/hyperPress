@@ -209,3 +209,4 @@ git commit -m "test: pin the content_template plugin contract" -- tests/integrat
 - `NoStaleReferencesTest` (5 cases) failed first and passes now; `RenderTest` and `CustomizerTest` are green; `ContentTemplateTest` pins that newsletter and sponsor supply a readable template inside `/plugins/` and that ordinary posts get none.
 - Edited files keep CRLF line endings (the working tree is CRLF, the index LF).
 - The `front-page.php` `(int)` cast on countdown ids stays an audit item (theme-05-audit, candidate 3).
+- Follow-up 2026-10-09 (commit pending): the Customizer control "Homepage Banner Button Text" (`hyperpress_home_banner_button_text`) that `library/customize/homepage.php` registered was removed as dead code (nothing read it); `HomepageSettingsTest` now asserts it is not registered. The front banner keeps using the Meta Box field `hyperpress_homepage_customize_banner_button_text`.

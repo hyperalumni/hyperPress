@@ -64,25 +64,6 @@ function hyperpress_customize_homepage( $wp_customize ): void {
 	);
 
 	$wp_customize->add_setting(
-		'hyperpress_home_banner_button_text',
-		array(
-			'type'              => 'theme_mod',
-			'sanitize_callback' => 'sanitize_text_field',
-		)
-	);
-	$wp_customize->add_control(
-        new WP_Customize_Control(
-        $wp_customize,
-        'home_banner_button_text',
-		array(
-			'label'    => __( 'Homepage Banner Button Text', 'hyperpress' ),
-			'settings' => 'hyperpress_home_banner_button_text',
-			'section'  => 'hyperpress_homepage',
-		)
-        )
-        );
-
-	$wp_customize->add_setting(
         'hyperpress_home_blog_categories',
         array(
 			'type'              => 'theme_mod',
