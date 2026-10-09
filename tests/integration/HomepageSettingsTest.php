@@ -21,10 +21,25 @@ final class HomepageSettingsTest extends WP_UnitTestCase {
 		return $setting->sanitize( $value );
 	}
 
-	public function test_the_homepage_section_is_registered(): void {
-		$section = $this->manager->get_section( 'hyperpress_homepage' );
+	public function test_the_native_front_page_posts_section_is_registered(): void {
+		$section = $this->manager->get_section( 'hyperpress_front_page_posts' );
 		$this->assertNotNull( $section );
-		$this->assertSame( 'Homepage', $section->title );
+		$this->assertSame( 'Front Page Posts', $section->title );
+		$this->assertSame( 132, $section->priority );
+		$this->assertSame( 'hyperpress_front_page_posts', $this->manager->get_control( 'hyperpress_home_blog_categories' )->section );
+		$this->assertSame( 'hyperpress_front_page_posts', $this->manager->get_control( 'hyperpress_home_blog_post_types' )->section );
+		$this->assertNull( $this->manager->get_section( 'hyperpress_homepage' ) );
+	}
+
+	public function test_the_meta_box_front_page_entry_has_its_own_section_id(): void {
+		$entries = hyperpress_homepage_customize_metabox( array() );
+		$this->assertCount( 1, $entries );
+		$entry = $entries[0];
+		$this->assertSame( 'hyperpress_front_page', $entry['id'] );
+		$this->assertSame( 'Front Page', $entry['title'] );
+		$this->assertSame( 131, $entry['priority'] );
+		$this->assertArrayHasKey( 'panel', $entry );
+		$this->assertArrayNotHasKey( $entry['id'], $this->manager->sections() );
 	}
 
 	public function test_the_unused_banner_button_text_setting_is_not_registered(): void {

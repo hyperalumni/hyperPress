@@ -9,7 +9,7 @@ function hyperpress_homepage_customize_metabox( $meta_boxes ) {
 
 	$meta_boxes[] = array(
 		'title'    => __( 'Front Page', 'hyperpress' ),
-		'id'       => 'hyperpress_homepage',
+		'id'       => 'hyperpress_front_page',
 		'panel'    => '',
 		'priority' => 131,
 		'fields'   => array(

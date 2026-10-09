@@ -56,10 +56,10 @@ function hyperpress_sanitize_home_post_types( $value ): array {
 
 function hyperpress_customize_homepage( $wp_customize ): void {
 	$wp_customize->add_section(
-		'hyperpress_homepage',
+		'hyperpress_front_page_posts',
 		array(
-			'title'    => __( 'Homepage', 'hyperpress' ),
-			'priority' => 106,
+			'title'    => __( 'Front Page Posts', 'hyperpress' ),
+			'priority' => 132,
 		)
 	);
 
@@ -77,7 +77,7 @@ function hyperpress_customize_homepage( $wp_customize ): void {
 	        $wp_customize,
 	        'hyperpress_home_blog_categories',
 	        array(
-				'section'     => 'hyperpress_homepage',
+				'section'     => 'hyperpress_front_page_posts',
 				'label'       => __( 'Homepage Blog Category', 'hyperpress' ),
 				'description' => __( 'Select the category that the homepage will show posts from', 'hyperpress' ),
 				'settings'    => 'hyperpress_home_blog_categories',
@@ -101,7 +101,7 @@ function hyperpress_customize_homepage( $wp_customize ): void {
 	        $wp_customize,
 	        'hyperpress_home_blog_post_types',
 	        array(
-				'section'     => 'hyperpress_homepage',
+				'section'     => 'hyperpress_front_page_posts',
 				'label'       => __( 'Homepage Blog Post Types', 'hyperpress' ),
 				'description' => __( 'Select the Post Types that the homepage will display', 'hyperpress' ),
 				'settings'    => 'hyperpress_home_blog_post_types',

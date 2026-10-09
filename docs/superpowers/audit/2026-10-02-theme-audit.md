@@ -538,6 +538,7 @@ $wp_customize->add_setting( 'wpt_mobile_menu_layout', array( 'default' => __( 't
 - Fix: register the section, add `add_setting( 'hyperpress_home_banner_button_text' … )`, and sanitize with `array_map( 'absint' … )` for categories and `array_filter( array_map( 'sanitize_key' … ), 'post_type_exists' )` (plus `get_post_type_object()->public`) for post types.
 - Test: unit test. `$wp_customize->get_section( 'hyperpress_homepage' )` is not null; sanitizing `['post','shop_order','x"y']` returns only public, existing types.
 - **FIXED**: Registered the `hyperpress_homepage` section and the banner button text setting, and gave the categories and post types settings sanitizers (existing category ids; registered public post types only).
+- Follow-up 2026-10-09: the Customizer section ids were split because the native section and the Meta Box entry both used `hyperpress_homepage` (`hyperpress_front_page` for the Meta Box entry, `hyperpress_front_page_posts` titled "Front Page Posts" for the native section) (see commit message `fix: give the front page customizer sections distinct ids`).
 
 ### T36 (low) Undefined array keys / null dereferences in labels and breadcrumbs
 - Files: library/labels/post.php:43-45; library/breadcrumbs/tag.php:16-33; library/breadcrumbs/category.php:12,24
