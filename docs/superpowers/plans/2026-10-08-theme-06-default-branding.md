@@ -160,7 +160,7 @@ git commit -m "feat: add an SVG favicon link for the default site icon" -- libra
   - `hyperpress_login_logo_css( string $url ): string`: one rule for `.login h1 a` with `background-image: url( {esc_url($url)} )`, `background-size: contain`, `background-position: center`, `width: 100%`, `height: 84px`.
   - `hyperpress_login_enqueue_styles(): void`: `wp_add_inline_style( 'login', hyperpress_login_logo_css( hyperpress_login_logo_url() ) )`, hooked to `login_enqueue_scripts`.
   - `hyperpress_login_header_url(): string` returns `home_url( '/' )`, hooked to `login_headerurl`.
-  - `hyperpress_login_header_text(): string` returns `get_bloginfo( 'name' )`, hooked to `login_headertext`.
+  - `hyperpress_login_header_text(): string` returns `get_bloginfo( 'name' )`, hooked to `login_headertext`. Core prints this as the link's text (hidden off-screen by core CSS), so it is the link's accessible name, not a `title` attribute or hover text.
 
 - [x] **Step 1: Write the failing tests:**
   - `test_logo_url_uses_custom_logo_attachment`: create an image attachment, `set_theme_mod( 'custom_logo', $id )`; `hyperpress_login_logo_url()` equals `wp_get_attachment_image_url( $id, 'full' )`.
@@ -188,7 +188,7 @@ git commit -m "feat: reuse the site logo on the login page" -- library/login-bra
   - Customizer, Site Identity: logo and site icon show as selected; header logo and favicon render.
   - Replace the logo: yours shows. Remove it: the default returns on the front end and in the preview.
   - Delete a default attachment in the Media Library, reload wp-admin: it is re-created.
-  - `/wp-login.php`: the logo is shown on the light background, the link goes to the site home, and hover text is the site name.
+  - `/wp-login.php`: the logo is shown on the light background, and the link goes to the site home. There is no hover text: core prints no `title` attribute (see the outcome notes).
   - Check view-source for the `image/svg+xml` icon link while on the default icon, and that it disappears after you set your own icon.
 - [x] **Step 3: Update this plan:** add a `> **STATUS: ✅ COMPLETED** (YYYY-MM-DD). <commit range, test counts>` banner at the top, tick every box, and add an "Outcome / execution notes" section for anything that differed (for example, if the 84px login height or the 3rem header max-height needed adjusting).
 - [x] **Step 4: Commit**
@@ -218,3 +218,8 @@ Final-review fixes (after the whole-branch review):
 - The pre-seed fallbacks (favicon link, login logo) use `get_template_directory_uri()`, matching the logo fallback markup and the seeder's parent-theme source.
 - The seeder deletes the just-copied file if `wp_insert_attachment()` fails.
 - Left for the user: strip the DOCTYPE from the bundled SVGs, and check visually whether the 3rem header logo cap (vs 4rem) is right.
+
+Corrections after manual testing (2026-10-08):
+
+- The logo and favicon appear correctly immediately after the theme is activated, with no other action, which confirms the `after_switch_theme` seeding path. On `/wp-login.php` the logo shows and links to the site home.
+- The login logo link has no hover text and no `title` attribute. This is core behaviour, not a defect: `wp-login.php` prints `<a href="…"><?php echo $login_header_text; ?></a>` with no `title`, and the `login_headertitle` filter that used to supply one was deprecated in WP 5.2. `login_headertext` only sets the link text, which core hides visually, so the site name serves as the link's accessible name. Earlier wording in this plan that promised "hover text" was wrong. A `title` attribute would need extra JavaScript on `login_footer`; that was considered and declined.
