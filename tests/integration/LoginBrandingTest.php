@@ -1,8 +1,12 @@
 <?php
+namespace HyperPress\ThemeTests\Integration;
+
+use WP_UnitTestCase;
+
 /**
  * Tests for the login page branding.
  */
-class LoginBrandingTest extends WP_UnitTestCase {
+final class LoginBrandingTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		remove_theme_mod( 'custom_logo' );
@@ -38,13 +42,23 @@ class LoginBrandingTest extends WP_UnitTestCase {
 	}
 
 	public function test_css_cannot_break_out_of_the_declaration(): void {
-		$css = hyperpress_login_logo_css( 'https://example.org/x.svg);}</style><script>alert(1)</script>' );
+		$css = hyperpress_login_logo_css( 'https://example.org/x.svg);}</style><script>alert(1)</script>"; color: red; a{b:url(x' );
 
 		$this->assertStringNotContainsString( '</style>', $css );
 		$this->assertStringNotContainsString( '<script', $css );
-		$this->assertStringNotContainsString( ');}', $css );
+		$this->assertSame( 1, substr_count( $css, 'background-image' ) );
 		$this->assertSame( 1, substr_count( $css, '{' ) );
 		$this->assertSame( 1, substr_count( $css, '}' ) );
+
+		$this->assertSame( 1, preg_match( '/background-image: url\( "([^"]*)" \); background-size/', $css, $m ) );
+		$this->assertStringNotContainsString( '"', $m[1] );
+		$this->assertStringStartsWith( 'https://example.org/x.svg', $m[1] );
+	}
+
+	public function test_css_quotes_the_url_and_keeps_ampersands_raw(): void {
+		$css = hyperpress_login_logo_css( 'https://example.org/l.svg?a=1&b=2' );
+
+		$this->assertStringContainsString( 'background-image: url( "https://example.org/l.svg?a=1&b=2" );', $css );
 	}
 
 	public function test_logo_url_falls_back_to_bundled_svg_when_unseeded(): void {

@@ -208,3 +208,13 @@ Deviations from the original plan text:
 - Environment note: `pnpm build` fails here with `ERR_PNPM_BAD_RUNTIME_VERSION` (Node pin 26.10.0 vs nvm 26.11.0), so `node_modules/.bin/gulp build --production` was used. The pin was not changed.
 - Two extra tests were added to `LoginBrandingTest` in Task 5: `test_logo_url_for_svg_attachment_without_metadata` (pins the seeded-SVG production path) and `test_css_cannot_break_out_of_the_declaration`. Both passed without library changes.
 - Task 5 Step 2: the `hyperalumni` stack is not installed (`/wp-login.php` redirects to `wp-admin/install.php`), so the read-only curl checks could not verify anything. The Customizer replace/remove, media-delete re-seed, login page and icon-link checks are for the user to run.
+
+Final-review fixes (after the whole-branch review):
+
+- The seeder now re-copies the bundled file over an existing tagged attachment's file (and regenerates the PNG metadata), so bumping `hyperpress_default_branding_version()` actually refreshes the files. `hyperpress_maybe_seed_default_branding()` also treats a default whose file is missing on disk as needing seeding (healing a database cloned without uploads); the disk check is not done in front-end read paths.
+- `admin_init` now calls `hyperpress_maybe_seed_default_branding_on_admin()`, which seeds only for users with `edit_theme_options` (no seeding from unauthenticated admin-ajax.php / admin-post.php). `after_switch_theme` still calls the seeder directly. A failed attempt stores `time()` in the autoloaded option `hyperpress_branding_failed_at`, and `hyperpress_maybe_seed_default_branding()` does nothing for 300 s afterwards (cleared on success; a held fresh lock is not a failure).
+- The `theme_mod_custom_logo` fallback is registered at priority 20. Core's Customizer preview filter (`WP_Customize_Setting::_preview_filter`, priority 10) returns the empty post value after "Remove", so the fallback has to run after it. The site icon fallback cannot do the same: core previews options through `pre_option_site_icon`, which short-circuits the `option_*` filters, so removing the icon in the preview shows none until saved (documented in the docblock).
+- The login logo CSS is now `background-image: url( "..." )` with `esc_url_raw()`, so `(`, `)`, `;` and `&` cannot break out of or be mangled inside the declaration.
+- The pre-seed fallbacks (favicon link, login logo) use `get_template_directory_uri()`, matching the logo fallback markup and the seeder's parent-theme source.
+- The seeder deletes the just-copied file if `wp_insert_attachment()` fails.
+- Left for the user: strip the DOCTYPE from the bundled SVGs, and check visually whether the 3rem header logo cap (vs 4rem) is right.

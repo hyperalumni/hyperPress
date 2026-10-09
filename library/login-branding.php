@@ -12,7 +12,7 @@ function hyperpress_login_logo_url(): string {
 		return $url;
 	}
 
-	return get_theme_file_uri( 'library/branding-assets/logo.svg' );
+	return get_template_directory_uri() . '/library/branding-assets/logo.svg';
 }
 
 /**
@@ -22,8 +22,8 @@ function hyperpress_login_logo_url(): string {
  */
 function hyperpress_login_logo_css( string $url ): string {
 	return sprintf(
-		'.login h1 a { background-image: url( %s ); background-size: contain; background-position: center; width: 100%%; height: 84px; }',
-		esc_url( $url )
+		'.login h1 a { background-image: url( "%s" ); background-size: contain; background-position: center; width: 100%%; height: 84px; }',
+		esc_url_raw( $url )
 	);
 }
 
