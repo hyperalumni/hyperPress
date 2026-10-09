@@ -25,7 +25,6 @@ PATHS:
   entries:
     - "src/assets/js/foundation.js"
     - "src/assets/js/app.js"
-    - "src/assets/js/TimeCircles.js"
   # Paths for the package task to include/exclude in .zip archive
   package:
     - "**/*"

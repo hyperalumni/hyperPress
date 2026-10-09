@@ -16,8 +16,7 @@ Text domain `hyperpress`. `README.md` keeps the upstream FoundationPress text be
 ## Layout
 - `functions.php` requires modules from `library/`; register new modules there.
 - Source assets: `src/assets/{js,scss,images,css}`. Webpack entries come from `PATHS.entries` in
-  `config-default.yml`/`config.yml`, not `webpack.config.js`. `TimeCircles.js` is listed there but
-  the file does not exist.
+  `config-default.yml`/`config.yml`, not `webpack.config.js`.
 - `config.yml` (git-ignored) replaces `config-default.yml` entirely; it is not merged.
 - `dist/`, `vendor/`, `packaged/` are generated and git-ignored. Never edit them.
 - `.env` exists and is git-ignored. Do not read or print it.
