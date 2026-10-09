@@ -50,7 +50,7 @@ function hyperpress_default_branding_id( string $key ): int {
 }
 
 /**
- * Reuse the tagged attachment for a default or create it from the bundled file.
+ * Reuse the tagged attachment for a default (refreshing its file from the bundle) or create it.
  *
  * @param string $key Either 'logo' or 'icon'.
  * @return int Attachment ID, or 0 on failure.
@@ -72,42 +72,53 @@ function hyperpress_seed_default_branding_asset( string $key ): int {
 			'no_found_rows'  => true,
 		)
 	);
-	if ( ! empty( $existing ) ) {
-		return (int) $existing[0];
-	}
 
 	$source = $files[ $key ]['file'];
+	$reuse  = ! empty( $existing ) ? (int) $existing[0] : 0;
+
 	if ( ! is_readable( $source ) ) {
-		return 0;
+		return $reuse;
 	}
 
-	$uploads = wp_upload_dir();
-	if ( ! empty( $uploads['error'] ) ) {
-		return 0;
+	$target = $reuse > 0 ? get_attached_file( $reuse ) : false;
+	if ( ! is_string( $target ) || '' === $target ) {
+		$uploads = wp_upload_dir();
+		if ( ! empty( $uploads['error'] ) ) {
+			return $reuse;
+		}
+
+		$target = trailingslashit( $uploads['path'] ) . wp_unique_filename( $uploads['path'], basename( $source ) );
 	}
 
-	$filename = wp_unique_filename( $uploads['path'], basename( $source ) );
-	$target   = trailingslashit( $uploads['path'] ) . $filename;
+	// Copy the bundled file over the target: this creates a new file, refreshes a stale one after a version
+	// bump, and restores one that is missing from disk (for example a database cloned without uploads).
+	wp_mkdir_p( dirname( $target ) );
 
 	// phpcs:ignore WordPress.WP.AlternativeFunctions -- copying a bundled theme file.
 	if ( ! copy( $source, $target ) ) {
-		return 0;
+		return file_exists( $target ) ? $reuse : 0;
 	}
 
-	$id = wp_insert_attachment(
-		array(
-			'post_mime_type' => $files[ $key ]['mime'],
-			'post_title'     => 'hyperpress-default-' . $key,
-			'post_content'   => '',
-			'post_status'    => 'inherit',
-		),
-		$target
-	);
-	if ( ! $id || is_wp_error( $id ) ) {
-		return 0;
-	}
+	if ( $reuse > 0 ) {
+		update_attached_file( $reuse, $target );
+		$id = $reuse;
+	} else {
+		$id = wp_insert_attachment(
+			array(
+				'post_mime_type' => $files[ $key ]['mime'],
+				'post_title'     => 'hyperpress-default-' . $key,
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+			),
+			$target
+		);
+		if ( ! $id || is_wp_error( $id ) ) {
+			wp_delete_file( $target );
+			return 0;
+		}
 
-	update_post_meta( $id, '_hyperpress_default', $key );
+		update_post_meta( $id, '_hyperpress_default', $key );
+	}
 
 	if ( 'image/png' === $files[ $key ]['mime'] ) {
 		require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -149,6 +160,10 @@ function hyperpress_seed_default_branding(): bool {
 		$success = $ids['logo'] > 0 && $ids['icon'] > 0;
 		if ( $success ) {
 			update_option( 'hyperpress_branding_version', hyperpress_default_branding_version(), true );
+			delete_option( 'hyperpress_branding_failed_at' );
+		} else {
+			// Back off: hyperpress_maybe_seed_default_branding() will not retry for five minutes.
+			update_option( 'hyperpress_branding_failed_at', time(), true );
 		}
 
 		return $success;
@@ -160,18 +175,51 @@ function hyperpress_seed_default_branding(): bool {
 }
 
 /**
- * Seed the defaults unless they are current and still present.
+ * Whether a default is a valid tagged attachment whose file is still on disk.
+ *
+ * @param string $key Either 'logo' or 'icon'.
+ */
+function hyperpress_default_branding_is_present( string $key ): bool {
+	$id = hyperpress_default_branding_id( $key );
+	if ( $id <= 0 ) {
+		return false;
+	}
+
+	$file = get_attached_file( $id );
+
+	return is_string( $file ) && file_exists( $file );
+}
+
+/**
+ * Seed the defaults unless they are current and still present, and a recent attempt has not failed.
+ *
+ * Only called from admin and theme-switch paths; front-end read paths never check the disk.
  */
 function hyperpress_maybe_seed_default_branding(): void {
 	if (
 		get_option( 'hyperpress_branding_version' ) === hyperpress_default_branding_version()
-		&& hyperpress_default_branding_id( 'logo' ) > 0
-		&& hyperpress_default_branding_id( 'icon' ) > 0
+		&& hyperpress_default_branding_is_present( 'logo' )
+		&& hyperpress_default_branding_is_present( 'icon' )
 	) {
 		return;
 	}
 
+	if ( ( time() - (int) get_option( 'hyperpress_branding_failed_at' ) ) < 300 ) {
+		return;
+	}
+
 	hyperpress_seed_default_branding();
+}
+
+/**
+ * Seed on admin requests, but only for users who can change the theme (not unauthenticated admin-ajax/admin-post).
+ */
+function hyperpress_maybe_seed_default_branding_on_admin(): void {
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	hyperpress_maybe_seed_default_branding();
 }
 
 /**
@@ -192,6 +240,9 @@ function hyperpress_default_logo_fallback( $value ) {
 
 /**
  * Fall back to the default icon attachment when no site icon is set.
+ *
+ * Customizer preview limitation: core previews the site icon through `pre_option_site_icon`, which short-circuits
+ * the `option_*` and `default_option_*` filters, so removing the icon in the preview shows no icon until saved.
  *
  * @param mixed $value The stored site_icon option.
  * @return mixed
@@ -236,13 +287,15 @@ function hyperpress_default_icon_svg_link(): void {
 
 	printf(
 		'<link rel="icon" type="image/svg+xml" href="%s">' . "\n",
-		esc_url( get_theme_file_uri( 'library/branding-assets/icon.svg' ) )
+		esc_url( get_template_directory_uri() . '/library/branding-assets/icon.svg' )
 	);
 }
 
-add_action( 'admin_init', 'hyperpress_maybe_seed_default_branding' );
+add_action( 'admin_init', 'hyperpress_maybe_seed_default_branding_on_admin' );
 add_action( 'after_switch_theme', 'hyperpress_maybe_seed_default_branding' );
-add_filter( 'theme_mod_custom_logo', 'hyperpress_default_logo_fallback' );
+// Priority 20: the Customizer preview filter (WP_Customize_Setting::_preview_filter) runs at 10 and returns the
+// empty post value after "Remove", so the fallback has to run after it.
+add_filter( 'theme_mod_custom_logo', 'hyperpress_default_logo_fallback', 20 );
 // Core returns early via default_option_site_icon, skipping option_site_icon, when the option row is absent.
 add_filter( 'option_site_icon', 'hyperpress_default_icon_fallback' );
 add_filter( 'default_option_site_icon', 'hyperpress_default_icon_fallback' );
