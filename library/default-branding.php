@@ -174,5 +174,60 @@ function hyperpress_maybe_seed_default_branding(): void {
 	hyperpress_seed_default_branding();
 }
 
+/**
+ * Fall back to the default logo attachment when no custom logo is set.
+ *
+ * @param mixed $value The stored custom_logo theme mod.
+ * @return mixed
+ */
+function hyperpress_default_logo_fallback( $value ) {
+	if ( $value ) {
+		return $value;
+	}
+
+	$id = hyperpress_default_branding_id( 'logo' );
+
+	return $id > 0 ? $id : $value;
+}
+
+/**
+ * Fall back to the default icon attachment when no site icon is set.
+ *
+ * @param mixed $value The stored site_icon option.
+ * @return mixed
+ */
+function hyperpress_default_icon_fallback( $value ) {
+	if ( $value ) {
+		return $value;
+	}
+
+	$id = hyperpress_default_branding_id( 'icon' );
+
+	return $id > 0 ? $id : $value;
+}
+
+/**
+ * Output the bundled logo when no logo attachment exists (before the defaults are seeded).
+ *
+ * @param string $html The custom logo markup.
+ */
+function hyperpress_custom_logo_fallback( string $html ): string {
+	if ( '' !== $html ) {
+		return $html;
+	}
+
+	return sprintf(
+		'<a href="%1$s" class="custom-logo-link" rel="home"><img class="custom-logo" src="%2$s" alt="%3$s"></a>',
+		esc_url( home_url( '/' ) ),
+		esc_url( get_template_directory_uri() . '/library/branding-assets/logo.svg' ),
+		esc_attr( get_bloginfo( 'name' ) )
+	);
+}
+
 add_action( 'admin_init', 'hyperpress_maybe_seed_default_branding' );
 add_action( 'after_switch_theme', 'hyperpress_maybe_seed_default_branding' );
+add_filter( 'theme_mod_custom_logo', 'hyperpress_default_logo_fallback' );
+// Core returns early via default_option_site_icon, skipping option_site_icon, when the option row is absent.
+add_filter( 'option_site_icon', 'hyperpress_default_icon_fallback' );
+add_filter( 'default_option_site_icon', 'hyperpress_default_icon_fallback' );
+add_filter( 'get_custom_logo', 'hyperpress_custom_logo_fallback' );

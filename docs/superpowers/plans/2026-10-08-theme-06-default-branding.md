@@ -95,7 +95,7 @@ git commit -m "feat: seed default logo and site icon attachments" -- library/bra
   - `hyperpress_default_icon_fallback( $value )`: the same with key `'icon'`. Hooked to both `option_site_icon` and `default_option_site_icon` (core skips `option_*` when the option row is absent).
   - `hyperpress_custom_logo_fallback( string $html ): string`: returns `$html` when non-empty, else an anchor with class `custom-logo-link` and `rel="home"` wrapping `<img class="custom-logo" src="…/library/branding-assets/logo.svg" alt="{site name}">`. Hooked to `get_custom_logo`.
 
-- [ ] **Step 1: Write the failing tests** in `DefaultBrandingFallbackTest` (each begins with `hyperpress_seed_default_branding()` unless stated):
+- [x] **Step 1: Write the failing tests** in `DefaultBrandingFallbackTest` (each begins with `hyperpress_seed_default_branding()` unless stated):
   - `test_empty_custom_logo_returns_default`: `remove_theme_mod( 'custom_logo' )`; `get_theme_mod( 'custom_logo' )` equals `hyperpress_default_branding_id( 'logo' )`; `has_custom_logo()` is true.
   - `test_custom_logo_set_to_empty_string_returns_default`: `set_theme_mod( 'custom_logo', '' )`; same assertion.
   - `test_user_logo_wins`: create an attachment with `$this->factory()->attachment->create()`, `set_theme_mod( 'custom_logo', $id )`; `get_theme_mod( 'custom_logo' )` equals `$id`.
@@ -103,13 +103,13 @@ git commit -m "feat: seed default logo and site icon attachments" -- library/bra
   - `test_user_site_icon_wins`: `update_option( 'site_icon', $other_id )`; `get_option( 'site_icon' )` equals `$other_id`.
   - `test_unseeded_logo_falls_back_to_bundled_svg` (no seeding): `get_custom_logo()` contains `custom-logo-link`, `class="custom-logo"` and `branding-assets/logo.svg`.
   - `test_seeded_logo_uses_attachment_not_fallback`: after seeding, `get_custom_logo()` does not contain `branding-assets/logo.svg` and does contain the attachment URL from `wp_get_attachment_url()`.
-- [ ] **Step 2: Write the failing unit test** `BrandingStylesTest::test_header_logo_is_sized_in_css` (pattern of `tests/unit/AdminBarStylesTest.php`): `_navigation.scss` contains `.site-desktop-title .custom-logo`.
-- [ ] **Step 3: Run to verify failure:** `composer test:integration -- --filter DefaultBrandingFallbackTest` and `composer test:unit -- --filter BrandingStylesTest` (via `docker compose run --rm php`). Expected: FAIL.
-- [ ] **Step 4: Implement** the three functions and their `add_filter` calls in `library/default-branding.php`.
-- [ ] **Step 5: Add the SCSS rule** in `_navigation.scss` next to the existing `.site-desktop-title a` rule: `.site-desktop-title .custom-logo { width: auto; height: auto; max-height: 3rem; }`.
-- [ ] **Step 6: Run to verify pass,** both modes for integration. Expected: PASS.
-- [ ] **Step 7: Lint,** then `pnpm build` (after `source ~/.nvm/nvm.sh && nvm use`) to confirm the SCSS compiles. Expected: both exit 0.
-- [ ] **Step 8: Commit**
+- [x] **Step 2: Write the failing unit test** `BrandingStylesTest::test_header_logo_is_sized_in_css` (pattern of `tests/unit/AdminBarStylesTest.php`): `_navigation.scss` contains `.site-desktop-title .custom-logo`.
+- [x] **Step 3: Run to verify failure:** `composer test:integration -- --filter DefaultBrandingFallbackTest` and `composer test:unit -- --filter BrandingStylesTest` (via `docker compose run --rm php`). Expected: FAIL.
+- [x] **Step 4: Implement** the three functions and their `add_filter` calls in `library/default-branding.php`.
+- [x] **Step 5: Add the SCSS rule** in `_navigation.scss` next to the existing `.site-desktop-title a` rule: `.site-desktop-title .custom-logo { width: auto; height: auto; max-height: 3rem; }`.
+- [x] **Step 6: Run to verify pass,** both modes for integration. Expected: PASS.
+- [x] **Step 7: Lint,** then `pnpm build` (after `source ~/.nvm/nvm.sh && nvm use`) to confirm the SCSS compiles. Expected: both exit 0.
+- [x] **Step 8: Commit**
 
 ```bash
 git add library/default-branding.php src/assets/scss/modules/_navigation.scss tests/integration/DefaultBrandingFallbackTest.php tests/unit/BrandingStylesTest.php docs/superpowers/plans/2026-10-08-theme-06-default-branding.md

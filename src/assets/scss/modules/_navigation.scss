@@ -144,6 +144,12 @@
 }
 
 // Site title
+.site-desktop-title .custom-logo {
+  width: auto;
+  height: auto;
+  max-height: 3rem;
+}
+
 .site-desktop-title a {
   font-weight: 600;
 
