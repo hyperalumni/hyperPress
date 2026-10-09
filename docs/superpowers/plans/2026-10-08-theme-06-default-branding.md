@@ -28,7 +28,7 @@
 - **Default icon is the PNG** (core's cropper and the apple-touch-icon need a raster). `icon.svg` is added as an extra `<link rel="icon" type="image/svg+xml">` while the default icon is in effect.
 - **Sizing is left to CSS.** No width or height is baked into attachment metadata for the SVG. The login height (84px) is the only fixed value.
 - **Login page reuses the site logo.** No separate Customizer control (the logo is dark and colour on transparent, so it reads on the light grey login background).
-- **Names:** options `hyperpress_default_logo_id`, `hyperpress_default_icon_id`, `hyperpress_branding_version`, `hyperpress_branding_lock`; attachment meta `_hyperpress_default` with value `logo` or `icon`.
+- **Names:** options `hyperpress_branding_ids` (array keyed `logo` and `icon`), `hyperpress_branding_version`, `hyperpress_branding_lock`; attachment meta `_hyperpress_default` with value `logo` or `icon`.
 
 ## Review Focus
 

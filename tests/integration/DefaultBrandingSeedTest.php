@@ -53,6 +53,25 @@ final class DefaultBrandingSeedTest extends WP_UnitTestCase {
 		$this->assertTrue( hyperpress_seed_default_branding() );
 	}
 
+	public function test_lock_taken_over_by_another_holder_is_not_deleted(): void {
+		$other = (string) time() . ':other-holder';
+		add_filter(
+			'upload_dir',
+			static function ( array $dirs ) use ( $other ): array {
+				update_option( 'hyperpress_branding_lock', $other );
+				return $dirs;
+			}
+		);
+
+		$this->assertTrue( hyperpress_seed_default_branding() );
+		$this->assertSame( $other, get_option( 'hyperpress_branding_lock' ) );
+	}
+
+	public function test_own_lock_is_released_after_seeding(): void {
+		$this->assertTrue( hyperpress_seed_default_branding() );
+		$this->assertFalse( get_option( 'hyperpress_branding_lock' ) );
+	}
+
 	public function test_unwritable_uploads_fails_quietly(): void {
 		add_filter(
 			'upload_dir',

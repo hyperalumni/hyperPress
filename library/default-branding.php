@@ -125,13 +125,17 @@ function hyperpress_seed_default_branding_asset( string $key ): int {
 function hyperpress_seed_default_branding(): bool {
 	$now = time();
 
-	if ( ! add_option( 'hyperpress_branding_lock', (string) $now, '', false ) ) {
+	// Best-effort lock only: a simultaneous first admin hit can at worst create duplicate default attachments.
+	// The value is "timestamp:token"; the token lets us release only a lock we still own.
+	$lock = $now . ':' . wp_generate_uuid4();
+
+	if ( ! add_option( 'hyperpress_branding_lock', $lock, '', false ) ) {
 		$locked_at = (int) get_option( 'hyperpress_branding_lock' );
 		if ( ( $now - $locked_at ) < 300 ) {
 			return false;
 		}
 		// Stale lock: take it over.
-		update_option( 'hyperpress_branding_lock', (string) $now, false );
+		update_option( 'hyperpress_branding_lock', $lock, false );
 	}
 
 	try {
@@ -140,16 +144,18 @@ function hyperpress_seed_default_branding(): bool {
 			'icon' => hyperpress_seed_default_branding_asset( 'icon' ),
 		);
 
-		update_option( 'hyperpress_branding_ids', $ids, false );
+		update_option( 'hyperpress_branding_ids', $ids, true );
 
 		$success = $ids['logo'] > 0 && $ids['icon'] > 0;
 		if ( $success ) {
-			update_option( 'hyperpress_branding_version', hyperpress_default_branding_version(), false );
+			update_option( 'hyperpress_branding_version', hyperpress_default_branding_version(), true );
 		}
 
 		return $success;
 	} finally {
-		delete_option( 'hyperpress_branding_lock' );
+		if ( get_option( 'hyperpress_branding_lock' ) === $lock ) {
+			delete_option( 'hyperpress_branding_lock' );
+		}
 	}
 }
 
