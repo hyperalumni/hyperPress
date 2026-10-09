@@ -52,6 +52,7 @@ require_once get_template_directory() . '/library/theme-support.php';
 
 /** Seed default logo and site icon */
 require_once get_template_directory() . '/library/default-branding.php';
+require_once get_template_directory() . '/library/login-branding.php';
 
 /** Add Nav Options to Customer */
 require_once get_template_directory() . '/library/custom-nav.php';

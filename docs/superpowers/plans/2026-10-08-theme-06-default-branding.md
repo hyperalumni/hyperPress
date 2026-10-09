@@ -160,15 +160,15 @@ git commit -m "feat: add an SVG favicon link for the default site icon" -- libra
   - `hyperpress_login_header_url(): string` returns `home_url( '/' )`, hooked to `login_headerurl`.
   - `hyperpress_login_header_text(): string` returns `get_bloginfo( 'name' )`, hooked to `login_headertext`.
 
-- [ ] **Step 1: Write the failing tests:**
+- [x] **Step 1: Write the failing tests:**
   - `test_logo_url_uses_custom_logo_attachment`: create an image attachment, `set_theme_mod( 'custom_logo', $id )`; `hyperpress_login_logo_url()` equals `wp_get_attachment_image_url( $id, 'full' )`.
   - `test_logo_url_falls_back_to_bundled_svg_when_unseeded`: no theme mod, no seeding; the URL ends with `library/branding-assets/logo.svg`.
   - `test_css_targets_login_heading_link`: the string from `hyperpress_login_logo_css( 'https://example.org/l.svg' )` contains `.login h1 a`, `https://example.org/l.svg`, `background-size: contain` and `height: 84px`.
   - `test_enqueue_adds_inline_style`: `wp_register_style( 'login', false )`; `hyperpress_login_enqueue_styles()`; `wp_styles()->get_data( 'login', 'after' )` is a non-empty array containing `.login h1 a`.
   - `test_header_url_and_text_point_at_the_site`: `apply_filters( 'login_headerurl', 'https://wordpress.org/' )` equals `home_url( '/' )`; `apply_filters( 'login_headertext', 'Powered by WordPress' )` equals `get_bloginfo( 'name' )`.
-- [ ] **Step 2: Run to verify failure,** then **Step 3: Implement** with the four `add_action` / `add_filter` registrations.
-- [ ] **Step 4: Run to verify pass** (both modes) and **lint.** Expected: PASS, exit 0.
-- [ ] **Step 5: Commit**
+- [x] **Step 2: Run to verify failure,** then **Step 3: Implement** with the four `add_action` / `add_filter` registrations.
+- [x] **Step 4: Run to verify pass** (both modes) and **lint.** Expected: PASS, exit 0.
+- [x] **Step 5: Commit**
 
 ```bash
 git add library/login-branding.php functions.php tests/integration/LoginBrandingTest.php docs/superpowers/plans/2026-10-08-theme-06-default-branding.md
