@@ -41,6 +41,17 @@ PATHS:
     - "!**/package.json"
     - "!**/package-lock.json"
     - "!**/webpack.config.js"
+    - "!vendor/**"
+    - "!tests/**"
+    - "!docs/**"
+    - "!gulpfile.mjs"
+    - "!phpunit.xml.dist"
+    - "!pnpm-lock.yaml"
+    - "!pnpm-workspace.yaml"
+    - "!AGENTS.md"
+    - "!Dockerfile"
+    - "!compose.yaml"
+    - "!config-default.yml"
   # Paths for PHP CodeSniffer
   phpcs:
     - "**/*.php"

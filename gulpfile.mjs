@@ -21,7 +21,6 @@ import gulp from 'gulp';
 import {rimraf} from 'rimraf';
 import {load as yamlLoad} from 'js-yaml';
 import {accessSync, constants as fsConstants, readFileSync} from 'fs';
-import dateFormat from 'dateformat';
 import webpackStream from 'webpack-stream';
 import webpack2 from 'webpack';
 import named from 'vinyl-named';
@@ -188,14 +187,13 @@ function images() {
     .pipe(gulp.dest(PATHS.dist + '/assets/images'));
 }
 
+// WordPress derives the installed theme folder from the zip file name, so it must equal the theme slug.
+const THEME_SLUG = 'hyperPress';
+
 // Create a .zip archive of the theme
 function archive() {
-  const time = dateFormat(new Date(), "yyyy-mm-dd_HH-MM");
-  const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
-  const title = pkg.name + '_' + time + '.zip';
-
   return gulp.src(PATHS.package)
-    .pipe(zip(title))
+    .pipe(zip(THEME_SLUG + '.zip'))
     .pipe(gulp.dest('packaged'));
 }
 
