@@ -15,19 +15,14 @@ if ( function_exists( 'add_revslider' ) ) {
 	// Fallback hero: the front page's featured image, when there is one.
 	$hyperpress_hero_id = get_queried_object_id();
 	if ( $hyperpress_hero_id && has_post_thumbnail( $hyperpress_hero_id ) ) {
-		$hyperpress_hero_urls = array();
+		// CSS custom properties, not Foundation Interchange: Interchange only recognises gif|jpe?g|png|svg|tiff URLs as images and would inject AVIF/WebP bytes as text.
+		$hyperpress_hero_style = '';
 		foreach ( array( 'small', 'medium', 'large', 'xlarge' ) as $hyperpress_hero_size ) {
-			$hyperpress_hero_urls[ $hyperpress_hero_size ] = (string) get_the_post_thumbnail_url( $hyperpress_hero_id, 'front-hero-' . $hyperpress_hero_size );
+			$hyperpress_hero_url    = (string) get_the_post_thumbnail_url( $hyperpress_hero_id, 'front-hero-' . $hyperpress_hero_size );
+			$hyperpress_hero_style .= sprintf( '--hyperpress-hero-%1$s:url(\'%2$s\');', $hyperpress_hero_size, esc_url( $hyperpress_hero_url ) );
 		}
-		$hyperpress_hero_interchange = sprintf(
-			'[%1$s, small], [%2$s, medium], [%3$s, large], [%4$s, xlarge]',
-			esc_url( $hyperpress_hero_urls['small'] ),
-			esc_url( $hyperpress_hero_urls['medium'] ),
-			esc_url( $hyperpress_hero_urls['large'] ),
-			esc_url( $hyperpress_hero_urls['xlarge'] )
-		);
 		?>
-		<div class="hyperpress-front-hero" aria-hidden="true" style="background-image:url('<?php echo esc_url( $hyperpress_hero_urls['large'] ); ?>')" data-interchange="<?php echo esc_attr( $hyperpress_hero_interchange ); ?>"></div>
+		<div class="hyperpress-front-hero" aria-hidden="true" style="<?php echo esc_attr( $hyperpress_hero_style ); ?>"></div>
 		<?php
 	}
 }

@@ -23,7 +23,7 @@ add_image_size( 'featured-xlarge', 1920, 400, true );
 add_image_size( 'front-hero-small', 640, 300, true );
 add_image_size( 'front-hero-medium', 1280, 400, true );
 add_image_size( 'front-hero-large', 1440, 600, true );
-add_image_size( 'front-hero-xlarge', 1920, 600, true );
+add_image_size( 'front-hero-xlarge', 1920, 900, true );
 
 // Add additional image sizes
 add_image_size( 'fp-small', 640 );

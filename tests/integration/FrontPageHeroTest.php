@@ -28,7 +28,7 @@ final class FrontPageHeroTest extends WP_UnitTestCase {
 	}
 
 	/** Create a static front page, optionally with a featured image that has the four hero sizes. */
-	private function create_front_page( bool $with_image ): int {
+	private function create_front_page( bool $with_image, string $extension = 'jpg' ): int {
 		$page_id = self::factory()->post->create(
 			array(
 				'post_type'   => 'page',
@@ -42,9 +42,9 @@ final class FrontPageHeroTest extends WP_UnitTestCase {
 		if ( $with_image ) {
 			$attachment_id = self::factory()->attachment->create_object(
 				array(
-					'file'           => 'hero.jpg',
+					'file'           => 'hero.' . $extension,
 					'post_parent'    => $page_id,
-					'post_mime_type' => 'image/jpeg',
+					'post_mime_type' => 'image/' . ( 'jpg' === $extension ? 'jpeg' : $extension ),
 				)
 			);
 			$sizes         = array();
@@ -52,13 +52,13 @@ final class FrontPageHeroTest extends WP_UnitTestCase {
 				'small'  => array( 640, 300 ),
 				'medium' => array( 1280, 400 ),
 				'large'  => array( 1440, 600 ),
-				'xlarge' => array( 1920, 600 ),
+				'xlarge' => array( 1920, 900 ),
 			) as $name => $dimensions ) {
 				$sizes[ 'front-hero-' . $name ] = array(
-					'file'      => sprintf( 'hero-%dx%d.jpg', $dimensions[0], $dimensions[1] ),
+					'file'      => sprintf( 'hero-%dx%d.%s', $dimensions[0], $dimensions[1], $extension ),
 					'width'     => $dimensions[0],
 					'height'    => $dimensions[1],
-					'mime-type' => 'image/jpeg',
+					'mime-type' => 'image/' . ( 'jpg' === $extension ? 'jpeg' : $extension ),
 				);
 			}
 			wp_update_attachment_metadata(
@@ -66,7 +66,7 @@ final class FrontPageHeroTest extends WP_UnitTestCase {
 				array(
 					'width'  => 2400,
 					'height' => 1200,
-					'file'   => 'hero.jpg',
+					'file'   => 'hero.' . $extension,
 					'sizes'  => $sizes,
 				)
 			);
@@ -81,7 +81,7 @@ final class FrontPageHeroTest extends WP_UnitTestCase {
 			'front-hero-small'  => array( 640, 300 ),
 			'front-hero-medium' => array( 1280, 400 ),
 			'front-hero-large'  => array( 1440, 600 ),
-			'front-hero-xlarge' => array( 1920, 600 ),
+			'front-hero-xlarge' => array( 1920, 900 ),
 		);
 		$sizes    = wp_get_additional_image_sizes();
 		foreach ( $expected as $name => $dimensions ) {
@@ -91,25 +91,60 @@ final class FrontPageHeroTest extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_hero_is_rendered_with_interchange_urls_when_there_is_no_slider_and_a_featured_image(): void {
+	/**
+	 * Pull the hero div's opening tag and its inline custom properties out of the HTML.
+	 *
+	 * @return array<string,string> Map of size name => URL inside url('...').
+	 */
+	private function hero_custom_properties( string $html ): array {
+		$this->assertSame( 1, preg_match( '/<div class="hyperpress-front-hero"[^>]*>/', $html, $tag ) );
+		$this->assertStringNotContainsString( 'data-interchange', $tag[0] );
+		$this->assertSame( 1, preg_match( '/ style="([^"]*)"/', $tag[0], $style ) );
+		// esc_attr turns the quotes inside url('...') into entities; browsers decode them back.
+		$declarations = html_entity_decode( $style[1], ENT_QUOTES );
+		$urls         = array();
+		foreach ( self::SIZES as $size ) {
+			$this->assertSame( 1, preg_match( '/--hyperpress-hero-' . $size . ":url\('([^']*)'\)/", $declarations, $url ), "Missing --hyperpress-hero-$size" );
+			$urls[ $size ] = $url[1];
+		}
+		return $urls;
+	}
+
+	public function test_hero_is_rendered_with_custom_property_urls_when_there_is_no_slider_and_a_featured_image(): void {
 		$this->assertFalse( function_exists( 'add_revslider' ) );
 		$this->create_front_page( true );
 
 		$html = $this->render_front_page();
 
 		$this->assertStringContainsString( 'class="hyperpress-front-hero"', $html );
-		$this->assertSame( 1, preg_match( '/<div class="hyperpress-front-hero"[^>]*data-interchange="([^"]*)"/', $html, $matches ) );
-		$interchange = html_entity_decode( $matches[1] );
+		$this->assertStringNotContainsString( 'data-interchange', $html );
+		$urls = $this->hero_custom_properties( $html );
 		foreach ( array(
 			'small'  => 'hero-640x300.jpg',
 			'medium' => 'hero-1280x400.jpg',
 			'large'  => 'hero-1440x600.jpg',
-			'xlarge' => 'hero-1920x600.jpg',
-		) as $breakpoint => $file ) {
-			$this->assertMatchesRegularExpression( '#\[[^\],]*' . preg_quote( $file, '#' ) . ', ' . $breakpoint . '\]#', $interchange );
+			'xlarge' => 'hero-1920x900.jpg',
+		) as $size => $file ) {
+			$this->assertStringEndsWith( '/' . $file, $urls[ $size ] );
 		}
-		// No-JS fallback uses the large size.
-		$this->assertMatchesRegularExpression( '#style="background-image:url\(\'[^\']*hero-1440x600\.jpg\'\)"#', $html );
+	}
+
+	public function test_hero_urls_stay_intact_for_avif_featured_images(): void {
+		$this->assertFalse( function_exists( 'add_revslider' ) );
+		$this->create_front_page( true, 'avif' );
+
+		$html = $this->render_front_page();
+
+		$this->assertStringNotContainsString( 'data-interchange', $html );
+		$urls = $this->hero_custom_properties( $html );
+		foreach ( array(
+			'small'  => 'hero-640x300.avif',
+			'medium' => 'hero-1280x400.avif',
+			'large'  => 'hero-1440x600.avif',
+			'xlarge' => 'hero-1920x900.avif',
+		) as $size => $file ) {
+			$this->assertMatchesRegularExpression( '#^https?://[^\s\']+/' . preg_quote( $file, '#' ) . '$#', $urls[ $size ] );
+		}
 	}
 
 	public function test_hero_is_not_rendered_when_the_front_page_has_no_featured_image(): void {
