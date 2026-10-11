@@ -50,7 +50,6 @@ function hyperpress_asset_path( $filename, string $manifest_dir = '' ): string {
 	return $filename;
 }
 
-$hyper_press_version    = '2.11.1';
 $foundation_version     = '6.9.0';
 $font_awesome_version   = '7.3.1';
 $jquery_version         = '3.7.1';
@@ -160,8 +159,21 @@ function hyperpress_main_style_deps( ?bool $fontawesome_registered = null ): arr
 	return $deps;
 }
 
+/**
+ * Version of the theme's own assets: the `Version:` header of style.css (release packages get the version tag
+ * there, see Versioning in AGENTS.md). A child theme has its own version, but the assets belong to the
+ * parent theme (get_template_directory_uri()), so the parent's header is the one to use.
+ *
+ * @return string|false The version, or false (WordPress then uses its own version) if the header is empty.
+ */
+function hyperpress_theme_version(): string|false {
+	$version = wp_get_theme( get_template() )->get( 'Version' );
+
+	return is_string( $version ) && '' !== $version ? $version : false;
+}
+
 function hyperpress_scripts(): void {
-	global $google_fonts_base, $hyper_press_version, $foundation_version, $font_awesome_version, $jquery_version, $jquery_migrate_version;
+	global $google_fonts_base, $foundation_version, $font_awesome_version, $jquery_version, $jquery_migrate_version;
 
 	// Deregister the jquery version bundled with WordPress.
 	wp_deregister_script( 'jquery' );
@@ -185,7 +197,7 @@ function hyperpress_scripts(): void {
         'main-stylesheet',
         get_template_directory_uri() . '/dist/assets/css/' . hyperpress_asset_path( 'app.css' ),
         hyperpress_main_style_deps(),
-        $hyper_press_version
+        hyperpress_theme_version()
         );
 
 	// CDN hosted jQuery placed in the header, as some plugins require that jQuery is loaded in the header.
@@ -199,7 +211,7 @@ function hyperpress_scripts(): void {
 
 	// Enqueue Foundation scripts
 	wp_enqueue_script( 'foundation', get_template_directory_uri() . '/dist/assets/js/' . hyperpress_asset_path( 'foundation.js' ), array( 'jquery' ), $foundation_version, true );
-	wp_enqueue_script( 'main-script', get_template_directory_uri() . '/dist/assets/js/' . hyperpress_asset_path( 'app.js' ), array( 'foundation' ), $hyper_press_version, true );
+	wp_enqueue_script( 'main-script', get_template_directory_uri() . '/dist/assets/js/' . hyperpress_asset_path( 'app.js' ), array( 'foundation' ), hyperpress_theme_version(), true );
 
 	// Add the comment-reply library on pages where it is necessary
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -210,12 +222,10 @@ function hyperpress_scripts(): void {
 add_action( 'admin_enqueue_scripts', 'hyperpress_admin_scripts' );
 
 function hyperpress_admin_scripts(): void {
-	global $hyper_press_version;
-
 	// WordPress's own jQuery is left alone in wp-admin: replacing it drops jquery-core/jquery-migrate
 	// for core and plugin scripts and would run third-party CDN code in admin sessions.
 
-	wp_register_style( 'wp-admin-svg-support', get_template_directory_uri() . '/dist/assets/css/' . hyperpress_asset_path( 'svg-wp-admin.css' ), array(), $hyper_press_version, 'screen' );
+	wp_register_style( 'wp-admin-svg-support', get_template_directory_uri() . '/dist/assets/css/' . hyperpress_asset_path( 'svg-wp-admin.css' ), array(), hyperpress_theme_version(), 'screen' );
 	// only load svg support on a screen to edit a post/page/custom-post-type
 	$screen = get_current_screen();
 	if ( $screen && 'post' === $screen->base ) {

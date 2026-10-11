@@ -44,6 +44,7 @@ PATHS:
     - "!tests/**"
     - "!docs/**"
     - "!gulpfile.mjs"
+    - "!gulp/**"
     - "!phpunit.xml.dist"
     - "!pnpm-lock.yaml"
     - "!pnpm-workspace.yaml"

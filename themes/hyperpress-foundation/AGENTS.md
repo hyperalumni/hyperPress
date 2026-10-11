@@ -12,8 +12,15 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
 - `pnpm start`: gulp dev server with Browsersync (needs `BROWSERSYNC.url` in a local `config.yml`)
 - `pnpm dev` / `pnpm build`: gulp build `--dev` (sourcemaps) / `--production` (minify, optional revisioning)
 - `pnpm phpcs` / `pnpm phpcbf`: PHPCS via `codesniffer.ruleset.xml` (WordPress standard, many exclusions)
-- `pnpm package`: build, then write `packaged/hyperPress-<version>-<yyyy-mm-dd>.zip` (version from `package.json`; same-day runs overwrite). Every entry sits in a `hyperPress/` wrapper folder, so the zip is for WordPress admin upload only (it installs to `wp-content/themes/hyperPress/` whatever the zip is called; do not unzip it into `themes/`). Dev files are excluded via `PATHS.package`; a local `config.yml` replaces that list, so keep it in sync
+- `pnpm package`: build, then write `packaged/hyperPress-<version>-<yyyy-mm-dd>.zip` (`<version>` is the nearest version tag, see Versioning; same-day runs overwrite). Every entry sits in a `hyperPress/` wrapper folder, so the zip is for WordPress admin upload only (it installs to `wp-content/themes/hyperPress/` whatever the zip is called; do not unzip it into `themes/`). Dev files are excluded via `PATHS.package`; a local `config.yml` replaces that list, so keep it in sync
+- `pnpm test:node`: node tests for the packaging helper (`gulp/package-version.mjs`, tests in `tests/node/`)
 - PHP tooling runs in Docker from this dir (never composer on the host): `docker compose run --rm php composer lint|test:unit|test:integration`. Set `HYPERPRESS_TEST_WITHOUT_EXTRACTED=1` to run the integration suite without hyperpress-shortcode and hyperpress-media. `lint` is gating (0 violations); security findings carry `// phpcs:ignore ... -- theme audit` comments.
+
+## Versioning
+- The release version is a git tag at the repo root (no `package.json` version; the field was removed). Tags look like `2026.0.0` (a leading `v` is accepted and stripped); other tags (`backup-1`) are ignored.
+- `pnpm package` takes the nearest version tag reachable from `HEAD` (`git describe --tags --abbrev=0`, no commit suffix), names the zip with it and writes it into the zipped `style.css` `Version:` header only. The source `style.css` is never modified.
+- The `Version:` header in the source `style.css` is only the development value and the fallback: with no version tag the package task prints `warning: no version tag found; using <version> from style.css` to stderr and uses it.
+- `hyperpress_theme_version()` (`library/enqueue-scripts.php`) returns the parent theme's `Version:` header and versions the theme's own CSS/JS (`main-stylesheet`, `main-script`, `wp-admin-svg-support`). Foundation, jQuery and Font Awesome keep their own library versions in the same file.
 
 ## Layout
 - `functions.php` requires modules from `library/`; register new modules there.

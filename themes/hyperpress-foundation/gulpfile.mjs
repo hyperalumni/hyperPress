@@ -28,6 +28,7 @@ import webpackStream from 'webpack-stream';
 import webpack2 from 'webpack';
 import named from 'vinyl-named';
 import log from 'fancy-log';
+import {resolveVersion, stampStyleVersion} from './gulp/package-version.mjs';
 import colors from 'ansi-colors';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
@@ -195,11 +196,14 @@ function images() {
 const THEME_SLUG = 'hyperPress';
 
 // Create a .zip archive of the theme: packaged/hyperPress-<version>-<yyyy-mm-dd>.zip
+// <version> is the nearest version tag (see gulp/package-version.mjs) and is also written into the zipped style.css;
+// the source style.css is not touched. Without a tag, the `Version:` header of style.css is used, with a warning.
 function archive() {
-  const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
-  const title = `${THEME_SLUG}-${pkg.version}-${dateFormat(new Date(), 'yyyy-mm-dd')}.zip`;
+  const version = resolveVersion({ cwd: process.cwd(), styleCss: readFileSync('style.css', 'utf8') });
+  const title = `${THEME_SLUG}-${version}-${dateFormat(new Date(), 'yyyy-mm-dd')}.zip`;
   // encoding: false, because Gulp 5 decodes files as UTF-8 by default, which corrupts binary files (PNG, .mo).
   return gulp.src(PATHS.package, { encoding: false })
+    .pipe(stampStyleVersion(version))
     .pipe(rename((file) => {
       file.dirname = posix.join(THEME_SLUG, file.dirname);
     }))

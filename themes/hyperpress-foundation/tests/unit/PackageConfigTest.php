@@ -13,10 +13,12 @@ final class PackageConfigTest extends TestCase {
 		return (string) file_get_contents( dirname( __DIR__, 2 ) . '/' . $file );
 	}
 
-	public function test_zip_title_uses_slug_version_and_date_only(): void {
+	public function test_zip_title_uses_slug_resolved_version_and_date_only(): void {
 		$gulpfile = self::read( 'gulpfile.mjs' );
 		$this->assertMatchesRegularExpression( "/THEME_SLUG\s*=\s*'hyperPress'/", $gulpfile );
-		$this->assertStringContainsString( 'THEME_SLUG}-${pkg.version}-${', $gulpfile, 'title is slug-version-date' );
+		$this->assertStringContainsString( 'THEME_SLUG}-${version}-${', $gulpfile, 'title is slug-version-date' );
+		$this->assertStringContainsString( 'resolveVersion(', $gulpfile, 'the version is the nearest tag, not package.json' );
+		$this->assertStringNotContainsString( 'pkg.version', $gulpfile );
 		$this->assertStringContainsString( "'yyyy-mm-dd'", $gulpfile );
 		$this->assertStringNotContainsString( 'pkg.name', $gulpfile, 'the scoped npm name (@hyper/press) would create a subdirectory' );
 		$this->assertDoesNotMatchRegularExpression( "/dateFormat\([^)]*'[^']*(HH|MM|hh|ss)/", $gulpfile, 'no time of day in the title' );
@@ -31,6 +33,27 @@ final class PackageConfigTest extends TestCase {
 			strpos( $gulpfile, '.pipe(rename(' ),
 			'entries must be renamed before they are zipped'
 		);
+	}
+
+	public function test_style_css_gets_the_resolved_version_before_it_is_zipped(): void {
+		$gulpfile = self::read( 'gulpfile.mjs' );
+		$this->assertStringContainsString( 'stampStyleVersion(version)', $gulpfile );
+		$this->assertLessThan(
+			strpos( $gulpfile, '.pipe(zip(' ),
+			strpos( $gulpfile, '.pipe(stampStyleVersion(' ),
+			'style.css must be stamped before it is zipped'
+		);
+		$this->assertLessThan(
+			strpos( $gulpfile, '.pipe(rename(' ),
+			strpos( $gulpfile, '.pipe(stampStyleVersion(' ),
+			'style.css is recognised by its path, so stamp it before the hyperPress/ wrapper is added'
+		);
+	}
+
+	public function test_package_json_has_no_version_field(): void {
+		$package = json_decode( self::read( 'package.json' ), true );
+		$this->assertIsArray( $package );
+		$this->assertArrayNotHasKey( 'version', $package, 'the theme version lives in style.css and the git tags' );
 	}
 
 	/**
@@ -72,6 +95,7 @@ final class PackageConfigTest extends TestCase {
 			'Dockerfile',
 			'compose.yaml',
 			'config-default.yml',
+			'gulp/**',
 		);
 		$cases = array();
 		foreach ( $paths as $path ) {

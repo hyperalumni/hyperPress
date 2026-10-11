@@ -2,7 +2,6 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@hyper/press",
   "title": "HYPER Press",
-  "version": "2026.0.0",
   "description": "hyperPress is a fork of FoundationPress (based on Foundation 6 by Zurb) for HYPER WordPress sites",
   "homepage": "https://hyperpress.idesign.co",
   "license": "MIT",
@@ -19,7 +18,8 @@
     "phpcs": "gulp phpcs",
     "phpcbf": "gulp phpcbf",
     "preinstall": "npx only-allow pnpm",
-    "start": "gulp"
+    "start": "gulp",
+    "test:node": "node --test 'tests/node/*.test.mjs'"
   },
   "dependencies": {
     "foundation-sites": "~6.9.0",
