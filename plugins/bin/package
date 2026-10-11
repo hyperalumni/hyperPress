@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Zip hyperPress plugins from their committed files (git archive of HEAD).
+# Zip hyperPress plugins from their committed files (git archive of HEAD),
+# stamping the nearest version tag into each packaged main file's header.
 set -euo pipefail
 
 usage() {
@@ -9,6 +10,14 @@ Usage: bin/package [plugin-dir ...]
 Zips each plugin from its committed files (HEAD) into
 packaged/<plugin>-<version>.zip. With no arguments, packages every
 hyperpress-*/ directory that has a tracked main file.
+
+The version is the nearest ancestor tag of HEAD that looks like a version
+(starts with a digit, or v and a digit; a leading v is dropped, no commit
+suffix). It is written into the 'Version:' header of the packaged copy of
+each plugin's main file; the source files are not changed. If no such tag
+exists, bin/package warns on stderr and falls back to the 'Version:' header
+committed in each plugin's main file.
+
 Needs git and unzip (or zipinfo). Uncommitted changes are not included.
 EOF
 }
@@ -37,16 +46,29 @@ else
 fi
 ((${#plugins[@]} > 0)) || die "no plugins to package"
 
+# One version for the whole run: the nearest version-like tag, without a leading v.
+tag_version=$(git describe --tags --abbrev=0 --match '[0-9]*' --match 'v[0-9]*' HEAD 2>/dev/null || true)
+tag_version=${tag_version#v}
+
 # Validate every plugin before creating any zip.
 versions=()
+warned=0
 for dir in "${plugins[@]}"; do
 	[[ -d $dir ]] || die "$dir: no such plugin directory"
 	git ls-files --error-unmatch "$dir/$dir.php" >/dev/null 2>&1 \
 		|| die "$dir: main file $dir/$dir.php is not tracked by git"
-	version=$(git show "HEAD:$dir/$dir.php" \
+	header_version=$(git show "HEAD:./$dir/$dir.php" \
 		| sed -nE 's/^[[:space:]]*\*[[:space:]]*Version:[[:space:]]*([^[:space:]]+).*/\1/p' | head -n1)
-	[[ -n $version ]] || die "$dir: no 'Version:' header in committed $dir/$dir.php"
-	versions+=("$version")
+	[[ -n $header_version ]] || die "$dir: no 'Version:' header in committed $dir/$dir.php"
+	if [[ -n $tag_version ]]; then
+		versions+=("$tag_version")
+	else
+		if ((warned == 0)); then
+			echo "warning: no version tag found; using versions from source headers" >&2
+			warned=1
+		fi
+		versions+=("$header_version")
+	fi
 done
 
 lister=()
@@ -58,16 +80,45 @@ else
 	echo "notice: neither unzip nor zipinfo found; zip verification skipped" >&2
 fi
 
+# Scratch index for building the stamped trees; removed on exit.
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+# Print the tree id of HEAD:<dir> with the main file's Version header set to $2.
+stamped_tree() {
+	local dir=$1 version=$2 main="$1.php" mode blob
+	mode=$(git ls-tree HEAD -- "./$dir/$main" | cut -d' ' -f1)
+	[[ -n $mode ]] || die "$dir: cannot read mode of $dir/$main"
+	rm -f "$tmp/index"
+	blob=$(git show "HEAD:./$dir/$main" | STAMP_VERSION=$version awk '
+		!done && match($0, /^[[:space:]]*\*[[:space:]]*Version:[[:space:]]*[^[:space:]]+/) {
+			head = substr($0, 1, RLENGTH)
+			rest = substr($0, RLENGTH + 1)
+			sub(/[^[:space:]]+$/, "", head)
+			$0 = head ENVIRON["STAMP_VERSION"] rest
+			done = 1
+		}
+		{ print }
+	' | git hash-object -w --stdin)
+	GIT_INDEX_FILE="$tmp/index" git read-tree "HEAD:./$dir"
+	GIT_INDEX_FILE="$tmp/index" git update-index --cacheinfo "$mode,$blob,$main"
+	GIT_INDEX_FILE="$tmp/index" git write-tree
+}
+
 mkdir -p packaged
-mtime=$(git log -1 --format=%cI HEAD) # fixed entry times: same commit, same zip
+root=$(git rev-parse --show-toplevel)
+mtime=$(git log -1 --format=%cI HEAD) # fixed entry times: same commit and tag, same zip
 zips=()
 for i in "${!plugins[@]}"; do
 	dir=${plugins[$i]}
-	zip="packaged/$dir-${versions[$i]}.zip"
+	version=${versions[$i]}
+	zip="packaged/$dir-$version.zip"
 	if [[ -n $(git status --porcelain -- "$dir") ]]; then
 		echo "warning: uncommitted changes in $dir are not included in the zip (only HEAD is archived)" >&2
 	fi
-	git archive --format=zip --mtime="$mtime" --prefix="$dir/" -o "$zip" "HEAD:$dir"
+	tree=$(stamped_tree "$dir" "$version")
+	# From the repo root: a bare tree id would otherwise be limited to the current subdirectory.
+	git -C "$root" archive --format=zip --mtime="$mtime" --prefix="$dir/" -o "$PWD/$zip" "$tree"
 	if ((${#lister[@]} > 0)); then
 		entries=$("${lister[@]}" "$zip")
 		if grep -qv "^$dir/" <<<"$entries" || ! grep -qxF "$dir/$dir.php" <<<"$entries"; then
