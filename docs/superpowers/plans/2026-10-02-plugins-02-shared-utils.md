@@ -1756,3 +1756,5 @@ git commit -m "docs(plans): complete plugins-02-shared-utils" -- docs/superpower
 > Note (2026-10-11): `PostTypeDropdownControl` takes an optional `array( 'show_ui' => true )` option (lists `show_ui` post types instead of `public`) and has a matching `sanitize_show_ui_post_types()` callback; default behavior is unchanged. Only the season Customizer uses it.
 
 > Note (2026-10-11): `HyperPress\Utils\TermSeeder` was added to `hyperpress-utils` (idempotent `seed()`, and `ensure()` which seeds once per version via an option); `hyperpress-program` and `hyperpress-competition` use it to seed their terms.
+
+> Note (2026-10-11): `TaxonomyRegistrar` validates taxonomy keys with its own `KEY_PATTERN` (`hyper_` + lowercase letters, digits, underscores, 32 characters max, WordPress's `register_taxonomy` limit); `PostTypeRegistrar` keeps the 20-character post type limit.

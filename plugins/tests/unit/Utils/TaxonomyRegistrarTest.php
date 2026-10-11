@@ -117,6 +117,18 @@ final class TaxonomyRegistrarTest extends TestCase {
 		TaxonomyRegistrar::build( $this->definition( array( 'key' => 'district' ) ) );
 	}
 
+	public function test_key_longer_than_a_post_type_key_is_accepted_up_to_32_characters(): void {
+		foreach ( array( 'hyper_competition_type', 'hyper_' . str_repeat( 'a', 26 ) ) as $key ) {
+			$built = TaxonomyRegistrar::build( $this->definition( array( 'key' => $key ) ) );
+			$this->assertSame( $key, $built['key'] );
+		}
+	}
+
+	public function test_key_longer_than_32_characters_is_rejected(): void {
+		$this->expectException( InvalidArgumentException::class );
+		TaxonomyRegistrar::build( $this->definition( array( 'key' => 'hyper_' . str_repeat( 'a', 27 ) ) ) );
+	}
+
 	public function test_key_with_trailing_newline_is_rejected(): void {
 		$this->expectException( InvalidArgumentException::class );
 		TaxonomyRegistrar::build( $this->definition( array( 'key' => "hyper_district\n" ) ) );

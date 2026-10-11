@@ -16,7 +16,7 @@ final class Plugin {
 	public const POST_TYPE    = 'hyper_competition';
 	public const DISTRICT     = 'hyper_district';
 	public const WEEK         = 'hyper_week';
-	public const TYPE         = 'hyper_comp_type';
+	public const TYPE         = 'hyper_competition_type';
 	private const CAPS_OPTION = 'hyperpress_competition_caps_version';
 	// Bump the seed version to seed newly added default terms on existing sites.
 	private const SEED_OPTION  = 'hyperpress_competition_terms_seeded';

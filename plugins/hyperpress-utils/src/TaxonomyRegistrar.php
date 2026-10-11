@@ -7,6 +7,8 @@ use InvalidArgumentException;
 
 final class TaxonomyRegistrar {
 
+	public const KEY_PATTERN = '/^hyper_[a-z0-9_]{1,26}$/D'; // 32 chars max including "hyper_".
+
 	private const DEFAULTS = array(
 		'show_ui'           => true,
 		'show_in_menu'      => true,
@@ -79,8 +81,8 @@ final class TaxonomyRegistrar {
 			throw new InvalidArgumentException( "Taxonomy definition is missing 'slug' (use null for no rewrite)." );
 		}
 		$key = (string) $definition['key'];
-		if ( ! preg_match( PostTypeRegistrar::KEY_PATTERN, $key ) ) {
-			throw new InvalidArgumentException( esc_html( "Invalid taxonomy key '$key': use hyper_ + lowercase letters, digits, underscores, max 20 characters." ) );
+		if ( ! preg_match( self::KEY_PATTERN, $key ) ) {
+			throw new InvalidArgumentException( esc_html( "Invalid taxonomy key '$key': use hyper_ + lowercase letters, digits, underscores, max 32 characters." ) );
 		}
 
 		$rewrite = null === $definition['slug']

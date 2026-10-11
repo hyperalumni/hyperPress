@@ -17,10 +17,15 @@ final class KeyConventionTest extends WP_UnitTestCase {
 	}
 
 	public function test_keys_follow_prefix_and_length_rules(): void {
-		$keys = array_merge( array_keys( Convention::POST_TYPES ), array_keys( Convention::TAXONOMIES ) );
-		foreach ( $keys as $key ) {
-			$this->assertMatchesRegularExpression( '/^hyper_[a-z0-9_]+$/', $key, "$key format" );
-			$this->assertLessThanOrEqual( Convention::KEY_MAX_LENGTH, strlen( $key ), "$key length" );
+		$limits = array(
+			Convention::KEY_MAX_LENGTH          => array_keys( Convention::POST_TYPES ),
+			Convention::TAXONOMY_KEY_MAX_LENGTH => array_keys( Convention::TAXONOMIES ),
+		);
+		foreach ( $limits as $max => $keys ) {
+			foreach ( $keys as $key ) {
+				$this->assertMatchesRegularExpression( '/^hyper_[a-z0-9_]+$/', $key, "$key format" );
+				$this->assertLessThanOrEqual( $max, strlen( $key ), "$key length" );
+			}
 		}
 	}
 }
