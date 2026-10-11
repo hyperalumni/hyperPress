@@ -32,6 +32,7 @@ final class AdminFilter {
 				'show_option_all' => __( 'All seasons', 'hyperpress' ),
 				'hierarchical'    => true,
 				'hide_empty'      => false,
+				'orderby'         => 'name',
 				'value_field'     => 'slug',
 				'selected'        => $selected,
 			)

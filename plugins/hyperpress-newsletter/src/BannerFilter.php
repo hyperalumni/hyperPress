@@ -3,6 +3,7 @@ namespace HyperPress\Newsletter;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Season\SortedSeasons;
 use HyperPress\Utils\Meta;
 
 final class BannerFilter {
@@ -24,15 +25,8 @@ final class BannerFilter {
 		}
 
 		if ( empty( $banner['title'] ) ) {
-			$seasons = wp_get_object_terms(
-				get_the_ID(),
-				'hyper_season',
-				array(
-					'orderby' => 'name',
-					'order'   => 'DESC',
-				)
-			);
-			if ( ! empty( $seasons ) && ! is_wp_error( $seasons ) ) {
+			$seasons = SortedSeasons::get();
+			if ( ! empty( $seasons ) ) {
 				$banner['title'] = $seasons[0]->name . ': ' . get_the_title();
 			} else {
 				$banner['title'] = __( 'Newsletter', 'hyperpress' );

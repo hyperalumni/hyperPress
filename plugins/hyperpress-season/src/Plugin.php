@@ -20,6 +20,7 @@ final class Plugin {
 		Customizer::register();
 		MetaBoxes::register();
 		AdminFilter::register();
+		SeasonOrder::register();
 		Rewrite::register();
 		SeasonCount::register();
 		Labels::register();
