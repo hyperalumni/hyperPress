@@ -74,27 +74,27 @@ Expected: clone succeeds. (Used in Task 7 only if a Docker command fails, to tel
 - Consumes: `THEME_SHA`, `THEME_COUNT` from `vars.sh`.
 - Produces: `master` = theme history + two docs commits; `origin` configured, not pushed.
 
-- [ ] **Step 1: Check the starting state**
+- [x] **Step 1: Check the starting state**
 
 Run: `git rev-parse --verify HEAD; git status --short`
 Expected: `rev-parse` fails (no commits); status shows only `?? .idea/` and `?? docs/`.
 
-- [ ] **Step 2: Import the theme's master**
+- [x] **Step 2: Import the theme's master**
 
 Run: `git fetch ../theme master && git checkout -B master FETCH_HEAD`
 Expected: success, and `git rev-parse HEAD` equals `$THEME_SHA`. If git refuses because an untracked file would be overwritten, stop and report which file.
 
-- [ ] **Step 3: Configure origin without pushing**
+- [x] **Step 3: Configure origin without pushing**
 
 Run: `git remote add origin git@github.com:hyperalumni/hyperPress.git && git remote -v`
 Expected: fetch and push URLs listed; `git branch -vv` shows no upstream.
 
-- [ ] **Step 4: Check only the two docs are untracked**
+- [x] **Step 4: Check only the two docs are untracked**
 
 Run: `git status --short`
 Expected: exactly `?? docs/superpowers/plans/2026-10-11-stage-0-monorepo-restructure.md` and `?? docs/superpowers/specs/2026-10-07-uikit-nx-wordpress-design.md` (`.idea/` is ignored by the theme's `.gitignore`).
 
-- [ ] **Step 5: Commit the spec, then the plan, each on its own**
+- [x] **Step 5: Commit the spec, then the plan, each on its own**
 
 Tick Task 1's boxes in the plan first. Then run `git add <spec> && git commit -m "docs(specs): uikit nx wordpress workspace design" -- <spec>` and `git add <plan> && git commit -m "docs(plans): stage 0 monorepo restructure" -- <plan>`.
 Expected: two commits; `git rev-parse HEAD~2` equals `$THEME_SHA`; `git rev-list --count HEAD` equals `$THEME_COUNT + 2`.
@@ -111,22 +111,22 @@ Expected: two commits; `git rev-parse HEAD~2` equals `$THEME_SHA`; `git rev-list
 - Consumes: Task 2 state.
 - Produces: root contains only `docs/` and `themes/` as tracked entries.
 
-- [ ] **Step 1: Move**
+- [x] **Step 1: Move**
 
 Run: `mkdir -p themes/hyperpress-foundation && git ls-files -z | cut -z -d/ -f1 | sort -zu | grep -zv '^docs$' | xargs -0 -I{} git mv {} themes/hyperpress-foundation/{}`
 Expected: no errors.
 
-- [ ] **Step 2: Verify the index holds only renames**
+- [x] **Step 2: Verify the index holds only renames**
 
 Run: `git diff --cached -M --name-status | cut -c1 | sort | uniq -c` and `git status --short | grep -v '^R '`
 Expected: only `R` entries counted (no `A`/`D`/`M`); the second command prints only `?? .idea/` (the theme's `.gitignore` that hid it has moved; the root `.gitignore` arrives in Task 5).
 
-- [ ] **Step 3: Verify the layout**
+- [x] **Step 3: Verify the layout**
 
 Run: `git ls-files | grep -v '^docs/' | grep -vc '^themes/hyperpress-foundation/'`
 Expected: `0`. Also `git ls-files | cut -d/ -f1 | sort -u` prints exactly `docs` and `themes`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 Tick Tasks 2 and 3 boxes in the plan, `git add <plan>`, then `git commit -m "refactor: move theme into themes/hyperpress-foundation"` (whole index, verified in Step 2).
 Expected: one commit; `git status --short` shows only `?? .idea/`.
