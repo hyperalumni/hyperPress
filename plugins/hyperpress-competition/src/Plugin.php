@@ -86,7 +86,7 @@ final class Plugin {
 			'hierarchical'       => true,
 			'show_tagcloud'      => false,
 			'show_in_quick_edit' => true,
-			'show_admin_column'  => false,
+			'show_admin_column'  => true,
 		);
 	}
 
@@ -103,7 +103,7 @@ final class Plugin {
 			'hierarchical'       => true,
 			'show_tagcloud'      => true,
 			'show_in_quick_edit' => true,
-			'show_admin_column'  => false,
+			'show_admin_column'  => true,
 		);
 	}
 }

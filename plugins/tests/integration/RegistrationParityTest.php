@@ -76,8 +76,8 @@ final class RegistrationParityTest extends WP_UnitTestCase {
 
 		foreach ( self::TAXONOMY_PROPS as $prop ) {
 			$expected = $legacy[ $prop ];
-			if ( 'hyper_season' === $new && 'show_admin_column' === $prop ) {
-				$expected = true; // Deliberate change: the Season column and filter show in admin lists.
+			if ( in_array( $new, array( 'hyper_season', 'hyper_district', 'hyper_week' ), true ) && 'show_admin_column' === $prop ) {
+				$expected = true; // Deliberate change: these taxonomy columns show in admin lists.
 			}
 			$this->assertSame( $expected, $tax->$prop, "$new: $prop" );
 		}

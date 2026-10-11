@@ -657,3 +657,5 @@ git commit -m "docs(plans): complete plugins-03-core-plugins" -- docs/superpower
 - Deferred minors: robot definition omits `hierarchical => false` (default); `version()` reads the main file on every request; `SeasonCountTest` expectations were derived by hand (reviewer verified the logic); a Customizer dropdown smoke test belongs in plugins-05.
 
 > Note (2026-10-11): `hyper_season` now sets `show_admin_column` to true and `hyperpress-season` adds an `AdminFilter` "All seasons" dropdown on list tables. The season post-types Customizer control lists `show_ui` post types (so the non-public `hyper_countdown` is selectable); `RegistrationParityTest` expects this one deviation from the legacy snapshot.
+>
+> Note (2026-10-11): `hyper_district` and `hyper_week` (hyperpress-competition) now also set `show_admin_column` to true; `RegistrationParityTest` expects these deviations too.
