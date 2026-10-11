@@ -52,6 +52,7 @@ final class Plugin {
 			'show_tagcloud'      => false,
 			'show_in_quick_edit' => true,
 			'show_admin_column'  => true,
+			'locked'             => true,
 		);
 	}
 }

@@ -65,7 +65,12 @@ final class TaxonomyRegistrar {
 	 *
 	 * Required: key, singular, plural, and the `slug` key (null disables rewrite).
 	 * Optional: description, public, publicly_queryable, hierarchical, show_tagcloud, show_in_quick_edit,
-	 * show_admin_column, meta_box_cb, args (overrides, win last).
+	 * show_admin_column, meta_box_cb, locked, args (overrides, win last).
+	 *
+	 * `locked` (default false) is for taxonomies whose terms are managed only by code (TermSeeder):
+	 * edit_terms and delete_terms map to do_not_allow, so nobody can add, edit or delete terms in the
+	 * admin, while manage_terms (term screen) and assign_terms (post checklist) keep working.
+	 * wp_insert_term() and friends do not check capabilities, so seeding is unaffected.
 	 *
 	 * @param array $definition Taxonomy definition.
 	 * @return array{key:string,args:array}
@@ -105,6 +110,15 @@ final class TaxonomyRegistrar {
 			'show_admin_column'  => $definition['show_admin_column'] ?? false,
 			'rewrite'            => $rewrite,
 		);
+		if ( ! empty( $definition['locked'] ) ) {
+			$derived['capabilities'] = array_merge(
+				self::DEFAULTS['capabilities'],
+				array(
+					'edit_terms'   => 'do_not_allow',
+					'delete_terms' => 'do_not_allow',
+				)
+			);
+		}
 		if ( array_key_exists( 'meta_box_cb', $definition ) ) {
 			$derived['meta_box_cb'] = $definition['meta_box_cb'];
 		}

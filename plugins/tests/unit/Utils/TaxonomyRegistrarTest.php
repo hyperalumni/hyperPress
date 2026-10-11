@@ -44,6 +44,20 @@ final class TaxonomyRegistrarTest extends TestCase {
 		$this->assertSame( 'edit_posts', $caps['assign_terms'] );
 	}
 
+	public function test_locked_definition_denies_adding_editing_and_deleting_terms(): void {
+		$caps = TaxonomyRegistrar::build( $this->definition( array( 'locked' => true ) ) )['args']['capabilities'];
+		$this->assertSame( 'do_not_allow', $caps['edit_terms'] );
+		$this->assertSame( 'do_not_allow', $caps['delete_terms'] );
+		$this->assertSame( 'manage_options', $caps['manage_terms'] );
+		$this->assertSame( 'edit_posts', $caps['assign_terms'] );
+	}
+
+	public function test_unlocked_definition_keeps_default_capabilities(): void {
+		$default = TaxonomyRegistrar::build( $this->definition() )['args']['capabilities'];
+		$this->assertSame( $default, TaxonomyRegistrar::build( $this->definition( array( 'locked' => false ) ) )['args']['capabilities'] );
+		$this->assertSame( 'manage_options', $default['edit_terms'] );
+	}
+
 	public function test_build_drops_generator_leftovers(): void {
 		$args = TaxonomyRegistrar::build( $this->definition() )['args'];
 		foreach ( array( 'sort', 'order', 'rest_base' ) as $leftover ) {

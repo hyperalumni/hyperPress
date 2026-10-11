@@ -82,7 +82,13 @@ final class RegistrationParityTest extends WP_UnitTestCase {
 			$this->assertSame( $expected, $tax->$prop, "$new: $prop" );
 		}
 		$this->assertSame( self::map( $legacy['query_var'] ), $tax->query_var, "$new: query_var" );
-		$this->assertSame( $legacy['cap'], (array) $tax->cap, "$new: capabilities" );
+		$expected_cap = $legacy['cap'];
+		if ( in_array( $new, array( 'hyper_season', 'hyper_program', 'hyper_district', 'hyper_week', 'hyper_competition_type' ), true ) ) {
+			// Deliberate change: these taxonomies are seeded and locked, so terms are managed only by code.
+			$expected_cap['edit_terms']   = 'do_not_allow';
+			$expected_cap['delete_terms'] = 'do_not_allow';
+		}
+		$this->assertSame( $expected_cap, (array) $tax->cap, "$new: capabilities" );
 
 		$object_types = array_map( array( self::class, 'map' ), $legacy['object_type'] );
 		$actual_types = $tax->object_type;

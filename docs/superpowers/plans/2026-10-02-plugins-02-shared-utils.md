@@ -1762,3 +1762,5 @@ git commit -m "docs(plans): complete plugins-02-shared-utils" -- docs/superpower
 > Note (2026-10-11): `TermSeeder::ensure()` now takes a map of taxonomy => terms and records a hash of the terms instead of a manually bumped version, so edits to a default list reseed automatically (existing terms are never changed; admin-deleted defaults return when the list changes).
 
 > Note (2026-10-11): seed entries may carry a `description` (`array( "name" => ..., "description" => ..., "children" => array( ... ) )`); it is filled in only when an existing term's description is empty, and a non-empty description is never overwritten.
+
+> Note (2026-10-11): `TaxonomyRegistrar` definitions accept `locked => true` (default false), which maps `edit_terms` and `delete_terms` to `do_not_allow` for taxonomies whose terms are managed only by code.
