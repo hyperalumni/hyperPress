@@ -1,3 +1,7 @@
+packages:
+  - themes/*
+  - plugins/*
+
 supportedArchitectures:
   os: [current]
   cpu: [current]

@@ -1,0 +1,22 @@
+{
+  "name": "@hyper/workspace",
+  "private": true,
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.11.2",
+      "onFail": "download"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "26.11.1",
+      "onFail": "error"
+    }
+  },
+  "engines": {
+    "node": "26.11.1"
+  }
+}

@@ -165,7 +165,9 @@ settings:
 
 importers:
 
-  .:
+  .: {}
+
+  themes/hyperpress-foundation:
     dependencies:
       foundation-sites:
         specifier: ~6.9.0

@@ -182,39 +182,39 @@ Expected: one commit; `git status --short` shows no changes to tracked files fro
 - Consumes: `baseline-dist.txt`, `baseline-deps.txt`.
 - Produces: a root workspace in which `pnpm --filter @hyper/press build` works.
 
-- [ ] **Step 1: Check no plugin-level JS projects exist**
+- [x] **Step 1: Check no plugin-level JS projects exist**
 
 Run: `git ls-files 'plugins/*package.json'`
 Expected: no output. If any file is listed, stop and report: it would become a workspace project.
 
-- [ ] **Step 2: Create root `package.json`**
+- [x] **Step 2: Create root `package.json`**
 
 Contents (values copied from the theme's `package.json`): `name` `@hyper/workspace`, `private` true, `scripts.preinstall` `npx only-allow pnpm`, `devEngines.packageManager` `{ name: pnpm, version: 12.11.2, onFail: download }`, `devEngines.runtime` `{ name: node, version: 26.11.1, onFail: error }`, `engines.node` `26.11.1`. No other scripts.
 
-- [ ] **Step 3: Move and extend the pnpm workspace file and lockfile**
+- [x] **Step 3: Move and extend the pnpm workspace file and lockfile**
 
 Run: `git mv themes/hyperpress-foundation/pnpm-workspace.yaml pnpm-workspace.yaml` and `git mv themes/hyperpress-foundation/pnpm-lock.yaml pnpm-lock.yaml`. Add to the top of `pnpm-workspace.yaml` a `packages:` key listing `themes/*` and `plugins/*`; keep every existing key unchanged.
 
-- [ ] **Step 4: Create root `.nvmrc` and `.gitignore`**
+- [x] **Step 4: Create root `.nvmrc` and `.gitignore`**
 
 `.nvmrc`: `26.11.1`. `.gitignore` lines: `node_modules/`, `dist/`, `.idea/`, `.env*`, `!.env.example`. (Do not copy the theme's 310-line file.)
 
-- [ ] **Step 5: Install and check the workspace**
+- [x] **Step 5: Install and check the workspace**
 
 Run: `source ~/.nvm/nvm.sh && nvm use 26.11.1 >/dev/null && pnpm install`, then `pnpm -r ls --depth -1`
 Expected: install succeeds; the project list contains `@hyper/press` and no `hyperpress-*`/`plugins` entries.
 
-- [ ] **Step 6: Check for dependency drift**
+- [x] **Step 6: Check for dependency drift**
 
 Run: `pnpm --filter @hyper/press ls --depth 0 --json | node -e "<same one-liner as Task 1 Step 3>" | diff - /tmp/opencode/stage0/baseline-deps.txt`
 Expected: no diff. If versions differ, stop and report the diff; do not commit.
 
-- [ ] **Step 7: Build from the root and compare output**
+- [x] **Step 7: Build from the root and compare output**
 
 Run: `pnpm --filter @hyper/press build`, then `(cd themes/hyperpress-foundation && find dist -type f | sort) | diff - /tmp/opencode/stage0/baseline-dist.txt`
 Expected: build succeeds; no diff.
 
-- [ ] **Step 8: Check nothing unwanted is tracked or pending, then commit**
+- [x] **Step 8: Check nothing unwanted is tracked or pending, then commit**
 
 Run: `git status --short`
 Expected: only `package.json`, `.nvmrc`, `.gitignore`, `pnpm-workspace.yaml`, `pnpm-lock.yaml` (the moves appear as renames/deletes of the old theme paths); no `node_modules`/`dist`. Tick Task 5's boxes, then `git add package.json .nvmrc .gitignore pnpm-workspace.yaml pnpm-lock.yaml <plan>` and `git commit -m "build: add root pnpm workspace" -- package.json .nvmrc .gitignore pnpm-workspace.yaml pnpm-lock.yaml themes/hyperpress-foundation/pnpm-workspace.yaml themes/hyperpress-foundation/pnpm-lock.yaml <plan>`.
@@ -270,7 +270,7 @@ Expected: `git status --short` is empty.
 Run:
 - `git log --follow --format=%h -- themes/hyperpress-foundation/functions.php | wc -l` -> expected `(git -C ../theme log --format=%h -- functions.php | wc -l) + 1`; and the last line of `git log --follow --format=%h -- themes/hyperpress-foundation/functions.php` equals the last line of `git -C ../theme log --format=%h -- functions.php`.
 - `git log --oneline -- plugins/hyperpress-media | wc -l` -> `8`; `git log --oneline -- docs/superpowers/plans/2026-10-06-label-plugin-extraction.md | wc -l` -> `21`.
-- `git rev-list --count HEAD` -> `$THEME_COUNT + $PLUGINS_COUNT + 6`; `git rev-list --merges --count $THEME_SHA..HEAD` -> `0` (no merge commit added).
+- `git rev-list --count HEAD` -> `$THEME_COUNT + $PLUGINS_COUNT + 7` (2 docs, move, spec update, plugins record, root files, AGENTS); `git rev-list --merges --count $THEME_SHA..HEAD` -> `0` (no merge commit added).
 - `git ls-files | cut -d/ -f1 | sort -u` -> exactly `.gitignore .nvmrc AGENTS.md docs package.json plugins pnpm-lock.yaml pnpm-workspace.yaml themes`; `test ! -e plugins/docs`; `git ls-files | grep -E '(^|/)(node_modules|dist)/'` -> no output.
 
 - [ ] **Step 2: PHP tooling still works from the new locations (Docker, isolated project names)**
