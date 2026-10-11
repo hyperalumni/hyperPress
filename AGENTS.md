@@ -14,7 +14,7 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - Node comes from nvm and is not on the default PATH. Load it first in each shell: `source ~/.nvm/nvm.sh && nvm use` (root `.nvmrc`, Node 26.11.1).
 - pnpm only (enforced by `preinstall`; no npm/yarn). The root `devEngines` pins pnpm 12.11.2. Run `pnpm install` once at the root.
 - Theme scripts: `pnpm --filter @hyper/press <script>`, or run `pnpm <script>` from `themes/hyperpress-foundation/`.
-- PHP tooling runs in Docker only, never composer on the host: from the theme or plugins directory, `docker compose run --rm php composer lint|test:unit|test:integration`. From `plugins/` always pass a project name (`docker compose -p hyperpress-plugins run --rm php ...`): Compose names the project after the directory, and the old `plugins` repo's stack has the same name, so without `-p` the two share containers and volumes. `vendor/` is git-ignored, so run `composer install` the same way first.
+- PHP tooling runs in Docker only, never composer on the host: from the theme or plugins directory, `docker compose run --rm php composer lint|test:unit|test:integration`. `vendor/` is git-ignored, so run `composer install` the same way first. The two tooling compose files set their own project names (`hyperpress-plugins`, `hyperpress-theme`), the same as the standalone repos, so their ephemeral containers and the composer cache volume are shared with those repos; do not run both copies at the same time. Their mounts use the monorepo layout: `plugins/` mounts `themes/hyperpress-foundation` as `/theme`, and the theme mounts `plugins/` as `/plugins`.
 - `.env*` files are git-ignored. Do not read or print them.
 
 ## Git

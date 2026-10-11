@@ -6,7 +6,7 @@ Part of the hyperPress monorepo (`plugins/`); the root `../AGENTS.md` also appli
 
 ## Plans and specs
 - Work is driven by `../docs/superpowers/` (`specs/`, `plans/`, `audit/`). Read the relevant plan and spec before starting work.
-- Tooling: the host has PHP 8.5 and docker only. Run everything through `docker compose -p hyperpress-plugins run --rm php <cmd>` from this dir (the `-p` stops it sharing a Compose project with the old `plugins` repo's stack) (never composer on the host): `composer lint`, `composer test:unit`, `composer test:integration`.
+- Tooling: the host has PHP 8.5 and docker only. Run everything through `docker compose run --rm php <cmd>` from this dir (never composer on the host): `composer lint`, `composer test:unit`, `composer test:integration`.
 - There are 14 plugins, including `hyperpress-shortcode` and `hyperpress-media`, which were extracted from the theme.
 - Packaging: `bin/package [plugin ...]` runs on the host (needs git and unzip). It writes `packaged/<plugin>-<version>.zip` from committed files only; with no args it packages all plugins.
 

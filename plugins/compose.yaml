@@ -5,7 +5,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-      - ../theme:/theme:ro
+      - ../themes/hyperpress-foundation:/theme:ro
       - composer-cache:/root/.composer
     environment:
       WP_DB_HOST: db

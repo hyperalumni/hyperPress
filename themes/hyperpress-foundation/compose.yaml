@@ -6,7 +6,7 @@ services:
     volumes:
       - .:/app
       - .:/hp-themes/hyperpress:ro
-      - ../plugins:/plugins:ro
+      - ../../plugins:/plugins:ro
       - composer-cache:/root/.composer
     environment:
       WP_DB_HOST: db
