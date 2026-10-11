@@ -23,6 +23,7 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - `docker/compose.main.yaml` is shared. Each site directory holds only its wrapper `compose.yaml` and its `.env.local`; the other env files (`.env`, `.env.db`, `.env.mariadb`, `.env.phpmyadmin`, `.env.wordpress`, `.env.versions`) are shared in `docker/`. Real env files are git-ignored; commit only the `*.example` templates, and copy them to real files (filling in the values) on a new checkout.
 - The project names keep the existing volumes (`hyperalumni_*`, `hyperonline_*`). `docker compose down -v` deletes a site's database and WordPress files: fine for local development, but do it on purpose.
 - The theme and the 14 plugins are bind-mounted from `themes/hyperpress-foundation/` and `plugins/`. Design: the spec's "Docker stack" section.
+- Docker Desktop creates a missing bind-mount source as an empty root-owned folder instead of failing, and Compose's `create_host_path: false` does not change that here. After changing a mount path or `THEME_SRC`, look for strays with `find . -maxdepth 4 -type d -empty -user root -not -path '*/node_modules/*'` and remove them with `rmdir`. The theme's integration tests also leave an empty root-owned `themes/hyperpress-foundation/.superpowers`; that one is harmless.
 
 ## Git
 - One repo: commit from the root with explicit paths. Run `git add <paths>` then `git commit -m "..." -- <paths>`. Never a bare `git commit` and never `git add -A`.
