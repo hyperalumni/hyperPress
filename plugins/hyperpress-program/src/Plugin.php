@@ -12,7 +12,24 @@ final class Plugin {
 
 	private const SEED_OPTION   = 'hyperpress_program_terms_seeded';
 	private const DEFAULT_TERMS = array(
-		'FIRST' => array( 'FRC', 'FTC', 'FLL' ),
+		array(
+			'name'        => 'FIRST',
+			'description' => 'For Inspiration and Recognition of Science and Technology',
+			'children'    => array(
+				array(
+					'name'        => 'FRC',
+					'description' => 'FIRST Robotics Competition',
+				),
+				array(
+					'name'        => 'FTC',
+					'description' => 'FIRST Tech Challenge',
+				),
+				array(
+					'name'        => 'FLL',
+					'description' => 'FIRST LEGO League',
+				),
+			),
+		),
 	);
 
 	public static function boot(): void {

@@ -51,6 +51,48 @@ final class TermSeederTest extends WP_UnitTestCase {
 		$this->assertFalse( get_term_by( 'name', 'One', self::TAXONOMY ) );
 	}
 
+	public function test_seed_creates_terms_with_descriptions_including_children(): void {
+		TermSeeder::seed(
+			self::TAXONOMY,
+			array(
+				array(
+					'name'        => 'Group',
+					'description' => 'The group',
+					'children'    => array(
+						array(
+							'name'        => 'One',
+							'description' => 'First child',
+						),
+						'Two',
+					),
+				),
+			)
+		);
+
+		$group = get_term_by( 'name', 'Group', self::TAXONOMY );
+		$one   = get_term_by( 'name', 'One', self::TAXONOMY );
+		$this->assertSame( 'The group', $group->description );
+		$this->assertSame( $group->term_id, $one->parent );
+		$this->assertSame( 'First child', $one->description );
+		$this->assertSame( '', get_term_by( 'name', 'Two', self::TAXONOMY )->description );
+	}
+
+	public function test_seed_fills_an_empty_description_on_an_existing_term(): void {
+		$existing = wp_insert_term( 'Group', self::TAXONOMY );
+
+		TermSeeder::seed( self::TAXONOMY, array( array( 'name' => 'Group', 'description' => 'The group' ) ) );
+
+		$this->assertSame( 'The group', get_term( $existing['term_id'], self::TAXONOMY )->description );
+	}
+
+	public function test_seed_leaves_a_non_empty_description_untouched(): void {
+		$existing = wp_insert_term( 'Group', self::TAXONOMY, array( 'description' => 'Edited by an admin' ) );
+
+		TermSeeder::seed( self::TAXONOMY, array( array( 'name' => 'Group', 'description' => 'The group' ) ) );
+
+		$this->assertSame( 'Edited by an admin', get_term( $existing['term_id'], self::TAXONOMY )->description );
+	}
+
 	public function test_seed_skips_an_unregistered_taxonomy(): void {
 		TermSeeder::seed( 'hyper_not_registered', array( 'Alpha' ) );
 		$this->assertTrue( true ); // No exception, no warning.
@@ -124,8 +166,16 @@ final class TermSeederTest extends WP_UnitTestCase {
 		\HyperPress\Program\Plugin::seed_terms();
 
 		$first = get_term_by( 'name', 'FIRST', 'hyper_program' );
-		foreach ( array( 'FRC', 'FTC', 'FLL' ) as $name ) {
-			$this->assertSame( $first->term_id, get_term_by( 'name', $name, 'hyper_program' )->parent );
+		$this->assertSame( 'For Inspiration and Recognition of Science and Technology', $first->description );
+		$descriptions = array(
+			'FRC' => 'FIRST Robotics Competition',
+			'FTC' => 'FIRST Tech Challenge',
+			'FLL' => 'FIRST LEGO League',
+		);
+		foreach ( $descriptions as $name => $description ) {
+			$term = get_term_by( 'name', $name, 'hyper_program' );
+			$this->assertSame( $first->term_id, $term->parent );
+			$this->assertSame( $description, $term->description );
 		}
 	}
 }
