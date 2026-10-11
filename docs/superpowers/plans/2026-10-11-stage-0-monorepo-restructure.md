@@ -232,25 +232,25 @@ Expected: only `package.json`, `.nvmrc`, `.gitignore`, `pnpm-workspace.yaml`, `p
 - Consumes: Task 5 state.
 - Produces: every `docs/superpowers`, `../theme`, `../plugins` reference in the three moved files resolves from its new location.
 
-- [ ] **Step 1: Write the failing path check**
+- [x] **Step 1: Write the failing path check**
 
 Run: `git grep -nE 'docs/superpowers|\.\./(theme|plugins)' -- themes/hyperpress-foundation/AGENTS.md plugins/AGENTS.md plugins/README.md`
 Expected now: lists the existing references (plugins `AGENTS.md` lines 6 and 13, `README.md` lines 35 and 50, theme `AGENTS.md` lines 26 and 42, plus any `../plugins` mention). These must each be rewritten in Step 2.
 
-- [ ] **Step 2: Fix the references**
+- [x] **Step 2: Fix the references**
 
 In `plugins/AGENTS.md` and `plugins/README.md`, prefix each `docs/superpowers` with `../` (resolves to the root `docs/`). In `themes/hyperpress-foundation/AGENTS.md`, prefix each with `../../`, change `../plugins` to `../../plugins`, and change the `pnpm-workspace.yaml allowBuilds` note to refer to the root `pnpm-workspace.yaml`. Add one line near the top of both nested `AGENTS.md` files: it lives in the hyperPress monorepo and the root `AGENTS.md` applies. Make no other edits to them.
 Re-run Step 1's command. Expected: every remaining match is `../docs/superpowers`, `../../docs/superpowers` or `../../plugins`.
 
-- [ ] **Step 3: Write root `AGENTS.md`**
+- [x] **Step 3: Write root `AGENTS.md`**
 
 Short and cross-cutting, with these sections: what the repo is and its layout (the tree from the spec); environment setup (`source ~/.nvm/nvm.sh && nvm use`, pnpm only, PHP tooling in Docker, never read `.env*`); git (single repo, commit from the root with explicit paths: `git add <paths>` then `git commit -m "..." -- <paths>`, never a bare `git commit`, never `git add -A`, no push without being asked, follow the style in `git log`); docs (root `docs/superpowers/`); "read `themes/hyperpress-foundation/AGENTS.md` or `plugins/AGENTS.md` before working in those areas"; "supersedes `../AGENTS.md`, which still describes `theme/` and `plugins/` as separate repos"; and an "Implementation plans" section (plans in `docs/superpowers/plans/`, specs in `docs/superpowers/specs/`, commit a plan on its own before coding, tick checkboxes with each task's commit, COMPLETED banner at the end).
 
-- [ ] **Step 4: Check the plans README**
+- [x] **Step 4: Check the plans README**
 
 Read `docs/superpowers/plans/README.md`. If it names the theme specifically, edit it to describe the whole workspace; otherwise leave it unchanged.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Tick Task 6's boxes, then `git add AGENTS.md themes/hyperpress-foundation/AGENTS.md plugins/AGENTS.md plugins/README.md <plan>` (plus `docs/superpowers/plans/README.md` if edited) and `git commit -m "docs: add root AGENTS.md and fix moved doc paths" -- <same paths>`.
 Expected: `git status --short` is empty.

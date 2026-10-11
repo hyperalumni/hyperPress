@@ -32,7 +32,7 @@ The plugin headers keep `Requires PHP: 8.3` as the floor and `Requires at least:
 - Every other identifier (meta box, field, Customizer setting, section, control, widget id, script handle) is `hyperpress_{plugin}_{field}`. A Customizer control id equals its setting id.
 - Shared code lives in `hyperpress-utils` (`HyperPress\Utils`). Each plugin has the layout `hyperpress-x/hyperpress-x.php` plus `src/` (namespace `HyperPress\X`, PSR-4, own autoloader).
 - Plugins boot on `plugins_loaded`, so they may call `HyperPress\Utils` only from then on, never while their main file is being included.
-- `Requires Plugins` in each header lists its dependencies; the target table is in `docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md`.
+- `Requires Plugins` in each header lists its dependencies; the target table is in `../docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md`.
 
 ## Extracted plugins
 
@@ -47,4 +47,4 @@ The plugin headers keep `Requires PHP: 8.3` as the floor and `Requires at least:
 
 ## Specs and plans
 
-See `docs/superpowers/` (`specs/`, `plans/`, `audit/`).
+See `../docs/superpowers/` (`specs/`, `plans/`, `audit/`).
