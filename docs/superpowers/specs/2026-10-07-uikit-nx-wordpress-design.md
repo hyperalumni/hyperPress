@@ -30,7 +30,7 @@ repo is added under `plugins/` (rebased on top, no merge commit), and root works
 | SCSS lint | Stylelint (Oxlint does not cover CSS) |
 | PHP lint | PHPCS (WordPress standard), in Docker only |
 | Twig | No formatter or linter (none available) |
-| Dev environment | Self-contained Docker Compose stack in `docker/`; PHP/Composer run in a tooling container, never on the host |
+| Dev environment | One shared Docker Compose file in `docker/` with thin per-site wrappers (`docker/hyperalumni/`, `docker/hyperonline/`, later `docker/uikit/`); PHP/Composer run in a tooling container, never on the host |
 | Stub plugin | `plugins/hyperpress-example/` was planned when no real plugins were in scope; revisit in stage 5 (a real plugin may serve instead) |
 
 ## Workspace layout
@@ -154,11 +154,39 @@ plugins now in the repo, stage 5 decides whether to keep it or use an existing p
 
 ## Docker stack
 
-Services on the `local` compose profile (matching `hyperalumni`/`hyperonline`):
-`wordpress` (PHP 8.3), `db` (MariaDB), `tooling` (PHP 8.3 + Composer, used for `composer install`
-and PHPCS). Credentials live in git-ignored `.env` files; `.env.example` is committed. The existing
-`hyperalumni`/`hyperonline` stacks keep mounting `../theme` and `../plugins` until they are
-deliberately repointed.
+Replaces the stacks in `hyperPress/hyperalumni/` and `hyperPress/hyperonline/`. Those two are byte-identical in `compose.main.yaml`, `php/uploads.ini` and every `.env*` file except `.env.local` (ports and `COMPOSE_*` settings). They differ in the wrapper's `name:`.
+
+Layout:
+
+```
+docker/
+├── compose.main.yaml     # shared: wordpress, db, phpmyadmin (profile `local`); later a `tooling` service
+├── php/uploads.ini
+├── .env, .env.db, .env.mariadb, .env.phpmyadmin, .env.wordpress, .env.versions   # shared, git-ignored; .env*.example templates committed
+├── hyperalumni/          # compose.yaml (name: hyperalumni, include ../compose.main.yaml) + .env.local (git-ignored; .env.local.example committed)
+├── hyperonline/          # same, name: hyperonline
+└── uikit/                # added in stage 2: dev site for the new theme
+```
+
+Rules:
+- Project names (`name: hyperalumni`, `name: hyperonline`), the named volumes (`db`, `wp`), service names, container-side mount paths (`wp-content/themes/hyperPress`, `wp-content/plugins/hyperpress-*`), the `local` profile, `restart`, `pull_policy` and the healthcheck are unchanged. The existing databases and uploads are therefore reused when they still exist (recreating them is acceptable for local development). The theme slug `hyperPress` is stored in each site's database, so it is not renamed.
+- Each wrapper `include`s `../compose.main.yaml` with `project_directory: .` and `env_file: [../.env, .env.local, ../.env.versions]`. A spike with Docker Compose 5.5.1 showed that this resolves bind-mount sources and service `env_file` paths relative to the wrapper directory (so `compose.main.yaml` uses `../php/...`, `../.env.db`, `../../plugins/...`) and keeps the volume names `<project>_db` and `<project>_wp`. Without `project_directory` that layout did not produce a usable config.
+- Only host paths change: `../theme` becomes `../../themes/hyperpress-foundation`, and `../plugins/hyperpress-*` becomes `../../plugins/hyperpress-*`. The theme mount source and slug are parameters, `THEME_SRC` (default `../../themes/hyperpress-foundation`) and `THEME_SLUG` (default `hyperPress`), so the new theme is served by the same file from its own `.env.local` (spike-verified).
+- The 14 per-plugin mounts stay (not one `plugins/` mount), because third-party plugins such as `meta-box-aio` live in the `wp` volume.
+- Secrets: the agent's shell rejects commands containing `.env` and EnvSitter works only inside the project, so the owner copies the real `.env*` files with a command block from the plan. The agent then checks key names and that the templates are empty with EnvSitter, without reading values. Templates list names only for secret-bearing files (`.env.db`, `.env.mariadb`, `.env.wordpress`); the other templates are plain copies. The root `.gitignore` gains `!.env*.example`.
+- A `tooling` service (PHP 8.3 + Composer, for `composer install` and PHPCS) and the `uikit` site are added in later stages.
+
+### Stage 0b: migrate the existing stacks
+
+The data in these stacks is local development data and is disposable (confirmed by the owner), so there are no backups or state-equality checks. The project and volume names are kept, so a site that still has its volumes reuses them.
+
+1. Preflight: Compose supports `include` with `project_directory`; both old stacks parse; no old container is running; record `sha256` of the old stacks' `compose.yaml`, `compose.main.yaml` and `php/uploads.ini` so the old directories can be proven unmodified at the end; save each old config with `docker compose config --no-env-resolution --format json` (prints env file paths, never values).
+2. The owner copies the env files and creates the templates (command block in the plan); the agent verifies key names and empty templates.
+3. Create the `docker/` files. Equivalence check: the new config for each site, normalized for host paths, must equal the saved old config.
+4. Cut over `hyperalumni`, then `hyperonline`: `up -d` from `docker/<site>/` (containers are recreated because bind-mount sources changed). Checks: whether the volumes were reused or recreated is recorded (a fresh volume means the WordPress installer appears and third-party plugins such as `meta-box-aio` must be reinstalled; acceptable); the theme and plugin mounts are present in the container; the published ports answer over HTTP; the owner confirms the site loads. If a site will not start against its old volumes, `docker compose down -v` for that site only is allowed.
+5. Docs: root `AGENTS.md` describes the new commands. The old directories stay untouched (retiring them is the owner's call), and the plan lists the edits to suggest for `../AGENTS.md`.
+
+Verification: both sites start from the new location; the old directories are unmodified; `git status` is clean; no real `.env*` file is tracked.
 
 ## Error handling
 
@@ -180,6 +208,7 @@ deliberately repointed.
 ## Staged rollout
 
 0. Restructure the hyperPress repo into a monorepo: move the theme, rebase the plugins on top, add root files.
+0b. Migrate the `hyperalumni` and `hyperonline` Docker stacks into `docker/` (see Docker stack).
 1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects.
 2. Docker stack and a bare `hyperpress-uikit` theme rendering through Timber.
 3. Vite build, manifest-based asset loading, UIkit from `libs/uikit-tokens`.
@@ -202,13 +231,11 @@ deliberately repointed.
 
 Block editor / `theme.json`, content migration, CI, Vite+, Twig linting, hoisting the plugins repo's
 shared tooling to the repo root, pushing the restructured history, retiring `hyperPressPlugins`,
-repointing the existing Docker stacks, and any change to `../theme`, `../plugins`, `hyperalumni/` or
-`hyperonline/`.
+and any change to `../theme` or `../plugins`. The old `hyperalumni/` and `hyperonline/` directories are not modified or deleted by stage 0b; retiring them is the owner's call.
 
 ## Risks and open items
 
-- `uikit/` and `../theme` diverge as soon as either gets new commits. The Docker stacks keep using
-  `../theme` and `../plugins`, so how work is synced or cut over is decided after stage 0.
+- `uikit/` and `../theme` diverge as soon as either gets new commits. Until stage 0b repoints the Docker stacks they keep using `../theme` and `../plugins`; stage 0b makes this repo the working copy, after which `../theme` and `../plugins` should be archived (decided at cutover).
 - Pushing the restructured `master` to `hyperalumni/hyperPress` changes the shared repo layout for
   everyone using it; it needs its own decision (branch vs `master`, and what happens to
   `hyperPressPlugins`).
