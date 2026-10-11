@@ -16,7 +16,7 @@ if ( ! class_exists( 'HyperPress_Theme_Top_Bar_Walker' ) ) :
 	class HyperPress_Theme_Top_Bar_Walker extends Walker_Nav_Menu {
 		public function start_lvl( &$output, $depth = 0, $args = array() ): void {
 			$indent  = str_repeat( "\t", $depth );
-			$output .= "\n$indent<ul class=\"dropdown menu vertical\" data-toggle>\n";
+			$output .= "\n$indent<ul class=\"dropdown menu vertical is-dropdown-submenu\" data-toggle>\n";
 		}
 	}
 endif;
