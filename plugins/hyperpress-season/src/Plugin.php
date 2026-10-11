@@ -16,6 +16,7 @@ final class Plugin {
 		Breadcrumbs::register();
 		Customizer::register();
 		MetaBoxes::register();
+		AdminFilter::register();
 		Rewrite::register();
 		SeasonCount::register();
 		Labels::register();
@@ -38,7 +39,7 @@ final class Plugin {
 			'hierarchical'       => true,
 			'show_tagcloud'      => false,
 			'show_in_quick_edit' => true,
-			'show_admin_column'  => false,
+			'show_admin_column'  => true,
 		);
 	}
 }

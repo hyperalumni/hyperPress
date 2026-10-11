@@ -655,3 +655,5 @@ git commit -m "docs(plans): complete plugins-03-core-plugins" -- docs/superpower
 - Open cross-plugin items: `hyperpress-sponsor/lib/labels.php` and the theme (`library/labels/post.php`, `library/breadcrumbs/post.php`) still call `HYPER_Press_Season\get_sorted_seasons` (plugins-04 Task 3 and theme-02).
 - Audit candidates added to plugins-06-audit: hard-coded Google Maps `api_key` and `__( '' )` in the competition meta box.
 - Deferred minors: robot definition omits `hierarchical => false` (default); `version()` reads the main file on every request; `SeasonCountTest` expectations were derived by hand (reviewer verified the logic); a Customizer dropdown smoke test belongs in plugins-05.
+
+> Note (2026-10-11): `hyper_season` now sets `show_admin_column` to true and `hyperpress-season` adds an `AdminFilter` "All seasons" dropdown on list tables. The season post-types Customizer control lists `show_ui` post types (so the non-public `hyper_countdown` is selectable); `RegistrationParityTest` expects this one deviation from the legacy snapshot.

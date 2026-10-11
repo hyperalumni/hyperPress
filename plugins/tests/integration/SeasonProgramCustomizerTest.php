@@ -44,6 +44,12 @@ final class SeasonProgramCustomizerTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'post' ), $setting->sanitize( array( 'post', array( 'x' ), 5 ) ) );
 	}
 
+	public function test_the_season_setting_accepts_the_non_public_countdown_type(): void {
+		$setting = $this->customizer()->get_setting( 'hyperpress_season_post_types' );
+
+		$this->assertSame( array( 'post', 'hyper_countdown' ), $setting->sanitize( array( 'post', 'hyper_countdown', 'nav_menu_item' ) ) );
+	}
+
 	public function test_the_banner_subtitle_sanitizes_scripts_away(): void {
 		$setting = $this->customizer()->get_setting( 'hyperpress_season_banner_subtitle' );
 

@@ -39,7 +39,7 @@ final class Customizer {
 			array(
 				'type'              => 'theme_mod',
 				'default'           => array( 'post' ),
-				'sanitize_callback' => array( PostTypeDropdownControl::class, 'sanitize_post_types' ),
+				'sanitize_callback' => array( PostTypeDropdownControl::class, 'sanitize_show_ui_post_types' ),
 			)
 		);
 		$wp_customize->add_control(
@@ -51,7 +51,8 @@ final class Customizer {
 					'label'       => __( 'Seasons Post Types', 'hyperpress' ),
 					'description' => __( 'Select the Post Types that will use the Season Taxonomy', 'hyperpress' ),
 					'settings'    => 'hyperpress_season_post_types',
-				)
+				),
+				array( 'show_ui' => true )
 			)
 		);
 

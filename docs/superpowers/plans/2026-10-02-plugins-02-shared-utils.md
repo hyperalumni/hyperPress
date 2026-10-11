@@ -1752,3 +1752,5 @@ git commit -m "docs(plans): complete plugins-02-shared-utils" -- docs/superpower
 - The theme's `hyperpress_breadcrumbs_custom_post_type()` is replaced by `HyperPress\Utils\Breadcrumbs` and becomes dead code; theme-02-renames-and-breadcrumbs removes it.
 - Undeclared plugin-to-theme dependency: banner color theme mods `hyperpress_hyper_green`, `hyperpress_hyper_orange`, `hyperpress_hyper_red`, `hyperpress_gear_blue`, and the theme meta field `hyperpress_banner_background_color`.
 - Filters the theme fires: `hyperpress_breadcrumbs_content`, `hyperpress_banner_content`.
+
+> Note (2026-10-11): `PostTypeDropdownControl` takes an optional `array( 'show_ui' => true )` option (lists `show_ui` post types instead of `public`) and has a matching `sanitize_show_ui_post_types()` callback; default behavior is unchanged. Only the season Customizer uses it.

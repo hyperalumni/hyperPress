@@ -75,7 +75,11 @@ final class RegistrationParityTest extends WP_UnitTestCase {
 		$this->assertNotFalse( $tax, "$new is not registered" );
 
 		foreach ( self::TAXONOMY_PROPS as $prop ) {
-			$this->assertSame( $legacy[ $prop ], $tax->$prop, "$new: $prop" );
+			$expected = $legacy[ $prop ];
+			if ( 'hyper_season' === $new && 'show_admin_column' === $prop ) {
+				$expected = true; // Deliberate change: the Season column and filter show in admin lists.
+			}
+			$this->assertSame( $expected, $tax->$prop, "$new: $prop" );
 		}
 		$this->assertSame( self::map( $legacy['query_var'] ), $tax->query_var, "$new: query_var" );
 		$this->assertSame( $legacy['cap'], (array) $tax->cap, "$new: capabilities" );

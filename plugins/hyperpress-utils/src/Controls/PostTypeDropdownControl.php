@@ -16,7 +16,8 @@ class PostTypeDropdownControl extends WP_Customize_Control {
 	protected array $post_types = array();
 
 	public function __construct( $manager, $id, $args = array(), $options = array() ) {
-		$post_args        = wp_parse_args( $options, array( 'public' => true ) );
+		$defaults         = empty( $options['show_ui'] ) ? array( 'public' => true ) : array();
+		$post_args        = wp_parse_args( $options, $defaults );
 		$this->post_types = get_post_types( $post_args, 'object' );
 		parent::__construct( $manager, $id, $args );
 	}
@@ -28,15 +29,36 @@ class PostTypeDropdownControl extends WP_Customize_Control {
 	 * @return string[]
 	 */
 	public static function sanitize_post_types( $value ): array {
+		return self::filter_post_types( $value, 'public' );
+	}
+
+	/**
+	 * Sanitize callback for a control built with the `show_ui` option: keep registered post types that have an admin UI.
+	 *
+	 * @param mixed $value Submitted value.
+	 * @return string[]
+	 */
+	public static function sanitize_show_ui_post_types( $value ): array {
+		return self::filter_post_types( $value, 'show_ui' );
+	}
+
+	/**
+	 * Keep registered post type keys whose object has a truthy property.
+	 *
+	 * @param mixed  $value Submitted value.
+	 * @param string $flag  Post type object property that must be truthy.
+	 * @return string[]
+	 */
+	private static function filter_post_types( $value, string $flag ): array {
 		return array_values(
 			array_filter(
 				is_array( $value ) ? $value : array(),
-				static function ( $type ): bool {
+				static function ( $type ) use ( $flag ): bool {
 					if ( ! is_string( $type ) || ! post_type_exists( $type ) ) {
 						return false;
 					}
 					$object = get_post_type_object( $type );
-					return null !== $object && $object->public;
+					return null !== $object && $object->$flag;
 				}
 			)
 		);
