@@ -10,7 +10,7 @@ new UIkit theme is an experiment, not a replacement for the Foundation theme.
 
 The monorepo is the existing hyperPress theme repo (`hyperalumni/hyperPress`, a FoundationPress
 fork), restructured by new commits: the theme moves into `themes/hyperpress-foundation/`, the plugins
-repo is merged in under `plugins/`, and root workspace files are added. Nx and the new theme follow.
+repo is added under `plugins/` (rebased on top, no merge commit), and root workspace files are added. Nx and the new theme follow.
 
 ## Decisions
 
@@ -21,7 +21,7 @@ repo is merged in under `plugins/`, and root workspace files are added. Nx and t
 | Runtime | Node 26.11.1 and pnpm 12.11.2, as already pinned by the theme (`.nvmrc`, `devEngines`); `only-allow pnpm` preinstall |
 | Docs | One location: the repo-root `docs/superpowers/{specs,plans,audit}/`, holding workspace (`uikit-*`), theme (`theme-*`) and plugins (`plugins-*`) documents. Checked: no filename collisions between the three sets |
 | Foundation theme | Existing theme moves unchanged, by one rename commit, to `themes/hyperpress-foundation/` (gulp/webpack build kept as is). Its `docs/` is not moved; it stays at the root |
-| Plugins | The `../plugins` repo is merged in with history: everything under `plugins/` as-is (14 `hyperpress-*` plugins plus its shared `composer.json`, `phpcs.xml.dist`, `phpunit.xml.dist`, `tests/`, `bin/`, `AGENTS.md`, Docker files), except its `docs/`, which goes to the root `docs/`. Hoisting shared tooling to the root is a later, separate step |
+| Plugins | The `../plugins` repo is imported with its history (rebased on top of the move commit, so no merge commit): everything under `plugins/` as-is (14 `hyperpress-*` plugins plus its shared `composer.json`, `phpcs.xml.dist`, `phpunit.xml.dist`, `tests/`, `bin/`, `AGENTS.md`, Docker files), except its `docs/`, which goes to the root `docs/`. Hoisting shared tooling to the root is a later, separate step |
 | New theme | Classic PHP theme `themes/hyperpress-uikit/`, Timber (Twig) templating, TypeScript, Sass |
 | UIkit | Consumed from Sass source (`uikit/src/scss`, shipped in the npm package); variables overridden, only used components imported |
 | Bundler | Vite via `@nx/vite` for the new theme; emits a manifest |
@@ -74,11 +74,11 @@ Commits:
    `themes/hyperpress-foundation/`, including its `AGENTS.md`, `.nvmrc`, `.gitignore` and `.github/`
    (the last becomes inert there; a root workflow directory is a later decision). One pure-rename
    commit, so `git log --follow` keeps working across it. Original theme hashes are untouched.
-2. **Merge the plugins repo.** In a throwaway clone of `../plugins` under `/tmp/opencode`, rewrite
+2. **Rebase the plugins repo on top.** In a throwaway clone of `../plugins` under `/tmp/opencode`, rewrite
    history with `git filter-repo` so that every path gets a `plugins/` prefix except `docs/`, which
    stays at `docs/` (for example `--to-subdirectory-filter plugins` followed by
    `--path-rename plugins/docs/:docs/`; the plan fixes the exact invocation and checks the result).
-   Fetch it into `uikit/` and merge with `--allow-unrelated-histories`. The prefix means no
+   Fetch it into `uikit/` as a local branch, rebase it onto `master` (`git rebase --onto master --root`, each replayed commit signed by the committer), and fast-forward `master`, so history stays linear and no merge commit is added. The prefix means no
    root-file collisions (both repos have `AGENTS.md`, `.gitignore`, `composer.json`, `compose.yaml`,
    `Dockerfile`), and `git log docs/superpowers/plans/<file>` shows the plugin docs' history without
    `--follow`. Plugin commit hashes change; they have no upstream, so nothing is lost. `master` only;
@@ -104,7 +104,7 @@ Commits:
    - Update references to the moved docs: the four `docs/superpowers/...` references in
      `plugins/AGENTS.md` and `plugins/README.md`, and the docs references in
      `themes/hyperpress-foundation/AGENTS.md`, now point to the root `docs/`. Other edits to the
-     moved `AGENTS.md` files are limited to paths or commands the merge changes (for example commands
+     moved `AGENTS.md` files are limited to paths or commands the restructure changes (for example commands
      now run via `pnpm --filter @hyper/press`).
    - The theme's existing `docs/superpowers/plans/README.md` stays at the root and now serves the
      whole workspace; it is edited only if it is theme-specific.
@@ -179,7 +179,7 @@ deliberately repointed.
 
 ## Staged rollout
 
-0. Restructure the hyperPress repo into a monorepo: move the theme, merge the plugins, add root files.
+0. Restructure the hyperPress repo into a monorepo: move the theme, rebase the plugins on top, add root files.
 1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects.
 2. Docker stack and a bare `hyperpress-uikit` theme rendering through Timber.
 3. Vite build, manifest-based asset loading, UIkit from `libs/uikit-tokens`.
