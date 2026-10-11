@@ -39,17 +39,17 @@
 **Interfaces:**
 - Produces: `old-cfg-<site>.json` (old config without env values); `old-sha256.txt`.
 
-- [ ] **Step 1: Commit the spec, then the plan, each on its own**
+- [x] **Step 1: Commit the spec, then the plan, each on its own**
 
 `git add <spec> && git -c user.signingkey=4A9F22E376B1163C commit -m "docs(specs): migrate docker stacks into the monorepo" -- <spec>`, then the same for the plan with `-m "docs(plans): docker stacks migration"`.
 Expected: two commits; `git status --short` is empty.
 
-- [ ] **Step 2: Preflight**
+- [x] **Step 2: Preflight**
 
 Run `docker compose version`, then for each site `cd /home/cmcg/projects/hyperPress/<site> && docker compose --profile local config --services`, then `docker ps --filter name=hyperalumni --filter name=hyperonline -q | wc -l`.
 Expected: Compose 2.20 or newer; services `db`, `phpmyadmin`, `wordpress` for both; `0` running containers (if not 0, stop and ask the user). Write `sha256sum` of `<site>/compose.yaml`, `<site>/compose.main.yaml`, `<site>/php/uploads.ini` for both sites (absolute paths) to `old-sha256.txt`.
 
-- [ ] **Step 3: Save the old configs without env values**
+- [x] **Step 3: Save the old configs without env values**
 
 For each site: `docker compose --profile local config --no-env-resolution --format json > /tmp/opencode/stage0b/old-cfg-<site>.json`.
 Expected: exit 0; `grep -c -E 'PASSWORD|environment' <file>` prints `0` (no values were resolved).
@@ -65,12 +65,12 @@ Expected: exit 0; `grep -c -E 'PASSWORD|environment' <file>` prints `0` (no valu
 **Interfaces:**
 - Produces: the eight real env files (git-ignored after Task 3) and eight `.example` templates.
 
-- [ ] **Step 1: Create directories and copy `uploads.ini`**
+- [x] **Step 1: Create directories and copy `uploads.ini`**
 
 `mkdir -p docker/php docker/hyperalumni docker/hyperonline && cp ../hyperalumni/php/uploads.ini docker/php/uploads.ini && cmp docker/php/uploads.ini ../hyperonline/php/uploads.ini`
 Expected: no output from `cmp` (identical).
 
-- [ ] **Step 2: Owner runs the copy block (STOP and wait)**
+- [x] **Step 2: Owner runs the copy block (STOP and wait)**
 
 Print exactly this block for the user to run in their own terminal, then stop until they confirm it finished:
 
@@ -89,7 +89,7 @@ cp hyperonline/.env.local hyperonline/.env.local.example
 
 Expected: the `cmp` loop prints nothing (the six shared files are byte-identical across the sites). If `cmp` reports a difference, stop: the shared-file design does not hold and the spec needs a per-site copy for that file.
 
-- [ ] **Step 3: Verify key names and empty templates with EnvSitter**
+- [x] **Step 3: Verify key names and empty templates with EnvSitter**
 
 With the `execute` tool, call `tools.envsitter_keys({ filePath })` for each real file and compare the names:
 `docker/.env`: `NODE_OPTIONS`; `docker/.env.db`: `HYPER_DB_NAME`, `HYPER_DB_PASSWORD`, `HYPER_DB_ROOT_PASSWORD`, `HYPER_DB_USER`; `docker/.env.mariadb`: `MARIADB_DATABASE`, `MARIADB_PASSWORD`, `MARIADB_ROOT_PASSWORD`, `MARIADB_USER`; `docker/.env.phpmyadmin`: none; `docker/.env.wordpress`: `WORDPRESS_DB_HOST`, `WORDPRESS_DB_NAME`, `WORDPRESS_DB_PASSWORD`, `WORDPRESS_DB_USER`; `docker/.env.versions`: `MARIADB_VERSION`, `PHPMYADMIN_VERSION`, `WORDPRESS_VERSION`; each `docker/<site>/.env.local`: `COMPOSE_BAKE`, `COMPOSE_PROFILES`, `PHPMYADMIN_EXTERNAL_PORT`, `PHPMYADMIN_INTERNAL_PORT`, `WORDPRESS_EXTERNAL_PORT`, `WORDPRESS_INTERNAL_PORT`.
@@ -109,16 +109,16 @@ Expected: every name list matches exactly, and the three secret templates report
 - Consumes: `old-cfg-<site>.json`, the Task 2 files.
 - Produces: `node compare.js <site>` exits `0` when the new config equals the old one after path normalisation, otherwise prints the differing JSON paths and exits `1`.
 
-- [ ] **Step 1: Write the comparison and watch it fail**
+- [x] **Step 1: Write the comparison and watch it fail**
 
 Create `compare.js <site>`: load `old-cfg-<site>.json`; run `docker compose --profile local config --no-env-resolution --format json` in `/home/cmcg/projects/hyperPress/uikit/docker/<site>` and parse it; replace host path prefixes in every string value, longest prefix first, so both sides use the same tokens. Old: `/home/cmcg/projects/hyperPress/theme` -> `<theme>`, `/home/cmcg/projects/hyperPress/plugins` -> `<plugins>`, `/home/cmcg/projects/hyperPress/<site>/php` -> `<php>`, `/home/cmcg/projects/hyperPress/<site>` -> `<envdir>`. New: `/home/cmcg/projects/hyperPress/uikit/themes/hyperpress-foundation` -> `<theme>`, `/home/cmcg/projects/hyperPress/uikit/plugins` -> `<plugins>`, `/home/cmcg/projects/hyperPress/uikit/docker/php` -> `<php>`, `/home/cmcg/projects/hyperPress/uikit/docker` -> `<envdir>`. Deep-compare ignoring key order.
 Run `node compare.js hyperalumni`. Expected now: FAIL (no wrapper exists yet).
 
-- [ ] **Step 2: Create `docker/compose.main.yaml`**
+- [x] **Step 2: Create `docker/compose.main.yaml`**
 
 Copy `/home/cmcg/projects/hyperPress/hyperalumni/compose.main.yaml` and make exactly these changes, nothing else: (1) every `env_file` entry gets a `../` prefix (`.env.db` -> `../.env.db`, and likewise `.env.wordpress`, `.env.mariadb`, `.env.phpmyadmin`); (2) `./php/uploads.ini` -> `../php/uploads.ini`; (3) the line `../theme/:/var/www/html/wp-content/themes/hyperPress` becomes `${THEME_SRC:-../../themes/hyperpress-foundation}:/var/www/html/wp-content/themes/${THEME_SLUG:-hyperPress}`; (4) every `../plugins/hyperpress-<name>/` source becomes `../../plugins/hyperpress-<name>/` (the 14 mounts stay separate).
 
-- [ ] **Step 3: Create the two wrappers**
+- [x] **Step 3: Create the two wrappers**
 
 `docker/hyperalumni/compose.yaml`:
 
@@ -135,21 +135,21 @@ include:
 
 `docker/hyperonline/compose.yaml` is identical except `name: hyperonline`.
 
-- [ ] **Step 4: Update `.gitignore`**
+- [x] **Step 4: Update `.gitignore`**
 
 Replace the line `!.env.example` with `!.env*.example` (edit tool). Expected: the root file still lists `node_modules/`, `dist/`, `.idea/`, `.env*`.
 
-- [ ] **Step 5: Run the comparison for both sites**
+- [x] **Step 5: Run the comparison for both sites**
 
 `node /tmp/opencode/stage0b/compare.js hyperalumni` and `... hyperonline`.
 Expected: both exit `0` with no differences. Any difference means Step 2 or 3 deviates from the old config: fix the file, not the script.
 
-- [ ] **Step 6: Check ignores and templates**
+- [x] **Step 6: Check ignores and templates**
 
 Run `git status --short -uall docker | wc -l` and `git status --short --ignored docker | grep -c '^!!'`.
 Expected: `12` untracked entries (compose.main.yaml, php/uploads.ini, two wrapper compose.yaml, eight `.example` templates) and `8` ignored entries (the real env files).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Tick Tasks 1 and 2 and this task's boxes in the plan. `git add .gitignore docker/compose.main.yaml docker/php/uploads.ini docker/hyperalumni/compose.yaml docker/hyperonline/compose.yaml 'docker/*.example' 'docker/hyperalumni/*.example' 'docker/hyperonline/*.example' <plan>`, then commit with the same paths: `-m "feat(docker): shared compose and per-site wrappers for hyperalumni and hyperonline"`.
 Expected: one commit; `git ls-files docker | wc -l` is `12`; `git ls-files docker | grep -c -v -E '(example|yaml|ini)$'` is `0`; `git status --short` is empty.

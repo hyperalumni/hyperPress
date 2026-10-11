@@ -1,0 +1,8 @@
+name: hyperonline
+include:
+  - path: ../compose.main.yaml
+    project_directory: .
+    env_file:
+      - ../.env
+      - .env.local
+      - ../.env.versions

@@ -1,0 +1,64 @@
+services:
+  wordpress:
+    image: wordpress:${WORDPRESS_VERSION:-latest}
+    restart: unless-stopped
+    pull_policy: weekly
+    profiles: [ "local" ]
+    env_file:
+      - ../.env.db
+      - ../.env.wordpress
+    ports:
+      - ${WORDPRESS_EXTERNAL_PORT}:${WORDPRESS_INTERNAL_PORT}
+    volumes:
+      - ../php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+      - wp:/var/www/html
+      - ${THEME_SRC:-../../themes/hyperpress-foundation}:/var/www/html/wp-content/themes/${THEME_SLUG:-hyperPress}
+      - ../../plugins/hyperpress-award/:/var/www/html/wp-content/plugins/hyperpress-award
+      - ../../plugins/hyperpress-competition/:/var/www/html/wp-content/plugins/hyperpress-competition
+      - ../../plugins/hyperpress-countdown/:/var/www/html/wp-content/plugins/hyperpress-countdown
+      - ../../plugins/hyperpress-label/:/var/www/html/wp-content/plugins/hyperpress-label
+      - ../../plugins/hyperpress-media/:/var/www/html/wp-content/plugins/hyperpress-media
+      - ../../plugins/hyperpress-newsletter/:/var/www/html/wp-content/plugins/hyperpress-newsletter
+      - ../../plugins/hyperpress-program/:/var/www/html/wp-content/plugins/hyperpress-program
+      - ../../plugins/hyperpress-robot/:/var/www/html/wp-content/plugins/hyperpress-robot
+      - ../../plugins/hyperpress-season/:/var/www/html/wp-content/plugins/hyperpress-season
+      - ../../plugins/hyperpress-shortcode/:/var/www/html/wp-content/plugins/hyperpress-shortcode
+      - ../../plugins/hyperpress-social/:/var/www/html/wp-content/plugins/hyperpress-social
+      - ../../plugins/hyperpress-sponsor/:/var/www/html/wp-content/plugins/hyperpress-sponsor
+      - ../../plugins/hyperpress-student/:/var/www/html/wp-content/plugins/hyperpress-student
+      - ../../plugins/hyperpress-utils/:/var/www/html/wp-content/plugins/hyperpress-utils
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mariadb:${MARIADB_VERSION:-latest}
+    restart: unless-stopped
+    pull_policy: weekly
+    profiles: [ "local" ]
+    env_file:
+      - ../.env.db
+      - ../.env.mariadb
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - db:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin:${PHPMYADMIN_VERSION:-latest}
+    restart: unless-stopped
+    pull_policy: weekly
+    profiles: [ "local" ]
+    env_file:
+      - ../.env.phpmyadmin
+    ports:
+      - ${PHPMYADMIN_EXTERNAL_PORT}:${PHPMYADMIN_INTERNAL_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db:
+  wp:
