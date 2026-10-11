@@ -287,7 +287,7 @@ Expected: no status lines; `same`; only `origin`; no upstream shown.
 
 - [x] **Step 4: Record the outcome and finish**
 
-Add a `> **STATUS: ✅ COMPLETED** (2026-10-11). <what passed>` banner at the top of this plan and an "Outcome / execution notes" section listing the actual counts and any deviations. Tick Tasks 6 and 7. `git add <plan>` and `git commit -m "docs(plans): mark stage 0 completed" -- <plan>`. Then `rm -rf /tmp/opencode/stage0`.
+Add a `> **STATUS: ✅ COMPLETED** (2026-10-11). <what passed>` banner at the top of this plan and an "Outcome / execution notes" section listing the actual counts and any deviations. Tick Tasks 6 and 7. `git add <plan>` and `git commit -m "docs(plans): mark monorepo restructure completed" -- <plan>`. Then `rm -rf /tmp/opencode/stage0`.
 Expected: `git status --short` is empty; do not push.
 
 ---

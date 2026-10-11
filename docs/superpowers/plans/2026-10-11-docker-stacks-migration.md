@@ -41,7 +41,7 @@
 
 - [ ] **Step 1: Commit the spec, then the plan, each on its own**
 
-`git add <spec> && git -c user.signingkey=4A9F22E376B1163C commit -m "docs(specs): migrate docker stacks into the monorepo" -- <spec>`, then the same for the plan with `-m "docs(plans): stage 0b docker stacks"`.
+`git add <spec> && git -c user.signingkey=4A9F22E376B1163C commit -m "docs(specs): migrate docker stacks into the monorepo" -- <spec>`, then the same for the plan with `-m "docs(plans): docker stacks migration"`.
 Expected: two commits; `git status --short` is empty.
 
 - [ ] **Step 2: Preflight**
