@@ -1,3 +1,5 @@
+> **STATUS: ✅ COMPLETED** (2026-10-11). Both sites start from docker/ with their existing volumes; configs identical to the old stacks; theme and 14 plugins mounted; HTTP 200; owner confirmed both sites and admin login; old directories unmodified; nothing pushed.
+
 # Migrate the hyperalumni and hyperonline Docker stacks Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -164,32 +166,32 @@ Expected: one commit; `git ls-files docker | wc -l` is `12`; `git ls-files docke
 - Consumes: the saved old configs and `old-sha256.txt` from Task 1; the Task 3 files.
 - Produces: `hyperalumni` verified running from the monorepo, then stopped; the published ports recorded in the ledger.
 
-- [ ] **Step 1: Record services, ports and volumes**
+- [x] **Step 1: Record services, ports and volumes**
 
 In `docker/hyperalumni`: `docker compose --profile local config --services`, `docker compose --profile local config --no-env-resolution | grep published`, and `docker volume ls -q | sort > /tmp/opencode/stage0b/vols-before.txt`.
 Expected: services `db`, `phpmyadmin`, `wordpress`; published ports `3080` (WordPress) and `3090` (phpMyAdmin), matching the old stack.
 
-- [ ] **Step 2: Bring the site up**
+- [x] **Step 2: Bring the site up**
 
 `docker compose --profile local up -d --wait` in `docker/hyperalumni`.
 Expected: `wordpress`, `db` and `phpmyadmin` are recreated and running; `db` is healthy. If anything fails, roll back: `docker compose --profile local down` (never `-v`) here, then `up -d` from `/home/cmcg/projects/hyperPress/hyperalumni`; no volume is removed.
 
-- [ ] **Step 3: Volume reuse**
+- [x] **Step 3: Volume reuse**
 
 Run `diff /tmp/opencode/stage0b/vols-before.txt <(docker volume ls -q | sort)`.
 Expected: empty (the site reused its volumes). If new `hyperalumni_*` volumes appear, the site started fresh: record it in the ledger (acceptable; WordPress shows the installer and third-party plugins such as `meta-box-aio` must be reinstalled).
 
-- [ ] **Step 4: Mounts inside the container**
+- [x] **Step 4: Mounts inside the container**
 
 `docker compose --profile local exec -T wordpress sh -c 'test -f /var/www/html/wp-content/themes/hyperPress/functions.php || echo MISSING theme; for p in award competition countdown label media newsletter program robot season shortcode social sponsor student utils; do test -f /var/www/html/wp-content/plugins/hyperpress-$p/hyperpress-$p.php || echo MISSING $p; done; echo checked'`
 Expected: only `checked` is printed.
 
-- [ ] **Step 5: HTTP**
+- [x] **Step 5: HTTP**
 
 `curl -sL -o /dev/null -w '%{http_code}\n' http://localhost:3080/` and the same for `http://localhost:3090/`.
 Expected: `200` for both. A redirect that ends elsewhere is a finding: report where it went.
 
-- [ ] **Step 6: Owner confirms login (STOP and wait)**
+- [x] **Step 6: Owner confirms login (STOP and wait)**
 
 Ask the user to open `http://localhost:3080/` and `http://localhost:3080/wp-admin` and confirm: for a reused volume, the site renders with the `hyperPress` theme and the admin login works; for a fresh volume, the WordPress installer appears. After they reply, run `docker compose --profile local stop`.
 Expected: the user confirms; `docker ps -q --filter name=hyperalumni | wc -l` is `0`.
@@ -204,27 +206,27 @@ Expected: the user confirms; `docker ps -q --filter name=hyperalumni | wc -l` is
 - Consumes: as Task 4 with `hyperonline` in place of `hyperalumni` (directory `docker/hyperonline`, volumes `hyperonline_db` / `hyperonline_wp`).
 - Produces: `hyperonline` verified, then stopped.
 
-- [ ] **Step 1: Record services, ports and volumes, and check the ports differ**
+- [x] **Step 1: Record services, ports and volumes, and check the ports differ**
 
 As Task 4 Step 1 for `docker/hyperonline`. Expected: the same three services; its published WordPress and phpMyAdmin ports are both different from `3080` and `3090`.
 
-- [ ] **Step 2: Bring the site up**
+- [x] **Step 2: Bring the site up**
 
 As Task 4 Step 2 for `docker/hyperonline` (rollback uses `/home/cmcg/projects/hyperPress/hyperonline`).
 
-- [ ] **Step 3: Volume reuse**
+- [x] **Step 3: Volume reuse**
 
 As Task 4 Step 3 for `hyperonline` (volumes `hyperonline_*`).
 
-- [ ] **Step 4: Mounts inside the container**
+- [x] **Step 4: Mounts inside the container**
 
 As Task 4 Step 4. Expected: only `checked`.
 
-- [ ] **Step 5: HTTP**
+- [x] **Step 5: HTTP**
 
 As Task 4 Step 5 using this site's published ports. Expected: `200` for both.
 
-- [ ] **Step 6: Owner confirms login (STOP and wait), then stop the site**
+- [x] **Step 6: Owner confirms login (STOP and wait), then stop the site**
 
 As Task 4 Step 6 for this site's URL. Expected: the user confirms; no `hyperonline` container is running afterwards.
 
@@ -239,22 +241,37 @@ As Task 4 Step 6 for this site's URL. Expected: the user confirms; no `hyperonli
 **Interfaces:**
 - Consumes: `old-sha256.txt`.
 
-- [ ] **Step 1: Write the failing check**
+- [x] **Step 1: Write the failing check**
 
 `grep -c 'docker/hyperalumni' AGENTS.md`
 Expected now: `0`.
 
-- [ ] **Step 2: Update the root `AGENTS.md`**
+- [x] **Step 2: Update the root `AGENTS.md`**
 
 Add a short "Local WordPress stacks" section: start a site with `cd docker/<hyperalumni|hyperonline> && docker compose --profile local up -d`; shared env files live in `docker/` and only `.env.local` is per site; `*.example` templates are committed and the real files are git-ignored; the project names keep the existing volumes; `docker compose down -v` deletes a site's database and WordPress files (fine for local development, but do it on purpose); design in the spec's "Docker stack". In the layout list, change the "Planned, not built yet" line so `docker/` is no longer listed as planned.
 Re-run Step 1's command. Expected now: `1` or more.
 
-- [ ] **Step 3: Final gate**
+- [x] **Step 3: Final gate**
 
 Run `sha256sum -c /tmp/opencode/stage0b/old-sha256.txt`, `git ls-files docker | grep -c -v -E '(example|yaml|ini)$'`, `docker ps -q --filter name=hyperalumni --filter name=hyperonline | wc -l`, `git -C ../theme status --short`, `git -C ../plugins status --short`.
 Expected: all six checksum lines `OK` (old stacks unmodified); `0`; `0`; empty; empty.
 
-- [ ] **Step 4: Record the outcome and commit**
+- [x] **Step 4: Record the outcome and commit**
 
 Add a `> **STATUS: ✅ COMPLETED** (<date>). <what passed>` banner at the top of this plan and an "Outcome / execution notes" section (ports, whether each site reused or recreated its volumes, deviations, and the suggested `../AGENTS.md` edits: uikit is now a git repo, the stacks live in `uikit/docker/`, theme and plugins paths changed). Tick Tasks 4-6. `git add AGENTS.md <plan>` and commit `-m "docs: describe docker stacks and mark migration plan completed" -- AGENTS.md <plan>`. Then `rm -rf /tmp/opencode/stage0b`.
 Expected: `git status --short` is empty. Do not push. Do not edit `../AGENTS.md`; list the suggested edits in the final message.
+
+---
+
+## Outcome / execution notes
+
+- **Result:** `docker/` now holds one shared `compose.main.yaml`, `php/uploads.ini`, two thin wrappers (`docker/hyperalumni/`, `docker/hyperonline/`), six shared env files, and a per-site `.env.local`, with eight committed `.example` templates. For both sites the new config is identical to the old stack's config after host paths are normalised (project names, ports, volumes, restart and pull policies, healthcheck, the 14 plugin mounts). Ports: `hyperalumni` WordPress 3080 and phpMyAdmin 3090; `hyperonline` 4080 and 4090.
+- **Cutover:** both sites started from the new location, reused their existing volumes (no new volumes appeared), and have the `hyperPress` theme and all 14 plugin files mounted. HTTP 200 on every published port. The owner confirmed that each site renders and that admin login works. Both sites were left stopped, as they were at the start.
+- **Data:** the owner said the volumes are disposable local development data, so the backup and baseline-state steps were dropped from the plan and spec before executing. No volumes were removed or recreated.
+- **Env files:** copied by the owner (the agent cannot read or copy them). Key names of all eight real files and eight templates were verified with EnvSitter, and the three secret-bearing templates (`.env.db`, `.env.mariadb`, `.env.wordpress`) were verified empty. The owner blanked the plain-copy per-site templates by hand; they hold only ports and profile settings.
+- **Old stacks:** `../hyperalumni` and `../hyperonline` are untouched (checksums of their `compose.yaml`, `compose.main.yaml` and `php/uploads.ini` match). Retiring them is the owner's call.
+- **Separate defect found and fixed during this plan:** two PHP-tooling compose files from stage 0 still used the old sibling-repo paths (see the correction note in the monorepo restructure plan). The fix is in `78ba2d0`.
+- **Naming:** commit subjects and plan filenames use topic names, not stage numbers. This plan was renamed accordingly and two earlier subjects were reworded.
+- **Check adjusted:** Task 6 Step 2's literal `grep` for `docker/hyperalumni` was replaced by checking the new section's header and start command.
+- **Suggested edits to `../AGENTS.md` (outside this repo, not applied):** state that `uikit/` is now a git repo containing the former `theme/` and `plugins/` (their history kept); that the `hyperalumni` and `hyperonline` stacks now live in `uikit/docker/` and mount `uikit/themes/hyperpress-foundation` and `uikit/plugins/hyperpress-*`; that the old `hyperalumni/` and `hyperonline/` directories are superseded; and that its note about `hyperonline` mounting a smaller plugin set is stale (both mount all 14).
+- **Not done / next:** archive `../theme` and `../plugins` once this repo is pushed and is the working copy; pushing `master` to `hyperalumni/hyperPress` is a separate decision; Nx, `themes/hyperpress-uikit/`, `libs/` and a `docker/uikit/` dev site are later stages.

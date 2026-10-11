@@ -8,7 +8,8 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - `themes/hyperpress-foundation/`: the classic Foundation theme (gulp/webpack). Read its `AGENTS.md` before working there.
 - `plugins/`: the `hyperpress-*` plugins plus shared PHP tooling (`composer.json`, phpcs, phpunit, `bin/`, `tests/`). Read its `AGENTS.md` before working there.
 - `docs/superpowers/{specs,plans,audit}/`: all specs, plans and audits for the workspace (`uikit-*`), theme (`theme-*`) and plugins (`plugins-*`).
-- Planned, not built yet (see the spec): Nx, `themes/hyperpress-uikit/`, `libs/`, `docker/`.
+- `docker/`: shared Compose file and per-site wrappers for the local WordPress sites `hyperalumni` and `hyperonline`.
+- Planned, not built yet (see the spec): Nx, `themes/hyperpress-uikit/`, `libs/`.
 
 ## Environment
 - Node comes from nvm and is not on the default PATH. Load it first in each shell: `source ~/.nvm/nvm.sh && nvm use` (root `.nvmrc`, Node 26.11.1).
@@ -16,6 +17,12 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - Theme scripts: `pnpm --filter @hyper/press <script>`, or run `pnpm <script>` from `themes/hyperpress-foundation/`.
 - PHP tooling runs in Docker only, never composer on the host: from the theme or plugins directory, `docker compose run --rm php composer lint|test:unit|test:integration`. `vendor/` is git-ignored, so run `composer install` the same way first. The two tooling compose files set their own project names (`hyperpress-plugins`, `hyperpress-theme`), the same as the standalone repos, so their ephemeral containers and the composer cache volume are shared with those repos; do not run both copies at the same time. Their mounts use the monorepo layout: `plugins/` mounts `themes/hyperpress-foundation` as `/theme`, and the theme mounts `plugins/` as `/plugins`.
 - `.env*` files are git-ignored. Do not read or print them.
+
+## Local WordPress stacks
+- Start a site: `cd docker/<hyperalumni|hyperonline> && docker compose --profile local up -d`; stop it with `docker compose --profile local stop`. Ports come from that site's `.env.local`: hyperalumni WordPress 3080 and phpMyAdmin 3090, hyperonline 4080 and 4090.
+- `docker/compose.main.yaml` is shared. Each site directory holds only its wrapper `compose.yaml` and its `.env.local`; the other env files (`.env`, `.env.db`, `.env.mariadb`, `.env.phpmyadmin`, `.env.wordpress`, `.env.versions`) are shared in `docker/`. Real env files are git-ignored; commit only the `*.example` templates, and copy them to real files (filling in the values) on a new checkout.
+- The project names keep the existing volumes (`hyperalumni_*`, `hyperonline_*`). `docker compose down -v` deletes a site's database and WordPress files: fine for local development, but do it on purpose.
+- The theme and the 14 plugins are bind-mounted from `themes/hyperpress-foundation/` and `plugins/`. Design: the spec's "Docker stack" section.
 
 ## Git
 - One repo: commit from the root with explicit paths. Run `git add <paths>` then `git commit -m "..." -- <paths>`. Never a bare `git commit` and never `git add -A`.
