@@ -1,3 +1,5 @@
+> **STATUS: ✅ COMPLETED** (2026-10-11). Stage 0 gate passed: history, layout, root pnpm install and build (deps and dist identical to baseline), PHP lint/tests in Docker, originals untouched, nothing pushed.
+
 # Stage 0: Monorepo Restructure Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -265,25 +267,38 @@ Expected: `git status --short` is empty.
 **Interfaces:**
 - Consumes: all `vars.sh` values; Docker.
 
-- [ ] **Step 1: History and layout checks**
+- [x] **Step 1: History and layout checks**
 
 Run:
-- `git log --follow --format=%h -- themes/hyperpress-foundation/functions.php | wc -l` -> expected `(git -C ../theme log --format=%h -- functions.php | wc -l) + 1`; and the last line of `git log --follow --format=%h -- themes/hyperpress-foundation/functions.php` equals the last line of `git -C ../theme log --format=%h -- functions.php`.
+- `git log --follow --format=%h -- themes/hyperpress-foundation/functions.php | wc -l` -> expected `(git -C ../theme log --follow --format=%h -- functions.php | wc -l) + 1`; and the last line of `git log --follow --format=%h -- themes/hyperpress-foundation/functions.php` equals the last line of `git -C ../theme log --format=%h -- functions.php`.
 - `git log --oneline -- plugins/hyperpress-media | wc -l` -> `8`; `git log --oneline -- docs/superpowers/plans/2026-10-06-label-plugin-extraction.md | wc -l` -> `21`.
 - `git rev-list --count HEAD` -> `$THEME_COUNT + $PLUGINS_COUNT + 7` (2 docs, move, spec update, plugins record, root files, AGENTS); `git rev-list --merges --count $THEME_SHA..HEAD` -> `0` (no merge commit added).
 - `git ls-files | cut -d/ -f1 | sort -u` -> exactly `.gitignore .nvmrc AGENTS.md docs package.json plugins pnpm-lock.yaml pnpm-workspace.yaml themes`; `test ! -e plugins/docs`; `git ls-files | grep -E '(^|/)(node_modules|dist)/'` -> no output.
 
-- [ ] **Step 2: PHP tooling still works from the new locations (Docker, isolated project names)**
+- [x] **Step 2: PHP tooling still works from the new locations (Docker, isolated project names)**
 
 Run in `plugins/`: `docker compose -p stage0-plugins run --rm php composer lint`, then `composer test:unit`, then `composer test:integration` (same prefix), then `docker compose -p stage0-plugins down -v`. Run in `themes/hyperpress-foundation/`: `docker compose -p stage0-theme run --rm php composer lint` and `... composer test:unit`, then `docker compose -p stage0-theme down -v`.
 Expected: each exits 0. If one fails, run the same command in the matching clone under `/tmp/opencode/stage0` (`plugins-baseline`, `theme-baseline`) with a `stage0-base` project name: a failure there too means it predates the restructure (report it, do not fix it here).
 
-- [ ] **Step 3: Originals untouched and nothing pushed**
+- [x] **Step 3: Originals untouched and nothing pushed**
 
 Run: `git -C ../theme status --short; git -C ../plugins status --short; [ "$(git -C ../theme rev-parse master)" = "$THEME_SHA" ] && [ "$(git -C ../plugins rev-parse master)" = "$PLUGINS_SHA" ] && echo same; git remote -v; git branch -vv`
 Expected: no status lines; `same`; only `origin`; no upstream shown.
 
-- [ ] **Step 4: Record the outcome and finish**
+- [x] **Step 4: Record the outcome and finish**
 
 Add a `> **STATUS: ✅ COMPLETED** (2026-10-11). <what passed>` banner at the top of this plan and an "Outcome / execution notes" section listing the actual counts and any deviations. Tick Tasks 6 and 7. `git add <plan>` and `git commit -m "docs(plans): mark stage 0 completed" -- <plan>`. Then `rm -rf /tmp/opencode/stage0`.
 Expected: `git status --short` is empty; do not push.
+
+---
+
+## Outcome / execution notes
+
+- **Result:** `master` holds the full hyperPress theme history (1627 commits, original hashes, tip `7e9a30a` is an ancestor of `HEAD`) followed by the stage 0 commits: spec, plan, theme move (264 R100 renames), 184 signed plugin commits, spec update, plan record, root workspace files, root `AGENTS.md` and path fixes, a Docker project-name fix, and this banner. At the stage gate `git rev-list --count HEAD` was 1818 (`THEME_COUNT + PLUGINS_COUNT + 7`) with 0 merge commits added. Nothing was pushed; `origin` is configured and `../theme`, `../plugins` and the Docker stacks are untouched.
+- **Plugins imported by rebase, not merge** (the user's request during Task 5): Task 4 and the spec were rewritten for it. The first merge-commit variant was discarded after confirming the rebased tree was identical (only the plan file differed); the plugins history had 0 merge commits, so nothing was flattened.
+- **Commit signing:** `~/.gitconfig` names key `B3A68A8C1678FCEC`, which is not in the keyring. By the user's decision every commit and the 184 replayed commits were signed with `4A9F22E376B1163C` via `git -c user.signingkey=...`; git config was not changed.
+- **pnpm:** it comes from the user's `.zshrc` (`PNPM_HOME`), so the plan's "pnpm missing" stop did not apply; the toolchain resolved to Node 26.11.1 and pnpm 12.11.2.
+- **Plan check corrected:** Task 7 compared plain `git log` with `git log --follow`; plain log includes a merge commit (`027ed5f`) that `--follow` omits in both repos. The check now compares `--follow` with `--follow` (39 in the original, 40 here: 39 plus the move commit).
+- **Docker:** `composer install` has to be run first because `vendor/` is git-ignored. All PHP suites passed from the new locations: plugins lint, 126 unit, 596 integration (4 skipped); theme lint, 38 unit.
+- **Final review (fresh context, most capable tier):** no Critical findings. One item judged Important by effect was fixed: the monorepo's `plugins/` and the old `plugins` repo share the default Compose project name, so the docs now say to pass `-p hyperpress-plugins`.
+- **Deferred follow-ups for the owner:** `.github/` is inert inside the theme folder; the theme keeps its own `.nvmrc` (same value as the root); the theme's `AGENTS.md` has older stale notes ("Node >=24", "only mozjpeg is enabled" while every `allowBuilds` entry is `false`); `../AGENTS.md` outside this repo is stale; the root `.gitignore` has no `vendor/` entry (nested ignores cover it); `uikit/` and `../theme` will diverge, so decide which is the source of truth before new commits land in either; pushing and repointing the Docker stacks remain separate decisions.
