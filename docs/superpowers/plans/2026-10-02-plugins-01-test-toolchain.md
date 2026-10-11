@@ -1235,3 +1235,5 @@ Not in this plan, by design:
 - Snapshot findings: `season` and `program` `object_type` is `[]`; `tier` rewrite has a stray `"0"` key and `with_front` true (compare rewrite by key); countdown supports `slug`.
 - Test-code fixes made while implementing: `PublicUrlTest` has its own `FIXTURE` constant; `NoLegacyKeysTest` is comment-blind and skips missing plugin dirs; id-less heading/divider/custom_html/button Meta Box fields are skipped.
 - Deferred minors: `Convention.php` array arrow alignment may trip phpcs; `BootTest` is weak; the multi-line legacy-key path has no positive test.
+
+> Note (2026-10-11): a sixth taxonomy, `hyper_comp_type` (owned by `hyperpress-competition`, attached to `hyper_competition`), now exists, so `Convention::TAXONOMIES` and `Convention::TAXONOMY_OBJECT_TYPES` list it too; the five-taxonomy lists above are the original state.

@@ -74,11 +74,12 @@ final class Convention {
 
 	/** New taxonomy key => owning plugin folder. */
 	public const TAXONOMIES = array(
-		'hyper_season'   => 'hyperpress-season',
-		'hyper_program'  => 'hyperpress-program',
-		'hyper_district' => 'hyperpress-competition',
-		'hyper_week'     => 'hyperpress-competition',
-		'hyper_tier'     => 'hyperpress-sponsor',
+		'hyper_season'    => 'hyperpress-season',
+		'hyper_program'   => 'hyperpress-program',
+		'hyper_district'  => 'hyperpress-competition',
+		'hyper_week'      => 'hyperpress-competition',
+		'hyper_comp_type' => 'hyperpress-competition',
+		'hyper_tier'      => 'hyperpress-sponsor',
 	);
 
 	/** Old registered key => new registered key (post types and taxonomies). */
@@ -98,9 +99,10 @@ final class Convention {
 
 	/** Taxonomies with a fixed attachment. Season and program are theme-mod driven (default: attached to nothing). */
 	public const TAXONOMY_OBJECT_TYPES = array(
-		'hyper_district' => array( 'hyper_competition' ),
-		'hyper_week'     => array( 'hyper_competition' ),
-		'hyper_tier'     => array( 'hyper_sponsor' ),
+		'hyper_district'  => array( 'hyper_competition' ),
+		'hyper_week'      => array( 'hyper_competition' ),
+		'hyper_comp_type' => array( 'hyper_competition' ),
+		'hyper_tier'      => array( 'hyper_sponsor' ),
 	);
 
 	public const THEME_DRIVEN_TAXONOMIES = array( 'hyper_season', 'hyper_program' );

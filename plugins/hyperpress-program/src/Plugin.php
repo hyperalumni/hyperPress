@@ -4,13 +4,21 @@ namespace HyperPress\Program;
 defined( 'ABSPATH' ) || exit;
 
 use HyperPress\Utils\TaxonomyRegistrar;
+use HyperPress\Utils\TermSeeder;
 
 final class Plugin {
 
 	public const TAXONOMY = 'hyper_program';
 
+	private const SEED_OPTION   = 'hyperpress_program_terms_seeded';
+	private const SEED_VERSION  = '1';
+	private const DEFAULT_TERMS = array(
+		'FIRST' => array( 'FRC', 'FTC', 'FLL' ),
+	);
+
 	public static function boot(): void {
 		add_action( 'init', array( self::class, 'register' ) );
+		add_action( 'init', array( self::class, 'seed_terms' ), 20 );
 		Customizer::register();
 		MetaBoxes::register();
 		Labels::register();
@@ -18,6 +26,14 @@ final class Plugin {
 
 	public static function register(): void {
 		TaxonomyRegistrar::register( self::definition() );
+	}
+
+	/**
+	 * Seed the default programs once per seed version, without touching terms an admin edited.
+	 * Runs on `init` after registration, so it also covers sites where the plugin is already active.
+	 */
+	public static function seed_terms(): void {
+		TermSeeder::ensure( self::SEED_OPTION, self::SEED_VERSION, self::TAXONOMY, self::DEFAULT_TERMS );
 	}
 
 	public static function definition(): array {
