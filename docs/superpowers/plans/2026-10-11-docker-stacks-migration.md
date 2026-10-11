@@ -1,4 +1,4 @@
-# Stage 0b: Migrate the hyperalumni and hyperonline Docker stacks Implementation Plan
+# Migrate the hyperalumni and hyperonline Docker stacks Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -33,7 +33,7 @@
 ### Task 1: Commit spec and plan, preflight, save old configs
 
 **Files:**
-- Commit: `docs/superpowers/specs/2026-10-07-uikit-nx-wordpress-design.md`, `docs/superpowers/plans/2026-10-11-stage-0b-docker-stacks.md`
+- Commit: `docs/superpowers/specs/2026-10-07-uikit-nx-wordpress-design.md`, `docs/superpowers/plans/2026-10-11-docker-stacks-migration.md`
 - Create (scratch): `/tmp/opencode/stage0b/{vars.sh,old-sha256.txt,old-cfg-hyperalumni.json,old-cfg-hyperonline.json,progress.md}`
 
 **Interfaces:**
@@ -256,5 +256,5 @@ Expected: all six checksum lines `OK` (old stacks unmodified); `0`; `0`; empty; 
 
 - [ ] **Step 4: Record the outcome and commit**
 
-Add a `> **STATUS: ✅ COMPLETED** (<date>). <what passed>` banner at the top of this plan and an "Outcome / execution notes" section (ports, whether each site reused or recreated its volumes, deviations, and the suggested `../AGENTS.md` edits: uikit is now a git repo, the stacks live in `uikit/docker/`, theme and plugins paths changed). Tick Tasks 4-6. `git add AGENTS.md <plan>` and commit `-m "docs: describe docker stacks and mark stage 0b completed" -- AGENTS.md <plan>`. Then `rm -rf /tmp/opencode/stage0b`.
+Add a `> **STATUS: ✅ COMPLETED** (<date>). <what passed>` banner at the top of this plan and an "Outcome / execution notes" section (ports, whether each site reused or recreated its volumes, deviations, and the suggested `../AGENTS.md` edits: uikit is now a git repo, the stacks live in `uikit/docker/`, theme and plugins paths changed). Tick Tasks 4-6. `git add AGENTS.md <plan>` and commit `-m "docs: describe docker stacks and mark migration plan completed" -- AGENTS.md <plan>`. Then `rm -rf /tmp/opencode/stage0b`.
 Expected: `git status --short` is empty. Do not push. Do not edit `../AGENTS.md`; list the suggested edits in the final message.
