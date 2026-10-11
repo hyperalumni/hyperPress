@@ -38,20 +38,30 @@ final class TermSeeder {
 	}
 
 	/**
-	 * Seed once per seed version, so terms an admin later deletes are not resurrected.
-	 * Call from `init` (after the taxonomy registers) and from activation.
+	 * Seed once per distinct set of terms, so terms an admin later deletes are not resurrected
+	 * until the lists change. The seeded version is a hash of the terms, so editing a default list
+	 * in code seeds again automatically. Call from `init` (after the taxonomies register) and from
+	 * activation.
 	 *
-	 * @param string $option   Option storing the last seeded version, e.g. hyperpress_competition_terms_seeded.
-	 * @param string $version  Seed version; bump it to seed newly added defaults.
-	 * @param string $taxonomy Taxonomy key.
-	 * @param array  $terms    See seed().
+	 * Nothing is seeded or recorded while any listed taxonomy is unregistered, so it retries later.
+	 *
+	 * @param string $option           Option storing the hash of the last seeded terms, e.g. hyperpress_competition_terms_seeded.
+	 * @param array  $terms_by_taxonomy Map of taxonomy key => terms (see seed()).
 	 */
-	public static function ensure( string $option, string $version, string $taxonomy, array $terms ): void {
-		if ( ! taxonomy_exists( $taxonomy ) || get_option( $option ) === $version ) {
+	public static function ensure( string $option, array $terms_by_taxonomy ): void {
+		$hash = md5( (string) wp_json_encode( $terms_by_taxonomy ) );
+		if ( get_option( $option ) === $hash ) {
 			return;
 		}
-		self::seed( $taxonomy, $terms );
-		update_option( $option, $version );
+		foreach ( array_keys( $terms_by_taxonomy ) as $taxonomy ) {
+			if ( ! taxonomy_exists( (string) $taxonomy ) ) {
+				return;
+			}
+		}
+		foreach ( $terms_by_taxonomy as $taxonomy => $terms ) {
+			self::seed( (string) $taxonomy, $terms );
+		}
+		update_option( $option, $hash );
 	}
 
 	/**

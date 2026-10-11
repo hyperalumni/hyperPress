@@ -18,9 +18,7 @@ final class Plugin {
 	public const WEEK         = 'hyper_week';
 	public const TYPE         = 'hyper_competition_type';
 	private const CAPS_OPTION = 'hyperpress_competition_caps_version';
-	// Bump the seed version to seed newly added default terms on existing sites.
-	private const SEED_OPTION  = 'hyperpress_competition_terms_seeded';
-	private const SEED_VERSION = '1';
+	private const SEED_OPTION = 'hyperpress_competition_terms_seeded';
 
 	public static function boot(): void {
 		add_action( 'init', array( self::class, 'register' ) );
@@ -74,24 +72,12 @@ final class Plugin {
 	}
 
 	/**
-	 * Seed the default terms once per seed version (runs on `init`, after registration, and on
-	 * activation). Existing terms are never renamed or re-parented, and terms an admin deletes are
-	 * not resurrected until the seed version is bumped.
+	 * Seed the default terms whenever the default lists change (runs on `init`, after registration,
+	 * and on activation). Existing terms are never renamed or re-parented, and terms an admin
+	 * deletes are not resurrected until a default list changes.
 	 */
 	public static function seed_terms(): void {
-		if ( get_option( self::SEED_OPTION ) === self::SEED_VERSION ) {
-			return;
-		}
-		$terms = self::default_terms();
-		foreach ( array_keys( $terms ) as $taxonomy ) {
-			if ( ! taxonomy_exists( $taxonomy ) ) {
-				return;
-			}
-		}
-		foreach ( $terms as $taxonomy => $list ) {
-			TermSeeder::seed( $taxonomy, $list );
-		}
-		update_option( self::SEED_OPTION, self::SEED_VERSION );
+		TermSeeder::ensure( self::SEED_OPTION, self::default_terms() );
 	}
 
 	public static function ensure_capabilities(): void {

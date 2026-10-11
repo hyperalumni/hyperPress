@@ -11,7 +11,6 @@ final class Plugin {
 	public const TAXONOMY = 'hyper_program';
 
 	private const SEED_OPTION   = 'hyperpress_program_terms_seeded';
-	private const SEED_VERSION  = '1';
 	private const DEFAULT_TERMS = array(
 		'FIRST' => array( 'FRC', 'FTC', 'FLL' ),
 	);
@@ -29,11 +28,11 @@ final class Plugin {
 	}
 
 	/**
-	 * Seed the default programs once per seed version, without touching terms an admin edited.
+	 * Seed the default programs whenever the default list changes, without touching terms an admin edited.
 	 * Runs on `init` after registration, so it also covers sites where the plugin is already active.
 	 */
 	public static function seed_terms(): void {
-		TermSeeder::ensure( self::SEED_OPTION, self::SEED_VERSION, self::TAXONOMY, self::DEFAULT_TERMS );
+		TermSeeder::ensure( self::SEED_OPTION, array( self::TAXONOMY => self::DEFAULT_TERMS ) );
 	}
 
 	public static function definition(): array {

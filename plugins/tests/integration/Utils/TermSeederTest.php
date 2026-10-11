@@ -56,21 +56,49 @@ final class TermSeederTest extends WP_UnitTestCase {
 		$this->assertTrue( true ); // No exception, no warning.
 	}
 
-	public function test_ensure_seeds_once_per_version(): void {
-		TermSeeder::ensure( self::OPTION, '1', self::TAXONOMY, array( 'Alpha' ) );
-		$this->assertSame( '1', get_option( self::OPTION ) );
+	public function test_ensure_seeds_and_stores_a_hash(): void {
+		TermSeeder::ensure( self::OPTION, array( self::TAXONOMY => array( 'Alpha' ) ) );
+
+		$this->assertInstanceOf( \WP_Term::class, get_term_by( 'name', 'Alpha', self::TAXONOMY ) );
+		$this->assertNotEmpty( get_option( self::OPTION ) );
+	}
+
+	public function test_ensure_with_the_same_terms_does_not_resurrect_a_deleted_term(): void {
+		$terms = array( self::TAXONOMY => array( 'Alpha' ) );
+		TermSeeder::ensure( self::OPTION, $terms );
 
 		$alpha = get_term_by( 'name', 'Alpha', self::TAXONOMY );
 		wp_delete_term( $alpha->term_id, self::TAXONOMY );
-		TermSeeder::ensure( self::OPTION, '1', self::TAXONOMY, array( 'Alpha' ) );
-		$this->assertFalse( get_term_by( 'name', 'Alpha', self::TAXONOMY ), 'same version must not resurrect' );
-
-		TermSeeder::ensure( self::OPTION, '2', self::TAXONOMY, array( 'Alpha' ) );
-		$this->assertInstanceOf( \WP_Term::class, get_term_by( 'name', 'Alpha', self::TAXONOMY ) );
+		TermSeeder::ensure( self::OPTION, $terms );
+		$this->assertFalse( get_term_by( 'name', 'Alpha', self::TAXONOMY ), 'same terms must not resurrect' );
 	}
 
-	public function test_ensure_does_not_record_a_version_for_an_unregistered_taxonomy(): void {
-		TermSeeder::ensure( self::OPTION, '1', 'hyper_not_registered', array( 'Alpha' ) );
+	public function test_ensure_seeds_again_when_the_terms_change(): void {
+		TermSeeder::ensure( self::OPTION, array( self::TAXONOMY => array( 'Alpha' ) ) );
+		$first_hash = get_option( self::OPTION );
+
+		TermSeeder::ensure( self::OPTION, array( self::TAXONOMY => array( 'Alpha', 'Beta' ) ) );
+
+		$this->assertInstanceOf( \WP_Term::class, get_term_by( 'name', 'Beta', self::TAXONOMY ) );
+		$this->assertNotEmpty( get_option( self::OPTION ) );
+		$this->assertNotSame( $first_hash, get_option( self::OPTION ) );
+	}
+
+	public function test_ensure_skips_and_does_not_record_an_unregistered_taxonomy(): void {
+		TermSeeder::ensure( self::OPTION, array( 'hyper_not_registered' => array( 'Alpha' ) ) );
+		$this->assertFalse( get_option( self::OPTION ) );
+	}
+
+	public function test_ensure_seeds_nothing_when_only_some_taxonomies_are_registered(): void {
+		TermSeeder::ensure(
+			self::OPTION,
+			array(
+				self::TAXONOMY         => array( 'Alpha' ),
+				'hyper_not_registered' => array( 'Beta' ),
+			)
+		);
+
+		$this->assertFalse( get_term_by( 'name', 'Alpha', self::TAXONOMY ) );
 		$this->assertFalse( get_option( self::OPTION ) );
 	}
 
