@@ -4,7 +4,7 @@
 
 **Goal:** Turn `uikit/` into a pnpm-workspace monorepo that contains the full hyperPress (theme) history, the theme moved to `themes/hyperpress-foundation/`, the plugins repo merged under `plugins/`, all docs at the root, and root workspace files, with no behavior change.
 
-**Architecture:** `uikit/` becomes a clone of the theme repo's `master` (original hashes kept). One rename commit moves the theme, one merge commit imports a `filter-repo`-rewritten copy of the plugins repo, and further commits add root workspace files and fix path references. Originals (`../theme`, `../plugins`) are never touched; nothing is pushed.
+**Architecture:** `uikit/` becomes a clone of the theme repo's `master` (original hashes kept). One rename commit moves the theme, the `filter-repo`-rewritten plugins history is rebased on top (linear history, no merge commit), and further commits add root workspace files and fix path references. Originals (`../theme`, `../plugins`) are never touched; nothing is pushed.
 
 **Tech Stack:** git 2.53, git-filter-repo, Node 26.11.1 (nvm), pnpm 12.11.2, Docker Compose (PHP tooling only).
 
@@ -14,11 +14,11 @@
 
 - Work only inside `/home/cmcg/projects/hyperPress/uikit` and the scratch directory `/tmp/opencode/stage0`. Never modify `../theme`, `../plugins`, `../hyperalumni`, `../hyperonline`.
 - Branch `master`. `origin` = `git@github.com:hyperalumni/hyperPress.git`. **Never push**, never set upstream tracking.
-- Theme commit hashes stay unchanged. Plugins history is rewritten with exactly: `git filter-repo --to-subdirectory-filter plugins` then `git filter-repo --force --path-rename plugins/docs/:docs/`. Only `master` of each repo is imported.
+- Theme commit hashes stay unchanged. Plugins history is rewritten with exactly: `git filter-repo --to-subdirectory-filter plugins` then `git filter-repo --force --path-rename plugins/docs/:docs/`. The rewritten plugins history is then rebased onto `master` with `git rebase --onto master --root` (never merged), so the added commits contain no merge commit. Only `master` of each repo is imported.
 - Node 26.11.1 and pnpm 12.11.2. Run Node tools with: `source ~/.nvm/nvm.sh && nvm use 26.11.1 >/dev/null && <command>`.
 - pnpm only (never npm/yarn). PHP/Composer only in Docker (`docker compose -p <name> ...`), never on the host.
-- Never read or print `.env*` files. Never `git add -A` / `git add .`. Commit with explicit paths: `git add <paths>` then `git commit -m "..." -- <paths>`. Exception: commits made from `git mv` renames or an in-progress merge, where the staged index is verified first and committed whole.
-- Commit signing: `~/.gitconfig` signs commits with `B3A68A8C1678FCEC`, which is not in the keyring. By the user's decision, every `git commit`/`git merge` in this plan is run as `git -c user.signingkey=4A9F22E376B1163C <command>` (signed, config untouched). Never edit git config.
+- Never read or print `.env*` files. Never `git add -A` / `git add .`. Commit with explicit paths: `git add <paths>` then `git commit -m "..." -- <paths>`. Exception: commits made from `git mv` renames, where the staged index is verified first and committed whole.
+- Commit signing: `~/.gitconfig` signs commits with `B3A68A8C1678FCEC`, which is not in the keyring. By the user's decision, every `git commit`/`git rebase`/`git merge` in this plan is run as `git -c user.signingkey=4A9F22E376B1163C <command>` (signed, config untouched). Never edit git config.
 - Docs live at root `docs/superpowers/{specs,plans,audit}/`. The theme's `docs/` stays in place at the repo root (it is not moved into `themes/hyperpress-foundation/`, but it is still part of the repo, with its history); the plugins repo's `docs/` is merged into the same root `docs/`.
 - Root `pnpm-workspace.yaml` `packages` = `themes/*`, `plugins/*`. Theme's own `pnpm-workspace.yaml` is removed; its settings move to the root file unchanged.
 - Tick a task's checkboxes in the commit that finishes that task. Tasks 1 and 2 finish before the plan is committed, so their boxes are ticked in the Task 3 commit; history-dependent checks that need the new commits to exist are collected in Task 7.
@@ -133,41 +133,41 @@ Expected: one commit; `git status --short` shows only `?? .idea/`.
 
 ---
 
-### Task 4: Merge the plugins repo under `plugins/`
+### Task 4: Rebase the plugins history onto `master` under `plugins/`
 
 **Files:**
 - Create (scratch): `/tmp/opencode/stage0/plugins-rewritten/`
-- Merge into `uikit/`: `plugins/**` (all plugin files and tooling) and `docs/superpowers/{audit,plans,specs}/*` from the plugins repo
-- Modify: the plan (checkboxes)
+- Add via rebase: `plugins/**` (all plugin files and tooling) and `docs/superpowers/{audit,plans,specs}/*` from the plugins repo, as `PLUGINS_COUNT` replayed commits
+- Modify: the plan (checkboxes), in one docs commit after the rebase
 
 **Interfaces:**
 - Consumes: `PLUGINS_COUNT`, `PLUGINS_DOCS`, `THEME_DOCS`.
-- Produces: `plugins/` (no `plugins/docs`), plugin docs at root `docs/`.
+- Produces: `plugins/` (no `plugins/docs`), plugin docs at root `docs/`, and `master` = the Task 3 commit followed by `PLUGINS_COUNT` linear plugin commits (no merge commit, each signed per Global Constraints), then one docs commit.
 
-- [ ] **Step 1: Rewrite a fresh clone**
+- [x] **Step 1: Rewrite a fresh clone**
 
 Run in `/tmp/opencode/stage0`: `git clone --no-local /home/cmcg/projects/hyperPress/plugins plugins-rewritten`, then inside it: `git filter-repo --to-subdirectory-filter plugins` followed by `git filter-repo --force --path-rename plugins/docs/:docs/`.
 Expected: both report parsed commits and a completed rewrite.
 
-- [ ] **Step 2: Verify the rewritten clone**
+- [x] **Step 2: Verify the rewritten clone**
 
 Run inside it: `git ls-files | grep -c '^docs/'`; `git ls-files | grep -c '^plugins/docs'`; `git ls-files | grep -vc -e '^plugins/' -e '^docs/'`; `git rev-list --count HEAD`
 Expected: `$PLUGINS_DOCS` (12); `0`; `0`; `$PLUGINS_COUNT` (184).
 
-- [ ] **Step 3: Start the merge**
+- [x] **Step 3: Rebase onto `master` and fast-forward**
 
-In `uikit/`: `git remote add plugins-import /tmp/opencode/stage0/plugins-rewritten && git fetch plugins-import master && git merge --no-commit --no-ff --allow-unrelated-histories plugins-import/master`
-Expected: "Automatic merge went well; stopped before committing as requested", no `CONFLICT`.
+In `uikit/` (clean working tree; park any uncommitted work with `git stash push --include-untracked` first and restore it with `git stash pop --index`): `git fetch /tmp/opencode/stage0/plugins-rewritten master:refs/heads/plugins-rewritten`, then `git -c user.signingkey=4A9F22E376B1163C rebase --onto master --root plugins-rewritten`, then `git checkout master && git merge --ff-only plugins-rewritten && git branch -d plugins-rewritten`.
+Expected: "Successfully rebased"; fast-forward; `git rev-list --count HEAD` equals `$THEME_COUNT + 3 + $PLUGINS_COUNT`; `git rev-list --merges --count HEAD~$PLUGINS_COUNT..HEAD` is `0`.
 
-- [ ] **Step 4: Verify the merged tree before committing**
+- [x] **Step 4: Verify the tree**
 
-Run: `test ! -e plugins/docs && echo ok`; `git ls-files plugins | grep -c '^plugins/hyperpress-'`; `git ls-files docs | wc -l`; `git ls-files | cut -d/ -f1 | sort -u`
-Expected: `ok`; a positive count; `$THEME_DOCS + $PLUGINS_DOCS + 2`; exactly `docs`, `plugins`, `themes`.
+Run: `test ! -e plugins/docs && echo ok`; `git ls-files plugins | grep -o '^plugins/hyperpress-[a-z]*' | sort -u | wc -l`; `git ls-files docs | wc -l`; `git ls-files | cut -d/ -f1 | sort -u`
+Expected: `ok`; `14`; `$THEME_DOCS + $PLUGINS_DOCS + 2`; exactly `docs`, `plugins`, `themes`.
 
-- [ ] **Step 5: Commit the merge and remove the temporary remote**
+- [x] **Step 5: Record the import in the plan**
 
-Tick Task 4's boxes in the plan, `git add <plan>`, `git commit -m "merge: import plugins repo under plugins/"`, then `git remote remove plugins-import`.
-Expected: merge commit created; `git remote -v` lists only `origin`.
+Tick Task 4's boxes in the plan, `git add <plan>`, `git -c user.signingkey=4A9F22E376B1163C commit -m "docs(plans): record plugins import" -- <plan>`.
+Expected: one commit; `git status --short` shows no changes to tracked files from this task.
 
 ---
 
@@ -270,7 +270,7 @@ Expected: `git status --short` is empty.
 Run:
 - `git log --follow --format=%h -- themes/hyperpress-foundation/functions.php | wc -l` -> expected `(git -C ../theme log --format=%h -- functions.php | wc -l) + 1`; and the last line of `git log --follow --format=%h -- themes/hyperpress-foundation/functions.php` equals the last line of `git -C ../theme log --format=%h -- functions.php`.
 - `git log --oneline -- plugins/hyperpress-media | wc -l` -> `8`; `git log --oneline -- docs/superpowers/plans/2026-10-06-label-plugin-extraction.md | wc -l` -> `21`.
-- `git rev-list --count HEAD` -> `$THEME_COUNT + $PLUGINS_COUNT + 6`.
+- `git rev-list --count HEAD` -> `$THEME_COUNT + $PLUGINS_COUNT + 6`; `git rev-list --merges --count $THEME_SHA..HEAD` -> `0` (no merge commit added).
 - `git ls-files | cut -d/ -f1 | sort -u` -> exactly `.gitignore .nvmrc AGENTS.md docs package.json plugins pnpm-lock.yaml pnpm-workspace.yaml themes`; `test ! -e plugins/docs`; `git ls-files | grep -E '(^|/)(node_modules|dist)/'` -> no output.
 
 - [ ] **Step 2: PHP tooling still works from the new locations (Docker, isolated project names)**
