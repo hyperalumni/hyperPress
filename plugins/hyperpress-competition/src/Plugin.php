@@ -58,7 +58,13 @@ final class Plugin {
 	 */
 	public static function default_terms(): array {
 		return array(
-			self::DISTRICT => array( 'NE FIRST', 'FTC MA' ),
+			self::DISTRICT => array(
+				array(
+					'name'        => 'NE FIRST',
+					'description' => 'FIRST Robotics Programs in New England, United States',
+				),
+				'FTC MA',
+			),
 			self::WEEK     => array_map(
 				static fn( int $week ): string => 'Week ' . $week,
 				range( 0, 7 )

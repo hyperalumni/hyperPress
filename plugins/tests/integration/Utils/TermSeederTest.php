@@ -148,7 +148,9 @@ final class TermSeederTest extends WP_UnitTestCase {
 		delete_option( 'hyperpress_competition_terms_seeded' );
 		Competition::seed_terms();
 
-		$this->assertInstanceOf( \WP_Term::class, get_term_by( 'name', 'NE FIRST', 'hyper_district' ) );
+		$ne_first = get_term_by( 'name', 'NE FIRST', 'hyper_district' );
+		$this->assertInstanceOf( \WP_Term::class, $ne_first );
+		$this->assertSame( 'FIRST Robotics Programs in New England, United States', $ne_first->description );
 		$this->assertInstanceOf( \WP_Term::class, get_term_by( 'name', 'FTC MA', 'hyper_district' ) );
 		foreach ( range( 0, 7 ) as $week ) {
 			$this->assertInstanceOf( \WP_Term::class, get_term_by( 'name', "Week $week", 'hyper_week' ) );
