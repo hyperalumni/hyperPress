@@ -669,3 +669,5 @@ git commit -m "docs(plans): complete plugins-04-remaining-plugins" -- docs/super
 - Deferred minors: weekly/monthly/annual `time-restrict-repeat` branches are date-dependent (parity only shows stable output); several thin tests (newsletter archive/color fallback, media gating); existing data is not migrated (dev DB reset by design).
 - Update (audit S20): the SVG upload filter was removed from `hyperpress-media`; SVG uploads now come from the Safe SVG plugin, declared as `Requires Plugins: safe-svg`. `Uploads\Svg` no longer exists, and `MediaTest` asserts the SVG MIME type is not added by this plugin.
 - Update (audit S30): `Uploads\Avif` was removed too; WordPress core already allows and detects AVIF. `hyperpress-media` now only carries the NextGen integration.
+
+> Note (2026-10-11): `hyperpress-sponsor` now seeds `hyper_tier` with Level 1 to Level 4 and their dollar-range descriptions (`<$500`, `$500-$4999`, `$5000-$9999`, `$10,000+`) through `TermSeeder`, on `init` priority 20 and on activation. The taxonomy is left unlocked on purpose, so tiers stay editable in the admin. WordPress stores the `<` in `<$500` as `&lt;`.

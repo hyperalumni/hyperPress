@@ -8,6 +8,7 @@ use HyperPress\Utils\Breadcrumbs;
 use HyperPress\Utils\Capabilities;
 use HyperPress\Utils\PostTypeRegistrar;
 use HyperPress\Utils\TaxonomyRegistrar;
+use HyperPress\Utils\TermSeeder;
 use HyperPress\Utils\Version;
 
 final class Plugin {
@@ -16,9 +17,30 @@ final class Plugin {
 	public const TIER         = 'hyper_tier';
 	private const CAPS_OPTION = 'hyperpress_sponsor_caps_version';
 
+	private const SEED_OPTION   = 'hyperpress_sponsor_terms_seeded';
+	private const DEFAULT_TERMS = array(
+		array(
+			'name'        => 'Level 1',
+			'description' => '<$500',
+		),
+		array(
+			'name'        => 'Level 2',
+			'description' => '$500-$4999',
+		),
+		array(
+			'name'        => 'Level 3',
+			'description' => '$5000-$9999',
+		),
+		array(
+			'name'        => 'Level 4',
+			'description' => '$10,000+',
+		),
+	);
+
 	public static function boot(): void {
 		add_action( 'init', array( self::class, 'register' ) );
 		add_action( 'init', array( self::class, 'ensure_capabilities' ), 20 );
+		add_action( 'init', array( self::class, 'seed_terms' ), 20 );
 		Breadcrumbs::register( array( self::POST_TYPE ) );
 		add_action( 'init', array( self::class, 'register_banner' ) );
 		Archive::register();
@@ -51,9 +73,18 @@ final class Plugin {
 		Capabilities::ensure( self::CAPS_OPTION, Version::of( dirname( __DIR__ ) . '/hyperpress-sponsor.php' ), array( self::POST_TYPE ) );
 	}
 
+	/**
+	 * Seed the default tiers whenever the default list changes, without touching terms an admin edited.
+	 * The tier taxonomy is deliberately not locked, so tiers stay editable in the admin.
+	 */
+	public static function seed_terms(): void {
+		TermSeeder::ensure( self::SEED_OPTION, array( self::TIER => self::DEFAULT_TERMS ) );
+	}
+
 	public static function activate(): void {
 		self::register();
 		self::ensure_capabilities();
+		self::seed_terms();
 		flush_rewrite_rules();
 	}
 

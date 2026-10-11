@@ -180,4 +180,32 @@ final class TermSeederTest extends WP_UnitTestCase {
 			$this->assertSame( $description, $term->description );
 		}
 	}
+
+	public function test_sponsor_seeds_four_unlocked_tiers_with_dollar_descriptions(): void {
+		delete_option( 'hyperpress_sponsor_terms_seeded' );
+		\HyperPress\Sponsor\Plugin::seed_terms();
+
+		// WordPress stores the `<` of `<$500` HTML-escaped, with or without unfiltered_html.
+		$descriptions = array(
+			'Level 1' => '&lt;$500',
+			'Level 2' => '$500-$4999',
+			'Level 3' => '$5000-$9999',
+			'Level 4' => '$10,000+',
+		);
+		foreach ( $descriptions as $name => $description ) {
+			$term = get_term_by( 'name', $name, 'hyper_tier' );
+			$this->assertInstanceOf( \WP_Term::class, $term, $name );
+			$this->assertSame( 0, $term->parent );
+			$this->assertSame( $description, $term->description, $name );
+		}
+		$this->assertCount( 4, get_terms( array( 'taxonomy' => 'hyper_tier', 'hide_empty' => false ) ) );
+
+		// A second pass must leave the escaped description alone.
+		delete_option( 'hyperpress_sponsor_terms_seeded' );
+		\HyperPress\Sponsor\Plugin::seed_terms();
+		$this->assertSame( '&lt;$500', get_term_by( 'name', 'Level 1', 'hyper_tier' )->description );
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$this->assertTrue( current_user_can( get_taxonomy( 'hyper_tier' )->cap->edit_terms ) );
+	}
 }
