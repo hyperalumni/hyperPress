@@ -33,3 +33,6 @@ spl_autoload_register(
 		}
 	}
 );
+
+// Boot after every plugin's main file is loaded.
+add_action( 'plugins_loaded', array( \HyperPress\Utils\AdminMenu::class, 'boot' ) );

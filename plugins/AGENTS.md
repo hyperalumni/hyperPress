@@ -14,6 +14,7 @@ Part of the hyperPress monorepo (`plugins/`); the root `../AGENTS.md` also appli
 - Layout: `hyperpress-<name>/hyperpress-<name>.php` (header, ABSPATH guard, PSR-4 autoloader, hook `Plugin::boot` on `plugins_loaded`) plus `src/` (namespace `HyperPress\<Name>`, one class per concern). Registered keys are `hyper_*`; other identifiers are `hyperpress_{plugin}_{field}`. Text domain `hyperpress`.
 - Every header carries Version `2026.0.0` (a dev/fallback value only: `bin/package` stamps the nearest version tag into the packaged copy), Requires at least `6.9` and Requires PHP `8.3`; `Requires Plugins` follows the table in `../docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md`.
 - `hyperpress-utils` is the base dependency, and `hyperpress-season` is a base CPT/taxonomy that many plugins depend on. Meta boxes come from the `meta-box-aio` plugin.
+- The top-level "hyperPress" wp-admin menu lives in `hyperpress-utils` (`AdminMenu`); other plugins attach their settings pages to it with `parent => AdminMenu::SLUG`.
 - `hyperpress-student` is a single-file placeholder with no behavior.
 - Labels: `hyperpress-label` owns the registry, Customizer section and renderer. Season, program, competition (district, week, type) and sponsor register their own. Plugins register labels on the `hyperpress_label_register` action; theme templates call `do_action( 'hyperpress_labels' )`.
 
