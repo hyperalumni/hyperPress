@@ -155,16 +155,16 @@
 - Consumes: `Settings::map()`, `GoogleMapsKey::get()`, `HyperPress\Utils\Version::of( string $file )`.
 - Produces: `MapShortcode::register(): void` (tag `hyperpress_map`), `render( $atts ): string`; script handles `hyperpress-contact-map` (our `assets/map.js`, footer, defines `window.hyperpressContactInitMaps`) and `hyperpress-contact-google-maps` (depends on the first).
 
-- [ ] **Step 1: Failing tests** (store `Settings::MAP` as `42.2518999,-71.0007911,17` and the `hyperpress_google_maps_api_key` option as `test-key`):
+- [x] **Step 1: Failing tests** (store `Settings::MAP` as `42.2518999,-71.0007911,17` and the `hyperpress_google_maps_api_key` option as `test-key`):
   - output contains `class="hyperpress-map"`, `data-lat="42.2518999"`, `data-lng="-71.0007911"`, `data-zoom="17"`, `role="img"` and `style="height:250px;width:100%;pointer-events:none;"`
   - `height="400"` gives 400px; `height="5"` gives 100px; `height="9999"` gives 1000px; `height="abc"` gives 250px
   - after rendering twice, `wp_script_is( 'hyperpress-contact-google-maps', 'enqueued' )` is true, its registered src contains `key=test-key` and `callback=hyperpressContactInitMaps`, it depends on `hyperpress-contact-map`, and the output contains two map elements
   - key `a&b` appears as `key=a%26b`
   - no key, no location, or an invalid location returns `''` for a visitor and an `<!-- hyperpress_map: ... -->` comment for an administrator
-- [ ] **Step 2: Run; Expected: FAIL.**
-- [ ] **Step 3: Implement** `render` and the enqueue. `map.js`: `window.hyperpressContactInitMaps` finds every `.hyperpress-map` not yet initialised and creates a `google.maps.Map` from its data attributes with `disableDefaultUI: true`, `gestureHandling: 'none'`, `keyboardShortcuts: false`, `clickableIcons: false`, plus a marker at the centre. The Google script URL is built with `loading=async` and `callback=hyperpressContactInitMaps`.
-- [ ] **Step 4:** Run lint and integration suite. Expected: pass. (No automated JS test; Task 7 covers it in a browser.)
-- [ ] **Step 5:** Commit: `feat(contact): add [hyperpress_map] shortcode and script`.
+- [x] **Step 2: Run; Expected: FAIL.**
+- [x] **Step 3: Implement** `render` and the enqueue. `map.js`: `window.hyperpressContactInitMaps` finds every `.hyperpress-map` not yet initialised and creates a `google.maps.Map` from its data attributes with `disableDefaultUI: true`, `gestureHandling: 'none'`, `keyboardShortcuts: false`, `clickableIcons: false`, plus a marker at the centre. The Google script URL is built with `loading=async` and `callback=hyperpressContactInitMaps`.
+- [x] **Step 4:** Run lint and integration suite. Expected: pass. (No automated JS test; Task 7 covers it in a browser.)
+- [x] **Step 5:** Commit: `feat(contact): add [hyperpress_map] shortcode and script`.
 
 ---
 

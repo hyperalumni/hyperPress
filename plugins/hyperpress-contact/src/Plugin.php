@@ -9,5 +9,6 @@ final class Plugin {
 		SettingsPage::register();
 		MetaBoxes::register();
 		AddressShortcode::register();
+		MapShortcode::register();
 	}
 }
