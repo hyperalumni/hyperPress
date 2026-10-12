@@ -23,13 +23,13 @@ final class DateDistanceHardeningTest extends WP_UnitTestCase {
 	}
 
 	public function test_inclusive_leaves_a_non_numeric_result_unchanged(): void {
-		$output = do_shortcode( '[hyper_date_distance date="' . $this->years_ago( 5 ) . '" format="%R%a days" inclusive="true"]' );
+		$output = do_shortcode( '[hyperpress_date_distance date="' . $this->years_ago( 5 ) . '" format="%R%a days" inclusive="true"]' );
 
 		$this->assertMatchesRegularExpression( '/^[+-]\d+ days$/', $output );
 	}
 
 	public function test_inclusive_still_increments_a_numeric_result(): void {
-		$this->assertSame( '6', do_shortcode( '[hyper_date_distance date="' . $this->years_ago( 5 ) . '" format="%y" inclusive="true"]' ) );
+		$this->assertSame( '6', do_shortcode( '[hyperpress_date_distance date="' . $this->years_ago( 5 ) . '" format="%y" inclusive="true"]' ) );
 	}
 
 	public function test_ordinals_are_supported_when_intl_is_loaded(): void {
@@ -40,14 +40,14 @@ final class DateDistanceHardeningTest extends WP_UnitTestCase {
 		add_filter( 'hyperpress_shortcode_ordinals', '__return_false' );
 
 		$this->assertFalse( DateDistance::supports_ordinals() );
-		$this->assertSame( '5', do_shortcode( '[hyper_date_distance date="' . $this->years_ago( 5 ) . '" format="%y" suffix="true"]' ) );
+		$this->assertSame( '5', do_shortcode( '[hyperpress_date_distance date="' . $this->years_ago( 5 ) . '" format="%y" suffix="true"]' ) );
 	}
 
 	public function test_suffix_adds_the_ordinal_when_supported(): void {
-		$this->assertSame( '5th', do_shortcode( '[hyper_date_distance date="' . $this->years_ago( 5 ) . '" format="%y" suffix="true"]' ) );
+		$this->assertSame( '5th', do_shortcode( '[hyperpress_date_distance date="' . $this->years_ago( 5 ) . '" format="%y" suffix="true"]' ) );
 	}
 
 	public function test_an_underscore_locale_is_normalized(): void {
-		$this->assertSame( '5th', do_shortcode( '[hyper_date_distance date="' . $this->years_ago( 5 ) . '" format="%y" suffix="true" locale="en_US"]' ) );
+		$this->assertSame( '5th', do_shortcode( '[hyperpress_date_distance date="' . $this->years_ago( 5 ) . '" format="%y" suffix="true" locale="en_US"]' ) );
 	}
 }

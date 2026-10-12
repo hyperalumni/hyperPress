@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 final class DateDistance {
 
 	public static function register(): void {
-		add_shortcode( 'hyper_date_distance', array( self::class, 'render' ) );
+		add_shortcode( 'hyperpress_date_distance', array( self::class, 'render' ) );
 	}
 
 	/**

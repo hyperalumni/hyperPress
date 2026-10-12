@@ -4,7 +4,7 @@ namespace HyperPress\Tests\Integration\Shortcodes;
 use WP_UnitTestCase;
 
 /**
- * Attribute validation of the time-restrict shortcodes (audit S25), evaluated at a frozen time.
+ * Attribute validation of the hyperpress_time_restrict shortcodes (audit S25), evaluated at a frozen time.
  */
 final class TimeRestrictValidationTest extends WP_UnitTestCase {
 
@@ -24,11 +24,11 @@ final class TimeRestrictValidationTest extends WP_UnitTestCase {
 	}
 
 	private static function repeat( string $attributes ): string {
-		return '[time-restrict-repeat ' . $attributes . ' else="HIDDEN"]SHOWN[/time-restrict-repeat]';
+		return '[hyperpress_time_restrict_repeat ' . $attributes . ' else="HIDDEN"]SHOWN[/hyperpress_time_restrict_repeat]';
 	}
 
 	private static function restrict( string $attributes ): string {
-		return '[time-restrict ' . $attributes . ' else="HIDDEN"]SHOWN[/time-restrict]';
+		return '[hyperpress_time_restrict ' . $attributes . ' else="HIDDEN"]SHOWN[/hyperpress_time_restrict]';
 	}
 
 	public static function cases(): array {
@@ -53,17 +53,17 @@ final class TimeRestrictValidationTest extends WP_UnitTestCase {
 			'daily, offtime="5:00pm" after it ends'            => array( self::repeat( 'type="daily" ontime="09:00:00" offtime="5:00pm"' ), '2026-03-05 18:00:00', 'HIDDEN' ),
 			'daily, unparsable ontime falls back to midnight'  => array( self::repeat( 'type="daily" ontime="garbage" offtime="17:00:00"' ), '2026-03-05 08:00:00', 'SHOWN' ),
 
-			// time-restrict: an unparsable on or off behaves like the attribute being unset.
-			'time-restrict, on unparsable, off in the future'  => array( self::restrict( 'on="garbage" off="2026-06-01"' ), '2026-03-05 12:00:00', 'SHOWN' ),
-			'time-restrict, on unparsable, off in the past'    => array( self::restrict( 'on="garbage" off="2026-01-01"' ), '2026-03-05 12:00:00', 'HIDDEN' ),
-			'time-restrict, on in the past, off unparsable'    => array( self::restrict( 'on="2026-01-01" off="garbage"' ), '2026-03-05 12:00:00', 'SHOWN' ),
-			'time-restrict, on in the future, off unparsable'  => array( self::restrict( 'on="2026-06-01" off="garbage"' ), '2026-03-05 12:00:00', 'HIDDEN' ),
+			// hyperpress_time_restrict: an unparsable on or off behaves like the attribute being unset.
+			'hyperpress_time_restrict, on unparsable, off in the future'  => array( self::restrict( 'on="garbage" off="2026-06-01"' ), '2026-03-05 12:00:00', 'SHOWN' ),
+			'hyperpress_time_restrict, on unparsable, off in the past'    => array( self::restrict( 'on="garbage" off="2026-01-01"' ), '2026-03-05 12:00:00', 'HIDDEN' ),
+			'hyperpress_time_restrict, on in the past, off unparsable'    => array( self::restrict( 'on="2026-01-01" off="garbage"' ), '2026-03-05 12:00:00', 'SHOWN' ),
+			'hyperpress_time_restrict, on in the future, off unparsable'  => array( self::restrict( 'on="2026-06-01" off="garbage"' ), '2026-03-05 12:00:00', 'HIDDEN' ),
 
 			// Regressions: identical before and after.
 			'regression: annually window, inside'              => array( self::repeat( 'type="annually" onmonth="march" offmonth="september" ondate="5" offdate="20"' ), '2026-06-15 12:00:00', 'SHOWN' ),
 			'regression: annually window, outside'             => array( self::repeat( 'type="annually" onmonth="march" offmonth="september" ondate="5" offdate="20"' ), '2026-12-15 12:00:00', 'HIDDEN' ),
-			'regression: time-restrict window, inside'         => array( self::restrict( 'on="2026-01-01" off="2026-06-01"' ), '2026-03-05 12:00:00', 'SHOWN' ),
-			'regression: time-restrict window, expired'        => array( self::restrict( 'on="2026-01-01" off="2026-02-01"' ), '2026-03-05 12:00:00', 'HIDDEN' ),
+			'regression: hyperpress_time_restrict window, inside'         => array( self::restrict( 'on="2026-01-01" off="2026-06-01"' ), '2026-03-05 12:00:00', 'SHOWN' ),
+			'regression: hyperpress_time_restrict window, expired'        => array( self::restrict( 'on="2026-01-01" off="2026-02-01"' ), '2026-03-05 12:00:00', 'HIDDEN' ),
 		);
 	}
 

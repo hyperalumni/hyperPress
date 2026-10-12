@@ -58,13 +58,13 @@ final class BannerSubtitleTest extends WP_UnitTestCase {
 	}
 
 	public function test_a_configured_subtitle_may_use_the_span_or_the_shortcode(): void {
-		set_theme_mod( 'hyperpress_homepage_customize_banner_subtitle', 'About <span class="emphasis">us</span> and [hyper_emphasis]you[/hyper_emphasis]' );
+		set_theme_mod( 'hyperpress_homepage_customize_banner_subtitle', 'About <span class="emphasis">us</span> and [hyperpress_emphasis]you[/hyperpress_emphasis]' );
 		$page_id = self::factory()->post->create( array( 'post_type' => 'page' ) );
 
 		$subtitle = $this->subtitle_html( $this->banner_html( get_permalink( $page_id ) ) );
 
 		$this->assertStringContainsString( '<span class="emphasis">us</span>', $subtitle );
-		if ( shortcode_exists( 'hyper_emphasis' ) ) {
+		if ( shortcode_exists( 'hyperpress_emphasis' ) ) {
 			$this->assertStringContainsString( '<span class="emphasis">you</span>', $subtitle );
 		}
 	}

@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 final class FRC {
 
     public static function register(): void {
-        add_shortcode( 'hyper_frc_abbreviation', array( self::class, 'render' ) );
+        add_shortcode( 'hyperpress_frc_abbreviation', array( self::class, 'render' ) );
     }
 
     public static function render(): string {

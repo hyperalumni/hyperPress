@@ -10,8 +10,8 @@ defined( 'ABSPATH' ) || exit;
  * (S24: the annual same-month branch read an undefined variable; S25: attribute validation).
  *
  * Attribute validation: a date or time attribute that cannot be parsed counts as if it was not set.
- * - time-restrict: an unparsable `on` or `off` is ignored, so the content shows whenever the other condition allows.
- * - time-restrict-repeat: an unparsable month name counts as a missing month (annually shows the content when
+ * - hyperpress_time_restrict: an unparsable `on` or `off` is ignored, so the content shows whenever the other condition allows.
+ * - hyperpress_time_restrict_repeat: an unparsable month name counts as a missing month (annually shows the content when
  *   a required attribute is missing), an unparsable `ontime` or `offtime` falls back to its default, and dates
  *   and times are normalized (`05` is 5, `9:00` is 09:00:00) before they are compared.
  *
@@ -20,11 +20,11 @@ defined( 'ABSPATH' ) || exit;
 final class TimeRestrict {
 
 	public static function register(): void {
-		add_shortcode( 'time-restrict', array( self::class, 'render' ) );
-		add_shortcode( 'time-restrict-repeat', array( self::class, 'render_repeat' ) );
-		add_shortcode( 'time-restrict-repeat-1', array( self::class, 'render_repeat' ) );
-		add_shortcode( 'time-restrict-repeat-2', array( self::class, 'render_repeat' ) );
-		add_shortcode( 'time-restrict-repeat-3', array( self::class, 'render_repeat' ) );
+		add_shortcode( 'hyperpress_time_restrict', array( self::class, 'render' ) );
+		add_shortcode( 'hyperpress_time_restrict_repeat', array( self::class, 'render_repeat' ) );
+		add_shortcode( 'hyperpress_time_restrict_repeat_1', array( self::class, 'render_repeat' ) );
+		add_shortcode( 'hyperpress_time_restrict_repeat_2', array( self::class, 'render_repeat' ) );
+		add_shortcode( 'hyperpress_time_restrict_repeat_3', array( self::class, 'render_repeat' ) );
 	}
 
 	/**

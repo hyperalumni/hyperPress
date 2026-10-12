@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 final class FLL {
 
     public static function register(): void {
-        add_shortcode( 'hyper_fll_abbreviation', array( self::class, 'render' ) );
+        add_shortcode( 'hyperpress_fll_abbreviation', array( self::class, 'render' ) );
     }
 
     public static function render(): string {

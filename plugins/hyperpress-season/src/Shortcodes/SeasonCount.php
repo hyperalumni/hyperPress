@@ -10,11 +10,11 @@ final class SeasonCount {
 	}
 
 	public static function add_shortcode(): void {
-		add_shortcode( 'hyper_season_count', array( self::class, 'render' ) );
+		add_shortcode( 'hyperpress_season_count', array( self::class, 'render' ) );
 	}
 
 	public static function render( $atts ): string {
-		if ( ! shortcode_exists( 'hyper_date_distance' ) ) {
+		if ( ! shortcode_exists( 'hyperpress_date_distance' ) ) {
 			return '';
 		}
 
@@ -29,6 +29,6 @@ final class SeasonCount {
 		$season = filter_var( $args['season'], FILTER_VALIDATE_BOOLEAN );
 		$suffix = filter_var( $args['suffix'], FILTER_VALIDATE_BOOLEAN );
 
-		return do_shortcode( '[hyper_date_distance date="1995-09-01" suffix="' . ( $suffix ? 'true' : 'false' ) . '" inclusive="true" /] ' . ( $season ? __( 'Season', 'hyperpress' ) : '' ) );
+		return do_shortcode( '[hyperpress_date_distance date="1995-09-01" suffix="' . ( $suffix ? 'true' : 'false' ) . '" inclusive="true" /] ' . ( $season ? __( 'Season', 'hyperpress' ) : '' ) );
 	}
 }

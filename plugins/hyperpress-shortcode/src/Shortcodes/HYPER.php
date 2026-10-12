@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 final class HYPER {
 
     public static function register(): void {
-        add_shortcode( 'hyper_hyper_abbreviation', array( self::class, 'render' ) );
+        add_shortcode( 'hyperpress_hyper_abbreviation', array( self::class, 'render' ) );
     }
 
     public static function render(): string {

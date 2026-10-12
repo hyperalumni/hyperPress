@@ -6,8 +6,8 @@ use WP_UnitTestCase;
 final class ExtractedShortcodesTest extends WP_UnitTestCase {
 
 	private const TAGS = array(
-		'time-restrict', 'time-restrict-repeat', 'time-restrict-repeat-1', 'time-restrict-repeat-2', 'time-restrict-repeat-3',
-		'hyper_date_distance', 'raw', 'hyper_emphasis', 'hyper_banner', 'hyper_season_count',
+		'hyperpress_time_restrict', 'hyperpress_time_restrict_repeat', 'hyperpress_time_restrict_repeat_1', 'hyperpress_time_restrict_repeat_2', 'hyperpress_time_restrict_repeat_3',
+		'hyperpress_date_distance', 'hyperpress_raw', 'hyperpress_emphasis', 'hyperpress_banner', 'hyperpress_season_count',
 	);
 
 	public function test_the_theme_does_not_register_the_extracted_shortcodes(): void {
@@ -16,7 +16,7 @@ final class ExtractedShortcodesTest extends WP_UnitTestCase {
 			$this->markTestSkipped( 'Run with HYPERPRESS_TEST_WITHOUT_EXTRACTED=1' );
 		}
 		foreach ( self::TAGS as $tag ) {
-			if ( 'hyper_season_count' === $tag ) {
+			if ( 'hyperpress_season_count' === $tag ) {
 				continue; // Registered by hyperpress-season, which stays loaded.
 			}
 			$this->assertFalse( shortcode_exists( $tag ), "[$tag] must not be registered by the theme" );

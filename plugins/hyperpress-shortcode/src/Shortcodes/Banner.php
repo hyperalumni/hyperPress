@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 final class Banner {
 
 	public static function register(): void {
-		add_shortcode( 'hyper_banner', array( self::class, 'render' ) );
+		add_shortcode( 'hyperpress_banner', array( self::class, 'render' ) );
 	}
 
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress always passes $content to shortcode callbacks; the signature matches the other shortcodes

@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 final class FIRST {
 
     public static function register(): void {
-        add_shortcode( 'hyper_first_abbreviation', array( self::class, 'render' ) );
+        add_shortcode( 'hyperpress_first_abbreviation', array( self::class, 'render' ) );
     }
 
     public static function render(): string {

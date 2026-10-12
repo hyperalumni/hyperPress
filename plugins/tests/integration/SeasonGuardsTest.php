@@ -15,13 +15,13 @@ final class SeasonGuardsTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		global $shortcode_tags;
-		$this->previous = $shortcode_tags['hyper_date_distance'] ?? null;
+		$this->previous = $shortcode_tags['hyperpress_date_distance'] ?? null;
 	}
 
 	public function tear_down(): void {
-		remove_shortcode( 'hyper_date_distance' );
+		remove_shortcode( 'hyperpress_date_distance' );
 		if ( null !== $this->previous ) {
-			add_shortcode( 'hyper_date_distance', $this->previous );
+			add_shortcode( 'hyperpress_date_distance', $this->previous );
 		}
 		unregister_post_type( 'hyper_gizmo' );
 		parent::tear_down();
@@ -45,21 +45,21 @@ final class SeasonGuardsTest extends WP_UnitTestCase {
 	}
 
 	public function test_season_count_renders_nothing_without_the_date_distance_shortcode(): void {
-		remove_shortcode( 'hyper_date_distance' );
+		remove_shortcode( 'hyperpress_date_distance' );
 
-		$this->assertSame( '', do_shortcode( '[hyper_season_count]' ) );
+		$this->assertSame( '', do_shortcode( '[hyperpress_season_count]' ) );
 	}
 
 	public function test_season_count_passes_boolean_words_and_translatable_label(): void {
 		add_shortcode(
-			'hyper_date_distance',
+			'hyperpress_date_distance',
 			static function ( $atts ): string {
 				return '[suffix=' . ( $atts['suffix'] ?? '' ) . ']';
 			}
 		);
 
-		$this->assertSame( '[suffix=true] Season', do_shortcode( '[hyper_season_count suffix="true"]' ) );
-		$this->assertSame( '[suffix=false] Season', do_shortcode( '[hyper_season_count]' ) );
+		$this->assertSame( '[suffix=true] Season', do_shortcode( '[hyperpress_season_count suffix="true"]' ) );
+		$this->assertSame( '[suffix=false] Season', do_shortcode( '[hyperpress_season_count]' ) );
 	}
 
 	public function test_sorted_seasons_is_empty_when_the_terms_lookup_errors(): void {

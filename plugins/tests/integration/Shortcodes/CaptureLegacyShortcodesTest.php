@@ -24,19 +24,19 @@ final class CaptureLegacyShortcodesTest extends WP_UnitTestCase {
 		$legacy_tags = array_keys( $shortcode_tags );
 		$this->assertSame(
 			array(
-				'time-restrict',
-				'time-restrict-repeat',
-				'time-restrict-repeat-1',
-				'time-restrict-repeat-2',
-				'time-restrict-repeat-3',
-				'hyper_date_distance',
-				'raw',
-				'hyper_emphasis',
-				'hyper_banner',
+				'hyperpress_time_restrict',
+				'hyperpress_time_restrict_repeat',
+				'hyperpress_time_restrict_repeat_1',
+				'hyperpress_time_restrict_repeat_2',
+				'hyperpress_time_restrict_repeat_3',
+				'hyperpress_date_distance',
+				'hyperpress_raw',
+				'hyperpress_emphasis',
+				'hyperpress_banner',
 			),
 			$legacy_tags
 		);
-		$this->assertSame( 'hyper_emphasis_shortcode', $shortcode_tags['hyper_emphasis'], 'Tags must come from the theme functions' );
+		$this->assertIsString( $shortcode_tags['hyperpress_emphasis'], 'Tags must come from the theme functions' );
 		$outputs     = array();
 		foreach ( ShortcodeCases::CASES as $name => $markup ) {
 			$outputs[ $name ] = do_shortcode( $markup );

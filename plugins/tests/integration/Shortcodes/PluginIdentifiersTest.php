@@ -5,21 +5,21 @@ use HyperPress\Tests\Support\Convention;
 use WP_UnitTestCase;
 
 /**
- * The plugin is `hyperpress-shortcode`: the shortcode tags do not change, the hook names follow the plugin slug.
+ * The plugin is `hyperpress-shortcode`: the shortcode tags are prefixed `hyperpress_`, and the hook names follow the plugin slug.
  */
 final class PluginIdentifiersTest extends WP_UnitTestCase {
 
 	public static function tags(): array {
 		return array(
-			'hyper_banner'         => array( 'hyper_banner' ),
-			'hyper_emphasis'       => array( 'hyper_emphasis' ),
-			'hyper_date_distance'  => array( 'hyper_date_distance' ),
-			'raw'                  => array( 'raw' ),
-			'time-restrict'        => array( 'time-restrict' ),
-			'time-restrict-repeat' => array( 'time-restrict-repeat' ),
-			'time-restrict-repeat-1' => array( 'time-restrict-repeat-1' ),
-			'time-restrict-repeat-2' => array( 'time-restrict-repeat-2' ),
-			'time-restrict-repeat-3' => array( 'time-restrict-repeat-3' ),
+			'hyperpress_banner'                 => array( 'hyperpress_banner' ),
+			'hyperpress_emphasis'               => array( 'hyperpress_emphasis' ),
+			'hyperpress_date_distance'          => array( 'hyperpress_date_distance' ),
+			'hyperpress_raw'                    => array( 'hyperpress_raw' ),
+			'hyperpress_time_restrict'          => array( 'hyperpress_time_restrict' ),
+			'hyperpress_time_restrict_repeat'   => array( 'hyperpress_time_restrict_repeat' ),
+			'hyperpress_time_restrict_repeat_1' => array( 'hyperpress_time_restrict_repeat_1' ),
+			'hyperpress_time_restrict_repeat_2' => array( 'hyperpress_time_restrict_repeat_2' ),
+			'hyperpress_time_restrict_repeat_3' => array( 'hyperpress_time_restrict_repeat_3' ),
 		);
 	}
 
@@ -59,12 +59,12 @@ final class PluginIdentifiersTest extends WP_UnitTestCase {
 	public function test_a_frozen_now_outside_the_window_hides_the_content(): void {
 		// The real current date is inside this window, so only the filter can make the block hide.
 		add_filter( 'hyperpress_shortcode_now', static fn() => strtotime( '2150-01-01 12:00:00' ) );
-		$this->assertSame( 'HIDDEN', do_shortcode( '[time-restrict on="2000-01-01" off="2100-01-01" else="HIDDEN"]SHOWN[/time-restrict]' ) );
+		$this->assertSame( 'HIDDEN', do_shortcode( '[hyperpress_time_restrict on="2000-01-01" off="2100-01-01" else="HIDDEN"]SHOWN[/hyperpress_time_restrict]' ) );
 	}
 
 	public function test_a_frozen_now_inside_a_past_window_shows_the_content(): void {
 		// The real current date is outside this window, so only the filter can make the block show.
 		add_filter( 'hyperpress_shortcode_now', static fn() => strtotime( '2000-06-01 12:00:00' ) );
-		$this->assertSame( 'SHOWN', do_shortcode( '[time-restrict on="2000-01-01" off="2001-01-01" else="HIDDEN"]SHOWN[/time-restrict]' ) );
+		$this->assertSame( 'SHOWN', do_shortcode( '[hyperpress_time_restrict on="2000-01-01" off="2001-01-01" else="HIDDEN"]SHOWN[/hyperpress_time_restrict]' ) );
 	}
 }

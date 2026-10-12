@@ -24,7 +24,7 @@ final class TimeRestrictAnnualTest extends WP_UnitTestCase {
 	}
 
 	private function block( string $attributes ): string {
-		return do_shortcode( '[time-restrict-repeat type="annually" ' . $attributes . ' else="HIDDEN"]SHOWN[/time-restrict-repeat]' );
+		return do_shortcode( '[hyperpress_time_restrict_repeat type="annually" ' . $attributes . ' else="HIDDEN"]SHOWN[/hyperpress_time_restrict_repeat]' );
 	}
 
 	public static function same_month_cases(): array {

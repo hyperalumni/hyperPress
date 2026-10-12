@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 final class Raw {
 
 	public static function register(): void {
-		add_shortcode( 'raw', array( self::class, 'render' ) );
+		add_shortcode( 'hyperpress_raw', array( self::class, 'render' ) );
 	}
 
 	public static function render( $atts = null, $content = '' ): array|string|null {
