@@ -15,6 +15,7 @@ services:
       - ${THEME_SRC:-../../themes/hyperpress-foundation}:/var/www/html/wp-content/themes/${THEME_SLUG:-hyperPress}
       - ../../plugins/hyperpress-award/:/var/www/html/wp-content/plugins/hyperpress-award
       - ../../plugins/hyperpress-competition/:/var/www/html/wp-content/plugins/hyperpress-competition
+      - ../../plugins/hyperpress-contact/:/var/www/html/wp-content/plugins/hyperpress-contact
       - ../../plugins/hyperpress-countdown/:/var/www/html/wp-content/plugins/hyperpress-countdown
       - ../../plugins/hyperpress-label/:/var/www/html/wp-content/plugins/hyperpress-label
       - ../../plugins/hyperpress-media/:/var/www/html/wp-content/plugins/hyperpress-media

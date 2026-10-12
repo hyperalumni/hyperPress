@@ -7,7 +7,7 @@ Part of the hyperPress monorepo (`plugins/`); the root `../AGENTS.md` also appli
 ## Plans and specs
 - Work is driven by `../docs/superpowers/` (`specs/`, `plans/`, `audit/`). Read the relevant plan and spec before starting work.
 - Tooling: the host has PHP 8.5 and docker only. Run everything through `docker compose run --rm php <cmd>` from this dir (never composer on the host): `composer lint`, `composer test:unit`, `composer test:integration`.
-- There are 14 plugins, including `hyperpress-shortcode` and `hyperpress-media`, which were extracted from the theme.
+- There are 15 plugins, including `hyperpress-shortcode` and `hyperpress-media`, which were extracted from the theme.
 - Packaging: `bin/package [plugin ...]` runs on the host (needs git and unzip). It writes `packaged/<plugin>-<version>.zip` from committed files only; with no args it packages all plugins. `<version>` is the nearest ancestor version tag of HEAD (`2027.1.0` or `v2027.1.0`; leading `v` dropped, no commit suffix; other tags are ignored), written into the `Version:` header of the zipped main file only (sources are untouched). With no version tag it warns on stderr and uses each plugin's committed header version. Tag the release commit before packaging.
 
 ## Plugin conventions

@@ -43,6 +43,19 @@ spl_autoload_register(
 	}
 );
 
+$hyperpress_contact_autoload = dirname( __DIR__ ) . '/hyperpress-contact/src/';
+spl_autoload_register(
+	static function ( string $class_name ) use ( $hyperpress_contact_autoload ): void {
+		$prefix = 'HyperPress\\Contact\\';
+		if ( 0 === strpos( $class_name, $prefix ) ) {
+			$file = $hyperpress_contact_autoload . str_replace( '\\', '/', substr( $class_name, strlen( $prefix ) ) ) . '.php';
+			if ( is_file( $file ) ) {
+				require_once $file;
+			}
+		}
+	}
+);
+
 $hyperpress_season_autoload = dirname( __DIR__ ) . '/hyperpress-season/src/';
 spl_autoload_register(
 	static function ( string $class_name ) use ( $hyperpress_season_autoload ): void {

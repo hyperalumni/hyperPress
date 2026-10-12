@@ -55,11 +55,11 @@
 **Interfaces:**
 - Produces: `HyperPress\Contact\Plugin::boot(): void`, hooked on `plugins_loaded` (later tasks add one line each to it).
 
-- [ ] **Step 1:** Add the three `Convention.php` entries first. Run `composer test:integration` and `composer test:unit` from `plugins/`. Expected: the Convention-driven tests FAIL because `hyperpress-contact.php` does not exist.
-- [ ] **Step 2:** Create the main file by copying the header, ABSPATH guard, PSR-4 autoloader (prefix `HyperPress\Contact\`) and the `plugins_loaded` hook from `plugins/hyperpress-countdown/hyperpress-countdown.php`; Plugin Name `hyperPress Contact`, Description `Contact addresses and map for hyperPress`. No activation hook. Create `Plugin::boot()` as an empty `final class` method.
-- [ ] **Step 3:** Add the bootstrap-unit autoloader, the compose mount line and the two AGENTS.md count changes.
-- [ ] **Step 4:** Run `composer lint`, `composer test:unit`, `composer test:integration`. Expected: all pass.
-- [ ] **Step 5:** Commit: `feat(contact): add hyperpress-contact plugin skeleton`. Include the plan file with this task's boxes ticked.
+- [x] **Step 1:** Add the three `Convention.php` entries first. Run `composer test:integration` and `composer test:unit` from `plugins/`. Expected: the Convention-driven tests FAIL because `hyperpress-contact.php` does not exist.
+- [x] **Step 2:** Create the main file by copying the header, ABSPATH guard, PSR-4 autoloader (prefix `HyperPress\Contact\`) and the `plugins_loaded` hook from `plugins/hyperpress-countdown/hyperpress-countdown.php`; Plugin Name `hyperPress Contact`, Description `Contact addresses and map for hyperPress`. No activation hook. Create `Plugin::boot()` as an empty `final class` method.
+- [x] **Step 3:** Add the bootstrap-unit autoloader, the compose mount line and the two AGENTS.md count changes.
+- [x] **Step 4:** Run `composer lint`, `composer test:unit`, `composer test:integration`. Expected: all pass.
+- [x] **Step 5:** Commit: `feat(contact): add hyperpress-contact plugin skeleton`. Include the plan file with this task's boxes ticked.
 
 ---
 

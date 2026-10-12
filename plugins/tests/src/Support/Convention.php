@@ -9,6 +9,7 @@ final class Convention {
 	public const PLUGINS = array(
 		'hyperpress-award',
 		'hyperpress-competition',
+		'hyperpress-contact',
 		'hyperpress-countdown',
 		'hyperpress-label',
 		'hyperpress-media',
@@ -32,6 +33,7 @@ final class Convention {
 		'hyperpress-social',
 		'hyperpress-award',
 		'hyperpress-competition',
+		'hyperpress-contact',
 		'hyperpress-countdown',
 		'hyperpress-newsletter',
 		'hyperpress-sponsor',
@@ -48,6 +50,7 @@ final class Convention {
 	public const REQUIRES_PLUGINS = array(
 		'hyperpress-award'       => array( 'hyperpress-utils', 'hyperpress-season' ),
 		'hyperpress-competition' => array( 'hyperpress-utils', 'hyperpress-season', 'hyperpress-robot', 'meta-box-aio' ),
+		'hyperpress-contact'     => array( 'hyperpress-utils', 'meta-box-aio' ),
 		'hyperpress-countdown'   => array( 'hyperpress-utils', 'meta-box-aio' ),
 		'hyperpress-newsletter'  => array( 'hyperpress-utils', 'hyperpress-season', 'meta-box-aio' ),
 		'hyperpress-robot'       => array( 'hyperpress-utils', 'hyperpress-season' ),
