@@ -668,3 +668,5 @@ git commit -m "docs(plans): complete plugins-03-core-plugins" -- docs/superpower
 
 
 > Note (2026-10-11): the five seeded taxonomies (`hyper_season`, `hyper_program`, `hyper_district`, `hyper_week`, `hyper_competition_type`) are locked: `edit_terms` and `delete_terms` map to `do_not_allow` through the registrar's `locked` option, so their terms are managed only by code. `manage_terms` and `assign_terms` are unchanged, and seeding is unaffected (it does not check capabilities). `RegistrationParityTest` expects this deviation from the legacy capabilities.
+
+> Note (2026-10-12): the `hyper_season_count` shortcode tag described above is now `hyperpress_season_count` (all shortcode tags were renamed to the `hyperpress_*` prefix, with no aliases). The function, hooks and option names are unchanged.

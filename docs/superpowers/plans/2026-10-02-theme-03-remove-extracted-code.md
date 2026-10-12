@@ -191,3 +191,5 @@ git commit -m "refactor: drop HYPER plugins and the committed download key from 
 - The committed Meta Box download URL (with its key) was removed from `library/plugins.php`; the `meta-box-aio` entry keeps only `external_url`. The key remains in git history: **the owner must rotate it with Meta Box.** This is finding 1 of theme-05-audit.
 - Deploy order: deploy the theme together with `hyperpress-shortcodes` and `hyperpress-media`; otherwise shortcodes render as literal text, and NextGen crumbs are missing (or doubled while both exist).
 - New tests: `ExtractedShortcodesTest` and `ExtractedMediaTest` (both modes via `HYPERPRESS_TEST_WITHOUT_EXTRACTED=1`), `PluginsListTest`.
+
+> Note (2026-10-12): the shortcode tags listed in `ExtractedShortcodesTest` (`time-restrict*`, `hyper_date_distance`, `raw`, `hyper_emphasis`, `hyper_banner`, `hyper_season_count`) were renamed to `hyperpress_*` (for example `hyperpress_time_restrict_repeat_1`, `hyperpress_raw`), with no aliases. Content or theme templates that still use the old tags would render them as literal text. See plugins-04 for the mapping.

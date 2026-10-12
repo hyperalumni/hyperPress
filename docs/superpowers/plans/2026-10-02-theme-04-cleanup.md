@@ -180,3 +180,5 @@ git commit -m "docs: document tooling, plugin expectations, hooks and upgrade no
 - Standards: 1417 violations down to 0 (`composer lint` gates). The ruleset excludes docblock-presence sniffs, `Generic.Files.LineEndings.InvalidEOLChar` (mixed CRLF/LF working tree), two filename sniffs, `.superpowers` and `tests/`; it no longer carries the stale `WordPress.XSS.EscapeOutput.*` entries. 84 `// phpcs:ignore ... -- theme audit` suppressions mark security-class and quality findings for theme-05-audit (`grep -rn 'theme audit' --include='*.php' .`).
 - `library/foundation.php` was reformatted the most (braces added, arrays and calls wrapped); reviewed: non-whitespace changes are equivalent. A manual check of pagination, the missing-menu notice and the gallery shortcode is still worth doing.
 - README and AGENTS.md updated.
+
+> Note (2026-10-12): the README text this plan wrote refers to the shortcodes `time-restrict`, `hyper_emphasis` and the others by their old tags. All shortcode tags are now `hyperpress_*` (for example `hyperpress_time_restrict`, `hyperpress_emphasis`), with no aliases. See plugins-04 for the mapping; check the theme README says the same.

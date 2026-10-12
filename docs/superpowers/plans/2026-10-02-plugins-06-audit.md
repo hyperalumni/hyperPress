@@ -144,3 +144,4 @@ final class SponsorDescriptionSanitizeTest extends WP_UnitTestCase {
 - Each fix has a test that failed first, except characterization tests (noted in the commits). Every suite passes and `composer lint` exits 0.
 - Two early audit conclusions were wrong and are corrected in the report: the stub meta boxes were not unused (they create the Customizer sections through Meta Box AIO), and the countdown time zone belongs to the site, not the visitor.
 - Deferred on purpose: nothing from the audit is open. The remaining `phpcs:ignore` comments each state why.
+- Note (2026-10-12): finding 17's `time-restrict` shortcode is now `hyperpress_time_restrict` (all shortcode tags were renamed to `hyperpress_*`, no aliases). The finding itself is unchanged.
