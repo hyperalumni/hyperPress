@@ -178,14 +178,14 @@
 - Consumes: shortcode `hyperpress_map` if it exists.
 - Produces: page template `Template Name: Contact`.
 
-- [ ] **Step 1: Failing tests** (mirror `FrontPageContentTemplateTest`: create a page with `_wp_page_template` set to `page-templates/page-contact.php`, `go_to` it, include the template in global scope with output buffering):
+- [x] **Step 1: Failing tests** (mirror `FrontPageContentTemplateTest`: create a page with `_wp_page_template` set to `page-templates/page-contact.php`, `go_to` it, include the template in global scope with output buffering):
   - `wp_get_theme()->get_page_templates()` contains `'page-templates/page-contact.php' => 'Contact'`
   - with a stub `hyperpress_map` shortcode returning `<div class="stub-map"></div>`: in the output, `class="banner` comes before `stub-map`, and `stub-map` comes before `main-container`; the page's content is present
   - with the shortcode removed: the output contains no `[hyperpress_map]` and no `Fatal error`
-- [ ] **Step 2: Run from `themes/hyperpress-foundation/`; Expected: FAIL.**
-- [ ] **Step 3: Implement** the template by copying the structure of `page-templates/page-full-width.php`, replacing the `featured-image` part with the map: `if ( shortcode_exists( 'hyperpress_map' ) )` echo `do_shortcode( '[hyperpress_map height="300"]' )` (add the `phpcs:ignore ... EscapeOutput -- shortcode output is escaped by the plugin` comment the theme lint requires).
-- [ ] **Step 4:** Run the theme lint and integration suite. Expected: pass.
-- [ ] **Step 5:** Commit: `feat(theme): add Contact page template`.
+- [x] **Step 2: Run from `themes/hyperpress-foundation/`; Expected: FAIL.**
+- [x] **Step 3: Implement** the template by copying the structure of `page-templates/page-full-width.php`, replacing the `featured-image` part with the map: `if ( shortcode_exists( 'hyperpress_map' ) )` echo `do_shortcode( '[hyperpress_map height="300"]' )` (add the `phpcs:ignore ... EscapeOutput -- shortcode output is escaped by the plugin` comment the theme lint requires).
+- [x] **Step 4:** Run the theme lint and integration suite. Expected: pass.
+- [x] **Step 5:** Commit: `feat(theme): add Contact page template`.
 
 ---
 
