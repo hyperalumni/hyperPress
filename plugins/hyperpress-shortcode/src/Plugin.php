@@ -1,6 +1,8 @@
 <?php
 namespace HyperPress\Shortcode;
 
+use HyperPress\Countdown\Shortcode;
+
 defined( 'ABSPATH' ) || exit;
 
 final class Plugin {
@@ -15,5 +17,9 @@ final class Plugin {
 		Shortcodes\Raw::register();
 		Shortcodes\Emphasis::register();
 		Shortcodes\Banner::register();
+        Shortcodes\HYPER::register();
+        Shortcodes\FIRST::register();
+        Shortcodes\FRC::register();
+        Shortcodes\FLL::register();
 	}
 }
