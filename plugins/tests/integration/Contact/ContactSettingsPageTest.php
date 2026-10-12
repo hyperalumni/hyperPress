@@ -70,7 +70,7 @@ final class ContactSettingsPageTest extends WP_UnitTestCase {
 		$this->assertSame( 'group', $group['type'] );
 		$this->assertTrue( $group['clone'] );
 		$this->assertTrue( $group['sort_clone'] );
-		$this->assertSame( array( Addresses::class, 'sanitize' ), $group['sanitize_callback'] );
+		$this->assertSame( array( Addresses::class, 'sanitize_entry' ), $group['sanitize_callback'] );
 		$this->assertSame(
 			array( 'heading', 'slug', 'name', 'extra', 'street', 'city', 'state', 'zip', 'phone' ),
 			array_column( $group['fields'], 'id' )

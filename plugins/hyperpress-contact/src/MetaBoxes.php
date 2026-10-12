@@ -36,7 +36,7 @@ final class MetaBoxes {
 					'collapsible'       => true,
 					'group_title'       => '{heading}',
 					'add_button'        => __( 'Add address', 'hyperpress' ),
-					'sanitize_callback' => array( Addresses::class, 'sanitize' ),
+					'sanitize_callback' => array( Addresses::class, 'sanitize_entry' ),
 					'fields'            => array(
 						array(
 							'id'       => 'heading',
