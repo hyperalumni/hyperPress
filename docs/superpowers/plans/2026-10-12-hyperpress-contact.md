@@ -78,21 +78,21 @@
   - `Settings::parse_map( string $value ): ?array`: pure, same return shape
   - `Addresses::sanitize( $groups ): array`
 
-- [ ] **Step 1: Failing unit test** `SettingsMapTest`, using `Settings::parse_map`:
+- [x] **Step 1: Failing unit test** `SettingsMapTest`, using `Settings::parse_map`:
   - `'42.2518999,-71.0007911,17'` returns `array( 'lat' => 42.2518999, 'lng' => -71.0007911, 'zoom' => 17 )`
   - `'42.25,-71.0'` returns zoom `15`
   - `' 42.25 , -71.0 , 17 '` parses (whitespace tolerated)
   - zoom `99` is clamped to `21`; zoom `-3` to `0`
   - `''`, `'abc'`, `'91,0,10'`, `'0,181,10'`, `'1,2,3,4'` return `null`
-- [ ] **Step 2: Failing integration test** `ContactSettingsTest`:
+- [x] **Step 2: Failing integration test** `ContactSettingsTest`:
   - `update_option( 'hyperpress_contact', array( Settings::ADDRESSES => array( array( 'slug' => 'meeting', 'heading' => 'Team Meeting Address', 'name' => 'HYPER @ Long Robotics Center' ) ) ) )`; `addresses()` returns that entry with the other seven keys as `''`; `address( 'meeting' )` returns it, `address( 'nope' )` returns `null`
   - option absent, or a string, gives `addresses() === array()`
   - `Settings::map()` returns the parsed value stored under `Settings::MAP`
   - `Addresses::sanitize` cases: `'Team Meeting Address'` with empty slug gets slug `team-meeting-address`; slug `'Ship To!'` becomes `ship-to`; three entries with slug `meeting` become `meeting`, `meeting-2`, `meeting-3`; an entry whose fields are all empty is dropped; `<b>x</b>` in a field becomes `x`; the phone `'+1 (617) 376-1100 x2'` is kept as typed; order is preserved; a non-array argument returns `array()`; an entry with fields but empty heading and slug gets slug `address`
-- [ ] **Step 3: Run both; Expected: FAIL (classes missing).**
-- [ ] **Step 4: Implement** `Settings` (reads `get_option( self::OPTION )`; normalizes entries to the nine keys; `parse_map` splits on commas, requires 2 or 3 numeric parts, lat in -90..90, lng in -180..180, zoom default 15 clamped 0..21) and `Addresses::sanitize` (text fields through `sanitize_text_field`, slug through `sanitize_title`, uniqueness by numeric suffix).
-- [ ] **Step 5:** Run lint and both test suites. Expected: pass.
-- [ ] **Step 6:** Commit: `feat(contact): read contact settings and sanitize the address list` (with the plan file ticked).
+- [x] **Step 3: Run both; Expected: FAIL (classes missing).**
+- [x] **Step 4: Implement** `Settings` (reads `get_option( self::OPTION )`; normalizes entries to the nine keys; `parse_map` splits on commas, requires 2 or 3 numeric parts, lat in -90..90, lng in -180..180, zoom default 15 clamped 0..21) and `Addresses::sanitize` (text fields through `sanitize_text_field`, slug through `sanitize_title`, uniqueness by numeric suffix).
+- [x] **Step 5:** Run lint and both test suites. Expected: pass.
+- [x] **Step 6:** Commit: `feat(contact): read contact settings and sanitize the address list` (with the plan file ticked).
 
 ---
 
