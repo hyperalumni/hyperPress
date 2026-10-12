@@ -22,6 +22,23 @@ if ( ! function_exists( 'rwmb_meta' ) ) {
 }
 
 /**
+ * Meta Box's map renderer is not installed in tests either. Record the calls and return a marker element.
+ */
+if ( ! class_exists( 'RWMB_Map_Field' ) ) {
+	class RWMB_Map_Field { // phpcs:ignore
+		/**
+		 * @var array<int,array{0:mixed,1:mixed}>
+		 */
+		public static array $calls = array();
+
+		public static function render_map( $location, $args = array() ) { // phpcs:ignore
+			self::$calls[] = array( $location, $args );
+			return '<div class="rwmb-map-canvas-stub"></div>';
+		}
+	}
+}
+
+/**
  * Find a plugin's main file: the root-level PHP file carrying a "Plugin Name:" header.
  * Works before and after the main file is renamed to <folder>.php.
  */

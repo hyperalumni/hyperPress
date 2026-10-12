@@ -2,24 +2,21 @@
 namespace HyperPress\Contact;
 
 use HyperPress\Utils\GoogleMapsKey;
-use HyperPress\Utils\Version;
+use RWMB_Map_Field;
 
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 /**
- * The [hyperpress_map height="250"] shortcode: a static Google map of the saved location.
+ * The [hyperpress_map height="250"] shortcode: a static Google map of the saved location, drawn by Meta Box.
  */
 final class MapShortcode {
-
-	private const MAP_HANDLE    = 'hyperpress-contact-map';
-	private const GOOGLE_HANDLE = 'hyperpress-contact-google-maps';
 
 	public static function register(): void {
 		add_shortcode( 'hyperpress_map', array( self::class, 'render' ) );
 	}
 
 	/**
-	 * Renders the map and enqueues its scripts, or a comment for administrators when it cannot be shown.
+	 * Renders the map, or a comment for administrators when it cannot be shown.
 	 *
 	 * @param mixed $atts Shortcode attributes.
 	 */
@@ -36,17 +33,51 @@ final class MapShortcode {
 		if ( '' === $key ) {
 			return self::notice( __( 'no Google Maps API key is set.', 'hyperpress' ) );
 		}
+		if ( ! class_exists( 'RWMB_Map_Field' ) ) {
+			return self::notice( __( 'Meta Box is not active.', 'hyperpress' ) );
+		}
 
-		self::enqueue( $key );
+		// Always pass our key: without one Meta Box falls back to a demo key.
+		$inner = RWMB_Map_Field::render_map(
+			self::location( $map ),
+			array(
+				'api_key'    => $key,
+				'width'      => '100%',
+				'height'     => $height . 'px',
+				'marker'     => true,
+				'js_options' => array(
+					'disableDefaultUI'  => true,
+					'gestureHandling'   => 'none',
+					'keyboardShortcuts' => false,
+					'clickableIcons'    => false,
+				),
+			)
+		);
 
 		return sprintf(
-			'<div class="hyperpress-map" role="img" aria-label="%s" data-lat="%s" data-lng="%s" data-zoom="%d" style="height:%dpx;width:100%%;pointer-events:none;"></div>',
+			'<div class="hyperpress-map" role="img" aria-label="%s" style="pointer-events:none;">%s</div>',
 			esc_attr( __( 'Map of our location', 'hyperpress' ) ),
-			esc_attr( (string) $map['lat'] ),
-			esc_attr( (string) $map['lng'] ),
-			$map['zoom'],
-			$height
+			$inner // Escaped by Meta Box.
 		);
+	}
+
+	/**
+	 * The "lat,lng,zoom" string Meta Box expects, as plain decimals (no exponent, no locale separators).
+	 *
+	 * @param array{lat:float,lng:float,zoom:int} $map The parsed location.
+	 */
+	private static function location( array $map ): string {
+		return self::decimal( $map['lat'] ) . ',' . self::decimal( $map['lng'] ) . ',' . (int) $map['zoom'];
+	}
+
+	/**
+	 * Up to seven decimal places, trailing zeros removed.
+	 *
+	 * @param float $value A coordinate.
+	 */
+	private static function decimal( float $value ): string {
+		$text = rtrim( rtrim( number_format( $value, 7, '.', '' ), '0' ), '.' );
+		return in_array( $text, array( '', '-0' ), true ) ? '0' : $text;
 	}
 
 	/**
@@ -63,44 +94,5 @@ final class MapShortcode {
 			$safe = str_replace( '--', '', $safe );
 		}
 		return '<!-- hyperpress_map: ' . esc_html( $safe ) . ' -->';
-	}
-
-	/**
-	 * Registers and enqueues the init script and the Google Maps loader; safe to call repeatedly.
-	 *
-	 * @param string $key Google Maps API key.
-	 */
-	private static function enqueue( string $key ): void {
-		$file = dirname( __DIR__ ) . '/hyperpress-contact.php';
-
-		wp_register_script(
-			self::MAP_HANDLE,
-			plugins_url( 'assets/map.js', $file ),
-			array(),
-			Version::of( $file ),
-			// No strategy: a plain footer script runs in order, before the async Google script that depends on it.
-			array( 'in_footer' => true )
-		);
-
-		$src = add_query_arg(
-			array(
-				'key'      => rawurlencode( $key ),
-				'loading'  => 'async',
-				'callback' => 'hyperpressContactInitMaps',
-			),
-			'https://maps.googleapis.com/maps/api/js'
-		);
-
-		wp_register_script(
-			self::GOOGLE_HANDLE,
-			$src,
-			array( self::MAP_HANDLE ),
-			null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Google serves its own versioned script.
-			array(
-				'in_footer' => true,
-				'strategy'  => 'async',
-			)
-		);
-		wp_enqueue_script( self::GOOGLE_HANDLE );
 	}
 }

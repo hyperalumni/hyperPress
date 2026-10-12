@@ -196,7 +196,7 @@
 
 - [ ] **Step 1:** Run `composer lint`, `test:unit`, `test:integration` in `plugins/` and in the theme. Expected: all pass, 0 lint violations.
 - [ ] **Step 2 (manual, needs a person in a browser):** start `docker/hyperalumni`, activate `hyperpress-contact`, and check that "Contact" appears under the hyperPress menu and is listed on the hyperPress landing page. If the child page does not appear under the custom `hyperpress` parent, record the finding and fix `SettingsPage` (the MB Settings Page docs do not cover custom top-level parents or `admin_menu` priority).
-- [ ] **Step 3 (manual):** add the three addresses and the map; confirm the group's `sanitize_callback` receives the list of entries (if the shape differs, fix `Addresses::sanitize` and add a test with the observed shape); confirm slugs are generated and unique after saving.
+- [ ] **Step 3 (manual):** add the three addresses and the map; confirm the group's `sanitize_callback` (`Addresses::sanitize_entry`) receives one entry per clone (if the shape differs, fix `Addresses::sanitize_entry` and add a test with the observed shape); confirm slugs are generated and unique after saving.
 - [ ] **Step 4 (manual):** make a page with the Contact template containing the form shortcode and the three `[hyperpress_address]` shortcodes; check the card look, the non-interactive map, two maps on one page, and the page with the plugin deactivated.
 - [ ] **Step 5:** Tick this plan's boxes, add `> **STATUS: COMPLETED** (date, commit range)`, commit: `docs(plans): complete hyperpress-contact`.
 
@@ -206,3 +206,5 @@
 - I1: `[hyperpress_address id="..."]` runs `sanitize_title` on the id before the lookup, so `Meeting`, ` meeting ` and `Team Meeting` match; the admin comment keeps the typed text.
 - I2: slugs derived from headings go through `remove_accents` first (`Café` becomes `cafe`); a slug that would still contain `%` (non-Latin text) becomes `address`.
 - I3: `hyperpress-contact-map` is a plain footer script with no `strategy`, so it runs in order before the async Google script that depends on it.
+
+- **Map refactor.** `[hyperpress_map]` is now rendered by Meta Box's `RWMB_Map_Field::render_map()`, wrapped in our `.hyperpress-map` element. Task 5's `assets/map.js`, the `hyperpress-contact-map` / `hyperpress-contact-google-maps` script handles and the I3 script-ordering issue are superseded. Integration tests use a stub of `RWMB_Map_Field` (in `tests/bootstrap-integration.php`); real map rendering is verified only in the Task 7 browser check.
