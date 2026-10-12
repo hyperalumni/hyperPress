@@ -107,16 +107,16 @@
 - Consumes: `Settings` constants, `Addresses::sanitize`, `HyperPress\Utils\AdminMenu::SLUG`, `HyperPress\Utils\GoogleMapsKey::get(): string`.
 - Produces: `SettingsPage::ID = 'hyperpress_contact'`, `SettingsPage::register(): void`, `SettingsPage::pages( array $pages ): array`; `MetaBoxes::register(): void`, `MetaBoxes::boxes( array $boxes ): array`.
 
-- [ ] **Step 1: Failing tests** (filters applied with `apply_filters`; Meta Box itself is not installed):
+- [x] **Step 1: Failing tests** (filters applied with `apply_filters`; Meta Box itself is not installed):
   - `mb_settings_pages` contains one entry with `id` `hyperpress_contact`, `option_name` `hyperpress_contact`, `menu_title` `Contact`, `parent` `hyperpress`, `capability` `manage_options`
   - `rwmb_meta_boxes` contains two boxes whose ids start `hyperpress_contact`; both have `settings_pages` equal to `hyperpress_contact` and non-empty `fields`
   - the group field has id `hyperpress_contact_addresses`, `type` `group`, `clone` and `sort_clone` true, `sanitize_callback` equal to `array( Addresses::class, 'sanitize' )`, and sub-field ids exactly `heading, slug, name, extra, street, city, state, zip, phone`
   - the map field has `type` `map`, `address_field` `hyperpress_contact_map_address`, `std` `42.2518999,-71.0007911,17`, and `api_key` equal to the value of the `hyperpress_google_maps_api_key` option when it is set to `abc`
   - a text field `hyperpress_contact_map_address` exists in the same box
-- [ ] **Step 2: Run; Expected: FAIL.**
-- [ ] **Step 3: Implement** both classes. Group config: `add_button` `Add address`, `collapsible` true, `group_title` `{heading}`; `heading` is `required`; the `slug` field has a description saying it is the id used in `[hyperpress_address id="..."]` and is generated from the heading when left empty.
-- [ ] **Step 4:** Run lint and integration suite. Expected: pass.
-- [ ] **Step 5:** Commit: `feat(contact): add Contact settings page with address list and map fields`.
+- [x] **Step 2: Run; Expected: FAIL.**
+- [x] **Step 3: Implement** both classes. Group config: `add_button` `Add address`, `collapsible` true, `group_title` `{heading}`; `heading` is `required`; the `slug` field has a description saying it is the id used in `[hyperpress_address id="..."]` and is generated from the heading when left empty.
+- [x] **Step 4:** Run lint and integration suite. Expected: pass.
+- [x] **Step 5:** Commit: `feat(contact): add Contact settings page with address list and map fields`.
 
 ---
 

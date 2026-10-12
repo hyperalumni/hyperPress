@@ -53,6 +53,7 @@ The fix is to store the addresses and the map location once, as site settings, a
 - The page template file lives in the theme (`themes/hyperpress-foundation/page-templates/`), because the theme is presentation-only. It calls the map shortcode only when the plugin is active (guard with `shortcode_exists`).
 - The Contact template keeps the standard page title banner (as the current page has: "CONTACT" plus subtitle), with the map banner directly below it and the page content after that.
 - Settings are stored in one option, `hyperpress_contact`.
+- Meta Box's `map` field requires `address_field`, so the settings page has a "Map address" text field that feeds it. The Geocoding API must be enabled for the Google Maps key for that field to find addresses.
 - `Requires Plugins: hyperpress-utils, meta-box-aio`, and the plugin needs a Docker mount entry like the other plugins.
 - With no API key configured, the map renders nothing (admins see an HTML comment).
 - Theme SCSS gains a small rule so `.vcard` is upright and `.fn` is bold (browsers italicize `<address>`; Foundation 6 has no vcard styling). It goes in `components/_cards.scss`.
