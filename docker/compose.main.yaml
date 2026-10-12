@@ -31,6 +31,21 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  wpcli:
+    image: wordpress:cli
+    pull_policy: weekly
+    profiles: [ "tools" ]
+    user: "33:33"
+    volumes_from:
+      - wordpress
+    env_file:
+      - ../.env.db
+      - ../.env.wordpress
+    environment:
+      HOME: /tmp
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: mariadb:${MARIADB_VERSION:-latest}
     restart: unless-stopped
