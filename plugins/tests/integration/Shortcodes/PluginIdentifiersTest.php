@@ -26,7 +26,7 @@ final class PluginIdentifiersTest extends WP_UnitTestCase {
 	/**
 	 * @dataProvider tags
 	 */
-	public function test_the_shortcode_tags_are_still_registered( string $tag ): void {
+	public function test_the_shortcode_tags_are_registered( string $tag ): void {
 		$this->assertTrue( shortcode_exists( $tag ) );
 	}
 

@@ -12,7 +12,7 @@ final class NullContentTest extends WP_UnitTestCase {
 
 	public static function callbacks(): array {
 		return array(
-			'hyperpress_emphasis'       => array( 'hyperpress_emphasis', array() ),
+			'hyperpress_emphasis'             => array( 'hyperpress_emphasis', array() ),
 			'hyperpress_raw'                  => array( 'hyperpress_raw', array() ),
 			'hyperpress_time_restrict'        => array( 'hyperpress_time_restrict', array( 'on' => '2000-01-01' ) ),
 			'hyperpress_time_restrict_repeat' => array( 'hyperpress_time_restrict_repeat', array( 'type' => 'weekly', 'onday' => 'monday' ) ),
