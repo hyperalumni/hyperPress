@@ -21,7 +21,9 @@ final class AddressShortcode {
 		$atts = shortcode_atts( array( 'id' => '' ), is_array( $atts ) ? $atts : array(), 'hyperpress_address' );
 		$id   = (string) $atts['id'];
 
-		$address = '' === $id ? null : Settings::address( $id );
+		// Saved slugs are always sanitize_title() output, so match the typed id the same way.
+		$slug    = sanitize_title( $id );
+		$address = '' === $slug ? null : Settings::address( $slug );
 		if ( null === $address ) {
 			if ( ! current_user_can( 'manage_options' ) ) {
 				return '';

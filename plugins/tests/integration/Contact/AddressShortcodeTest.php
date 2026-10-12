@@ -2,6 +2,7 @@
 namespace HyperPress\Tests\Integration\Contact;
 
 use HyperPress\Contact\AddressShortcode;
+use HyperPress\Contact\Addresses;
 use HyperPress\Contact\Settings;
 use WP_UnitTestCase;
 
@@ -77,6 +78,48 @@ final class AddressShortcodeTest extends WP_UnitTestCase {
 		$this->assertLessThan( $street, $extra );
 	}
 
+	/**
+	 * @return array<string,array{string}>
+	 */
+	public static function loose_ids(): array {
+		return array(
+			'capitalised'      => array( 'Meeting' ),
+			'padded'           => array( ' meeting ' ),
+			'heading as typed' => array( 'Team Meeting' ),
+		);
+	}
+
+	/**
+	 * @dataProvider loose_ids
+	 */
+	public function test_id_is_matched_after_sanitizing_it( string $id ): void {
+		$this->seed(
+			array(
+				array(
+					'slug'    => 'team-meeting',
+					'heading' => 'Team Meeting',
+				),
+			)
+		);
+		$out = AddressShortcode::render( array( 'id' => $id ) );
+
+		$this->assertStringContainsString( '<div class="card">', $out );
+	}
+
+	public function test_a_padded_capitalised_id_renders_the_card_through_do_shortcode(): void {
+		$this->assertStringContainsString( 'Team Meeting Address', do_shortcode( '[hyperpress_address id="Meeting"]' ) );
+		$this->assertStringContainsString( 'Team Meeting Address', do_shortcode( '[hyperpress_address id=" meeting "]' ) );
+	}
+
+	public function test_unknown_id_comment_keeps_the_original_text(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		$this->assertSame(
+			'<!-- hyperpress_address: no address with id "No Such" -->',
+			do_shortcode( '[hyperpress_address id="No Such"]' )
+		);
+	}
+
 	public function test_unknown_or_missing_id_is_silent_for_visitors(): void {
 		wp_set_current_user( 0 );
 		$this->assertSame( '', do_shortcode( '[hyperpress_address id="nope"]' ) );
@@ -100,6 +143,8 @@ final class AddressShortcodeTest extends WP_UnitTestCase {
 	}
 
 	public function test_heading_and_name_are_escaped(): void {
+		// Saving would strip the tags; the output escaping must hold for values that did not come through a save.
+		remove_filter( 'pre_update_option_' . Settings::OPTION, array( Addresses::class, 'normalize_option' ) );
 		$this->seed(
 			array(
 				array(
