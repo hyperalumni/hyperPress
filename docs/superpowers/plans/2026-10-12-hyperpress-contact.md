@@ -131,16 +131,16 @@
 - Consumes: `Settings::address( string ): ?array`.
 - Produces: `AddressShortcode::register(): void` (tag `hyperpress_address`), `render( $atts ): string`, `card( array $address ): string`, `tel_href( string $phone ): string`.
 
-- [ ] **Step 1: Failing tests** (store the three addresses from the current page in the option; `do_shortcode( '[hyperpress_address id="meeting"]' )`):
+- [x] **Step 1: Failing tests** (store the three addresses from the current page in the option; `do_shortcode( '[hyperpress_address id="meeting"]' )`):
   - output contains `<div class="card">`, `<div class="card-divider"><h5>Team Meeting Address</h5></div>`, `<address class="vcard">`, `<span class="fn">HYPER @ Long Robotics Center</span>`, `<span class="street-address">18 Spear Street</span>`, `<span class="locality">Quincy</span>, <span class="state">MA</span> <span class="zip">02169</span>`, `<a href="tel:+16173761100">(617) 376-1100</a>`
   - the shipping address (no phone) contains no `class="phone"`, and its extra line `ATTN: Michael Gendron` appears after the `fn` span and before the street span
   - unknown id, and missing `id`, return `''` for a visitor; for an administrator they return `<!-- hyperpress_address: no address with id "nope" -->`; an id of `x--><script>` produces no `<script` in the output
   - heading `<script>alert(1)</script>` and name `A & B` come out as `&lt;script&gt;` and `A &amp; B`
   - `tel_href`: `'(617) 376-1100'` gives `'+16173761100'`; `'+44 20 7946 0958'` gives `'+442079460958'`; `'617.376.1100 x23'` gives `'+16173761100'`; `'1-617-376-1100'` gives `'+16173761100'`; `'call us'` gives `''` and the phone is then shown as plain text without a link
-- [ ] **Step 2: Run; Expected: FAIL.**
-- [ ] **Step 3: Implement.** `card()` skips empty parts and builds the locality line from whichever of city/state/zip are present. `tel_href` rules: strip a trailing extension matching `x`/`ext` plus digits; keep a leading `+` and the digits; 10 digits get `+1`; 11 digits starting with `1` get `+`; no digits gives `''`.
-- [ ] **Step 4:** Run lint and integration suite. Expected: pass.
-- [ ] **Step 5:** Commit: `feat(contact): add [hyperpress_address] shortcode`.
+- [x] **Step 2: Run; Expected: FAIL.**
+- [x] **Step 3: Implement.** `card()` skips empty parts and builds the locality line from whichever of city/state/zip are present. `tel_href` rules: strip a trailing extension matching `x`/`ext` plus digits; keep a leading `+` and the digits; 10 digits get `+1`; 11 digits starting with `1` get `+`; no digits gives `''`.
+- [x] **Step 4:** Run lint and integration suite. Expected: pass.
+- [x] **Step 5:** Commit: `feat(contact): add [hyperpress_address] shortcode`.
 
 ---
 
