@@ -1,18 +1,41 @@
 .grid-container, .main-container {
   @include xy-grid-container;
 
-  &.full-screen {
-    padding-right: 0;
-    padding-left: 0;
-
-    margin-left: 0;
-    margin-right: 0;
-  }
-
   .main-grid {
     @include xy-grid();
     width: 100%;
   }
+
+  &.full-screen {
+    max-width: 100%;
+    width: 100%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding-right: 0;
+    padding-left: 0;
+
+    .main-content {
+      @include xy-cell(12, $output: (base size));
+      width: 100%;
+
+      .content {
+        @include xy-cell(12);
+        max-width: 100rem;
+        margin: 1rem auto 0;
+
+        @include breakpoint(large) {
+          margin-top: 1.25rem;
+        }
+
+        @include breakpoint(xlarge) {
+          margin-top: 1.5rem;
+        }
+      }
+    }
+  }
+
+
 
   &:not(.full-screen) {
     .main-grid {
@@ -77,28 +100,7 @@
     }
   }
 
-  &.full-screen {
-    max-width: 100%;
-    margin-top: 0;
 
-    .main-content {
-      @include xy-cell(12, $output: (base size));
-
-      .content {
-        @include xy-cell(12);
-        max-width: 100rem;
-        margin: 1rem auto 0;
-
-        @include breakpoint(large) {
-          margin-top: 1.25rem;
-        }
-
-        @include breakpoint(xlarge) {
-          margin-top: 1.5rem;
-        }
-      }
-    }
-  }
 }
 
 .section-divider {
