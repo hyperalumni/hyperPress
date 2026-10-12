@@ -195,7 +195,7 @@ function hyper_register_required_plugins(): void {
 			'slug'         => 'revslider',
 			'external_url' => 'https://sliderrevolution.com',
 			'source'       => '#',
-			'required'     => true,
+			'required'     => false,
 		),
 		array(
 			'name'     => 'Web Worker Offloading',
