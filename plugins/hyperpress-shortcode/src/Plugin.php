@@ -17,9 +17,9 @@ final class Plugin {
 		Shortcodes\Raw::register();
 		Shortcodes\Emphasis::register();
 		Shortcodes\Banner::register();
-        Shortcodes\HYPER::register();
-        Shortcodes\FIRST::register();
-        Shortcodes\FRC::register();
-        Shortcodes\FLL::register();
+		Shortcodes\HYPER::register();
+		Shortcodes\FIRST::register();
+		Shortcodes\FRC::register();
+		Shortcodes\FLL::register();
 	}
 }

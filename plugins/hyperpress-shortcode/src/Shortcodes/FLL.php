@@ -5,11 +5,11 @@ defined( 'ABSPATH' ) || exit;
 
 final class FLL {
 
-    public static function register(): void {
-        add_shortcode( 'hyperpress_fll_abbreviation', array( self::class, 'render' ) );
-    }
+	public static function register(): void {
+		add_shortcode( 'hyperpress_fll_abbreviation', array( self::class, 'render' ) );
+	}
 
-    public static function render(): string {
-        return '<abbr title="FIRST LEGO League">FLL</abbr>';
-    }
+	public static function render(): string {
+		return '<abbr title="FIRST LEGO League">FLL</abbr>';
+	}
 }
