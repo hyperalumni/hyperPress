@@ -1237,3 +1237,5 @@ Not in this plan, by design:
 - Deferred minors: `Convention.php` array arrow alignment may trip phpcs; `BootTest` is weak; the multi-line legacy-key path has no positive test.
 
 > Note (2026-10-11): a sixth taxonomy, `hyper_competition_type` (owned by `hyperpress-competition`, attached to `hyper_competition`), now exists, so `Convention::TAXONOMIES` and `Convention::TAXONOMY_OBJECT_TYPES` list it too; the five-taxonomy lists above are the original state.
+
+> Note (2026-10-12): PHPCompatibility was upgraded from 9.3.5 / phpcompatibility-wp 2.1.8 to `php-compatibility` 10.0.0-alpha2, `phpcompatibility-wp` 3.0.0-alpha2 and `phpcompatibility-paragonie` 2.0.0-alpha2 (pinned `@alpha`, the only line that understands PHP 8.x syntax). The 9.x sniffs reported nothing for PHP 8.0+ features, so `testVersion` `8.3-` never actually guarded the floor. Running `--runtime-set testVersion 7.4-7.4` now flags union types, `mixed` and the bare `catch`; `8.0-8.0` is clean. The code's real minimum is PHP 8.0; "Requires PHP 8.3" stays as a deliberate policy floor.

@@ -16,15 +16,16 @@
     "ext-intl": "*"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "*",
-    "phpcompatibility/php-compatibility": "*",
     "dealerdirect/phpcodesniffer-composer-installer": "^1.2.0",
-    "phpunit/phpunit": "^9.6",
-    "yoast/phpunit-polyfills": "^2.0",
-    "wp-phpunit/wp-phpunit": "^6.9",
     "johnpbloch/wordpress-core": "^6.9",
+    "phpcompatibility/php-compatibility": "^10.0@alpha",
+    "phpcompatibility/phpcompatibility-paragonie": "^2.0@alpha",
+    "phpcompatibility/phpcompatibility-wp": "^3.0@alpha",
+    "phpunit/phpunit": "^9.6",
+    "squizlabs/php_codesniffer": "*",
     "wp-coding-standards/wpcs": "^3.1",
-    "phpcompatibility/phpcompatibility-wp": "^2.1"
+    "wp-phpunit/wp-phpunit": "^6.9",
+    "yoast/phpunit-polyfills": "^2.0"
   },
   "autoload-dev": {
     "psr-4": {
