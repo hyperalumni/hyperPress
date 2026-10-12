@@ -74,13 +74,6 @@ function hyper_register_required_plugins(): void {
 			'required'     => false,
 		),
 		array(
-			'name'         => 'RunCloud Hub',
-			'slug'         => 'runcloud-hub',
-			'source'       => 'https://runcloud-hub.s3.us-west-1.amazonaws.com/production/runcloud-hub-1.4.8.zip',
-			'external_url' => 'https://runcloud.io/docs/runcloud-hub',
-			'required'     => false,
-		),
-		array(
 			'name'     => 'Classic Editor',
 			'slug'     => 'classic-editor',
 			'required' => true,
