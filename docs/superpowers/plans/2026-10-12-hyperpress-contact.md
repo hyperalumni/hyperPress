@@ -199,3 +199,10 @@
 - [ ] **Step 3 (manual):** add the three addresses and the map; confirm the group's `sanitize_callback` receives the list of entries (if the shape differs, fix `Addresses::sanitize` and add a test with the observed shape); confirm slugs are generated and unique after saving.
 - [ ] **Step 4 (manual):** make a page with the Contact template containing the form shortcode and the three `[hyperpress_address]` shortcodes; check the card look, the non-interactive map, two maps on one page, and the page with the plugin deactivated.
 - [ ] **Step 5:** Tick this plan's boxes, add `> **STATUS: COMPLETED** (date, commit range)`, commit: `docs(plans): complete hyperpress-contact`.
+
+## Execution notes
+
+- **Task 3 correction (final review, C1).** Meta Box calls a cloneable group's `sanitize_callback` once per clone with that clone's single associative entry, not the list, so a list sanitizer would have emptied the address list on every real save. The group's callback is now `Addresses::sanitize_entry` (one entry; tolerates the extra args Meta Box passes). Slugs are made unique across the list by `Addresses::normalize_option`, hooked to `pre_update_option_hyperpress_contact` from `Addresses::register()` (called in `Plugin::boot()`); `Addresses::sanitize` remains the list sanitizer built on `sanitize_entry`.
+- I1: `[hyperpress_address id="..."]` runs `sanitize_title` on the id before the lookup, so `Meeting`, ` meeting ` and `Team Meeting` match; the admin comment keeps the typed text.
+- I2: slugs derived from headings go through `remove_accents` first (`Café` becomes `cafe`); a slug that would still contain `%` (non-Latin text) becomes `address`.
+- I3: `hyperpress-contact-map` is a plain footer script with no `strategy`, so it runs in order before the async Google script that depends on it.

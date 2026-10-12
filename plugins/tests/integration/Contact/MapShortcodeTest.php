@@ -74,6 +74,16 @@ final class MapShortcodeTest extends WP_UnitTestCase {
 		$this->assertContains( 'hyperpress-contact-map', $script->deps );
 	}
 
+	public function test_map_script_runs_in_order_in_the_footer_before_the_google_script(): void {
+		do_shortcode( '[hyperpress_map]' );
+
+		$scripts = wp_scripts();
+		$this->assertFalse( $scripts->get_data( 'hyperpress-contact-map', 'strategy' ) );
+		$this->assertSame( 1, $scripts->get_data( 'hyperpress-contact-map', 'group' ) );
+		$this->assertSame( 'async', $scripts->get_data( 'hyperpress-contact-google-maps', 'strategy' ) );
+		$this->assertContains( 'hyperpress-contact-map', $scripts->registered['hyperpress-contact-google-maps']->deps );
+	}
+
 	public function test_key_is_url_encoded(): void {
 		$this->store( '42.2518999,-71.0007911,17', 'a&b' );
 

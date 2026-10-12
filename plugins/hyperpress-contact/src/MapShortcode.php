@@ -78,10 +78,8 @@ final class MapShortcode {
 			plugins_url( 'assets/map.js', $file ),
 			array(),
 			Version::of( $file ),
-			array(
-				'in_footer' => true,
-				'strategy'  => 'defer',
-			)
+			// No strategy: a plain footer script runs in order, before the async Google script that depends on it.
+			array( 'in_footer' => true )
 		);
 
 		$src = add_query_arg(
