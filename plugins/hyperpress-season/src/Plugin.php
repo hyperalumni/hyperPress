@@ -18,7 +18,6 @@ final class Plugin {
 		SeasonBanner::register();
 		Breadcrumbs::register();
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
-		Customizer::register();
 		SettingsPage::register();
 		MetaBoxes::register();
 		AdminFilter::register();
@@ -47,7 +46,7 @@ final class Plugin {
 			'plural'             => __( 'Seasons', 'hyperpress' ),
 			'description'        => __( 'Build Seasons of Team HYPER', 'hyperpress' ),
 			'slug'               => 'seasons',
-			'object_types'       => 'hyperpress_season_post_types',
+			'object_types'       => Settings::post_types(),
 			'public'             => true,
 			'publicly_queryable' => true,
 			'hierarchical'       => true,

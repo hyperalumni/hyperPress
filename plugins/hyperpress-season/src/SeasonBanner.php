@@ -25,7 +25,7 @@ final class SeasonBanner {
 			}
 
 			if ( empty( $banner['subtitle'] ) ) {
-				$banner['subtitle'] = get_theme_mod( 'hyperpress_season_banner_subtitle' );
+				$banner['subtitle'] = Settings::banner_subtitle();
 			}
 		}
 

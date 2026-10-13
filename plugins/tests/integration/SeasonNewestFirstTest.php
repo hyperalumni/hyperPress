@@ -51,13 +51,13 @@ final class SeasonNewestFirstTest extends WP_UnitTestCase {
 	}
 
 	public function test_the_admin_filter_dropdown_lists_newest_first(): void {
-		set_theme_mod( 'hyperpress_season_post_types', array( 'post' ) );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_post_types' => array( 'post' ) ) );
 		Plugin::register();
 
 		ob_start();
 		AdminFilter::render( 'post' );
 		$html = (string) ob_get_clean();
-		remove_theme_mod( 'hyperpress_season_post_types' );
+		delete_option( 'hyperpress_season' );
 		Plugin::register();
 
 		preg_match_all( '/value="(season-\d+)"/', $html, $m );

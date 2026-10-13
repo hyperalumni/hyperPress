@@ -103,7 +103,7 @@ final class Convention {
 		'tier'        => 'hyper_tier',
 	);
 
-	/** Taxonomies with a fixed attachment. Season and program are theme-mod driven (default: attached to nothing). */
+	/** Taxonomies with a fixed attachment. Program is theme-mod driven (default: attached to nothing); season follows its settings page (default: post). */
 	public const TAXONOMY_OBJECT_TYPES = array(
 		'hyper_district'         => array( 'hyper_competition' ),
 		'hyper_week'             => array( 'hyper_competition' ),
@@ -111,7 +111,7 @@ final class Convention {
 		'hyper_tier'             => array( 'hyper_sponsor' ),
 	);
 
-	public const THEME_DRIVEN_TAXONOMIES = array( 'hyper_season', 'hyper_program' );
+	public const THEME_DRIVEN_TAXONOMIES = array( 'hyper_program' );
 
 	public const KEY_MAX_LENGTH          = 20;
 	public const TAXONOMY_KEY_MAX_LENGTH = 32;

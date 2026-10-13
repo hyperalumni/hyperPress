@@ -66,11 +66,11 @@
 - Consumes: `Settings::current()`, `banner_subtitle()`, `post_types()`.
 - `SeasonBanner` sets `$banner['subtitle'] = Settings::banner_subtitle()`; `Plugin::definition()['object_types']` becomes the array `Settings::post_types()` (the shared `TaxonomyRegistrar` already accepts a list, so `hyperpress-utils` does not change); the sponsor widget reads `\HyperPress\Season\Settings::current()` (the sponsor plugin already requires season; keep any existing season-not-active guard).
 
-- [ ] **Step 1: Write failing tests.** Update the listed tests to write `update_option( 'hyperpress_season', array( 'hyperpress_season_current' => ... ) )` (and `hyperpress_season_post_types`) in place of theme mods, keeping their assertions; add: `SeasonBanner` shows the saved subtitle on a season archive; the sponsor widget with a saved slug for a deleted term behaves as with no season; the taxonomy's object types follow the saved option after re-registration; the Customizer has no `hyperpress_season` section and none of the three season settings (build a `WP_Customize_Manager` and fire `customize_register` as `CustomizerTest`-style tests do); `apply_filters( 'rwmb_meta_boxes', array() )` has no box with id `hyperpress_season`.
-- [ ] **Step 2:** Run `composer test:integration -- --filter 'Sponsor|Season'`. Expected: FAIL.
-- [ ] **Step 3:** Switch the three readers, delete `Customizer.php`, its `Plugin::boot()` call and `MetaBoxes::customize_metabox`; update the tests as above.
-- [ ] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and `composer test:integration` and `lint` from `themes/hyperpress-foundation/`. Expected: pass.
-- [ ] **Step 5:** Commit `refactor(season): read the season settings from the Season settings page`.
+- [x] **Step 1: Write failing tests.** Update the listed tests to write `update_option( 'hyperpress_season', array( 'hyperpress_season_current' => ... ) )` (and `hyperpress_season_post_types`) in place of theme mods, keeping their assertions; add: `SeasonBanner` shows the saved subtitle on a season archive; the sponsor widget with a saved slug for a deleted term behaves as with no season; the taxonomy's object types follow the saved option after re-registration; the Customizer has no `hyperpress_season` section and none of the three season settings (build a `WP_Customize_Manager` and fire `customize_register` as `CustomizerTest`-style tests do); `apply_filters( 'rwmb_meta_boxes', array() )` has no box with id `hyperpress_season`.
+- [x] **Step 2:** Run `composer test:integration -- --filter 'Sponsor|Season'`. Expected: FAIL.
+- [x] **Step 3:** Switch the three readers, delete `Customizer.php`, its `Plugin::boot()` call and `MetaBoxes::customize_metabox`; update the tests as above.
+- [x] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and `composer test:integration` and `lint` from `themes/hyperpress-foundation/`. Expected: pass.
+- [x] **Step 5:** Commit `refactor(season): read the season settings from the Season settings page`.
 
 ### Task 3: Verify in a browser and close out
 

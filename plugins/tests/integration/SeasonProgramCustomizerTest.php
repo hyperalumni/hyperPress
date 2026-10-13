@@ -16,7 +16,6 @@ final class SeasonProgramCustomizerTest extends WP_UnitTestCase {
 	/** @return array<string,array{0:string}> */
 	public static function post_type_settings(): array {
 		return array(
-			'season'  => array( 'hyperpress_season_post_types' ),
 			'program' => array( 'hyperpress_program_post_types' ),
 		);
 	}
@@ -42,35 +41,5 @@ final class SeasonProgramCustomizerTest extends WP_UnitTestCase {
 		$this->assertSame( array(), $setting->sanitize( 'nope' ) );
 		$this->assertSame( array(), $setting->sanitize( null ) );
 		$this->assertSame( array( 'post' ), $setting->sanitize( array( 'post', array( 'x' ), 5 ) ) );
-	}
-
-	public function test_the_season_setting_accepts_the_non_public_countdown_type(): void {
-		$setting = $this->customizer()->get_setting( 'hyperpress_season_post_types' );
-
-		$this->assertSame( array( 'post', 'hyper_countdown' ), $setting->sanitize( array( 'post', 'hyper_countdown', 'nav_menu_item' ) ) );
-	}
-
-	public function test_the_banner_subtitle_sanitizes_scripts_away(): void {
-		$setting = $this->customizer()->get_setting( 'hyperpress_season_banner_subtitle' );
-
-		$sanitized = $setting->sanitize( '<script>x</script><b>ok</b>' );
-
-		$this->assertStringNotContainsString( '<script', $sanitized );
-		$this->assertStringContainsString( '<b>ok</b>', $sanitized );
-	}
-
-	public function test_the_current_season_accepts_only_an_existing_season(): void {
-		$term = self::factory()->term->create_and_get(
-			array(
-				'taxonomy' => 'hyper_season',
-				'name'     => 'Season 2026',
-				'slug'     => 'season-2026',
-			)
-		);
-		$setting = $this->customizer()->get_setting( 'hyperpress_season_current' );
-
-		$this->assertSame( $term->slug, $setting->sanitize( $term->slug ) );
-		$this->assertSame( '', $setting->sanitize( 'no-such-season' ) );
-		$this->assertSame( '', $setting->sanitize( array( $term->slug ) ) );
 	}
 }

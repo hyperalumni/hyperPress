@@ -15,12 +15,12 @@ final class SeasonAdminFilterTest extends WP_UnitTestCase {
 	}
 
 	private function attach_countdown(): void {
-		set_theme_mod( 'hyperpress_season_post_types', array( 'post', 'hyper_countdown' ) );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_post_types' => array( 'post', 'hyper_countdown' ) ) );
 		Plugin::register();
 	}
 
 	public function tear_down(): void {
-		remove_theme_mod( 'hyperpress_season_post_types' );
+		delete_option( 'hyperpress_season' );
 		Plugin::register();
 		parent::tear_down();
 	}
@@ -82,7 +82,7 @@ final class SeasonAdminFilterTest extends WP_UnitTestCase {
 
 	public function test_registration_does_not_depend_on_the_post_type_being_registered_first(): void {
 		unregister_post_type( 'hyper_countdown' );
-		set_theme_mod( 'hyperpress_season_post_types', array( 'post', 'hyper_countdown' ) );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_post_types' => array( 'post', 'hyper_countdown' ) ) );
 		Plugin::register();
 		$this->assertFalse( post_type_exists( 'hyper_countdown' ) );
 

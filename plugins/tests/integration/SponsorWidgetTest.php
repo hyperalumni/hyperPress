@@ -11,12 +11,12 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		$this->original_structure = '/%postname%/';
-		remove_theme_mod( 'hyperpress_season_current' );
+		delete_option( 'hyperpress_season' );
 	}
 
 	public function tear_down(): void {
 		$this->use_permalinks( $this->original_structure );
-		remove_theme_mod( 'hyperpress_season_current' );
+		delete_option( 'hyperpress_season' );
 		parent::tear_down();
 	}
 
@@ -84,7 +84,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 
 	public function test_missing_season_term_renders_without_link_or_error(): void {
 		$this->fixture_with_season( 'season-real' );
-		set_theme_mod( 'hyperpress_season_current', 'season-ghost' );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-ghost' ) );
 
 		$output = $this->render();
 
@@ -93,10 +93,23 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'WP_Error', $output );
 	}
 
+	public function test_a_saved_slug_for_a_deleted_season_behaves_like_no_season_set(): void {
+		$this->fixture_with_season( 'season-a' );
+		delete_option( 'hyperpress_season' );
+		$without = $this->render();
+
+		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
+		$term = get_term_by( 'slug', 'season-a', 'hyper_season' );
+		wp_delete_term( $term->term_id, 'hyper_season' );
+
+		$this->assertSame( $without, $this->render() );
+		$this->assertStringNotContainsString( '<div class="cell">', $this->render() );
+	}
+
 	public function test_see_all_link_is_escaped_and_pretty_with_pretty_permalinks(): void {
 		$this->use_permalinks( '/%postname%/' );
 		$this->fixture_with_season( 'season-a' );
-		set_theme_mod( 'hyperpress_season_current', 'season-a' );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
 		$term = get_term_by( 'slug', 'season-a', 'hyper_season' );
 
 		$output   = $this->render();
@@ -109,7 +122,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 	public function test_see_all_link_uses_post_type_query_arg_with_plain_permalinks(): void {
 		$this->use_permalinks( '' );
 		$this->fixture_with_season( 'season-a' );
-		set_theme_mod( 'hyperpress_season_current', 'season-a' );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
 		$term = get_term_by( 'slug', 'season-a', 'hyper_season' );
 
 		$output   = $this->render();
@@ -121,7 +134,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 
 	public function test_number_of_sponsors_never_exceeds_max_count_across_tiers(): void {
 		$this->fixture_with_season( 'season-a', 3, 2 );
-		set_theme_mod( 'hyperpress_season_current', 'season-a' );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
 
 		$output = $this->render( array( 'maxCount' => 3 ) );
 
@@ -130,7 +143,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 
 	public function test_global_post_is_restored_after_rendering(): void {
 		$this->fixture_with_season( 'season-a' );
-		set_theme_mod( 'hyperpress_season_current', 'season-a' );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
 		$host = self::factory()->post->create();
 		$this->go_to( get_permalink( $host ) );
 
@@ -155,7 +168,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 
 	public function test_render_tolerates_missing_instance_keys(): void {
 		$this->fixture_with_season( 'season-a' );
-		set_theme_mod( 'hyperpress_season_current', 'season-a' );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
 		$args = array(
 			'before_widget' => '',
 			'after_widget'  => '',
@@ -178,7 +191,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 		$this->make_term( 'hyper_season', 'season-a' );
 		$this->make_term( 'hyper_tier', 'tier-1' );
 		$this->make_sponsor( '"><script>alert(1)</script>', 'tier-1', 'season-a' );
-		set_theme_mod( 'hyperpress_season_current', 'season-a' );
+		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
 
 		$output = $this->render();
 

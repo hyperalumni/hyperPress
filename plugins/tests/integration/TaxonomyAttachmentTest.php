@@ -28,4 +28,8 @@ final class TaxonomyAttachmentTest extends WP_UnitTestCase {
 			$this->assertSame( array(), $tax->object_type, "$taxonomy must not attach to any post type (incl. 'post') by default" );
 		}
 	}
+
+	public function test_season_attaches_to_posts_until_the_season_settings_page_says_otherwise(): void {
+		$this->assertSame( array( 'post' ), get_taxonomy( 'hyper_season' )->object_type );
+	}
 }
