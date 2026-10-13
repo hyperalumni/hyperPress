@@ -69,7 +69,7 @@ final class SeasonSettingsPageTest extends WP_UnitTestCase {
 	public function test_the_box_has_the_three_fields_in_order_with_their_types(): void {
 		$this->assertSame(
 			array(
-				'hyperpress_season_current'         => 'select',
+				'hyperpress_season_current'         => 'select_advanced',
 				'hyperpress_season_banner_subtitle' => 'textarea',
 				'hyperpress_season_post_types'      => 'select_advanced',
 			),
@@ -81,6 +81,7 @@ final class SeasonSettingsPageTest extends WP_UnitTestCase {
 		$fields = $this->fields();
 
 		$this->assertSame( array( Sanitizers::class, 'current' ), $fields['hyperpress_season_current']['sanitize_callback'] );
+		$this->assertArrayNotHasKey( 'multiple', $fields['hyperpress_season_current'] );
 		$this->assertTrue( $fields['hyperpress_season_banner_subtitle']['raw'] );
 		$this->assertSame( array( Sanitizers::class, 'banner_subtitle' ), $fields['hyperpress_season_banner_subtitle']['sanitize_callback'] );
 		$this->assertTrue( $fields['hyperpress_season_post_types']['multiple'] );

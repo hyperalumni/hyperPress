@@ -25,7 +25,7 @@ final class MetaBoxes {
 					'id'                => Settings::CURRENT,
 					'name'              => __( 'Current Season', 'hyperpress' ),
 					'desc'              => __( 'Select the current season for the site', 'hyperpress' ),
-					'type'              => 'select',
+					'type'              => 'select_advanced',
 					'options'           => self::season_options(),
 					'sanitize_callback' => array( Sanitizers::class, 'current' ),
 				),
