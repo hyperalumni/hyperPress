@@ -10,7 +10,7 @@ final class BannerTest extends TestCase {
 		return array_merge(
 			array(
 				'type'          => 'sponsor',
-				'subtitle_mod'  => 'hyperpress_sponsor_banner_subtitle',
+				'subtitle'      => static fn() => 'Sponsor subtitle',
 				'color_mod'     => 'hyperpress_hyper_red',
 				'archive_title' => 'Sponsors',
 				'term_joiner'   => 'in',

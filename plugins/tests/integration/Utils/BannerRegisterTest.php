@@ -2,6 +2,7 @@
 namespace HyperPress\Tests\Integration\Utils;
 
 use HyperPress\Utils\Banner;
+use InvalidArgumentException;
 use WP_UnitTestCase;
 
 final class BannerRegisterTest extends WP_UnitTestCase {
@@ -10,13 +11,12 @@ final class BannerRegisterTest extends WP_UnitTestCase {
 		parent::set_up();
 		register_post_type( 'hyper_gizmo', array( 'public' => true, 'has_archive' => 'gizmos' ) );
 		flush_rewrite_rules();
-		set_theme_mod( 'hyperpress_gizmo_banner_subtitle', 'Sub' );
 		set_theme_mod( 'hyperpress_hyper_green', '#0a0' );
 		Banner::register(
 			'hyper_gizmo',
 			array(
 				'type'          => 'gizmo',
-				'subtitle_mod'  => 'hyperpress_gizmo_banner_subtitle',
+				'subtitle'      => static fn() => 'Sub',
 				'color_mod'     => 'hyperpress_hyper_green',
 				'archive_title' => 'Gizmos',
 			)
@@ -42,14 +42,44 @@ final class BannerRegisterTest extends WP_UnitTestCase {
 		$this->assertSame( '#0a0', $banner['backgroundColor'] );
 	}
 
-	public function test_singular_request_with_subtitle_mod_gets_the_theme_mod_subtitle(): void {
-		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_gizmo' ) );
-		$this->go_to( get_permalink( $post_id ) );
-		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Gizmo' ) );
-		$this->assertSame( 'Sub', $banner['subtitle'] );
+	public function test_register_without_a_subtitle_throws_and_hooks_nothing(): void {
+		$before = count( $GLOBALS['wp_filter']['hyperpress_banner_content']->callbacks[10] ?? array() );
+		try {
+			Banner::register(
+				'hyper_widget',
+				array(
+					'type'          => 'widget',
+					'color_mod'     => 'hyperpress_hyper_green',
+					'archive_title' => 'Widgets',
+				)
+			);
+			$this->fail( 'Expected InvalidArgumentException.' );
+		} catch ( InvalidArgumentException $e ) {
+			$this->assertStringContainsString( 'hyper_widget', $e->getMessage() );
+		}
+		$this->assertSame( $before, count( $GLOBALS['wp_filter']['hyperpress_banner_content']->callbacks[10] ?? array() ) );
 	}
 
-	public function test_subtitle_callable_fills_the_subtitle_without_a_subtitle_mod(): void {
+	public function test_register_with_a_non_callable_subtitle_throws_and_hooks_nothing(): void {
+		$before = count( $GLOBALS['wp_filter']['hyperpress_banner_content']->callbacks[10] ?? array() );
+		try {
+			Banner::register(
+				'hyper_widget',
+				array(
+					'type'          => 'widget',
+					'subtitle'      => 'nope',
+					'color_mod'     => 'hyperpress_hyper_green',
+					'archive_title' => 'Widgets',
+				)
+			);
+			$this->fail( 'Expected InvalidArgumentException.' );
+		} catch ( InvalidArgumentException $e ) {
+			$this->assertStringContainsString( 'hyper_widget', $e->getMessage() );
+		}
+		$this->assertSame( $before, count( $GLOBALS['wp_filter']['hyperpress_banner_content']->callbacks[10] ?? array() ) );
+	}
+
+	public function test_subtitle_callable_fills_the_subtitle(): void {
 		register_post_type( 'hyper_widget', array( 'public' => true, 'has_archive' => 'widgets' ) );
 		flush_rewrite_rules();
 		Banner::register(

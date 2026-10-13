@@ -1,6 +1,8 @@
 <?php
 namespace HyperPress\Utils;
 
+use InvalidArgumentException;
+
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 final class Banner {
@@ -11,12 +13,16 @@ final class Banner {
 	 * Hook the theme's banner filter for one post type.
 	 *
 	 * @param string $post_type Post type key.
-	 * @param array  $args      type, color_mod, archive_title (all required) and exactly one of
-	 *                          subtitle (callable returning the subtitle string) or
-	 *                          subtitle_mod (theme mod name; to be removed);
-	 *                          term_joiner ('in' default), always_set_archive_title (false default).
+	 * @param array  $args      Required: type, subtitle (callable returning the subtitle string),
+	 *                          color_mod, archive_title.
+	 *                          Optional: term_joiner ('in' default), always_set_archive_title (false default).
+	 *
+	 * @throws InvalidArgumentException When subtitle is missing or not callable.
 	 */
 	public static function register( string $post_type, array $args ): void {
+		if ( ! is_callable( $args['subtitle'] ?? null ) ) {
+			throw new InvalidArgumentException( esc_html( "Banner for '$post_type' needs a callable 'subtitle'." ) );
+		}
 		add_filter(
 			'hyperpress_banner_content',
 			static function ( $banner ) use ( $post_type, $args ) {
@@ -26,9 +32,7 @@ final class Banner {
 					'is_singular'   => is_singular( $post_type ),
 					'is_archive'    => is_post_type_archive( $post_type ),
 					'is_tax_season' => $is_tax_season,
-					'subtitle'      => is_callable( $args['subtitle'] ?? null )
-						? (string) call_user_func( $args['subtitle'] )
-						: get_theme_mod( $args['subtitle_mod'] ),
+					'subtitle'      => (string) call_user_func( $args['subtitle'] ),
 					'color'         => get_theme_mod( $args['color_mod'] ),
 					'term_name'     => $queried instanceof \WP_Term ? $queried->name : '',
 				);

@@ -111,11 +111,11 @@ Same for `hyperpress-competition`: option `hyperpress_competition`, field `hyper
 
 **Interfaces:** `Banner::register()` args: `type`, `subtitle` (callable), `color_mod`, `archive_title` (required); `term_joiner`, `always_set_archive_title` optional. Grep `plugins/` for any remaining `subtitle_mod` first.
 
-- [ ] **Step 1: Write failing tests.** Update the gizmo registrations in the three test files to pass `'subtitle' => static fn() => ...` instead of `subtitle_mod`; add a test that registering without `subtitle` throws `InvalidArgumentException` (or the project's convention for a missing required arg: look at how `TaxonomyRegistrar::build` signals it and match it).
-- [ ] **Step 2:** Run the three test files. Expected: FAIL.
-- [ ] **Step 3:** Remove the `subtitle_mod` code and update the docblock.
-- [ ] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and the theme's `composer test:integration`, `test:unit` and `lint`. Expected: pass.
-- [ ] **Step 5:** Commit `refactor(utils): drop the subtitle_mod banner argument`.
+- [x] **Step 1: Write failing tests.** Update the gizmo registrations in the three test files to pass `'subtitle' => static fn() => ...` instead of `subtitle_mod`; add a test that registering without `subtitle` throws `InvalidArgumentException` (or the project's convention for a missing required arg: look at how `TaxonomyRegistrar::build` signals it and match it).
+- [x] **Step 2:** Run the three test files. Expected: FAIL.
+- [x] **Step 3:** Remove the `subtitle_mod` code and update the docblock.
+- [x] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and the theme's `composer test:integration`, `test:unit` and `lint`. Expected: pass.
+- [x] **Step 5:** Commit `refactor(utils): drop the subtitle_mod banner argument`.
 
 ### Task 6: Verify in a browser and close out
 
