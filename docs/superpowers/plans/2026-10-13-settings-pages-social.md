@@ -1,5 +1,7 @@
 # Social settings page Implementation Plan
 
+> **STATUS: ✅ CODE COMPLETE, browser checks pending** (2026-10-13). Tasks 1-2 and Task 3 step 4 are done on `feat/settings-pages`; Task 3 steps 1-3 (Social page, footer links and Customizer section gone, optional dev-data copy) need a person in a browser.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Move the 12 `hyperpress_social_*` Customizer theme mods (eleven URLs and the contact page) of `hyperpress-social` to a "Social" Meta Box settings page under the hyperPress menu, switch `Links` to the new option, delete the plugin's Customizer section, and make the plugin require `hyperpress-utils` and `meta-box-aio`.
@@ -77,7 +79,15 @@
 - [ ] **Step 1 (manual):** hyperPress menu lists Social. Open it, fill several URLs, a relative one such as `/about/` and a contact page; save, reload; values stay. Clear one and save; it disappears from the footer.
 - [ ] **Step 2 (manual):** the footer socials widget shows the links in the same order as before, external links open in a new tab, the contact link points at the chosen published page, and the Customizer no longer has a "Socials" section. Note whether the browser's URL validation blocks a relative URL in the field (the old Customizer control was also `type=url`).
 - [ ] **Step 3 (dev data, optional):** after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old values once: `wpcli eval '$o = array(); foreach ( array( "firstinspires", "thebluealliance", "facebook", "instagram", "youtube", "twitter", "github", "snapchat", "tiktok", "discord", "contact", "add_calendar" ) as $k ) { $v = get_theme_mod( "hyperpress_social_$k", "" ); if ( "" !== $v && 0 !== $v ) { $o[ "hyperpress_social_$k" ] = $v; } } update_option( "hyperpress_social", $o );'`.
-- [ ] **Step 4:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_social_`, the "Socials" Customizer section, `SocialsTest` and `Social\Customizer`; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest.
+- [x] **Step 4:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_social_`, the "Socials" Customizer section, `SocialsTest` and `Social\Customizer`; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest.
 - [ ] **Step 5:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete social settings page`.
 
 ## Outcome / execution notes
+
+- **2026-10-13, requirements:** `hyperpress-social` now requires `hyperpress-utils` and `meta-box-aio` (plugin header, the Convention table in `plugins/tests/src/Support/Convention.php`, and `PluginHeadersTest`).
+- **2026-10-13, defaults:** there are no non-empty defaults, so no `default_option` filter was added.
+- **2026-10-13, `contact_page()` is strict:** it accepts a positive integer or an all-digit string and gives 0 for anything else. A negative id written into the option gives no contact link, where the old `absint` read used its absolute value; the settings page saves through `absint`, so the UI cannot produce a negative id.
+- **2026-10-13, deleted tests:** the Customizer-based `SocialsTest` cases are gone. Their intent now lives in `Social/SocialSettingsPageTest` (each URL field's callback drops `javascript:` and keeps https; the contact callback gives 0 for a non-numeric value and an absolute integer otherwise) and `Social/SocialReadersTest` (no Customizer section or settings).
+- **2026-10-13, no migration:** until the optional wpcli copy (Task 3 step 3) runs, existing sites' footer socials disappear. Editing the links now needs `manage_options` instead of `edit_theme_options`, and there is no live preview.
+- **2026-10-13, browser items still open:** the contact `post` field options were copied from the Front Page banner button page field; whether Meta Box's URL field accepts relative URLs such as `/about/` (browser URL validation) is not yet known.
+- **2026-10-13, review minors:** the deferred review minors (a `javascript:` test that could pass vacuously, and the missing never-saved widget test) were addressed in the test-hardening commit `test(social): cover contact page edge cases and the never-saved widget`.
