@@ -95,11 +95,11 @@
 
 **Interfaces:** Consumes `GoogleMapsKey::get()`. `Customizer` keeps only `SUBTITLE_SETTING` and its section (it moves in a later plan); `API_KEY_SETTING`, `google_maps_api_key()` and the key setting and control are removed.
 
-- [ ] **Step 1: Write failing tests:** the venue map field's `api_key` equals the key saved in `hyperpress_general`; it is `''` when none is saved; `hyperpress_competition_google_maps_api_key` is no longer a registered Customizer setting (the banner subtitle still is).
-- [ ] **Step 2:** Run `composer test:integration -- --filter 'CompetitionMapApiKey|CompetitionSettings'`. Expected: FAIL.
-- [ ] **Step 3:** Switch `MetaBoxes.php` to `GoogleMapsKey::get()` and delete the key pieces of `Customizer`.
-- [ ] **Step 4:** Run `composer test:integration` and `lint`. Expected: pass.
-- [ ] **Step 5:** Commit `refactor(competition): read the Google Maps key from the shared General setting`.
+- [x] **Step 1: Write failing tests:** the venue map field's `api_key` equals the key saved in `hyperpress_general`; it is `''` when none is saved; `hyperpress_competition_google_maps_api_key` is no longer a registered Customizer setting (the banner subtitle still is).
+- [x] **Step 2:** Run `composer test:integration -- --filter 'CompetitionMapApiKey|CompetitionSettings'`. Expected: FAIL.
+- [x] **Step 3:** Switch `MetaBoxes.php` to `GoogleMapsKey::get()` and delete the key pieces of `Customizer`.
+- [x] **Step 4:** Run `composer test:integration` and `lint`. Expected: pass.
+- [x] **Step 5:** Commit `refactor(competition): read the Google Maps key from the shared General setting`.
 
 ### Task 5: `hyperpress-frontpage` skeleton
 

@@ -3,6 +3,8 @@ namespace HyperPress\Competition;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Utils\GoogleMapsKey;
+
 final class MetaBoxes {
 
 	public static function register(): void {
@@ -58,7 +60,7 @@ final class MetaBoxes {
 					'type'              => 'map',
 					'std'               => '42.25228605221164, -71.00051344845554,15',
 					'address_field'     => 'hyperpress_competition_venue_address',
-					'api_key'           => Customizer::google_maps_api_key(),
+					'api_key'           => GoogleMapsKey::get(),
 					'sanitize_callback' => array( self::class, 'map_location' ),
 				),
 				array(
