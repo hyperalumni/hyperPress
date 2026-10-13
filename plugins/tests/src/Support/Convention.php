@@ -62,7 +62,7 @@ final class Convention {
 		'hyperpress-student'     => array(),
 		'hyperpress-shortcode' => array(),
 		'hyperpress-media'      => array( 'safe-svg' ),
-		'hyperpress-utils'       => array(),
+		'hyperpress-utils'       => array( 'meta-box-aio' ),
 	);
 
 	/** New post type key => owning plugin folder. */

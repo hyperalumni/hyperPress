@@ -16,6 +16,7 @@
  * Text Domain:         hyperpress
  * Domain Path:         /languages
  * Update URI:          false
+ * Requires Plugins:    meta-box-aio
  */
 
 // Don't load directly.

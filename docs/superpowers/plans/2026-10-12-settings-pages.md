@@ -47,11 +47,11 @@
 
 **Interfaces:** Produces: `Convention::REQUIRES_PLUGINS['hyperpress-utils'] === array( 'meta-box-aio' )`.
 
-- [ ] **Step 1:** Change the utils entry in `Convention::REQUIRES_PLUGINS` to `array( 'meta-box-aio' )`.
-- [ ] **Step 2:** Run `docker compose run --rm php composer test:unit` from `plugins/`. Expected: `PluginHeadersTest` FAILS for `hyperpress-utils` (header has no `Requires Plugins`).
-- [ ] **Step 3:** Add `Requires Plugins:    meta-box-aio` to the header of `hyperpress-utils.php`, formatted like the contact plugin's header.
-- [ ] **Step 4:** Run `composer test:unit`, `composer test:integration` and `composer lint`. Expected: all pass.
-- [ ] **Step 5:** Commit `feat(utils): require meta-box-aio`, including this plan file.
+- [x] **Step 1:** Change the utils entry in `Convention::REQUIRES_PLUGINS` to `array( 'meta-box-aio' )`.
+- [x] **Step 2:** Run `docker compose run --rm php composer test:unit` from `plugins/`. Expected: `PluginHeadersTest` FAILS for `hyperpress-utils` (header has no `Requires Plugins`).
+- [x] **Step 3:** Add `Requires Plugins:    meta-box-aio` to the header of `hyperpress-utils.php`, formatted like the contact plugin's header.
+- [x] **Step 4:** Run `composer test:unit`, `composer test:integration` and `composer lint`. Expected: all pass.
+- [x] **Step 5:** Commit `feat(utils): require meta-box-aio`, including this plan file.
 
 ### Task 2: General page and the Google Maps key
 
