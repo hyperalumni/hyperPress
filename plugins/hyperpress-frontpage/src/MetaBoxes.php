@@ -27,10 +27,11 @@ final class MetaBoxes {
 				array(
 					'id'                => Settings::CATEGORIES,
 					'name'              => __( 'Categories', 'hyperpress' ),
-					'type'              => 'taxonomy',
-					'taxonomy'          => 'category',
-					'field_type'        => 'select_advanced',
+					'type'              => 'select_advanced',
 					'multiple'          => true,
+					'options'           => self::category_options(),
+					'std'               => array(),
+					'placeholder'       => __( 'Select categories', 'hyperpress' ),
 					'sanitize_callback' => array( Sanitizers::class, 'categories' ),
 				),
 				array(
@@ -96,6 +97,19 @@ final class MetaBoxes {
 		);
 
 		return $boxes;
+	}
+
+	/**
+	 * Categories as term id => name (empty ones included).
+	 *
+	 * @return array<int,string>
+	 */
+	private static function category_options(): array {
+		$options = array();
+		foreach ( get_categories( array( 'hide_empty' => false ) ) as $category ) {
+			$options[ $category->term_id ] = $category->name;
+		}
+		return $options;
 	}
 
 	/**

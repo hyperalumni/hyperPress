@@ -19,6 +19,8 @@ final class FrontPageQueryTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
+		unregister_post_type( 'hp_private_type' );
+		unregister_post_type( 'hp_public_type' );
 		if ( $this->stubbed_countdown ) {
 			remove_shortcode( 'hyperpress_countdown' );
 			$this->stubbed_countdown = false;
@@ -95,6 +97,13 @@ final class FrontPageQueryTest extends WP_UnitTestCase {
 
 	public function test_non_public_post_types_in_the_option_are_not_queried(): void {
 		register_post_type( 'hp_private_type', array( 'public' => false ) );
+		register_post_type( 'hp_public_type', array( 'public' => true ) );
+		self::factory()->post->create(
+			array(
+				'post_type'  => 'hp_public_type',
+				'post_title' => 'Visible Custom Entry',
+			)
+		);
 		self::factory()->post->create(
 			array(
 				'post_type'  => 'hp_private_type',
@@ -104,15 +113,13 @@ final class FrontPageQueryTest extends WP_UnitTestCase {
 		self::factory()->post->create( array( 'post_title' => 'Ordinary Post Entry' ) );
 		update_option(
 			'hyperpress_frontpage',
-			array( 'hyperpress_frontpage_post_types' => array( 'hp_private_type', 'hp_not_registered_type' ) )
+			array( 'hyperpress_frontpage_post_types' => array( 'hp_public_type', 'hp_private_type', 'hp_not_registered_type' ) )
 		);
 
 		$html = $this->render_front_page();
 		$list = substr( $html, (int) strpos( $html, '<main' ) );
 
-		$this->assertStringContainsString( 'Ordinary Post Entry', $list );
+		$this->assertStringContainsString( 'Visible Custom Entry', $list );
 		$this->assertStringNotContainsString( 'Secret Private Entry', $list );
-
-		unregister_post_type( 'hp_private_type' );
 	}
 }

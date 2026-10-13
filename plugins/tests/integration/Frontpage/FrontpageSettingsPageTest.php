@@ -6,6 +6,11 @@ use WP_UnitTestCase;
 
 final class FrontpageSettingsPageTest extends WP_UnitTestCase {
 
+	public function tear_down(): void {
+		unregister_post_type( 'hp_private' );
+		parent::tear_down();
+	}
+
 	/**
 	 * The Front Page boxes from the Meta Box filter.
 	 *
@@ -58,7 +63,7 @@ final class FrontpageSettingsPageTest extends WP_UnitTestCase {
 	public function test_the_box_has_the_eight_fields_in_order_with_their_types(): void {
 		$this->assertSame(
 			array(
-				'hyperpress_frontpage_categories'                => 'taxonomy',
+				'hyperpress_frontpage_categories'                => 'select_advanced',
 				'hyperpress_frontpage_post_types'                => 'select_advanced',
 				'hyperpress_frontpage_banner_title'              => 'text',
 				'hyperpress_frontpage_banner_subtitle'           => 'textarea',
@@ -75,7 +80,7 @@ final class FrontpageSettingsPageTest extends WP_UnitTestCase {
 		$fields = $this->fields();
 
 		$this->assertTrue( $fields['hyperpress_frontpage_categories']['multiple'] );
-		$this->assertSame( 'category', $fields['hyperpress_frontpage_categories']['taxonomy'] );
+		$this->assertSame( array(), $fields['hyperpress_frontpage_categories']['std'] );
 		$this->assertSame( array( Sanitizers::class, 'categories' ), $fields['hyperpress_frontpage_categories']['sanitize_callback'] );
 
 		$this->assertTrue( $fields['hyperpress_frontpage_post_types']['multiple'] );
@@ -105,7 +110,15 @@ final class FrontpageSettingsPageTest extends WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'post', $options );
 		$this->assertArrayNotHasKey( 'hp_private', $options );
+	}
 
-		unregister_post_type( 'hp_private' );
+	public function test_the_category_options_list_categories_as_id_to_name(): void {
+		$id = self::factory()->category->create( array( 'name' => 'Empty Cat' ) ); // No posts: empty terms are listed too.
+
+		$options = $this->fields()['hyperpress_frontpage_categories']['options'];
+
+		$this->assertSame( 'Empty Cat', $options[ $id ] );
+		$this->assertContains( 'Uncategorized', $options );
+		$this->assertArrayHasKey( (int) get_option( 'default_category' ), $options );
 	}
 }

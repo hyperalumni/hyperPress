@@ -55,4 +55,34 @@ final class FrontpageSettingTest extends WP_UnitTestCase {
 		$this->assertSame( 'Join now', $banner['buttonText'] );
 		$this->assertSame( get_post_permalink( $page ), $banner['buttonLink'] );
 	}
+
+	/**
+	 * The banner button link for a stored button page value, on the front page.
+	 *
+	 * @param mixed $value The stored value, or null for an unset key.
+	 */
+	private function button_link( $value ): string {
+		$option = array( 'hyperpress_frontpage_banner_button_text' => 'Join now' );
+		if ( null !== $value ) {
+			$option['hyperpress_frontpage_banner_button_page'] = $value;
+		}
+		update_option( 'hyperpress_frontpage', $option );
+		$this->go_to( home_url( '/' ) );
+
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+		return $banner['buttonLink'];
+	}
+
+	public function test_the_banner_button_has_no_link_without_a_valid_page(): void {
+		// An empty id must not fall back to the current post's permalink.
+		self::factory()->post->create();
+		foreach ( array( null, '', 0, '0', 'abc', array(), -5 ) as $value ) {
+			$this->assertSame( '', $this->button_link( $value ), 'Value: ' . wp_json_encode( $value ) );
+		}
+	}
+
+	public function test_the_banner_button_links_to_the_chosen_page(): void {
+		$page = self::factory()->post->create( array( 'post_type' => 'page' ) );
+		$this->assertSame( get_post_permalink( $page ), $this->button_link( (string) $page ) );
+	}
 }

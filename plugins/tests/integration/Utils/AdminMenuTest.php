@@ -16,6 +16,8 @@ final class AdminMenuTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		unset( $GLOBALS['menu'], $GLOBALS['submenu'], $GLOBALS['admin_page_hooks'], $GLOBALS['_registered_pages'], $GLOBALS['_parent_pages'] );
+		$GLOBALS['menu']    = array();
+		$GLOBALS['submenu'] = array();
 		parent::tear_down();
 	}
 

@@ -45,6 +45,11 @@ final class GoogleMapsKeyTest extends WP_UnitTestCase {
 		$this->assertSame( '', GoogleMapsKey::get() );
 	}
 
+	public function test_returns_empty_string_when_the_option_array_lacks_the_key(): void {
+		update_option( self::OPTION, array( 'hyperpress_general_other' => 'x' ) );
+		$this->assertSame( '', GoogleMapsKey::get() );
+	}
+
 	public function test_returns_empty_string_when_the_option_is_a_string(): void {
 		update_option( self::OPTION, 'global-key' );
 		$this->assertSame( '', GoogleMapsKey::get() );
