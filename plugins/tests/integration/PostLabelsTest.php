@@ -9,7 +9,6 @@ namespace HyperPress\Tests\Integration;
 
 use HyperPress\Label\Registry;
 use HyperPress\Label\Renderer;
-use HyperPress\Label\Resolver;
 use WP_UnitTestCase;
 
 /**
@@ -37,7 +36,7 @@ final class PostLabelsTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
-		remove_theme_mod( Resolver::enabled_key( 'page' ) );
+		delete_option( 'hyperpress_label' );
 		remove_all_filters( 'hyperpress_labels_content' );
 		remove_filter( 'get_the_categories', '__return_empty_array' );
 		Registry::reset( true );

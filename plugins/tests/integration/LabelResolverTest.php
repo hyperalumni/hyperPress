@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for the label Resolver.
+ * Tests for the label Resolver, which reads the Labels settings page option.
  *
  * @package HyperPress\Tests
  */
@@ -25,6 +25,16 @@ final class LabelResolverTest extends WP_UnitTestCase {
 		return array();
 	}
 
+	/**
+	 * Merge values into the saved label settings option.
+	 *
+	 * @param string $key   Option array key.
+	 * @param mixed  $value Value.
+	 */
+	private function save( string $key, $value ): void {
+		update_option( 'hyperpress_label', array_merge( (array) get_option( 'hyperpress_label', array() ), array( $key => $value ) ) );
+	}
+
 	public function set_up(): void {
 		parent::set_up();
 		Registry::reset( true );
@@ -46,10 +56,7 @@ final class LabelResolverTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
-		foreach ( array( 'post', 'page', 'attachment' ) as $type ) {
-			remove_theme_mod( Resolver::enabled_key( $type ) );
-			remove_theme_mod( Resolver::labels_key( $type ) );
-		}
+		delete_option( 'hyperpress_label' );
 		Registry::reset( true );
 		parent::tear_down();
 	}
@@ -68,43 +75,96 @@ final class LabelResolverTest extends WP_UnitTestCase {
 	}
 
 	public function test_saved_list_overrides_defaults(): void {
-		set_theme_mod( Resolver::labels_key( 'post' ), array( 'b' ) );
+		$this->save( Resolver::labels_key( 'post' ), array( 'b' ) );
 
 		$this->assertTrue( Resolver::is_enabled( 'post', 'b' ) );
 		$this->assertFalse( Resolver::is_enabled( 'post', 'a' ) );
 	}
 
 	public function test_disabled_post_type_shows_nothing(): void {
-		set_theme_mod( Resolver::labels_key( 'post' ), array( 'a', 'b' ) );
-		set_theme_mod( Resolver::enabled_key( 'post' ), false );
+		$this->save( Resolver::labels_key( 'post' ), array( 'a', 'b' ) );
+		$this->save( Resolver::enabled_key( 'post' ), false );
 
 		$this->assertFalse( Resolver::is_enabled( 'post', 'a' ) );
 		$this->assertFalse( Resolver::is_enabled( 'post', 'b' ) );
 
-		set_theme_mod( Resolver::enabled_key( 'post' ), true );
+		$this->save( Resolver::enabled_key( 'post' ), true );
 
 		$this->assertTrue( Resolver::is_enabled( 'post', 'a' ) );
 		$this->assertTrue( Resolver::is_enabled( 'post', 'b' ) );
 	}
 
 	public function test_stale_ids_are_ignored(): void {
-		set_theme_mod( Resolver::labels_key( 'post' ), array( 'gone', 'a' ) );
+		$this->save( Resolver::labels_key( 'post' ), array( 'gone', 'a' ) );
 
 		$this->assertTrue( Resolver::is_enabled( 'post', 'a' ) );
 		$this->assertFalse( Resolver::is_enabled( 'post', 'gone' ) );
 	}
 
 	public function test_disabled_without_saved_labels_shows_nothing(): void {
-		set_theme_mod( Resolver::enabled_key( 'post' ), false );
+		$this->save( Resolver::enabled_key( 'post' ), false );
 
 		$this->assertFalse( Resolver::is_enabled( 'post', 'a' ) );
 	}
 
 	public function test_empty_saved_list_shows_nothing(): void {
-		set_theme_mod( Resolver::labels_key( 'post' ), array() );
+		$this->save( Resolver::labels_key( 'post' ), array() );
 
 		$this->assertFalse( Resolver::is_enabled( 'post', 'a' ) );
 		$this->assertFalse( Resolver::is_enabled( 'post', 'b' ) );
+	}
+
+	public function test_a_false_option_value_gives_the_defaults(): void {
+		$this->assertFalse( get_option( 'hyperpress_label' ) );
+		$this->assertTrue( Resolver::is_enabled( 'post', 'a' ) );
+		$this->assertFalse( Resolver::is_enabled( 'post', 'b' ) );
+		$this->assertTrue( Resolver::is_enabled( 'page', 'b' ) );
+		$this->assertFalse( Resolver::is_enabled( 'attachment', 'a' ) );
+	}
+
+	public function test_a_missing_enabled_key_with_the_row_present_gives_the_default(): void {
+		$this->save( Resolver::labels_key( 'post' ), array( 'a' ) );
+		$this->save( Resolver::labels_key( 'attachment' ), array( 'a' ) );
+
+		$this->assertTrue( Resolver::is_enabled( 'post', 'a' ), 'post defaults to on' );
+		$this->assertFalse( Resolver::is_enabled( 'attachment', 'a' ), 'attachment defaults to off' );
+	}
+
+	public function test_enabled_true_turns_on_a_type_that_defaults_off(): void {
+		$this->save( Resolver::labels_key( 'attachment' ), array( 'a' ) );
+		$this->save( Resolver::enabled_key( 'attachment' ), true );
+
+		$this->assertTrue( Resolver::is_enabled( 'attachment', 'a' ) );
+	}
+
+	public function test_a_missing_labels_key_with_the_row_present_gives_the_defaults(): void {
+		$this->save( Resolver::enabled_key( 'post' ), true );
+
+		$this->assertTrue( Resolver::is_enabled( 'post', 'a' ) );
+		$this->assertFalse( Resolver::is_enabled( 'post', 'b' ) );
+	}
+
+	public function test_a_non_array_option_gives_the_defaults(): void {
+		foreach ( array( 'x', 1, '' ) as $value ) {
+			update_option( 'hyperpress_label', $value );
+
+			$this->assertTrue( Resolver::is_enabled( 'post', 'a' ), var_export( $value, true ) );
+			$this->assertFalse( Resolver::is_enabled( 'post', 'b' ), var_export( $value, true ) );
+		}
+	}
+
+	public function test_a_non_array_labels_value_gives_the_defaults(): void {
+		$this->save( Resolver::labels_key( 'post' ), 'b' );
+
+		$this->assertTrue( Resolver::is_enabled( 'post', 'a' ) );
+		$this->assertFalse( Resolver::is_enabled( 'post', 'b' ) );
+	}
+
+	public function test_a_saved_option_for_one_type_leaves_the_other_types_on_defaults(): void {
+		$this->save( Resolver::labels_key( 'post' ), array() );
+
+		$this->assertFalse( Resolver::is_enabled( 'post', 'a' ) );
+		$this->assertTrue( Resolver::is_enabled( 'page', 'b' ) );
 	}
 
 	public function test_default_types_filter_is_honoured(): void {

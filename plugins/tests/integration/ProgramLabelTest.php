@@ -18,6 +18,16 @@ use WP_UnitTestCase;
  */
 final class ProgramLabelTest extends WP_UnitTestCase {
 
+	/**
+	 * Merge values into the saved label settings option.
+	 *
+	 * @param string $key   Option array key.
+	 * @param mixed  $value Value.
+	 */
+	private function save( string $key, $value ): void {
+		update_option( 'hyperpress_label', array_merge( (array) get_option( 'hyperpress_label', array() ), array( $key => $value ) ) );
+	}
+
 	public function set_up(): void {
 		parent::set_up();
 		register_taxonomy_for_object_type( 'hyper_program', 'post' );
@@ -26,7 +36,7 @@ final class ProgramLabelTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
-		remove_theme_mod( Resolver::enabled_key( 'post' ) );
+		delete_option( 'hyperpress_label' );
 		foreach ( array( 'hyper_program', 'hyper_season' ) as $taxonomy ) {
 			unregister_taxonomy_for_object_type( $taxonomy, 'post' );
 			unregister_taxonomy_for_object_type( $taxonomy, 'page' );
@@ -136,7 +146,7 @@ final class ProgramLabelTest extends WP_UnitTestCase {
 	}
 
 	public function test_label_is_hidden_when_labels_are_disabled_for_the_post_type(): void {
-		set_theme_mod( Resolver::enabled_key( 'post' ), false );
+		$this->save( Resolver::enabled_key( 'post' ), false );
 		$this->go_to_post_with_programs( array( 'FTC' ) );
 
 		$this->assertSame( array(), $this->program_labels() );

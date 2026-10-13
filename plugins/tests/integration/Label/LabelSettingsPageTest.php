@@ -147,6 +147,16 @@ final class LabelSettingsPageTest extends WP_UnitTestCase {
 		$this->assertSame( $options, $this->field( Resolver::labels_key( 'page' ) )['options'] );
 	}
 
+	public function test_stale_saved_ids_do_not_break_page_building(): void {
+		update_option( 'hyperpress_label', array( Resolver::labels_key( 'post' ) => array( 'gone' ) ) );
+
+		$field = $this->field( Resolver::labels_key( 'post' ) );
+
+		$this->assertIsArray( $field );
+		$this->assertArrayNotHasKey( 'gone', $field['options'] );
+		delete_option( 'hyperpress_label' );
+	}
+
 	public function test_a_post_type_named_only_in_label_defaults_gets_fields(): void {
 		Registry::reset( true );
 		Registry::instance()->add(

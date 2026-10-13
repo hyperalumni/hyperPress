@@ -93,6 +93,16 @@ final class LabelRendererTest extends WP_UnitTestCase {
 		return static fn (): array => array( array( 'label' => $name ) );
 	}
 
+	/**
+	 * Merge values into the saved label settings option.
+	 *
+	 * @param string $key   Option array key.
+	 * @param mixed  $value Value.
+	 */
+	private function save( string $key, $value ): void {
+		update_option( 'hyperpress_label', array_merge( (array) get_option( 'hyperpress_label', array() ), array( $key => $value ) ) );
+	}
+
 	public function set_up(): void {
 		parent::set_up();
 		self::$ran = false;
@@ -103,8 +113,7 @@ final class LabelRendererTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
-		remove_theme_mod( Resolver::enabled_key( 'post' ) );
-		remove_theme_mod( Resolver::labels_key( 'post' ) );
+		delete_option( 'hyperpress_label' );
 		remove_all_filters( 'hyperpress_labels_content' );
 		if ( '' !== $this->override ) {
 			if ( file_exists( $this->override ) ) {
@@ -170,7 +179,7 @@ final class LabelRendererTest extends WP_UnitTestCase {
 
 	public function test_disabled_post_type_runs_no_callback(): void {
 		$this->add( 'a', array( self::class, 'flagged' ) );
-		set_theme_mod( Resolver::enabled_key( 'post' ), false );
+		$this->save( Resolver::enabled_key( 'post' ), false );
 
 		$this->assertSame( array(), Renderer::labels() );
 		$this->assertFalse( self::$ran );
@@ -180,7 +189,7 @@ final class LabelRendererTest extends WP_UnitTestCase {
 	public function test_unselected_label_is_skipped(): void {
 		$this->add( 'a', self::named( 'A' ) );
 		$this->add( 'b', array( self::class, 'flagged' ) );
-		set_theme_mod( Resolver::labels_key( 'post' ), array( 'a' ) );
+		$this->save( Resolver::labels_key( 'post' ), array( 'a' ) );
 
 		$this->assertSame( array( 'A' ), array_column( Renderer::labels(), 'label' ) );
 		$this->assertFalse( self::$ran );

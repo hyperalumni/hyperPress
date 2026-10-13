@@ -26,7 +26,7 @@ final class SeasonLabelTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
-		remove_theme_mod( Resolver::enabled_key( 'post' ) );
+		delete_option( 'hyperpress_label' );
 		unregister_taxonomy_for_object_type( 'hyper_season', 'post' );
 		unregister_taxonomy_for_object_type( 'hyper_season', 'page' );
 		remove_all_filters( 'hyperpress_labels_content' );

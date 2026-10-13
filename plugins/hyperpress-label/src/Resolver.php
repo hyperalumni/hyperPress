@@ -10,12 +10,12 @@ namespace HyperPress\Label;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Reads the per-post-type Customizer settings and falls back to registry defaults.
+ * Reads the per-post-type settings from the Labels settings page and falls back to registry defaults.
  */
 final class Resolver {
 
 	/**
-	 * Theme mod name holding the on/off switch for a post type.
+	 * Option key holding the on/off switch for a post type.
 	 *
 	 * @param string $post_type Post type name.
 	 */
@@ -24,7 +24,7 @@ final class Resolver {
 	}
 
 	/**
-	 * Theme mod name holding the chosen label IDs for a post type.
+	 * Option key holding the chosen label IDs for a post type.
 	 *
 	 * @param string $post_type Post type name.
 	 */
@@ -71,14 +71,17 @@ final class Resolver {
 			return false;
 		}
 
-		$enabled = (bool) get_theme_mod( self::enabled_key( $post_type ), self::default_enabled( $post_type ) );
+		$saved   = Settings::saved();
+		$enabled = array_key_exists( self::enabled_key( $post_type ), $saved )
+			? (bool) $saved[ self::enabled_key( $post_type ) ]
+			: self::default_enabled( $post_type );
 		if ( ! $enabled ) {
 			return false;
 		}
 
-		$saved = get_theme_mod( self::labels_key( $post_type ), null );
-		$ids   = is_array( $saved )
-			? array_values( array_map( 'strval', array_filter( $saved, 'is_scalar' ) ) )
+		$labels = $saved[ self::labels_key( $post_type ) ] ?? null;
+		$ids    = is_array( $labels )
+			? array_values( array_map( 'strval', array_filter( $labels, 'is_scalar' ) ) )
 			: self::default_labels( $post_type );
 
 		return in_array( $label_id, $ids, true );
