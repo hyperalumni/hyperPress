@@ -17,7 +17,9 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'seed_terms' ), 20 );
 		SeasonBanner::register();
 		Breadcrumbs::register();
+		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 		Customizer::register();
+		SettingsPage::register();
 		MetaBoxes::register();
 		AdminFilter::register();
 		SeasonOrder::register();
