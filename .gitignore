@@ -304,7 +304,7 @@ wp-config.php
 
 
 # End of https://www.toptal.com/developers/gitignore/api/node,sass,phpunit,composer,wordpress,jetbrains+all
-
+.worktrees/
 
 config.yml
 packaged/
