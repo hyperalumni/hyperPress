@@ -7,14 +7,18 @@ defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
  * The top-level "hyperPress" wp-admin menu.
  *
  * Other plugins attach their settings pages to it with `parent => AdminMenu::SLUG`.
+ * The menu has no landing page of its own: WordPress sends a click on a top-level menu to its first
+ * submenu item, so `reorder()` moves the General page to the front once every page has registered.
  */
 final class AdminMenu {
 
 	public const SLUG = 'hyperpress';
 
 	public static function boot(): void {
-		// Early, so the parent exists (and "Overview" comes first) before children attach at the default priority.
+		// Early, so the parent exists before children attach at the default priority.
 		add_action( 'admin_menu', array( self::class, 'register' ), 5 );
+		// Late, so every child page has registered before General is moved to the front.
+		add_action( 'admin_menu', array( self::class, 'reorder' ), 999 );
 	}
 
 	public static function register(): void {
@@ -23,56 +27,39 @@ final class AdminMenu {
 			__( 'hyperPress', 'hyperpress' ),
 			'manage_options',
 			self::SLUG,
-			array( self::class, 'render' ),
+			'',
 			'dashicons-admin-settings',
 			80
-		);
-		// Without this, WordPress repeats the parent's name as the first submenu item.
-		add_submenu_page(
-			self::SLUG,
-			__( 'hyperPress', 'hyperpress' ),
-			__( 'Overview', 'hyperpress' ),
-			'manage_options',
-			self::SLUG,
-			array( self::class, 'render' )
 		);
 	}
 
 	/**
-	 * The child settings pages the current user can open, as slug => title.
-	 *
-	 * @return array<string,string>
+	 * Moves the General page to the front of the hyperPress submenu, leaving the other items in order, and drops
+	 * the automatic copy of the parent. Does nothing when there is no General page.
 	 */
-	public static function children(): array {
+	public static function reorder(): void {
 		global $submenu;
 
-		$children = array();
-		foreach ( (array) ( $submenu[ self::SLUG ] ?? array() ) as $item ) {
-			if ( self::SLUG === $item[2] || ! current_user_can( $item[1] ) ) {
-				continue;
-			}
-			$children[ $item[2] ] = wp_strip_all_tags( $item[0] );
+		if ( empty( $submenu[ self::SLUG ] ) || ! is_array( $submenu[ self::SLUG ] ) ) {
+			return;
 		}
-		return $children;
-	}
 
-	public static function render(): void {
-		$children = self::children();
-		?>
-		<div class="wrap">
-			<h1><?php esc_html_e( 'hyperPress', 'hyperpress' ); ?></h1>
-			<?php if ( empty( $children ) ) : ?>
-				<p><?php esc_html_e( 'No settings pages yet.', 'hyperpress' ); ?></p>
-			<?php else : ?>
-				<ul>
-					<?php foreach ( $children as $slug => $title ) : ?>
-						<li>
-							<a href="<?php echo esc_url( false !== strpos( $slug, '.php' ) ? admin_url( $slug ) : admin_url( 'admin.php?page=' . $slug ) ); ?>"><?php echo esc_html( $title ); ?></a>
-						</li>
-					<?php endforeach; ?>
-				</ul>
-			<?php endif; ?>
-		</div>
-		<?php
+		$general = array();
+		$others  = array();
+		foreach ( $submenu[ self::SLUG ] as $item ) {
+			$slug = $item[2] ?? null;
+			if ( GeneralPage::ID === $slug ) {
+				$general[] = $item;
+			} elseif ( self::SLUG !== $slug ) {
+				$others[] = $item;
+			}
+			// Else it is the copy of the parent that WordPress adds as the first submenu item when the first child
+			// registers. It has no page of its own, so it is dropped.
+		}
+		if ( empty( $general ) ) {
+			return;
+		}
+
+		$submenu[ self::SLUG ] = array_values( array_merge( $general, $others ) ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 	}
 }

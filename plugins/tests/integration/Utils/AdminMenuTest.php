@@ -2,6 +2,7 @@
 namespace HyperPress\Tests\Integration\Utils;
 
 use HyperPress\Utils\AdminMenu;
+use HyperPress\Utils\GeneralPage;
 use WP_UnitTestCase;
 
 final class AdminMenuTest extends WP_UnitTestCase {
@@ -32,20 +33,27 @@ final class AdminMenuTest extends WP_UnitTestCase {
 		return false;
 	}
 
-	private function landing_page(): string {
-		ob_start();
-		AdminMenu::render();
-		return (string) ob_get_clean();
+	private function add_page( string $slug ): void {
+		add_submenu_page( AdminMenu::SLUG, $slug, $slug, 'manage_options', $slug, '__return_null' );
+	}
+
+	/** @return list<string> */
+	private function submenu_slugs(): array {
+		return array_map(
+			static fn( array $item ): string => $item[2],
+			(array) ( $GLOBALS['submenu'][ AdminMenu::SLUG ] ?? array() )
+		);
 	}
 
 	public function test_slug_is_hyperpress(): void {
 		$this->assertSame( 'hyperpress', AdminMenu::SLUG );
 	}
 
-	public function test_administrator_sees_the_top_level_menu(): void {
+	public function test_registers_the_top_level_menu(): void {
 		$this->user_as( 'administrator' );
 		AdminMenu::register();
 		$this->assertTrue( $this->menu_visible() );
+		$this->assertSame( 'dashicons-admin-settings', $GLOBALS['menu'][80][6] );
 	}
 
 	public function test_editor_does_not_see_the_top_level_menu(): void {
@@ -54,30 +62,66 @@ final class AdminMenuTest extends WP_UnitTestCase {
 		$this->assertFalse( $this->menu_visible() );
 	}
 
-	public function test_landing_page_shows_empty_message_without_children(): void {
+	public function test_has_no_overview_submenu(): void {
 		$this->user_as( 'administrator' );
 		AdminMenu::register();
-		$html = $this->landing_page();
-		$this->assertStringContainsString( 'No settings pages yet.', $html );
-		$this->assertStringNotContainsString( 'Overview', $html );
+		$this->assertNotContains( AdminMenu::SLUG, $this->submenu_slugs() );
 	}
 
-	public function test_landing_page_lists_a_child_page(): void {
-		$this->user_as( 'administrator' );
-		AdminMenu::register();
-		add_submenu_page( AdminMenu::SLUG, 'Child Page', 'Child <b>Settings</b>', 'manage_options', 'hyperpress-child', '__return_null' );
-		$html = $this->landing_page();
-		$this->assertStringContainsString( 'Child Settings', $html );
-		$this->assertStringContainsString( 'admin.php?page=hyperpress-child', $html );
-		$this->assertStringNotContainsString( 'No settings pages yet.', $html );
+	public function test_boot_hooks_register_early_and_reorder_late(): void {
+		AdminMenu::boot();
+		$this->assertSame( 5, has_action( 'admin_menu', array( AdminMenu::class, 'register' ) ) );
+		$this->assertSame( 999, has_action( 'admin_menu', array( AdminMenu::class, 'reorder' ) ) );
 	}
 
-	public function test_landing_page_skips_children_the_user_cannot_access(): void {
+	public function test_reorder_puts_general_first_when_it_registered_after_other_pages(): void {
 		$this->user_as( 'administrator' );
 		AdminMenu::register();
-		add_submenu_page( AdminMenu::SLUG, 'Secret', 'Secret Page', 'manage_network', 'hyperpress-secret', '__return_null' );
-		$html = $this->landing_page();
-		$this->assertStringNotContainsString( 'Secret Page', $html );
-		$this->assertStringContainsString( 'No settings pages yet.', $html );
+		$this->add_page( 'hyperpress-first' );
+		$this->add_page( GeneralPage::ID );
+		AdminMenu::reorder();
+		$this->assertSame( GeneralPage::ID, $this->submenu_slugs()[0] );
+	}
+
+	public function test_reorder_keeps_the_other_items_in_their_order(): void {
+		$this->user_as( 'administrator' );
+		AdminMenu::register();
+		$this->add_page( 'hyperpress-a' );
+		$this->add_page( 'hyperpress-b' );
+		$this->add_page( GeneralPage::ID );
+		$this->add_page( 'hyperpress-c' );
+		AdminMenu::reorder();
+		$this->assertSame(
+			array( GeneralPage::ID, 'hyperpress-a', 'hyperpress-b', 'hyperpress-c' ),
+			$this->submenu_slugs()
+		);
+		$this->assertSame( array_keys( $GLOBALS['submenu'][ AdminMenu::SLUG ] ), range( 0, 3 ) );
+	}
+
+	public function test_reorder_drops_the_automatic_copy_of_the_parent(): void {
+		$this->user_as( 'administrator' );
+		AdminMenu::register();
+		$this->add_page( 'hyperpress-a' );
+		$this->add_page( GeneralPage::ID );
+		$this->assertContains( AdminMenu::SLUG, $this->submenu_slugs() ); // WordPress adds it with the first child.
+		AdminMenu::reorder();
+		$this->assertNotContains( AdminMenu::SLUG, $this->submenu_slugs() );
+	}
+
+	public function test_reorder_does_nothing_without_a_general_page(): void {
+		$this->user_as( 'administrator' );
+		AdminMenu::register();
+		$this->add_page( 'hyperpress-a' );
+		$this->add_page( 'hyperpress-b' );
+		$before = $GLOBALS['submenu'];
+		AdminMenu::reorder();
+		$this->assertSame( $before, $GLOBALS['submenu'] );
+	}
+
+	public function test_reorder_does_nothing_without_a_submenu(): void {
+		$this->user_as( 'administrator' );
+		AdminMenu::register();
+		AdminMenu::reorder();
+		$this->assertArrayNotHasKey( AdminMenu::SLUG, $GLOBALS['submenu'] );
 	}
 }

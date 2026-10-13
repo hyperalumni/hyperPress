@@ -81,11 +81,11 @@
 - Consumes: `GeneralPage::ID`.
 - Produces: `AdminMenu::SLUG = 'hyperpress'` (unchanged); `boot(): void` hooks `register` at `admin_menu` priority 5 and `reorder` at priority 999; `register(): void` adds only the top-level menu (empty callback, `manage_options`, same title, icon and position 80); `reorder(): void` moves the submenu item whose slug is `GeneralPage::ID` to the front of `$submenu['hyperpress']`. `render()` and `children()` are removed (confirm nothing else calls them).
 
-- [ ] **Step 1: Write failing tests** (`AdminMenuTest`): `test_registers_the_top_level_menu`; `test_has_no_overview_submenu` (no submenu item with slug `hyperpress`); `test_reorder_puts_general_first_when_it_registered_after_other_pages`; `test_reorder_keeps_the_other_items_in_their_order`; `test_reorder_does_nothing_without_a_general_page` (no error, `$submenu` unchanged). Use `add_submenu_page( AdminMenu::SLUG, ... )` and an administrator user as the old test did.
-- [ ] **Step 2:** Run `composer test:integration -- --filter AdminMenuTest`. Expected: FAIL.
-- [ ] **Step 3:** Rework `AdminMenu` to the interface above.
-- [ ] **Step 4:** Run `composer test:integration`, `test:unit` and `lint`. Expected: pass.
-- [ ] **Step 5:** Commit `feat(utils): make General the first hyperPress menu page and drop Overview`.
+- [x] **Step 1: Write failing tests** (`AdminMenuTest`): `test_registers_the_top_level_menu`; `test_has_no_overview_submenu` (no submenu item with slug `hyperpress`); `test_reorder_puts_general_first_when_it_registered_after_other_pages`; `test_reorder_keeps_the_other_items_in_their_order`; `test_reorder_does_nothing_without_a_general_page` (no error, `$submenu` unchanged). Use `add_submenu_page( AdminMenu::SLUG, ... )` and an administrator user as the old test did.
+- [x] **Step 2:** Run `composer test:integration -- --filter AdminMenuTest`. Expected: FAIL.
+- [x] **Step 3:** Rework `AdminMenu` to the interface above.
+- [x] **Step 4:** Run `composer test:integration`, `test:unit` and `lint`. Expected: pass.
+- [x] **Step 5:** Commit `feat(utils): make General the first hyperPress menu page and drop Overview`.
 
 ### Task 4: Competition reads the shared key
 
