@@ -21,6 +21,15 @@ final class TaxonomyAttachmentTest extends WP_UnitTestCase {
 		$this->assertEqualsCanonicalizing( $expected, $tax->object_type, "$taxonomy object types" );
 	}
 
+	public function set_up(): void {
+		parent::set_up();
+		// Earlier tests may leave other post types saved or registered.
+		delete_option( 'hyperpress_season' );
+		delete_option( 'hyperpress_program' );
+		\HyperPress\Season\Plugin::register();
+		\HyperPress\Program\Plugin::register();
+	}
+
 	public function test_season_attaches_to_posts_until_the_season_settings_page_says_otherwise(): void {
 		$this->assertSame( array( 'post' ), get_taxonomy( 'hyper_season' )->object_type );
 	}

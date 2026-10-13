@@ -143,6 +143,28 @@ final class LabelCustomizerTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( '<b>', $html );
 	}
 
+	public function test_the_dropdown_description_keeps_harmless_markup_and_drops_scripts(): void {
+		Registry::instance()->add(
+			'x.one',
+			array(
+				'group'    => 'G',
+				'title'    => 'T',
+				'callback' => array( self::class, 'noop' ),
+			)
+		);
+		$control              = $this->customizer()->get_control( Resolver::labels_key( 'post' ) );
+		$control->description = 'See <a href="https://example.org/docs">the docs</a> and <em>note</em><script>alert(1)</script><img src=x onerror=alert(2)>';
+
+		ob_start();
+		( new \ReflectionMethod( $control, 'render_content' ) )->invoke( $control );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '<a href="https://example.org/docs">the docs</a>', $html );
+		$this->assertStringContainsString( '<em>note</em>', $html );
+		$this->assertStringNotContainsString( '<script', $html );
+		$this->assertStringNotContainsString( 'onerror', $html );
+	}
+
 	public function test_a_post_type_named_only_in_label_defaults_gets_controls(): void {
 		Registry::reset( true );
 		Registry::instance()->add(

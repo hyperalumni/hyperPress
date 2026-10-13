@@ -12,6 +12,15 @@ final class RegistrationParityTest extends WP_UnitTestCase {
 	private const FIXTURE = __DIR__ . '/../fixtures/legacy-registrations.json';
 	private const TAXONOMY_PROPS  = array( 'public', 'publicly_queryable', 'hierarchical', 'show_tagcloud', 'show_in_quick_edit', 'show_admin_column' );
 
+	public function set_up(): void {
+		parent::set_up();
+		// Season and Program follow their saved settings; start from the defaults.
+		delete_option( 'hyperpress_season' );
+		delete_option( 'hyperpress_program' );
+		\HyperPress\Season\Plugin::register();
+		\HyperPress\Program\Plugin::register();
+	}
+
 	private static function snapshot(): array {
 		return json_decode( (string) file_get_contents( self::FIXTURE ), true );
 	}

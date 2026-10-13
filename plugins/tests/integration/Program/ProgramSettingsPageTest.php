@@ -9,6 +9,7 @@ final class ProgramSettingsPageTest extends WP_UnitTestCase {
 	public function tear_down(): void {
 		unregister_post_type( 'hp_public_type' );
 		unregister_post_type( 'hp_private_type' );
+		\HyperPress\Program\Plugin::register();
 		parent::tear_down();
 	}
 
@@ -95,5 +96,18 @@ final class ProgramSettingsPageTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'post', $options );
 		$this->assertSame( 'Public Type', $options['hp_public_type'] );
 		$this->assertArrayNotHasKey( 'hp_private_type', $options );
+	}
+
+	public function test_the_box_is_built_when_the_program_taxonomy_is_not_registered(): void {
+		unregister_taxonomy( 'hyper_program' );
+		$this->assertFalse( taxonomy_exists( 'hyper_program' ) );
+
+		$boxes = \HyperPress\Program\MetaBoxes::boxes( array() );
+
+		$this->assertCount( 1, $boxes );
+		$this->assertSame( 'hyperpress_program_box', $boxes[0]['id'] );
+		$field = $boxes[0]['fields'][0];
+		$this->assertSame( 'hyperpress_program_post_types', $field['id'] );
+		$this->assertArrayHasKey( 'post', $field['options'] );
 	}
 }
