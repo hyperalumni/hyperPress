@@ -4,6 +4,7 @@ namespace HyperPress\Sponsor;
 defined( 'ABSPATH' ) || exit;
 
 use HyperPress\Utils\Banner;
+use HyperPress\Utils\Sanitize;
 
 final class MetaBoxes {
 
@@ -64,7 +65,7 @@ final class MetaBoxes {
 					'type'              => 'url',
 					'placeholder'       => 'https://hyperonline.org',
 					'required'          => false,
-					'sanitize_callback' => 'esc_url_raw',
+					'sanitize_callback' => array( Sanitize::class, 'url' ),
 				),
 				array(
 					'name'              => 'Sponsor Description',

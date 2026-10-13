@@ -3,6 +3,8 @@ namespace HyperPress\Social;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Utils\Sanitize;
+
 final class MetaBoxes {
 
 	public static function register(): void {
@@ -63,7 +65,7 @@ final class MetaBoxes {
 			'id'                => Settings::field_id( $key ),
 			'name'              => $label,
 			'type'              => 'url',
-			'sanitize_callback' => 'esc_url_raw',
+			'sanitize_callback' => array( Sanitize::class, 'url' ),
 		);
 	}
 }

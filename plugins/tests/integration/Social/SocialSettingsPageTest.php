@@ -85,7 +85,7 @@ final class SocialSettingsPageTest extends WP_UnitTestCase {
 			}
 			++$seen;
 			$this->assertSame( 'url', $field['type'], $field['id'] );
-			$this->assertSame( 'esc_url_raw', $field['sanitize_callback'], $field['id'] );
+			$this->assertSame( array( \HyperPress\Utils\Sanitize::class, 'url' ), $field['sanitize_callback'], $field['id'] );
 			$this->assertSame( $labels[ $field['id'] ], $field['name'], $field['id'] );
 			$this->assertArrayNotHasKey( 'std', $field, $field['id'] );
 		}
