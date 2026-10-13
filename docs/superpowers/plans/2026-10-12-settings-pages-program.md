@@ -1,6 +1,6 @@
 # Program settings page Implementation Plan
 
-> **STATUS: ✅ CODE COMPLETE, browser checks pending** (2026-10-12). Tasks 1-3 and Task 4 step 4 are done on `feat/settings-pages`; Task 4 steps 1-3 (Program page, taxonomy on the selected post types and Customizer section gone, optional dev-data copy) need a person in a browser.
+> **STATUS: ✅ COMPLETED** (2026-10-13, commits 46a85fa..79b8709). All tasks are done on `feat/settings-pages`; browser checks confirmed by the owner on 2026-10-13: the Program page saves, clearing every post type and saving persists the empty list (after the fix `ccecd9c`). Not confirmed in the browser: the Program taxonomy on the selected post types' edit screens and the Customizer "Programs" section being gone. Optional dev-data copy not run.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -90,11 +90,11 @@
 
 **Files:** this plan; completed plans that mention changed files.
 
-- [ ] **Step 1 (manual):** open hyperPress > Program. Check the post types select lists public post types, `post` is selected on first load, and choosing, clearing every choice, saving and reloading keeps the state.
-- [ ] **Step 2 (manual):** confirm the Program taxonomy appears on the selected post types' edit screens, and that the Customizer no longer has a "Programs" section.
-- [ ] **Step 3 (dev data, optional):** after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old value once: `wpcli eval 'update_option( "hyperpress_program", array( "hyperpress_program_post_types" => get_theme_mod( "hyperpress_program_post_types", array( "post" ) ) ) );'`.
+- [x] **Step 1 (manual):** open hyperPress > Program. Check the post types select lists public post types, `post` is selected on first load, and choosing, clearing every choice, saving and reloading keeps the state.
+- [ ] **Step 2 (manual):** (not confirmed in the browser) confirm the Program taxonomy appears on the selected post types' edit screens, and that the Customizer no longer has a "Programs" section.
+- [ ] **Step 3 (dev data, optional):** (not run) after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old value once: `wpcli eval 'update_option( "hyperpress_program", array( "hyperpress_program_post_types" => get_theme_mod( "hyperpress_program_post_types", array( "post" ) ) ) );'`.
 - [x] **Step 4:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_program_post_types`, `Programs` with Customizer, `PostTypeDropdownControl`, `CategoryDropdownControl`, `HyperPress\Utils\Controls`, `SeasonProgramCustomizerTest`; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest. The controls no longer exist, so older plans that describe them get a note.
-- [ ] **Step 5:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete program settings page`.
+- [x] **Step 5:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete program settings page`.
 
 ## Outcome / execution notes
 
@@ -106,3 +106,4 @@
 - **Deferred minors from reviews (2026-10-12).** `Settings::post_types()` returns saved strings without a registered/public check (the save-side sanitizer and `TaxonomyRegistrar` cover it). `TaxonomyAttachmentTest`'s default-attachment tests depend on global taxonomy state, so running `--filter 'Program|TaxonomyAttachment'` alone fails; fixed in the final fix wave. `NoControlsTest` uses `class_exists`; a sturdier file-existence assertion is planned in the final fix wave.
 - Note (2026-10-13): `LabelDropdownControl` is now deleted too, together with the label Customizer section; see `docs/superpowers/plans/2026-10-13-settings-pages-label.md`.
 - **2026-10-13, clearing the post types showed "Posts" again (browser test):** found in the owner's browser test (clearing Program showed "Posts" again). Meta Box redisplays `std` for an empty or missing multi-select value, so a field whose default is delivered by `default_option_<option>` must not also set `std`, and a saved row without the key means none. The `std` is removed from the post types field and `post_types()` now gives `array()` for a saved row without the key (default `array( 'post' )` only for a missing option or a non-array value). This reverses the earlier ruling that dismissed the final-review concern.
+- **Browser checks (2026-10-13, owner).** Confirmed: clearing every post type and saving works and the empty list persists after a reload (after the fix `ccecd9c`, see the "Posts" bullet above). Not confirmed: that the Program taxonomy shows on the selected post types' edit screens and that the Customizer has no "Programs" section (Task 4 step 2). The optional dev-data copy (step 3) was not run.

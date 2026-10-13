@@ -1,6 +1,6 @@
 # Media settings page Implementation Plan
 
-> **STATUS: ✅ CODE COMPLETE, browser checks pending** (2026-10-13). Task 1 and Task 2 step 3 are done on `feat/settings-pages`; Task 2 steps 1-2 (Media page, NextGen breadcrumbs, Customizer section gone, optional dev-data copy) need a person in a browser.
+> **STATUS: ✅ COMPLETED** (2026-10-13, commits 289e60c..79b8709). All tasks are done on `feat/settings-pages`; browser checks confirmed by the owner on 2026-10-13: picking a page and saving retains it, clearing it retains the empty value, and unpublishing the selected page empties the select box on the settings page (accepted behaviour: the picker lists only published pages). Not confirmed in the browser: the breadcrumb trail with NextGEN active and the Customizer "NextGen Gallery" section being gone. Optional dev-data copy not run.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -59,10 +59,10 @@
 
 **Files:** this plan; completed plans that mention changed files.
 
-- [ ] **Step 1 (manual):** hyperPress menu lists Media. Pick a page, save, reload; it stays. Clear it, save, reload; it stays empty. With NextGEN active, open an album or gallery under that page and check the breadcrumb trail includes the NextGen levels as before; with no page selected the trail is unchanged. Confirm the Customizer no longer has a "NextGen Gallery" section.
-- [ ] **Step 2 (dev data, optional):** after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old value once: `wpcli eval '$v = absint( get_theme_mod( "hyperpress_nggallery_photos_page", 0 ) ); if ( $v ) { update_option( "hyperpress_media", array( "hyperpress_media_photos_page" => $v ) ); }'`.
+- [x] **Step 1 (manual):** hyperPress menu lists Media. Pick a page, save, reload; it stays. Clear it, save, reload; it stays empty. With NextGEN active, open an album or gallery under that page and check the breadcrumb trail includes the NextGen levels as before; with no page selected the trail is unchanged. Confirm the Customizer no longer has a "NextGen Gallery" section. (Confirmed in the browser: pick and clear persist, and unpublishing the selected page empties the select box, accepted behaviour. Not confirmed in the browser: the breadcrumb trail with NextGEN active and the Customizer section being gone.)
+- [ ] **Step 2 (dev data, optional):** (not run) after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old value once: `wpcli eval '$v = absint( get_theme_mod( "hyperpress_nggallery_photos_page", 0 ) ); if ( $v ) { update_option( "hyperpress_media", array( "hyperpress_media_photos_page" => $v ) ); }'`.
 - [x] **Step 3:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_nggallery_photos_page`, `NextGen\Customizer`, `hyperpress_media_nextgen`, the "NextGen Gallery" Customizer section and `hyperpress-media` + "Requires Plugins"; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; update the `REQUIRES` row for media in `docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md` (it lists safe-svg only); leave the rest.
-- [ ] **Step 4:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete media settings page`.
+- [x] **Step 4:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete media settings page`.
 
 ## Outcome / execution notes
 
@@ -74,3 +74,4 @@
 - (2026-10-13) `NextGenBreadcrumbsTest` covers only paths that return before NextGEN's mappers (no NextGEN in the test environment) and cannot detect removal of the first `0 === $photos_page` guard.
 - (2026-10-13) Browser items still open: the `desc` key on the post field, the saved value shape of the picker, and the breadcrumb trail with NextGEN active.
 - (2026-10-13) This is the last settings-page plan: all Customizer options of the plugins that were data or configuration have moved. What remains in the Customizer is colours (gear, hyper, countdown) and the theme's own copyright name and mobile menu layout.
+- (2026-10-13) **Browser checks (owner).** Confirmed: picking a page and saving retains it; clearing it retains the empty value; unpublishing the selected page empties the select box on the settings page. The picker lists only published pages and the owner wants that, so this is accepted behaviour; the next save would clear the saved page. Not confirmed: the breadcrumb trail with NextGEN active and the Customizer "NextGen Gallery" section being gone (Task 2 step 1 is ticked on the confirmed parts, which the step text records). The optional dev-data copy (step 2) was not run.
