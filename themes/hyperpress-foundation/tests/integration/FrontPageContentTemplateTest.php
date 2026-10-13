@@ -41,7 +41,7 @@ final class FrontPageContentTemplateTest extends WP_UnitTestCase {
 		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_PLUGINS' ) ) {
 			$this->markTestSkipped( 'Needs the HYPER plugins' );
 		}
-		set_theme_mod( 'hyperpress_home_blog_post_types', array( 'hyper_award' ) );
+		update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_post_types' => array( 'hyper_award' ) ) );
 		self::factory()->post->create(
 			array(
 				'post_type'   => 'hyper_award',
@@ -57,7 +57,7 @@ final class FrontPageContentTemplateTest extends WP_UnitTestCase {
 
 	public function test_front_page_only_passes_integer_countdown_ids_to_the_shortcode(): void {
 		self::factory()->post->create( array( 'post_status' => 'publish' ) );
-		set_theme_mod( 'hyperpress_homepage_customize_countdowns', array( '12', '7" x="y', 'abc' ) );
+		update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_countdowns' => array( '12', '7" x="y', 'abc', '0' ) ) );
 
 		$seen = array();
 		add_filter(

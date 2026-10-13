@@ -44,9 +44,9 @@ final class FrontPageQueryTest extends WP_UnitTestCase {
 
 		foreach ( array( null, false, '' ) as $value ) {
 			if ( null === $value ) {
-				remove_theme_mod( 'hyperpress_home_blog_categories' );
+				delete_option( 'hyperpress_frontpage' );
 			} else {
-				set_theme_mod( 'hyperpress_home_blog_categories', $value );
+				update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_categories' => $value ) );
 			}
 			$html = $this->render_front_page();
 			$this->assertStringContainsString( 'Unfiltered Post Title', $html );
@@ -83,7 +83,7 @@ final class FrontPageQueryTest extends WP_UnitTestCase {
 			)
 		);
 		self::factory()->post->create( array( 'post_title' => 'Outside Category Post' ) );
-		set_theme_mod( 'hyperpress_home_blog_categories', array( (string) $category, 'abc', '0' ) );
+		update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_categories' => array( (string) $category, 'abc', '0', '7" x="y' ) ) );
 
 		// Only look at the post list: the banner above it prints the main query's current post regardless of the mod.
 		$html = $this->render_front_page();
@@ -91,5 +91,28 @@ final class FrontPageQueryTest extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( 'Inside Category Post', $list );
 		$this->assertStringNotContainsString( 'Outside Category Post', $list );
+	}
+
+	public function test_non_public_post_types_in_the_option_are_not_queried(): void {
+		register_post_type( 'hp_private_type', array( 'public' => false ) );
+		self::factory()->post->create(
+			array(
+				'post_type'  => 'hp_private_type',
+				'post_title' => 'Secret Private Entry',
+			)
+		);
+		self::factory()->post->create( array( 'post_title' => 'Ordinary Post Entry' ) );
+		update_option(
+			'hyperpress_frontpage',
+			array( 'hyperpress_frontpage_post_types' => array( 'hp_private_type', 'hp_not_registered_type' ) )
+		);
+
+		$html = $this->render_front_page();
+		$list = substr( $html, (int) strpos( $html, '<main' ) );
+
+		$this->assertStringContainsString( 'Ordinary Post Entry', $list );
+		$this->assertStringNotContainsString( 'Secret Private Entry', $list );
+
+		unregister_post_type( 'hp_private_type' );
 	}
 }

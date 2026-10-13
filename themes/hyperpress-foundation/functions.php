@@ -72,6 +72,9 @@ require_once get_template_directory() . '/library/plugins.php';
 /** WP Customize Options */
 require_once get_template_directory() . '/library/customize.php';
 
+/** Front Page settings (the hyperpress_frontpage option) */
+require_once get_template_directory() . '/library/frontpage-settings.php';
+
 /** HYPER Colors in wp-head */
 require_once get_template_directory() . '/library/root-colors.php';
 

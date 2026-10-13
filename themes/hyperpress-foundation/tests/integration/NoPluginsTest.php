@@ -95,6 +95,32 @@ final class NoPluginsTest extends WP_UnitTestCase {
 		$this->render( home_url( '/' ) );
 	}
 
+	public function test_the_front_page_renders_with_no_option_an_empty_banner_and_no_countdowns(): void {
+		self::factory()->post->create( array( 'post_title' => 'Front listed post' ) );
+		delete_option( 'hyperpress_frontpage' );
+		$seen = 0;
+		add_filter(
+			'pre_do_shortcode_tag',
+			static function ( $output, $tag ) use ( &$seen ) {
+				if ( 'hyperpress_countdown' === $tag ) {
+					++$seen;
+				}
+				return $output;
+			},
+			10,
+			2
+		);
+
+		$html = $this->render( home_url( '/' ) );
+
+		$this->assertStringContainsString( 'Front listed post', $html );
+		$this->assertSame( 0, $seen );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+		$this->assertSame( '', $banner['title'] );
+		$this->assertSame( '', $banner['subtitle'] );
+		$this->assertSame( '', $banner['buttonText'] );
+	}
+
 	public function test_the_customizer_loads(): void {
 		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
 		$manager = new WP_Customize_Manager();

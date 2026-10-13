@@ -21,7 +21,7 @@ if ( empty( $banner['title'] ) ) {
 	$banner['title'] = get_the_title();
 }
 if ( empty( $banner['subtitle'] ) ) {
-	$banner['subtitle'] = get_theme_mod( 'hyperpress_homepage_customize_banner_subtitle' );
+	$banner['subtitle'] = hyperpress_frontpage_setting( 'hyperpress_frontpage_banner_subtitle', '' );
 }
 
 $banner['type'] = sanitize_text_field( $banner['type'] );

@@ -58,7 +58,7 @@ final class BannerSubtitleTest extends WP_UnitTestCase {
 	}
 
 	public function test_a_configured_subtitle_may_use_the_span_or_the_shortcode(): void {
-		set_theme_mod( 'hyperpress_homepage_customize_banner_subtitle', 'About <span class="emphasis">us</span> and [hyperpress_emphasis]you[/hyperpress_emphasis]' );
+		update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_banner_subtitle' => 'About <span class="emphasis">us</span> and [hyperpress_emphasis]you[/hyperpress_emphasis]' ) );
 		$page_id = self::factory()->post->create( array( 'post_type' => 'page' ) );
 
 		$subtitle = $this->subtitle_html( $this->banner_html( get_permalink( $page_id ) ) );
@@ -70,7 +70,7 @@ final class BannerSubtitleTest extends WP_UnitTestCase {
 	}
 
 	public function test_hostile_markup_in_a_subtitle_is_removed(): void {
-		set_theme_mod( 'hyperpress_homepage_customize_banner_subtitle', 'Hi <span class="emphasis" onclick="x()">there</span><script>alert(1)</script><a href="javascript:alert(2)">l</a><img src=x onerror=alert(3)>' );
+		update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_banner_subtitle' => 'Hi <span class="emphasis" onclick="x()">there</span><script>alert(1)</script><a href="javascript:alert(2)">l</a><img src=x onerror=alert(3)>' ) );
 		$page_id = self::factory()->post->create( array( 'post_type' => 'page' ) );
 
 		$subtitle = $this->subtitle_html( $this->banner_html( get_permalink( $page_id ) ) );

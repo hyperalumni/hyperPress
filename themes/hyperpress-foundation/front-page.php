@@ -32,7 +32,7 @@ if ( function_exists( 'add_revslider' ) ) {
 <?php do_action( 'foundationpress_before_content' ); ?>
 	<div class="main-container">
 		<div class="main-grid">
-			<?php $countdowns = get_theme_mod( 'hyperpress_homepage_customize_countdowns' ); ?>
+			<?php $countdowns = hyperpress_frontpage_setting( 'hyperpress_frontpage_countdowns', array() ); ?>
 			<?php if ( ! empty( $countdowns ) ) : ?>
 				<?php
                 while ( have_posts() ) :
@@ -58,21 +58,25 @@ the_post();
 			<main class="main-content">
 				<?php
 				// query posts by the categories selected in the customizer
-				$blog_categories = array_values( array_filter( array_map( 'absint', (array) get_theme_mod( 'hyperpress_home_blog_categories' ) ) ) );
+				$blog_categories = array_values( array_filter( array_map( 'absint', (array) hyperpress_frontpage_setting( 'hyperpress_frontpage_categories', array() ) ) ) );
 				$query_args      = array( 'post_type' => 'post' );
 				if ( ! empty( $blog_categories ) ) {
 					$query_args['category__in'] = $blog_categories;
 				}
 				$the_query       = new WP_Query( $query_args );
-				$blog_post_types = get_theme_mod( 'hyperpress_home_blog_post_types' );
+				$blog_post_types = hyperpress_frontpage_setting( 'hyperpress_frontpage_post_types', array() );
 
-				if ( ! empty( $blog_post_types ) ) {
+				if ( ! empty( $blog_post_types ) && is_array( $blog_post_types ) ) {
 					$blog_custom_post_types = array_filter(
                         $blog_post_types,
                         function ( $post_type ) {
-						// filter out custom post types that do not exist
+						// filter out custom post types that do not exist or are not public
 						// filter out 'post' type as that is covered by the query above
-						return ! empty( $post_type ) && post_type_exists( $post_type ) && 'post' !== $post_type;
+						if ( ! is_string( $post_type ) || '' === $post_type || 'post' === $post_type || ! post_type_exists( $post_type ) ) {
+							return false;
+						}
+						$post_type_object = get_post_type_object( $post_type );
+						return $post_type_object && $post_type_object->public;
 					}
                         );
 					if ( ! empty( $blog_custom_post_types ) ) {
