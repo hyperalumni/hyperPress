@@ -1,6 +1,6 @@
 # hyperpress-contact Implementation Plan
 
-> **STATUS: ✅ COMPLETED, browser checks pending** (2026-10-12). Tasks 1-6 and the automated part of Task 7 are done on `feat/hyperpress-contact` (final review fix wave and the Meta Box map refactor included). Task 7 steps 2-4 (Meta Box admin page, save, front-end map) need a person in a browser and are still unticked.
+> **STATUS: ✅ COMPLETED** (2026-10-12). Tasks 1-6 and the automated part of Task 7 are done on `feat/hyperpress-contact` (final review fix wave and the Meta Box map refactor included). Task 7 steps 2-4 (Meta Box admin page, save, front-end map) were confirmed in a browser by the owner on 2026-10-12.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -197,9 +197,9 @@
 - Modify: this plan (tick boxes; add the COMPLETED banner), the spec if reality differs from it
 
 - [x] **Step 1:** Run `composer lint`, `test:unit`, `test:integration` in `plugins/` and in the theme. Expected: all pass, 0 lint violations.
-- [ ] **Step 2 (manual, needs a person in a browser):** start `docker/hyperalumni`, activate `hyperpress-contact`, and check that "Contact" appears under the hyperPress menu and is listed on the hyperPress landing page. If the child page does not appear under the custom `hyperpress` parent, record the finding and fix `SettingsPage` (the MB Settings Page docs do not cover custom top-level parents or `admin_menu` priority).
-- [ ] **Step 3 (manual):** add the three addresses and the map; confirm the group's `sanitize_callback` (`Addresses::sanitize_entry`) receives one entry per clone (if the shape differs, fix `Addresses::sanitize_entry` and add a test with the observed shape); confirm slugs are generated and unique after saving.
-- [ ] **Step 4 (manual):** make a page with the Contact template containing the form shortcode and the three `[hyperpress_address]` shortcodes; check the card look, the non-interactive map, two maps on one page, and the page with the plugin deactivated.
+- [x] **Step 2 (manual, needs a person in a browser):** start `docker/hyperalumni`, activate `hyperpress-contact`, and check that "Contact" appears under the hyperPress menu and is listed on the hyperPress landing page. If the child page does not appear under the custom `hyperpress` parent, record the finding and fix `SettingsPage` (the MB Settings Page docs do not cover custom top-level parents or `admin_menu` priority).
+- [x] **Step 3 (manual):** add the three addresses and the map; confirm the group's `sanitize_callback` (`Addresses::sanitize_entry`) receives one entry per clone (if the shape differs, fix `Addresses::sanitize_entry` and add a test with the observed shape); confirm slugs are generated and unique after saving.
+- [x] **Step 4 (manual):** make a page with the Contact template containing the form shortcode and the three `[hyperpress_address]` shortcodes; check the card look, the non-interactive map, two maps on one page, and the page with the plugin deactivated.
 - [x] **Step 5:** Tick this plan's boxes, add `> **STATUS: COMPLETED** (date, commit range)`, commit: `docs(plans): complete hyperpress-contact`.
 
 ## Execution notes
