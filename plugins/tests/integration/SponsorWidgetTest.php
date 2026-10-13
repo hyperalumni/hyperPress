@@ -100,13 +100,13 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 
 		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
 		// Positive control: while the season exists the widget prints its sponsor cells.
-		$this->assertStringContainsString( '<div class="cell">', $this->render() );
+		$this->assertStringContainsString( '<div class="cell text-center">', $this->render() );
 
 		$term = get_term_by( 'slug', 'season-a', 'hyper_season' );
 		wp_delete_term( $term->term_id, 'hyper_season' );
 
 		$this->assertSame( $without, $this->render() );
-		$this->assertStringNotContainsString( '<div class="cell">', $this->render() );
+		$this->assertStringNotContainsString( '<div class="cell text-center">', $this->render() );
 	}
 
 	public function test_see_all_link_is_escaped_and_pretty_with_pretty_permalinks(): void {
@@ -141,7 +141,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 
 		$output = $this->render( array( 'maxCount' => 3 ) );
 
-		$this->assertSame( 3, substr_count( $output, '<div class="cell">' ) );
+		$this->assertSame( 3, substr_count( $output, '<div class="cell text-center">' ) );
 	}
 
 	public function test_global_post_is_restored_after_rendering(): void {
@@ -152,7 +152,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 
 		$output = $this->render();
 
-		$this->assertStringContainsString( '<div class="cell">', $output );
+		$this->assertStringContainsString( '<div class="cell text-center">', $output );
 		$this->assertSame( $host, get_post()->ID );
 	}
 
@@ -186,7 +186,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 			$output = (string) ob_get_clean();
 		}
 
-		$this->assertStringContainsString( '<div class="cell">', $output );
+		$this->assertStringContainsString( '<div class="cell text-center">', $output );
 	}
 
 	public function test_sponsor_title_cannot_break_out_of_the_title_attribute(): void {
@@ -198,7 +198,7 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 
 		$output = $this->render();
 
-		$this->assertStringContainsString( '<div class="cell">', $output );
+		$this->assertStringContainsString( '<div class="cell text-center">', $output );
 		$this->assertStringNotContainsString( '<script', $output );
 		$this->assertStringNotContainsString( '"><script', $output );
 	}

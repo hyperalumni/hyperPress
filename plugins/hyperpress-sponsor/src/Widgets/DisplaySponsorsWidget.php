@@ -85,7 +85,7 @@ class DisplaySponsorsWidget extends WP_Widget {
 					while ( $the_query->have_posts() ) {
 						$the_query->the_post();
 						if ( has_post_thumbnail() ) {
-							echo '<div class="cell">';
+							echo '<div class="cell text-center">';
 							echo '<a href="' . esc_url( get_the_permalink() ) . '" title="' . esc_attr( get_the_title() ) . '">';
 							the_post_thumbnail( '', array( 'class' => '' ) );
 							echo '</a>';
