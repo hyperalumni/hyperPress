@@ -100,7 +100,10 @@ final class FrontpageSettingsPageTest extends WP_UnitTestCase {
 		$this->assertSame( 4, $fields['hyperpress_frontpage_banner_button_text']['limit'] );
 		$this->assertSame( 100, $fields['hyperpress_frontpage_banner_subtitle']['limit'] );
 		$this->assertTrue( $fields['hyperpress_frontpage_banner_subtitle']['raw'] );
-		$this->assertStringContainsString( 'Team HYPER', $fields['hyperpress_frontpage_banner_subtitle']['std'] );
+		// No `std`: Meta Box drops the key of a cleared field and would redisplay a `std`, so the
+		// user could never clear the subtitle. The default comes from the default_option filter
+		// (see FrontpageSettingsTest).
+		$this->assertArrayNotHasKey( 'std', $fields['hyperpress_frontpage_banner_subtitle'] );
 	}
 
 	public function test_the_post_type_options_list_public_types_only(): void {

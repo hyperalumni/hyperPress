@@ -35,7 +35,6 @@ final class MetaBoxes {
 					'desc'              => __( 'Shown under the title on newsletter pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do <strong>, <em> and <br> tags; other markup is removed when the banner is displayed.', 'hyperpress' ),
 					'type'              => 'textarea',
 					'raw'               => true,
-					'std'               => Settings::BANNER_SUBTITLE_DEFAULT,
 					'sanitize_callback' => array( Banner::class, 'sanitize_subtitle' ),
 				),
 			),

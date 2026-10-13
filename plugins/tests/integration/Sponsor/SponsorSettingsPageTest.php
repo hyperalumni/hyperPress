@@ -54,8 +54,16 @@ final class SponsorSettingsPageTest extends WP_UnitTestCase {
 		$this->assertSame( 'textarea', $fields[0]['type'] );
 		$this->assertTrue( $fields[0]['raw'] );
 		$this->assertSame( array( Banner::class, 'sanitize_subtitle' ), $fields[0]['sanitize_callback'] );
-		$this->assertSame( 'Helping Make HYPER Happen', $fields[0]['std'] );
-		$this->assertSame( Settings::defaults()[ Settings::BANNER_SUBTITLE ], $fields[0]['std'] );
+		// No `std`: Meta Box drops the key of a cleared field and would redisplay a `std`, so the
+		// user could never clear the subtitle. The default comes from the default_option filter
+		// (see SponsorSubtitleSettingTest: get_option() with no row returns Settings::defaults()).
+		$this->assertArrayNotHasKey( 'std', $fields[0] );
+	}
+
+	public function test_the_unsaved_default_subtitle_comes_from_the_option_not_the_field(): void {
+		delete_option( 'hyperpress_sponsor' );
+
+		$this->assertSame( 'Helping Make HYPER Happen', get_option( 'hyperpress_sponsor' )[ Settings::BANNER_SUBTITLE ] );
 	}
 
 	public function test_the_sponsor_information_box_remains(): void {

@@ -54,7 +54,6 @@ final class MetaBoxes {
 					'id'         => Settings::BANNER_SUBTITLE,
 					'name'       => __( 'Banner Subtitle', 'hyperpress' ),
 					'type'       => 'textarea',
-					'std'        => Settings::default_subtitle(),
 					'raw'        => true,
 					'limit'      => 100,
 					'limit_type' => 'word',
