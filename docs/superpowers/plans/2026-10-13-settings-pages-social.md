@@ -49,11 +49,11 @@
 - Produces: `Settings::OPTION = 'hyperpress_social'`; `Settings::NETWORKS` (ordered `key => label` for the 11 URL fields) and `Settings::CONTACT = 'contact'`; `Settings::field_id( string $key ): string` returns `'hyperpress_social_' . $key`; `Settings::url( string $key ): string` (the saved string for the URL network `$key`, `''` otherwise); `Settings::contact_page(): int` (`absint` of the saved contact page value when scalar, else 0).
 - Produces: `SettingsPage::ID = 'hyperpress_social'`, `register()`, `pages( array ): array`; `MetaBoxes::register()`, `boxes( array ): array` with box `hyperpress_social_box`, `settings_pages` `SettingsPage::ID` and the 12 fields in the order from Global Constraints (URL fields `type => 'url'` with `sanitize_callback => 'esc_url_raw'`; the contact field after `discord`, then `add_calendar` last).
 
-- [ ] **Step 1: Write failing tests.** `SocialSettingsPageTest`: `pages()` entry values; `boxes()` has exactly 12 fields with the expected ids in order, types (`url`, `post` for contact), sanitizers (`esc_url_raw`, `absint`), labels as in Global Constraints, and the contact field is not multiple and targets `page`. `SocialSettingsTest`: nothing saved gives `''`/0 for every key; saved values come back; non-array option, a saved array value and an int where a string is expected give `''`; a contact page saved as `'12'` gives 12, as `'abc'`/negative/array gives 0. `PluginHeadersTest` (existing, Convention-driven) must fail first because of the Convention change.
-- [ ] **Step 2:** Run `composer test:unit` and `composer test:integration -- --filter Social` from `plugins/`. Expected: FAIL (header mismatch, classes missing).
-- [ ] **Step 3:** Implement to the interfaces, update the header and Convention entry.
-- [ ] **Step 4:** Run the full `composer test:unit`, `test:integration` and `lint` from `plugins/`, and `composer test:integration` and `lint` from the theme. Expected: pass.
-- [ ] **Step 5:** Commit `feat(social): add the Social settings page`.
+- [x] **Step 1: Write failing tests.** `SocialSettingsPageTest`: `pages()` entry values; `boxes()` has exactly 12 fields with the expected ids in order, types (`url`, `post` for contact), sanitizers (`esc_url_raw`, `absint`), labels as in Global Constraints, and the contact field is not multiple and targets `page`. `SocialSettingsTest`: nothing saved gives `''`/0 for every key; saved values come back; non-array option, a saved array value and an int where a string is expected give `''`; a contact page saved as `'12'` gives 12, as `'abc'`/negative/array gives 0. `PluginHeadersTest` (existing, Convention-driven) must fail first because of the Convention change.
+- [x] **Step 2:** Run `composer test:unit` and `composer test:integration -- --filter Social` from `plugins/`. Expected: FAIL (header mismatch, classes missing).
+- [x] **Step 3:** Implement to the interfaces, update the header and Convention entry.
+- [x] **Step 4:** Run the full `composer test:unit`, `test:integration` and `lint` from `plugins/`, and `composer test:integration` and `lint` from the theme. Expected: pass.
+- [x] **Step 5:** Commit `feat(social): add the Social settings page`.
 
 ### Task 2: Switch `Links` and remove the Customizer section
 
