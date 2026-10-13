@@ -74,7 +74,7 @@ Both follow Spec 1 exactly: folder `hyperpress-{name}/`, main file `hyperpress-{
 ### `hyperpress-media`
 - Requires Plugins: none. NextGen is optional (`class_exists` checks remain because this is a real optional dependency).
 - `src/Uploads/Svg.php`, `src/Uploads/Avif.php`, `src/NextGen/Customizer.php`, `src/NextGen/Breadcrumbs.php`.
-- The NextGen Customizer setting keeps its id `hyperpress_nggallery_photos_page`; the theme mod is already prefixed. The section id and control id follow the convention (`hyperpress_media_...`); the implementation plan lists the exact legacy ids.
+- The NextGen Customizer setting keeps its id `hyperpress_nggallery_photos_page`; the theme mod is already prefixed. The section id and control id follow the convention (`hyperpress_media_...`); the implementation plan lists the exact legacy ids. (Superseded 2026-10-13: the setting is no longer a theme mod; it is the field `hyperpress_media_photos_page` on hyperPress > Media. See `docs/superpowers/plans/2026-10-13-settings-pages-media.md`.)
 
 ### Dependency edges
 `hyper_season_count` (in season) calls `[hyper_date_distance]`. Season does not declare a hard dependency; the shortcode returns an empty string, and the audit notes it, when the `hyper_date_distance` shortcode is not registered. (Alternative considered and rejected: a hard `Requires Plugins` on `hyperpress-shortcodes` in season, because it would force a feature plugin onto every season user.)

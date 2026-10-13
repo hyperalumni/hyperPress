@@ -1,5 +1,7 @@
 # Media settings page Implementation Plan
 
+> **STATUS: ✅ CODE COMPLETE, browser checks pending** (2026-10-13). Task 1 and Task 2 step 3 are done on `feat/settings-pages`; Task 2 steps 1-2 (Media page, NextGen breadcrumbs, Customizer section gone, optional dev-data copy) need a person in a browser.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Move the one `hyperpress-media` Customizer setting (`hyperpress_nggallery_photos_page`, the page that displays NextGen photos, used for breadcrumbs) to a "Media" Meta Box settings page under the hyperPress menu, switch the NextGen breadcrumbs to the new option, and delete the plugin's Customizer section. This is the last of the settings-page plans.
@@ -59,7 +61,16 @@
 
 - [ ] **Step 1 (manual):** hyperPress menu lists Media. Pick a page, save, reload; it stays. Clear it, save, reload; it stays empty. With NextGEN active, open an album or gallery under that page and check the breadcrumb trail includes the NextGen levels as before; with no page selected the trail is unchanged. Confirm the Customizer no longer has a "NextGen Gallery" section.
 - [ ] **Step 2 (dev data, optional):** after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old value once: `wpcli eval '$v = absint( get_theme_mod( "hyperpress_nggallery_photos_page", 0 ) ); if ( $v ) { update_option( "hyperpress_media", array( "hyperpress_media_photos_page" => $v ) ); }'`.
-- [ ] **Step 3:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_nggallery_photos_page`, `NextGen\Customizer`, `hyperpress_media_nextgen`, the "NextGen Gallery" Customizer section and `hyperpress-media` + "Requires Plugins"; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; update the `REQUIRES` row for media in `docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md` (it lists safe-svg only); leave the rest.
+- [x] **Step 3:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_nggallery_photos_page`, `NextGen\Customizer`, `hyperpress_media_nextgen`, the "NextGen Gallery" Customizer section and `hyperpress-media` + "Requires Plugins"; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; update the `REQUIRES` row for media in `docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md` (it lists safe-svg only); leave the rest.
 - [ ] **Step 4:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete media settings page`.
 
 ## Outcome / execution notes
+
+- (2026-10-13) The field id changed from `hyperpress_nggallery_photos_page` to `hyperpress_media_photos_page` to follow the `hyperpress_<plugin>_<field>` convention. The optional wpcli copy in Task 2 step 2 maps the old theme mod to the new key.
+- (2026-10-13) `hyperpress-media` now requires `hyperpress-utils` and `meta-box-aio` besides `safe-svg` (header, Convention table, `PluginHeadersTest`).
+- (2026-10-13) `Settings::photos_page()` is strict: a positive integer or an all-digit string, else 0. The old `absint` sanitizer semantics live on in the field's save callback.
+- (2026-10-13) Deleted the `NextGen\Customizer` class and `NextGenCustomizerTest`. The intents moved: sanitizer and field keys to `Media/MediaSettingsPageTest`, the reader's strictness and default to `MediaSettingsTest`, the Customizer section and setting being gone to `MediaReadersTest`, and the breadcrumb behaviour to the new `NextGenBreadcrumbsTest`.
+- (2026-10-13) No migration: until the optional wpcli copy runs, the NextGen breadcrumb levels disappear until the page is picked again. Editing the setting needs `manage_options` instead of `edit_theme_options`, and there is no live preview any more.
+- (2026-10-13) `NextGenBreadcrumbsTest` covers only paths that return before NextGEN's mappers (no NextGEN in the test environment) and cannot detect removal of the first `0 === $photos_page` guard.
+- (2026-10-13) Browser items still open: the `desc` key on the post field, the saved value shape of the picker, and the breadcrumb trail with NextGEN active.
+- (2026-10-13) This is the last settings-page plan: all Customizer options of the plugins that were data or configuration have moved. What remains in the Customizer is colours (gear, hyper, countdown) and the theme's own copyright name and mobile menu layout.

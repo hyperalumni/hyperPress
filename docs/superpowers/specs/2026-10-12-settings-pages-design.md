@@ -46,6 +46,8 @@ The front-page banner fields and countdown picker (a Meta Box-registered Customi
 | Label | the per-post-type `hyperpress_label_*` labels |
 | Media | `hyperpress_nggallery_photos_page` |
 
+Status note (2026-10-13): the Media page is built; its field is `hyperpress_media_photos_page` in option `hyperpress_media` (the id follows the `hyperpress_<plugin>_<field>` convention, so it differs from the old theme mod id above). See `docs/superpowers/plans/2026-10-13-settings-pages-media.md`.
+
 Season and Program also have empty Meta Box entries (`MetaBoxes::customize_metabox`, `'panel' => ''`) whose only job is to create the Customizer section their `add_setting` controls sit in. When a plugin's last Customizer setting moves, delete that entry too (and keep `EmptyMetaBoxSectionsTest` consistent).
 
 This list comes from a quick scan of the code, which has already been wrong (a non-existent competition map color; and Customizer fields registered through Meta Box instead of `add_setting`, which a grep for `add_setting` cannot see); re-verify each plugin with grep for `customize_register` and `get_theme_mod` when its turn comes. The scan found Label and Social registering through Customizer classes at `plugins/hyperpress-label/src/Customizer.php` and `plugins/hyperpress-social/src/Customizer.php`. A third control, `LabelDropdownControl`, also exists (modelled on `PostTypeDropdownControl`); check whether it can go once Label moves.

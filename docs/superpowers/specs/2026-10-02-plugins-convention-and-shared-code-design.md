@@ -65,7 +65,7 @@ Resulting `Requires Plugins`:
 | label | hyperpress-utils, meta-box-aio (Amended 2026-10-13: it was none, until its Customizer settings moved to a Meta Box settings page; see `docs/superpowers/plans/2026-10-13-settings-pages-label.md`.) |
 | student | none |
 | social | hyperpress-utils, meta-box-aio (Amended 2026-10-13: it was `socials`, none, until its Customizer settings moved to a Meta Box settings page; see `docs/superpowers/plans/2026-10-13-settings-pages-social.md`.) |
-| media (added later) | safe-svg (SVG uploads and their sanitizing come from Safe SVG) |
+| media (added later) | hyperpress-utils, meta-box-aio, safe-svg (SVG uploads and their sanitizing come from Safe SVG) (Amended 2026-10-13: it was safe-svg only, until its Customizer setting moved to a Meta Box settings page; see `docs/superpowers/plans/2026-10-13-settings-pages-media.md`.) |
 | utils | none |
 
 Countdown does not require season: it is a non-public utility CPT with no
