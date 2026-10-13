@@ -86,6 +86,8 @@ This list comes from a quick scan of the code, which has already been wrong (a n
 
 `CategoryDropdownControl` and `PostTypeDropdownControl` are used by the front page, program and season. Delete them from `plugins/hyperpress-utils/src/Controls/`, together with `ControlsTest`, `ControlDescriptionEscapingTest`, `ControlsRenderTest` and the control assertion in `NoPluginsTest`, only when the last of those three has moved.
 
+**Status (2026-10-12):** done. The program plan (`docs/superpowers/plans/2026-10-12-settings-pages-program.md`) deleted both classes and the three test files; `LabelDropdownControl` stays.
+
 ### Dev data
 
 Each plugin's plan carries a short `wpcli` command that copies the current theme-mod values into the new option once (run after `wpcli db export -`). Using it is optional; re-entering the values by hand is fine.

@@ -81,7 +81,7 @@ Both follow Spec 1 exactly: folder `hyperpress-{name}/`, main file `hyperpress-{
 
 ## 7. Theme updates for the Spec 1 renames and the moves
 
-- `library/customize/homepage.php`: imports become `HyperPress\Utils\Controls\PostTypeDropdownControl` and `CategoryDropdownControl`. The `class_exists` guards go; if utils is missing, the Customizer section fails loudly instead of silently disappearing.
+- `library/customize/homepage.php`: imports become `HyperPress\Utils\Controls\PostTypeDropdownControl` and `CategoryDropdownControl`. The `class_exists` guards go; if utils is missing, the Customizer section fails loudly instead of silently disappearing. (Superseded 2026-10-12: `library/customize/homepage.php` is gone and the two control classes were deleted; see `docs/superpowers/plans/2026-10-12-settings-pages-program.md`.)
 - `library/metaboxes/homepage-customize.php:69`: `'countdown'` becomes `'hyper_countdown'`.
 - Renamed theme mods and meta keys the theme reads are listed in section 11 of this spec's implementation plan; the known ones are `hyperpress_banner_background_color` and `hyperpress_banner_subtitle` (theme-owned, unchanged) and the four color theme mods (theme-owned, unchanged).
 - The `content_template` filter contract is kept: a plugin returns a file path, the theme includes it. The newsletter and sponsor migrations (plugins-04-remaining-plugins) must keep their callbacks hooked and returning a path; a test for that is added there. The `include` of a filter-returned path is an audit item.

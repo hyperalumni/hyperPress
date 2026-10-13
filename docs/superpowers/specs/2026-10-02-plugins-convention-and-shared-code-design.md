@@ -247,3 +247,5 @@ Non-goals:
 - `php -l` is clean on every file and the phpcs ruleset passes.
 
 > Note (2026-10-12): superseded for season: its object types now come from `HyperPress\Season\Settings::post_types()` (option `hyperpress_season` on hyperPress > Season, default `array( 'post' )`), not the `hyperpress_season_post_types` theme mod, and the season Customizer settings no longer exist. `hyper_season` is no longer a theme-driven taxonomy; program is unchanged. See `docs/superpowers/plans/2026-10-12-settings-pages-season.md`.
+
+> Note (2026-10-12): superseded in part. Program's object types now come from `HyperPress\Program\Settings::post_types()` (option `hyperpress_program`, key `hyperpress_program_post_types`, default `array( 'post' )`), not a theme mod; `Controls\PostTypeDropdownControl` and `Controls\CategoryDropdownControl` were deleted; `Convention::THEME_DRIVEN_TAXONOMIES` was removed. See `docs/superpowers/plans/2026-10-12-settings-pages-program.md`.

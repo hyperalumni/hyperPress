@@ -1,5 +1,7 @@
 # Program settings page Implementation Plan
 
+> **STATUS: ✅ CODE COMPLETE, browser checks pending** (2026-10-12). Tasks 1-3 and Task 4 step 4 are done on `feat/settings-pages`; Task 4 steps 1-3 (Program page, taxonomy on the selected post types and Customizer section gone, optional dev-data copy) need a person in a browser.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Move the one `hyperpress-program` Customizer setting (the post types the Program taxonomy attaches to) to a "Program" Meta Box settings page under the hyperPress menu, switch its reader, delete program's Customizer section, and then delete the two now-unused dropdown control classes in `hyperpress-utils`.
@@ -91,7 +93,14 @@
 - [ ] **Step 1 (manual):** open hyperPress > Program. Check the post types select lists public post types, `post` is selected on first load, and choosing, clearing every choice, saving and reloading keeps the state.
 - [ ] **Step 2 (manual):** confirm the Program taxonomy appears on the selected post types' edit screens, and that the Customizer no longer has a "Programs" section.
 - [ ] **Step 3 (dev data, optional):** after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old value once: `wpcli eval 'update_option( "hyperpress_program", array( "hyperpress_program_post_types" => get_theme_mod( "hyperpress_program_post_types", array( "post" ) ) ) );'`.
-- [ ] **Step 4:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_program_post_types`, `Programs` with Customizer, `PostTypeDropdownControl`, `CategoryDropdownControl`, `HyperPress\Utils\Controls`, `SeasonProgramCustomizerTest`; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest. The controls no longer exist, so older plans that describe them get a note.
+- [x] **Step 4:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_program_post_types`, `Programs` with Customizer, `PostTypeDropdownControl`, `CategoryDropdownControl`, `HyperPress\Utils\Controls`, `SeasonProgramCustomizerTest`; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest. The controls no longer exist, so older plans that describe them get a note.
 - [ ] **Step 5:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete program settings page`.
 
 ## Outcome / execution notes
+
+- **Default behaviour change (2026-10-12).** Program now attaches to `post` on a fresh install, because `Settings::post_types()` defaults to `array( 'post' )`. The old code attached it to nothing until the Customizer was saved, even though the Customizer displayed `post`. `Convention::THEME_DRIVEN_TAXONOMIES` and its test were removed. `ProgramLabelTest::tear_down` now re-registers the Program and Season taxonomies, and `RegistrationParityTest` expects `array( 'post' )` for both.
+- **No migration code (2026-10-12).** On an existing site the old theme-mod value is ignored until the optional `wpcli` copy (Task 4 step 3) runs; otherwise Program falls back to `post`.
+- **`hyperpress-utils` (2026-10-12).** Unchanged apart from deleting the two control classes. The shared `TaxonomyRegistrar` accepts a list.
+- **Control deletion (2026-10-12).** `CategoryDropdownControl`, `PostTypeDropdownControl` and their three test files (`ControlsTest`, `ControlDescriptionEscapingTest`, `ControlsRenderTest`) were deleted. `LabelDropdownControl` stays and its own plan covers it; a replacement escaping test for it is added in the final fix wave.
+- **Browser items still to check (2026-10-12).** The multiple `select_advanced` saves as an array; clearing every choice persists (Season's equivalent was confirmed by the owner); the `sanitize_callback` is honoured.
+- **Deferred minors from reviews (2026-10-12).** `Settings::post_types()` returns saved strings without a registered/public check (the save-side sanitizer and `TaxonomyRegistrar` cover it). `TaxonomyAttachmentTest`'s default-attachment tests depend on global taxonomy state, so running `--filter 'Program|TaxonomyAttachment'` alone fails; fixed in the final fix wave. `NoControlsTest` uses `class_exists`; a sturdier file-existence assertion is planned in the final fix wave.
