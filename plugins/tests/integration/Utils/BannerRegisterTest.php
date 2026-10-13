@@ -42,6 +42,33 @@ final class BannerRegisterTest extends WP_UnitTestCase {
 		$this->assertSame( '#0a0', $banner['backgroundColor'] );
 	}
 
+	public function test_singular_request_with_subtitle_mod_gets_the_theme_mod_subtitle(): void {
+		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_gizmo' ) );
+		$this->go_to( get_permalink( $post_id ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Gizmo' ) );
+		$this->assertSame( 'Sub', $banner['subtitle'] );
+	}
+
+	public function test_subtitle_callable_fills_the_subtitle_without_a_subtitle_mod(): void {
+		register_post_type( 'hyper_widget', array( 'public' => true, 'has_archive' => 'widgets' ) );
+		flush_rewrite_rules();
+		Banner::register(
+			'hyper_widget',
+			array(
+				'type'          => 'widget',
+				'subtitle'      => static fn() => 'From callable',
+				'color_mod'     => 'hyperpress_hyper_green',
+				'archive_title' => 'Widgets',
+			)
+		);
+		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_widget' ) );
+		$this->go_to( get_permalink( $post_id ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Widget' ) );
+		$this->assertSame( 'widget', $banner['type'] );
+		$this->assertSame( 'From callable', $banner['subtitle'] );
+		unregister_post_type( 'hyper_widget' );
+	}
+
 	public function test_hyperpress_banner_args_filter_can_adjust_the_banner(): void {
 		$seen = array();
 		add_filter(

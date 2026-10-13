@@ -45,11 +45,11 @@
 **Interfaces:**
 - Produces: `Banner::register( string $post_type, array $args )` where `$args` may carry `subtitle` (a callable returning string) instead of `subtitle_mod`; when `subtitle` is present it is called to fill `$ctx['subtitle']`, otherwise `get_theme_mod( $args['subtitle_mod'] )` as today. `Banner::sanitize_subtitle( mixed $value ): string` returns `wp_kses_post( (string) $value )` for scalars and `''` otherwise.
 
-- [ ] **Step 1: Write failing tests.** `BannerRegisterTest`: registering with `'subtitle' => static fn() => 'From callable'` and no `subtitle_mod` makes the banner of a singular post of the registered type carry that subtitle; a registered type with `subtitle_mod` still works. `BannerTest` (unit): `sanitize_subtitle` keeps `<em>x</em>` and removes `<script>`, returns `''` for `array( 'x' )`, `null` and an object.
-- [ ] **Step 2:** Run `composer test:unit -- --filter BannerTest` and `composer test:integration -- --filter BannerRegister`. Expected: FAIL.
-- [ ] **Step 3:** Implement to the interface; update the docblock of `register()`.
-- [ ] **Step 4:** Run the full `composer test:unit`, `test:integration` and `lint`. Expected: pass.
-- [ ] **Step 5:** Commit `feat(utils): let Banner take a subtitle callable`.
+- [x] **Step 1: Write failing tests.** `BannerRegisterTest`: registering with `'subtitle' => static fn() => 'From callable'` and no `subtitle_mod` makes the banner of a singular post of the registered type carry that subtitle; a registered type with `subtitle_mod` still works. `BannerTest` (unit): `sanitize_subtitle` keeps `<em>x</em>` and removes `<script>`, returns `''` for `array( 'x' )`, `null` and an object.
+- [x] **Step 2:** Run `composer test:unit -- --filter BannerTest` and `composer test:integration -- --filter BannerRegister`. Expected: FAIL.
+- [x] **Step 3:** Implement to the interface; update the docblock of `register()`.
+- [x] **Step 4:** Run the full `composer test:unit`, `test:integration` and `lint`. Expected: pass.
+- [x] **Step 5:** Commit `feat(utils): let Banner take a subtitle callable`.
 
 ### Task 2: Newsletter settings page
 

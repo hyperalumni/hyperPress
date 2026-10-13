@@ -11,7 +11,9 @@ final class Banner {
 	 * Hook the theme's banner filter for one post type.
 	 *
 	 * @param string $post_type Post type key.
-	 * @param array  $args      type, subtitle_mod, color_mod, archive_title (all required);
+	 * @param array  $args      type, color_mod, archive_title (all required) and exactly one of
+	 *                          subtitle (callable returning the subtitle string) or
+	 *                          subtitle_mod (theme mod name; to be removed);
 	 *                          term_joiner ('in' default), always_set_archive_title (false default).
 	 */
 	public static function register( string $post_type, array $args ): void {
@@ -24,7 +26,9 @@ final class Banner {
 					'is_singular'   => is_singular( $post_type ),
 					'is_archive'    => is_post_type_archive( $post_type ),
 					'is_tax_season' => $is_tax_season,
-					'subtitle'      => get_theme_mod( $args['subtitle_mod'] ),
+					'subtitle'      => is_callable( $args['subtitle'] ?? null )
+						? (string) call_user_func( $args['subtitle'] )
+						: get_theme_mod( $args['subtitle_mod'] ),
 					'color'         => get_theme_mod( $args['color_mod'] ),
 					'term_name'     => $queried instanceof \WP_Term ? $queried->name : '',
 				);
@@ -43,6 +47,15 @@ final class Banner {
 				return apply_filters( 'hyperpress_banner_args', $banner, $post_type, $ctx );
 			}
 		);
+	}
+
+	/**
+	 * Sanitize a banner subtitle: post-allowed markup for scalars, '' for anything else.
+	 *
+	 * @param mixed $value Raw value.
+	 */
+	public static function sanitize_subtitle( $value ): string {
+		return is_scalar( $value ) ? wp_kses_post( (string) $value ) : '';
 	}
 
 	/**
