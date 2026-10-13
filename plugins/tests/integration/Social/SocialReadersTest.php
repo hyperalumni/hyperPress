@@ -70,9 +70,29 @@ final class SocialReadersTest extends WP_UnitTestCase {
 	}
 
 	public function test_a_javascript_url_written_straight_into_the_option_is_passed_on_and_escaped_by_the_widget(): void {
-		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => 'javascript:alert(1)' ) );
+		update_option(
+			'hyperpress_social',
+			array(
+				'hyperpress_social_github'    => 'javascript:alert(1)',
+				'hyperpress_social_instagram' => 'https://github.com/x',
+			)
+		);
 
 		$this->assertSame( 'javascript:alert(1)', Links::all()[0]['url'] );
-		$this->assertStringNotContainsString( 'javascript:', $this->render() );
+
+		$html = $this->render();
+
+		$this->assertStringContainsString( 'github.com/x', $html );
+		$this->assertStringNotContainsString( 'javascript:', $html );
+	}
+
+	public function test_the_widget_renders_no_links_and_no_notices_when_the_option_was_never_saved(): void {
+		delete_option( 'hyperpress_social' );
+
+		$html = $this->render();
+
+		$this->assertStringNotContainsString( '<a ', $html );
+		$this->assertStringNotContainsString( 'Notice', $html );
+		$this->assertStringNotContainsString( 'Warning', $html );
 	}
 }

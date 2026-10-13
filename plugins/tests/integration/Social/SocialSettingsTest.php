@@ -81,10 +81,13 @@ final class SocialSettingsTest extends WP_UnitTestCase {
 
 		update_option( 'hyperpress_social', array( 'hyperpress_social_contact' => '12' ) );
 		$this->assertSame( 12, Settings::contact_page() );
+
+		update_option( 'hyperpress_social', array( 'hyperpress_social_contact' => '007' ) );
+		$this->assertSame( 7, Settings::contact_page() );
 	}
 
 	public function test_a_bad_contact_page_value_gives_zero(): void {
-		foreach ( array( 'abc', '-5', -5, '', '0', 0, '1.5', 1.5, true, array( 12 ), null ) as $value ) {
+		foreach ( array( 'abc', '12abc', ' 12', '-5', -5, '', '0', 0, '1.5', 1.5, true, array( 12 ), null ) as $value ) {
 			update_option( 'hyperpress_social', array( 'hyperpress_social_contact' => $value ) );
 
 			$this->assertSame( 0, Settings::contact_page(), var_export( $value, true ) );
