@@ -1,5 +1,7 @@
 # Settings pages Implementation Plan
 
+> **STATUS: ✅ CODE COMPLETE, browser checks pending** (2026-10-12). Tasks 1-8 and Task 9 step 6 are done on `feat/settings-pages`; Task 9 steps 1-5 (menu order, saving each page, front page rendering, plugins inactive, optional dev-data copy) need a person in a browser.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Move the Customizer options that are data or configuration into Meta Box settings pages under the hyperPress wp-admin menu, starting with the shared pieces (menu, General page, Google Maps key) and the new `hyperpress-frontpage` plugin; the remaining plugins follow in their own small plans.
@@ -141,7 +143,7 @@
 - Modify: `themes/hyperpress-foundation/front-page.php` (lines 35, 61, 67), `library/banner/front.php`, `template-parts/banner.php` (the `get_theme_mod( 'hyperpress_homepage_customize_banner_subtitle' )` at line 24)
 - Test: update `themes/hyperpress-foundation/tests/integration/FrontPageQueryTest.php`, `BannerSubtitleTest.php`, `FrontPageContentTemplateTest.php`, `NoPluginsTest.php`; create `FrontpageSettingTest.php`
 
-**Interfaces:** Produces `hyperpress_frontpage_setting( string $field, $default = '' )`: returns the value of `$field` in `get_option( 'hyperpress_frontpage' )`, or `$default` when the option is not an array or the key is missing. Callers pass the full field id (for example `hyperpress_frontpage_banner_title`), because the theme cannot use plugin constants. `front-page.php` keeps its current normalization (categories through `absint` and filter, countdowns through `absint` and skip 0) and additionally drops post types that are not registered and public.
+**Interfaces:** Produces `hyperpress_frontpage_setting( string $field, $fallback = '' )`: returns the value of `$field` in `get_option( 'hyperpress_frontpage' )`, or `$fallback` when the option is not an array or the key is missing. Callers pass the full field id (for example `hyperpress_frontpage_banner_title`), because the theme cannot use plugin constants. `front-page.php` keeps its current normalization (categories through `absint` and filter, countdowns through `absint` and skip 0) and additionally drops post types that are not registered and public.
 
 - [x] **Step 1: Write failing tests.** `FrontpageSettingTest`: helper returns the stored value; returns the default for a missing key, for a non-array option, and for no option. `FrontPageQueryTest`: set `update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_categories' => ... ) )` in place of `set_theme_mod`, keeping the two existing cases, plus `test_non_public_post_types_in_the_option_are_not_queried`. `FrontPageContentTemplateTest`: option holds `array( 'hyperpress_frontpage_post_types' => array( 'hyper_award' ), 'hyperpress_frontpage_countdowns' => array( '12', '7" x="y', 'abc' ) )`, same assertions as today. `BannerSubtitleTest`: subtitle comes from the option; hostile markup is still removed. A banner test: title, background color, button text and button link come from the option on the front page. `NoPluginsTest`: with no plugins and no option the front page renders with no warnings, an empty banner and no countdowns.
 - [x] **Step 2:** Run `docker compose run --rm php composer test:integration` from `themes/hyperpress-foundation/`. Expected: the changed tests FAIL.
@@ -172,7 +174,7 @@
 - [ ] **Step 3 (manual):** fill in and save every Front Page field; confirm the front page shows the banner (title, subtitle, color, button), the countdowns, and the selected categories and post types; confirm the categories and post types selections survive a reload (the taxonomy field stores ids in the option).
 - [ ] **Step 4 (manual):** deactivate `hyperpress-frontpage` and then all plugins; confirm the front page still renders. Open the Customizer and confirm the "Front Page" and "Front Page Posts" sections are gone.
 - [ ] **Step 5 (dev data, optional):** after `cd docker/hyperalumni && docker compose --profile local run --rm wpcli db export -` (backup), copy the old theme mods once with `wpcli eval`, for example `update_option( 'hyperpress_general', array( 'hyperpress_general_google_maps_api_key' => get_theme_mod( 'hyperpress_competition_google_maps_api_key', '' ) ) );` and a similar call for `hyperpress_frontpage` mapping the old `hyperpress_home_blog_*` and `hyperpress_homepage_customize_*` mods to the field ids above. Re-entering the values by hand is equally fine.
-- [ ] **Step 6:** Grep `docs/superpowers/plans/` for `homepage.php`, `homepage-customize`, `CategoryDropdownControl`, `Front Page Posts`, `AdminMenu` and `Overview`. For each completed plan that mentions a changed file, append a dated note under its "Outcome / execution notes" (known: `2026-10-02-theme-01-tooling-and-baseline.md:568`, `2026-10-02-theme-02-renames-and-breadcrumbs.md`, `2026-10-12-hyperpress-contact.md` for the removed Overview page). Do not edit plans whose references still hold (the control classes stay until the later plans).
+- [x] **Step 6:** Grep `docs/superpowers/plans/` for `homepage.php`, `homepage-customize`, `CategoryDropdownControl`, `Front Page Posts`, `AdminMenu` and `Overview`. For each completed plan that mentions a changed file, append a dated note under its "Outcome / execution notes" (known: `2026-10-02-theme-01-tooling-and-baseline.md:568`, `2026-10-02-theme-02-renames-and-breadcrumbs.md`, `2026-10-12-hyperpress-contact.md` for the removed Overview page). Do not edit plans whose references still hold (the control classes stay until the later plans).
 - [ ] **Step 7:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete settings pages`.
 
 ---
@@ -187,3 +189,13 @@ One small plan each, in this order, following the Front Page recipe (settings pa
 4. `hyperpress-social`: the 12 `hyperpress_social_*` settings (`Links.php`).
 5. `hyperpress-label`: the per-post-type labels (`Resolver.php`).
 6. `hyperpress-media`: `hyperpress_nggallery_photos_page` (`NextGen/Breadcrumbs.php`).
+
+## Outcome / execution notes
+
+- Note (2026-10-12): field ids are prefixed `hyperpress_<plugin>_<field>` (`IdentifierConventionTest`), for example `hyperpress_general_google_maps_api_key` and `hyperpress_frontpage_*`. The spec and this plan were edited to match.
+- Note (2026-10-12): `AdminMenu::reorder()` also drops the parent copy that WordPress inserts as the first submenu item when the first child registers, so the top-level click opens General and there is no duplicate entry.
+- Note (2026-10-12): the second parameter of `hyperpress_frontpage_setting()` is `$fallback`, because phpcs reserves `$default`.
+- Note (2026-10-12): `Settings::default_option` only applies when the option row is absent, so the theme helper supplies its own defaults for a saved option that lacks a key.
+- Note (2026-10-12): `library/metaboxes.php` was kept, because it still requires `metaboxes/banner.php`; only `homepage-customize.php` was removed.
+- Note (2026-10-12): under `HYPERPRESS_TEST_WITHOUT_PLUGINS=1` two `LabelsBreadcrumbsGuardTest` season-crumb cases fail. They failed before this plan and are not caused by it.
+- Note (2026-10-12): Task 9 steps 1-5 were not run (they need a person in a browser). Things to check there: `GeneralPage::ID` equals the submenu slug Meta Box registers, and clicking the top-level hyperPress item opens General; the taxonomy field saves category ids into the `hyperpress_frontpage` option and they survive a reload; the `sanitize_callback` of each field is honoured on save; `raw`, `limit` and `limit_type` behave as intended on settings pages; `std` is applied on the first render of the post types select.

@@ -146,3 +146,5 @@ The theme never loses a feature in between: code is removed from the theme only 
 - Which `foundationpress_` functions are override points.
 - Whether anything outside the theme calls `hyperpress_breadcrumbs_custom_post_type()` (the plugin consumer audit, plugins-02-shared-utils Task 0).
 - The exact legacy Customizer ids for the NextGen setting.
+
+> Note (2026-10-12): `library/customize/homepage.php` and `library/metaboxes/homepage-customize.php` were later removed; the front page settings moved to the `hyperpress-frontpage` plugin. Superseded by `docs/superpowers/specs/2026-10-12-settings-pages-design.md`.

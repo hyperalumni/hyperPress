@@ -675,3 +675,4 @@ Severity changes applied through update notes: T2 medium to info, T5 medium to l
 - low: T5, T7-T18, T20, T25, T31-T39, T42
 - info: T2, T19, T21, T22, T23, T40, T41, T43
 
+> Note (2026-10-12): the front page Customizer settings and meta boxes named in this report (`hyperpress_home_blog_categories`, `hyperpress_home_blog_post_types`, `hyperpress_homepage_customize_*`, `library/customize/homepage.php`, `library/metaboxes/homepage-customize.php`) were removed from the theme and moved to the `hyperpress-frontpage` plugin settings page (option `hyperpress_frontpage`). The findings above describe the code as it was; see `docs/superpowers/specs/2026-10-12-settings-pages-design.md`.

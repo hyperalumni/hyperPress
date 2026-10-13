@@ -42,7 +42,7 @@ The fix is to store the addresses and the map location once, as site settings, a
 - A single shortcode, passed an argument, selects which address to show. The card puts the entry's heading in the card divider and the address in an `<address>` element, with the phone number as a `tel:` link.
 - The map is a Meta Box `map` field on the same settings page. A shortcode displays it, and a page template uses it. The map is display only, with no link out and no Google UI card.
 - The page template shows the map banner followed by the normal page content. The addresses are added to that content with the shortcodes.
-- The Google Maps API key already exists (used by the competition plugin's Meta Box map field, `plugins/hyperpress-competition/src/MetaBoxes.php`). The contact plugin reads it through a shared accessor in `hyperpress-utils` (`GoogleMapsKey::get()`), which is added before this plugin, in its own commit. The accessor reads the global option `hyperpress_google_maps_api_key` and falls back to the competition theme mod `hyperpress_competition_google_maps_api_key`.
+- The Google Maps API key already exists (used by the competition plugin's Meta Box map field, `plugins/hyperpress-competition/src/MetaBoxes.php`). The contact plugin reads it through a shared accessor in `hyperpress-utils` (`GoogleMapsKey::get()`), which is added before this plugin, in its own commit. The accessor reads the field `hyperpress_general_google_maps_api_key` of the option `hyperpress_general` (the General settings page; superseded by `docs/superpowers/specs/2026-10-12-settings-pages-design.md`, which replaced the flat option `hyperpress_google_maps_api_key` and the competition theme mod fallback).
 
 ## Calls made without the site owner (change them if wrong)
 
