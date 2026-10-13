@@ -62,11 +62,11 @@
 **Interfaces:**
 - Produces: `Settings::OPTION = 'hyperpress_newsletter'`, `Settings::BANNER_SUBTITLE = 'hyperpress_newsletter_banner_subtitle'`, `Settings::defaults(): array`, `Settings::default_option( $fallback, $option, $passed_default )`, `Settings::banner_subtitle(): string`; `SettingsPage::ID = 'hyperpress_newsletter'`, `register()`, `pages( array ): array` (title `Newsletter`); `MetaBoxes::boxes( array ): array` with box `hyperpress_newsletter_box` and one `textarea` field (`raw` true, `sanitize_callback` `array( Banner::class, 'sanitize_subtitle' )`, label "Newsletter Banner Subtitle" and the old control's description, taken from the deleted `Customizer.php`).
 
-- [ ] **Step 1: Write failing tests.** `NewsletterSettingsPageTest`: `pages()` values; `boxes()` field id, type, `raw`, callback, `std` equal to the default text. `NewsletterSettingsTest`: nothing saved gives the default; saved value comes back; saved array without the key gives the default; non-array option and non-string value give the default; explicit default passed to `get_option` wins. `NewsletterSubtitleTest` (from the old Customizer test): the default shows on a newsletter archive/singular banner until a value is saved; a saved value replaces it; the Customizer has no setting `hyperpress_newsletter_banner_subtitle` and no section `hyperpress_newsletter`; hostile markup is removed by the sanitizer.
-- [ ] **Step 2:** Run `composer test:integration -- --filter Newsletter`. Expected: FAIL.
-- [ ] **Step 3:** Implement the classes, rewire `Plugin::boot()`, delete `Customizer.php`; migrate any other test that sets `hyperpress_newsletter_banner_subtitle` as a theme mod (grep `plugins/tests` and `themes/*/tests`) to `update_option( 'hyperpress_newsletter', array( ... ) )`.
-- [ ] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`. Expected: pass.
-- [ ] **Step 5:** Commit `feat(newsletter): move the banner subtitle to a settings page`.
+- [x] **Step 1: Write failing tests.** `NewsletterSettingsPageTest`: `pages()` values; `boxes()` field id, type, `raw`, callback, `std` equal to the default text. `NewsletterSettingsTest`: nothing saved gives the default; saved value comes back; saved array without the key gives the default; non-array option and non-string value give the default; explicit default passed to `get_option` wins. `NewsletterSubtitleTest` (from the old Customizer test): the default shows on a newsletter archive/singular banner until a value is saved; a saved value replaces it; the Customizer has no setting `hyperpress_newsletter_banner_subtitle` and no section `hyperpress_newsletter`; hostile markup is removed by the sanitizer.
+- [x] **Step 2:** Run `composer test:integration -- --filter Newsletter`. Expected: FAIL.
+- [x] **Step 3:** Implement the classes, rewire `Plugin::boot()`, delete `Customizer.php`; migrate any other test that sets `hyperpress_newsletter_banner_subtitle` as a theme mod (grep `plugins/tests` and `themes/*/tests`) to `update_option( 'hyperpress_newsletter', array( ... ) )`.
+- [x] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`. Expected: pass.
+- [x] **Step 5:** Commit `feat(newsletter): move the banner subtitle to a settings page`.
 
 ### Task 3: Sponsor settings page
 

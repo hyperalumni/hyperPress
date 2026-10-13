@@ -7,6 +7,7 @@ final class NewsletterBannerTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		unset( $GLOBALS['hyperpress_test_rwmb'] );
+		delete_option( 'hyperpress_newsletter' );
 		parent::tear_down();
 	}
 
@@ -52,7 +53,7 @@ final class NewsletterBannerTest extends WP_UnitTestCase {
 	}
 
 	public function test_archive_title_is_always_set_and_season_uses_from(): void {
-		set_theme_mod( 'hyperpress_newsletter_banner_subtitle', 'News' );
+		update_option( 'hyperpress_newsletter', array( 'hyperpress_newsletter_banner_subtitle' => 'News' ) );
 		$this->go_to( get_post_type_archive_link( 'hyper_newsletter' ) );
 		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Preset' ) );
 		$this->assertSame( 'Newsletters', $banner['title'] );
