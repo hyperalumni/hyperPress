@@ -87,7 +87,7 @@ class DisplaySponsorsWidget extends WP_Widget {
 						if ( has_post_thumbnail() ) {
 							echo '<div class="cell">';
 							echo '<a href="' . esc_url( get_the_permalink() ) . '" title="' . esc_attr( get_the_title() ) . '">';
-							the_post_thumbnail( '', array( 'class' => 'full-width' ) );
+							the_post_thumbnail( '', array( 'class' => '' ) );
 							echo '</a>';
 							echo '</div>';
 						}
