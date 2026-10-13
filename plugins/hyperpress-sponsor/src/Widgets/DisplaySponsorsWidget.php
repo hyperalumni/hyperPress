@@ -30,6 +30,7 @@ class DisplaySponsorsWidget extends WP_Widget {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sidebar wrappers are trusted markup from register_sidebar(), printed unescaped by core widgets too
 			echo $args['before_title'] . esc_html( $title ) . $args['after_title'];
 		}
+		// Soft dependency on hyperpress-season: without it the widget behaves as if no season is set.
 		$current_season_slug = class_exists( '\HyperPress\Season\Settings' ) ? \HyperPress\Season\Settings::current() : '';
 		if ( ! empty( $current_season_slug ) ) {
 			$tier_terms = get_terms(

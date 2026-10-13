@@ -38,6 +38,12 @@ final class SeasonSanitizersTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '<b>ok</b>', $sanitized );
 	}
 
+	public function test_the_banner_subtitle_returns_an_empty_string_for_non_string_input(): void {
+		$this->assertSame( '', Sanitizers::banner_subtitle( array( 'x' ) ) );
+		$this->assertSame( '', Sanitizers::banner_subtitle( new \stdClass() ) );
+		$this->assertSame( '', Sanitizers::banner_subtitle( null ) );
+	}
+
 	public function test_the_current_season_accepts_only_an_existing_season(): void {
 		$term = self::factory()->term->create_and_get(
 			array(

@@ -99,6 +99,9 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 		$without = $this->render();
 
 		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
+		// Positive control: while the season exists the widget prints its sponsor cells.
+		$this->assertStringContainsString( '<div class="cell">', $this->render() );
+
 		$term = get_term_by( 'slug', 'season-a', 'hyper_season' );
 		wp_delete_term( $term->term_id, 'hyper_season' );
 

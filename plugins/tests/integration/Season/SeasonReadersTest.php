@@ -54,7 +54,7 @@ final class SeasonReadersTest extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_only_the_settings_page_box_is_registered(): void {
+	public function test_the_old_customizer_box_is_gone_and_the_season_box_remains(): void {
 		$ids = wp_list_pluck( apply_filters( 'rwmb_meta_boxes', array() ), 'id' );
 
 		$this->assertNotContains( 'hyperpress_season', $ids );

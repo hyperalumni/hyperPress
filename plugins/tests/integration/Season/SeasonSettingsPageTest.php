@@ -9,6 +9,9 @@ final class SeasonSettingsPageTest extends WP_UnitTestCase {
 	public function tear_down(): void {
 		unregister_post_type( 'hp_private_ui' );
 		unregister_post_type( 'hp_no_ui' );
+		if ( ! taxonomy_exists( 'hyper_season' ) ) {
+			\HyperPress\Season\Plugin::register();
+		}
 		parent::tear_down();
 	}
 
@@ -98,6 +101,27 @@ final class SeasonSettingsPageTest extends WP_UnitTestCase {
 
 		$this->assertSame( 'None', $options[''] );
 		$this->assertSame( 'Season 2026', $options['season-2026'] );
+	}
+
+	public function test_the_current_season_options_are_only_none_before_any_season_exists(): void {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => 'hyper_season',
+				'hide_empty' => false,
+				'fields'     => 'ids',
+			)
+		);
+		foreach ( $terms as $term_id ) {
+			wp_delete_term( $term_id, 'hyper_season' );
+		}
+
+		$this->assertSame( array( '' => 'None' ), $this->fields()['hyperpress_season_current']['options'] );
+	}
+
+	public function test_the_current_season_options_are_only_none_when_the_taxonomy_is_unregistered(): void {
+		unregister_taxonomy( 'hyper_season' );
+
+		$this->assertSame( array( '' => 'None' ), $this->fields()['hyperpress_season_current']['options'] );
 	}
 
 	public function test_the_post_type_options_list_types_with_a_ui(): void {
