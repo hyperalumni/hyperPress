@@ -5,11 +5,11 @@
  * @wordpress-plugin
  * Plugin Name:         hyperPress Media
  * Plugin URI:          https://hyperalumni.org
- * Description:         Media support for hyperPress: NextGen Gallery breadcrumbs and Customizer options. SVG uploads come from the Safe SVG plugin.
+ * Description:         Media support for hyperPress: NextGen Gallery breadcrumbs and a settings page. SVG uploads come from the Safe SVG plugin.
  * Version:             2026.0.0
  * Requires at least:   6.9
  * Requires PHP:        8.3
- * Requires Plugins:    safe-svg
+ * Requires Plugins:    hyperpress-utils, meta-box-aio, safe-svg
  * Author:              Chris McGroarty
  * Author URI:          https://idesign.co
  * License:             MIT License

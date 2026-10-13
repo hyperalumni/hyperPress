@@ -64,7 +64,7 @@ final class Convention {
 		'hyperpress-label'       => array( 'hyperpress-utils', 'meta-box-aio' ),
 		'hyperpress-student'     => array(),
 		'hyperpress-shortcode' => array(),
-		'hyperpress-media'      => array( 'safe-svg' ),
+		'hyperpress-media'      => array( 'hyperpress-utils', 'meta-box-aio', 'safe-svg' ),
 		'hyperpress-utils'       => array( 'meta-box-aio' ),
 	);
 

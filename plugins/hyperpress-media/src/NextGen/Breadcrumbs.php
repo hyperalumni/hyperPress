@@ -115,8 +115,8 @@ final class Breadcrumbs {
 	}
 
 	public static function add( $breadcrumbs ) {
-		$photos_page = get_theme_mod( 'hyperpress_nggallery_photos_page' );
-		if ( empty( $photos_page ) || ! is_page( $photos_page ) ) {
+		$photos_page = Settings::photos_page();
+		if ( 0 === $photos_page || ! is_page( $photos_page ) ) {
 			return $breadcrumbs;
 		}
 

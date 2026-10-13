@@ -22,7 +22,7 @@ final class ExtractedMediaTest extends WP_UnitTestCase {
 		if ( getenv( 'HYPERPRESS_TEST_WITHOUT_EXTRACTED' ) ) {
 			$this->markTestSkipped( 'Needs the media plugin' );
 		}
-		$this->assertTrue( class_exists( 'HyperPress\Media\NextGen\Customizer' ) );
+		$this->assertTrue( class_exists( 'HyperPress\Media\NextGen\Settings' ) );
 		// SVG uploads come from the Safe SVG plugin and AVIF from WordPress core, not from the theme or hyperpress-media.
 		$this->assertArrayNotHasKey( 'svg', apply_filters( 'upload_mimes', array() ) );
 	}
