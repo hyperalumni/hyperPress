@@ -110,10 +110,10 @@
 
 **Interfaces:** Produces: namespace `HyperPress\Frontpage`; `Plugin::boot(): void` (empty until Task 6), header Plugin Name `hyperPress Front Page`, same header values as the contact plugin.
 
-- [ ] **Step 1:** Add the three `Convention.php` entries. Run `composer test:integration` and `composer test:unit` from `plugins/`. Expected: the Convention-driven tests FAIL because the plugin file does not exist.
-- [ ] **Step 2:** Create the main file and `Plugin` by copying the contact plugin's pattern; update the other listings.
-- [ ] **Step 3:** Run `composer test:integration`, `test:unit` and `lint`. Expected: pass.
-- [ ] **Step 4:** Commit `feat(frontpage): add hyperpress-frontpage plugin skeleton`.
+- [x] **Step 1:** Add the three `Convention.php` entries. Run `composer test:integration` and `composer test:unit` from `plugins/`. Expected: the Convention-driven tests FAIL because the plugin file does not exist.
+- [x] **Step 2:** Create the main file and `Plugin` by copying the contact plugin's pattern; update the other listings.
+- [x] **Step 3:** Run `composer test:integration`, `test:unit` and `lint`. Expected: pass.
+- [x] **Step 4:** Commit `feat(frontpage): add hyperpress-frontpage plugin skeleton`.
 
 ### Task 6: Front Page settings page
 
