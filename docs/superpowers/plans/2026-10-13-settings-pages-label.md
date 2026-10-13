@@ -1,5 +1,7 @@
 # Label settings page Implementation Plan
 
+> **STATUS: ✅ CODE COMPLETE, browser checks pending** (2026-10-13). Tasks 1-2 and Task 3 step 4 are done on `feat/settings-pages`; Task 3 steps 1-3 (Labels page, front-end labels and Customizer section gone, optional dev-data copy) need a person in a browser.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Move the per-post-type label settings of `hyperpress-label` (a "show labels" switch and a list of label ids for every public post type) from the Customizer to a "Labels" Meta Box settings page under the hyperPress menu, switch `Resolver` to the new option, and delete the Customizer section and the `LabelDropdownControl` Customizer control.
@@ -80,7 +82,16 @@
 - [ ] **Step 1 (manual):** hyperPress menu lists Labels. The page shows, per post type, a "Show labels" checkbox and a label list with the defaults selected on first load (posts: date, author, category, comments; sponsors, seasons, programs per the registry). Change a few, save, reload; values stay. For one type uncheck "Show labels" and clear another type's list, save, and confirm the front end shows no labels for them while other types are unchanged.
 - [ ] **Step 2 (manual):** confirm the hidden marker does not appear in the UI, that saving twice does not reset anything, and the Customizer no longer has a "Labels" section. Activate a plugin that adds a label default for a type that did not exist at save time (or temporarily register one) and confirm it still shows its default.
 - [ ] **Step 3 (dev data, optional):** after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old values once: `wpcli eval '$o = array(); foreach ( get_theme_mods() as $k => $v ) { if ( 0 === strpos( $k, "hyperpress_label_" ) ) { $o[ $k ] = $v; } } update_option( "hyperpress_label", $o );'`.
-- [ ] **Step 4:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_label_`, `LabelDropdownControl`, the "Labels" Customizer section, `LabelCustomizerTest` and `Label\Customizer`; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue (known: the label extraction plan and design); leave the rest.
+- [x] **Step 4:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_label_`, `LabelDropdownControl`, the "Labels" Customizer section, `LabelCustomizerTest` and `Label\Customizer`; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue (known: the label extraction plan and design); leave the rest.
 - [ ] **Step 5:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete label settings page`.
 
 ## Outcome / execution notes
+
+- (2026-10-13) `hyperpress-label` now requires `hyperpress-utils` and `meta-box-aio`: the `Requires Plugins` header, the `Convention::REQUIRES_PLUGINS` table and `PluginHeadersTest` (and the plugins convention spec's table) agree.
+- (2026-10-13) The hidden marker `hyperpress_label_saved` plus the `pre_update_option_hyperpress_label` normalizer (`Settings::normalize()`) exist because Meta Box drops the key of an empty field while keeping the row. Without it a cleared "Show labels" box or label list would read as never configured and snap back to the registry defaults. A post type registered after the last save has no keys and keeps the defaults; writes without the marker (tests, wpcli) are stored as given.
+- (2026-10-13) The fields are generated per post type at `rwmb_meta_boxes` time from the `Registry` (which collects on the first call after `init`).
+- (2026-10-13) `Resolver` reads: a key present gives its value, a key missing gives the default (same for a non-array option or a non-array `_labels`).
+- (2026-10-13) Deleted: the `Customizer` class, `LabelDropdownControl` and its render and description-escaping tests, and `LabelCustomizerTest`. Their intents moved to `Label/LabelSettingsPageTest`, `LabelSettingsTest`, `LabelResolverTest` and `LabelReadersTest`.
+- (2026-10-13) No migration: until the optional wpcli copy (Task 3 step 3) runs, existing sites show the registry defaults. Editing now needs `manage_options` instead of `edit_theme_options`, and there is no live preview.
+- (2026-10-13) Browser items still to check: the hidden marker is saved and stripped; an empty multi-select really drops its key (the normalizer's premise); the `desc` key works on `select_advanced`; no early `Registry::all()` warning; the page is usable with about 20 fields.
+- (2026-10-13) Deferred minors from the reviews: the inline test cleanups were moved into `tear_down()` (done in the test commit); the `desc`-or-`description` loose assertion in `LabelSettingsPageTest` is to be tightened after the browser check; the new `LabelResolverTest` cases for the false and non-array option also pass against a theme-mod `Resolver`, so only the override tests prove the switch.

@@ -8,6 +8,8 @@ Amends: `theme/docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-de
 
 Move label rendering and the post labels out of the theme into `hyperpress-label`, so the theme is presentation-only. Add a Customizer setting that chooses which labels appear on which post types, or turns labels off for a post type entirely.
 
+> **Superseded in part (2026-10-13):** the per-post-type settings (sections 3 and 4, the `theme_mod`s, the Customizer section and `LabelDropdownControl`) now live on a "Labels" Meta Box settings page (option `hyperpress_label`, same ids as keys), and `hyperpress-label` requires `hyperpress-utils` and `meta-box-aio`. See `docs/superpowers/plans/2026-10-13-settings-pages-label.md`.
+
 Nothing here is live, so the old theme entry points are removed rather than shimmed.
 
 ## Current state

@@ -88,6 +88,8 @@ This list comes from a quick scan of the code, which has already been wrong (a n
 
 **Status (2026-10-12):** done. The program plan (`docs/superpowers/plans/2026-10-12-settings-pages-program.md`) deleted both classes and the three test files; `LabelDropdownControl` stays.
 
+**Status (2026-10-13):** Label has moved (`docs/superpowers/plans/2026-10-13-settings-pages-label.md`); `LabelDropdownControl` and the label Customizer classes are deleted.
+
 ### Dev data
 
 Each plugin's plan carries a short `wpcli` command that copies the current theme-mod values into the new option once (run after `wpcli db export -`). Using it is optional; re-entering the values by hand is fine.
