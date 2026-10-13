@@ -64,8 +64,7 @@ final class MetaBoxes {
 			array(
 				'taxonomy'   => 'hyper_season',
 				'hide_empty' => false,
-				'orderby'    => 'term_id',
-				'order'      => 'ASC',
+				'orderby'    => 'name',
 			)
 		);
 		foreach ( is_wp_error( $seasons ) ? array() : $seasons as $season ) {

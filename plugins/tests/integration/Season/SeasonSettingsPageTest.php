@@ -103,6 +103,26 @@ final class SeasonSettingsPageTest extends WP_UnitTestCase {
 		$this->assertSame( 'Season 2026', $options['season-2026'] );
 	}
 
+	public function test_the_current_season_options_list_seasons_newest_first_after_none(): void {
+		foreach ( array( 'Season 2', 'Season 10', 'Season 1' ) as $name ) {
+			self::factory()->term->create(
+				array(
+					'taxonomy' => 'hyper_season',
+					'name'     => $name,
+					'slug'     => sanitize_title( $name ),
+				)
+			);
+		}
+
+		$keys = array_keys( $this->fields()['hyperpress_season_current']['options'] );
+
+		$this->assertSame( '', $keys[0] );
+		$this->assertSame(
+			array( 'season-10', 'season-2', 'season-1' ),
+			array_values( array_intersect( $keys, array( 'season-10', 'season-2', 'season-1' ) ) )
+		);
+	}
+
 	public function test_the_current_season_options_are_only_none_before_any_season_exists(): void {
 		$terms = get_terms(
 			array(
