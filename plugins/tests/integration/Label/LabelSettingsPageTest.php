@@ -24,6 +24,10 @@ final class LabelSettingsPageTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		Registry::reset();
+		delete_option( 'hyperpress_label' );
+		if ( post_type_exists( 'hyper_pub' ) ) {
+			unregister_post_type( 'hyper_pub' );
+		}
 		parent::tear_down();
 	}
 
@@ -154,7 +158,6 @@ final class LabelSettingsPageTest extends WP_UnitTestCase {
 
 		$this->assertIsArray( $field );
 		$this->assertArrayNotHasKey( 'gone', $field['options'] );
-		delete_option( 'hyperpress_label' );
 	}
 
 	public function test_a_post_type_named_only_in_label_defaults_gets_fields(): void {
@@ -190,7 +193,6 @@ final class LabelSettingsPageTest extends WP_UnitTestCase {
 		);
 
 		$field = $this->field( Resolver::enabled_key( 'hyper_pub' ) );
-		unregister_post_type( 'hyper_pub' );
 
 		$this->assertIsArray( $field );
 		$this->assertSame( 'Show labels on Pubs', $field['name'] );
