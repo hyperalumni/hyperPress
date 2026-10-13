@@ -1,5 +1,7 @@
 # Banner subtitle settings pages Implementation Plan
 
+> **STATUS: ✅ CODE COMPLETE, browser checks pending** (2026-10-13). Tasks 1-5 and Task 6 step 4 are done on `feat/settings-pages`; Task 6 steps 1-3 (three settings pages, banners on the front end and Customizer sections gone, optional dev-data copy) need a person in a browser.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Move the banner subtitle Customizer settings of `hyperpress-newsletter`, `hyperpress-sponsor` and `hyperpress-competition` to one Meta Box settings page each under the hyperPress menu, delete their Customizer classes, and drop the theme-mod based `subtitle_mod` argument from the shared `Banner` class.
@@ -40,13 +42,13 @@
 
 **Files:**
 - Modify: `plugins/hyperpress-utils/src/Banner.php`
-- Test: `plugins/tests/unit/Utils/BannerTest.php`, `plugins/tests/integration/Utils/BannerRegisterTest.php`
+- Test: `plugins/tests/integration/Utils/BannerRegisterTest.php`, `plugins/tests/integration/Utils/BannerSanitizeTest.php` (new; `sanitize_subtitle` needs `wp_kses_post`, which the unit bootstrap does not provide)
 
 **Interfaces:**
 - Produces: `Banner::register( string $post_type, array $args )` where `$args` may carry `subtitle` (a callable returning string) instead of `subtitle_mod`; when `subtitle` is present it is called to fill `$ctx['subtitle']`, otherwise `get_theme_mod( $args['subtitle_mod'] )` as today. `Banner::sanitize_subtitle( mixed $value ): string` returns `wp_kses_post( (string) $value )` for scalars and `''` otherwise.
 
-- [x] **Step 1: Write failing tests.** `BannerRegisterTest`: registering with `'subtitle' => static fn() => 'From callable'` and no `subtitle_mod` makes the banner of a singular post of the registered type carry that subtitle; a registered type with `subtitle_mod` still works. `BannerTest` (unit): `sanitize_subtitle` keeps `<em>x</em>` and removes `<script>`, returns `''` for `array( 'x' )`, `null` and an object.
-- [x] **Step 2:** Run `composer test:unit -- --filter BannerTest` and `composer test:integration -- --filter BannerRegister`. Expected: FAIL.
+- [x] **Step 1: Write failing tests.** `BannerRegisterTest`: registering with `'subtitle' => static fn() => 'From callable'` and no `subtitle_mod` makes the banner of a singular post of the registered type carry that subtitle; a registered type with `subtitle_mod` still works. `BannerSanitizeTest` (integration, in `plugins/tests/integration/Utils/BannerSanitizeTest.php`, because `wp_kses_post` is not available in the unit bootstrap): `sanitize_subtitle` keeps `<em>x</em>` and removes `<script>`, returns `''` for `array( 'x' )`, `null` and an object.
+- [x] **Step 2:** Run `composer test:integration -- --filter BannerSanitize` and `composer test:integration -- --filter BannerRegister`. Expected: FAIL.
 - [x] **Step 3:** Implement to the interface; update the docblock of `register()`.
 - [x] **Step 4:** Run the full `composer test:unit`, `test:integration` and `lint`. Expected: pass.
 - [x] **Step 5:** Commit `feat(utils): let Banner take a subtitle callable`.
@@ -124,7 +126,14 @@ Same for `hyperpress-competition`: option `hyperpress_competition`, field `hyper
 - [ ] **Step 1 (manual):** hyperPress menu lists Newsletter, Sponsor and Competition. Open each: the field shows the default text (Competition empty), edit, save, reload; the value stays. Clearing the field and saving: note what the front end shows (the default returns if Meta Box drops the empty key).
 - [ ] **Step 2 (manual):** the banners on a newsletter page, a sponsors page and a competition page show the saved subtitle; on a season archive of each type it reads "<subtitle> in Season N". The Customizer no longer has "Newsletter", "Sponsors" or "Competitions" sections.
 - [ ] **Step 3 (dev data, optional):** after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old values once: `wpcli eval 'foreach ( array( "newsletter", "sponsor", "competition" ) as $p ) { $k = "hyperpress_{$p}_banner_subtitle"; update_option( "hyperpress_{$p}", array( $k => get_theme_mod( $k, "" ) ) ); }'`. Old text may still use removed `[hyper_*]` shortcode tags; update them to `[hyperpress_*]`.
-- [ ] **Step 4:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_newsletter_banner_subtitle`, `hyperpress_sponsor_banner_subtitle`, `hyperpress_competition_banner_subtitle`, `subtitle_mod`, `NewsletterCustomizerTest`; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest.
+- [x] **Step 4:** Grep `docs/superpowers/plans/`, `specs/` and `audit/` for `hyperpress_newsletter_banner_subtitle`, `hyperpress_sponsor_banner_subtitle`, `hyperpress_competition_banner_subtitle`, `subtitle_mod`, `NewsletterCustomizerTest`; append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest.
 - [ ] **Step 5:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete banner subtitle settings pages`.
 
 ## Outcome / execution notes
+
+- Note (2026-10-13): accepted behaviour: if Meta Box drops an empty key when saving, clearing the newsletter or sponsor subtitle makes the default text come back; competition's default is empty, so it is unaffected.
+- Note (2026-10-13): the field descriptions were written for the new fields (the old Customizer controls had none except competition's), with the shortcode and markup wording copied from Season. They say "bold, italic", while the display allow-list is strong/em/br/span[class], so `<b>` and `<i>` are removed at display; the wording was changed in the final fix wave.
+- Note (2026-10-13): no migration code. Until the optional wpcli copy (Task 6 step 3) runs on an existing site, the old theme-mod subtitles are ignored and the defaults show; the old text may contain removed `[hyper_*]` shortcode tags.
+- Note (2026-10-13): `Banner::register()` now throws `InvalidArgumentException` at registration when `subtitle` is missing or not callable, so any third-party caller still passing `subtitle_mod` breaks loudly (none in this repo).
+- Note (2026-10-13): test notes: the sponsor accessor test class is `SponsorSubtitleSettingTest`, to avoid clashing with the existing `SponsorSettingsTest`; competition had no season-archive banner test, so `CompetitionSubtitleTest` calls `Banner::apply` directly plus a real-filter test; filtered runs of `SeasonGuardsTest` show a known `trim(): WP_Error` order dependence (the full suite passes).
+- Note (2026-10-13): deferred minors from the reviews: a few loose assertions, and the `SeasonGuardsTest` gizmo fixtures use a `get_theme_mod` closure where a literal would do.

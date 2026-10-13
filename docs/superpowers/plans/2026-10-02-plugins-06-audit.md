@@ -146,3 +146,5 @@ final class SponsorDescriptionSanitizeTest extends WP_UnitTestCase {
 - Deferred on purpose: nothing from the audit is open. The remaining `phpcs:ignore` comments each state why.
 - Note (2026-10-12): finding 17's `time-restrict` shortcode is now `hyperpress_time_restrict` (all shortcode tags were renamed to `hyperpress_*`, no aliases). The finding itself is unchanged.
 - Note (2026-10-12): findings 6 and 13 name `hyperpress-utils/src/Controls/PostTypeDropdownControl.php` and `CategoryDropdownControl.php`. Both classes, their tests and the `src/Controls/` directory were deleted when the Front Page, Season and Program settings moved to Meta Box settings pages, so those two findings no longer apply to any code. See `docs/superpowers/plans/2026-10-12-settings-pages-program.md`.
+
+- Note (2026-10-13): finding 8 (competition banner subtitle theme mod) no longer applies as written: the competition subtitle is an option on hyperPress > Competition (`hyperpress_competition`), `subtitle_mod` is gone from `Banner::register()` and the competition `Customizer` class was deleted. See `docs/superpowers/plans/2026-10-13-settings-pages-banner-subtitles.md`.
