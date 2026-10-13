@@ -48,7 +48,6 @@ final class NoPluginsTest extends WP_UnitTestCase {
 	public function test_the_plugins_really_are_absent(): void {
 		$this->assertFalse( function_exists( 'rwmb_meta' ) );
 		$this->assertFalse( class_exists( 'HyperPress\Season\SortedSeasons' ) );
-		$this->assertFalse( class_exists( 'HyperPress\Utils\Controls\PostTypeDropdownControl' ) );
 	}
 
 	public function test_the_footer_renders_without_social_icons(): void {

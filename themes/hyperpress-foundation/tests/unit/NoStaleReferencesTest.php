@@ -34,7 +34,7 @@ final class NoStaleReferencesTest extends TestCase {
 	public static function removed_symbols(): array {
 		return array(
 			'old utils namespace'     => array( '/HYPER_Press_Utils/', 'Utils namespace is now HyperPress\\Utils' ),
-			'old control classes'     => array( '/HYPERpress_Dropdown_/', 'Controls are HyperPress\\Utils\\Controls\\*' ),
+			'old control classes'     => array( '/HYPERpress_Dropdown_/', 'the Customizer dropdown controls were removed (the settings moved to Meta Box settings pages)' ),
 			'theme breadcrumb helper' => array( '/hyperpress_breadcrumbs_custom_post_type/', 'Builder moved to HyperPress\\Utils\\Breadcrumbs' ),
 			'old season namespace'    => array( '/HYPER_Press_Season/', 'get_sorted_seasons is now \\HyperPress\\Season\\SortedSeasons::get' ),
 			'old countdown key'       => array( '/[\'"]countdown[\'"]\s*\]/', "Countdown post type key is now 'hyper_countdown'" ),

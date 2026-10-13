@@ -78,11 +78,11 @@
 
 **Interfaces:** None produced. `HyperPress\Label\Controls\LabelDropdownControl` and `LabelCustomizerTest` are not touched.
 
-- [ ] **Step 1: Write failing tests.** Add one test to the existing utils integration tests (or a small new file `plugins/tests/integration/Utils/NoControlsTest.php`): `class_exists( 'HyperPress\Utils\Controls\PostTypeDropdownControl' )` and `...CategoryDropdownControl` are both false.
-- [ ] **Step 2:** Run it. Expected: FAIL (the classes still exist).
-- [ ] **Step 3:** Confirm with the grep tool (exclude `vendor/`, `node_modules/`, `docs/`) that nothing else references `HyperPress\Utils\Controls`, `PostTypeDropdownControl` or `CategoryDropdownControl` in `plugins/` or `themes/`; delete the files and the three test files; update `NoPluginsTest` and `NoStaleReferencesTest` as above.
-- [ ] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and `composer test:integration`, `test:unit` and `lint` from `themes/hyperpress-foundation/`. Expected: pass (the theme `test:unit` includes `NoStaleReferencesTest`).
-- [ ] **Step 5:** Commit `refactor(utils): remove the unused dropdown Customizer controls`.
+- [x] **Step 1: Write failing tests.** Add one test to the existing utils integration tests (or a small new file `plugins/tests/integration/Utils/NoControlsTest.php`): `class_exists( 'HyperPress\Utils\Controls\PostTypeDropdownControl' )` and `...CategoryDropdownControl` are both false.
+- [x] **Step 2:** Run it. Expected: FAIL (the classes still exist).
+- [x] **Step 3:** Confirm with the grep tool (exclude `vendor/`, `node_modules/`, `docs/`) that nothing else references `HyperPress\Utils\Controls`, `PostTypeDropdownControl` or `CategoryDropdownControl` in `plugins/` or `themes/`; delete the files and the three test files; update `NoPluginsTest` and `NoStaleReferencesTest` as above.
+- [x] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and `composer test:integration`, `test:unit` and `lint` from `themes/hyperpress-foundation/`. Expected: pass (the theme `test:unit` includes `NoStaleReferencesTest`).
+- [x] **Step 5:** Commit `refactor(utils): remove the unused dropdown Customizer controls`.
 
 ### Task 4: Verify in a browser and close out
 
