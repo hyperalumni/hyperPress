@@ -5,11 +5,11 @@ use WP_UnitTestCase;
 
 /**
  * A Meta Box entry without fields and with 'panel' => '' makes Meta Box AIO create an empty Customizer section. The
- * theme keeps those only where controls live in them.
+ * theme must not register one for the gallery.
  */
 final class EmptyMetaBoxSectionsTest extends WP_UnitTestCase {
 
-	public function test_the_theme_registers_no_meta_box_without_fields_except_the_homepage_section(): void {
+	public function test_the_theme_registers_no_meta_box_without_fields_for_the_gallery_section(): void {
 		foreach ( apply_filters( 'rwmb_meta_boxes', array() ) as $box ) {
 			$id = (string) ( $box['id'] ?? '' );
 			if ( empty( $box['fields'] ) && 'hyperpress_gallery' === $id ) {

@@ -13,7 +13,6 @@ final class CustomizerTest extends WP_UnitTestCase {
 		foreach ( array( 'hyperpress_hyper_green', 'hyperpress_hyper_orange', 'hyperpress_hyper_red', 'hyperpress_gear_blue' ) as $setting ) {
 			$this->assertNotNull( $manager->get_setting( $setting ), "color setting $setting is registered" );
 		}
-		$this->assertNotNull( $manager->get_setting( 'hyperpress_home_blog_post_types' ) );
 	}
 
 	public function test_the_gear_gray_color_uses_the_american_spelling(): void {

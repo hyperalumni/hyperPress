@@ -57,7 +57,7 @@ the_post();
 			<?php endif; ?>
 			<main class="main-content">
 				<?php
-				// query posts by the categories selected in the customizer
+				// query posts by the categories selected on the Front Page settings page
 				$blog_categories = array_values( array_filter( array_map( 'absint', (array) hyperpress_frontpage_setting( 'hyperpress_frontpage_categories', array() ) ) ) );
 				$query_args      = array( 'post_type' => 'post' );
 				if ( ! empty( $blog_categories ) ) {
@@ -80,7 +80,7 @@ the_post();
 					}
                         );
 					if ( ! empty( $blog_custom_post_types ) ) {
-						// also include any custom post types selected in the customizer
+						// also include any custom post types selected on the Front Page settings page
 						$custom_post_types_query = new WP_Query(
                             array(
 								'post_type' => $blog_custom_post_types,

@@ -125,8 +125,7 @@ final class NoPluginsTest extends WP_UnitTestCase {
 		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
 		$manager = new WP_Customize_Manager();
 		do_action( 'customize_register', $manager );
-		// The homepage section itself comes from Meta Box, so only the settings are expected here.
-		$this->assertNotNull( $manager->get_setting( 'hyperpress_home_blog_post_types' ) );
-		$this->assertNull( $manager->get_control( 'hyperpress_home_blog_post_types' ), 'no control without hyperpress-utils' );
+		$this->assertNotNull( $manager->get_setting( 'hyperpress_gear_gray' ) );
+		$this->assertNull( $manager->get_setting( 'hyperpress_home_blog_post_types' ), 'the front page settings live in hyperpress-frontpage' );
 	}
 }

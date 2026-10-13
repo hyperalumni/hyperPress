@@ -152,16 +152,16 @@
 ### Task 8: Remove the front-page Customizer sections
 
 **Files:**
-- Delete: `themes/hyperpress-foundation/library/customize/homepage.php` (and its require in `library/customize.php`), `library/metaboxes/homepage-customize.php` (and `library/metaboxes.php` with its require at `functions.php:79`, if it contains nothing else)
+- Delete: `themes/hyperpress-foundation/library/customize/homepage.php` (and its require in `library/customize.php`), `library/metaboxes/homepage-customize.php` (its require is removed from `library/metaboxes.php`, which stays because it still requires `metaboxes/banner.php`)
 - Test: modify `HomepageSettingsTest.php` (delete the tests ported in Task 6 and the metabox test), `CustomizerTest.php` (the `hyperpress_home_blog_post_types` assertion), `NoPluginsTest.php:103-104`, `EmptyMetaBoxSectionsTest.php` (docblock and method name no longer mention the homepage exception)
 
 **Interfaces:** Consumes the Task 7 reads. The two dropdown control classes stay (program and season still use them).
 
-- [ ] **Step 1: Write failing tests:** the Customizer has no section `hyperpress_front_page_posts` and no panel or section created for `hyperpress_front_page`; no setting `hyperpress_home_blog_categories` or `hyperpress_home_blog_post_types` is registered; `apply_filters( 'rwmb_meta_boxes', array() )` contains no box with id `hyperpress_front_page`.
-- [ ] **Step 2:** Run the theme `composer test:integration`. Expected: FAIL.
-- [ ] **Step 3:** Delete the files and requires and update the tests listed above.
-- [ ] **Step 4:** Run the theme `composer test:integration` and `composer lint`, then `composer test:integration` from `plugins/`. Expected: pass.
-- [ ] **Step 5:** Commit `refactor(theme): remove the front page Customizer sections`.
+- [x] **Step 1: Write failing tests:** the Customizer has no section `hyperpress_front_page_posts` and no panel or section created for `hyperpress_front_page`; no setting `hyperpress_home_blog_categories` or `hyperpress_home_blog_post_types` is registered; `apply_filters( 'rwmb_meta_boxes', array() )` contains no box with id `hyperpress_front_page`.
+- [x] **Step 2:** Run the theme `composer test:integration`. Expected: FAIL.
+- [x] **Step 3:** Delete the files and requires and update the tests listed above.
+- [x] **Step 4:** Run the theme `composer test:integration` and `composer lint`, then `composer test:integration` from `plugins/`. Expected: pass.
+- [x] **Step 5:** Commit `refactor(theme): remove the front page Customizer sections`.
 
 ### Task 9: Verify in a browser and close out
 
