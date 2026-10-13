@@ -28,7 +28,7 @@ final class MetaBoxes {
 				array(
 					'id'                => Settings::BANNER_SUBTITLE,
 					'name'              => __( 'Banner subtitle', 'hyperpress' ),
-					'desc'              => __( 'Shown under the title on the competitions pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do <strong>, <em> and <br> tags; other markup is removed when the banner is displayed.', 'hyperpress' ),
+					'desc'              => __( 'Shown under the title on the competitions pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' ),
 					'type'              => 'textarea',
 					'raw'               => true,
 					'std'               => Settings::BANNER_SUBTITLE_DEFAULT,
