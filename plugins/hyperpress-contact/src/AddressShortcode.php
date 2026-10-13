@@ -51,7 +51,7 @@ final class AddressShortcode {
 
 		$lines = array();
 		if ( '' !== $field( 'name' ) ) {
-			$lines[] = '<span class="fn">' . esc_html( $field( 'name' ) ) . '</span>';
+			$lines[] = '<span class="fn">' . do_shortcode( esc_html( $field( 'name' ) ) ) . '</span>';
 		}
 		if ( '' !== $field( 'extra' ) ) {
 			$lines[] = '<span class="extended-address">' . esc_html( $field( 'extra' ) ) . '</span>';
