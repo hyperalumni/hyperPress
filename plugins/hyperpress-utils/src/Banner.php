@@ -28,11 +28,12 @@ final class Banner {
 			static function ( $banner ) use ( $post_type, $args ) {
 				$is_tax_season = is_tax( self::SEASON_TAXONOMY );
 				$queried       = $is_tax_season ? get_queried_object() : null;
+				$subtitle      = call_user_func( $args['subtitle'] );
 				$ctx           = array(
 					'is_singular'   => is_singular( $post_type ),
 					'is_archive'    => is_post_type_archive( $post_type ),
 					'is_tax_season' => $is_tax_season,
-					'subtitle'      => (string) call_user_func( $args['subtitle'] ),
+					'subtitle'      => is_scalar( $subtitle ) ? (string) $subtitle : '',
 					'color'         => get_theme_mod( $args['color_mod'] ),
 					'term_name'     => $queried instanceof \WP_Term ? $queried->name : '',
 				);

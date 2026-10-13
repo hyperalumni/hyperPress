@@ -99,6 +99,23 @@ final class BannerRegisterTest extends WP_UnitTestCase {
 		$this->assertSame( 'From callable', $banner['subtitle'] );
 	}
 
+	public function test_a_callable_returning_an_array_gives_an_empty_subtitle(): void {
+		register_post_type( 'hyper_widget', array( 'public' => true, 'has_archive' => 'widgets' ) );
+		flush_rewrite_rules();
+		Banner::register(
+			'hyper_widget',
+			array(
+				'type'          => 'widget',
+				'subtitle'      => static fn() => array( 'not', 'a string' ),
+				'color_mod'     => 'hyperpress_hyper_green',
+				'archive_title' => 'Widgets',
+			)
+		);
+		$this->go_to( get_post_type_archive_link( 'hyper_widget' ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
+		$this->assertSame( '', $banner['subtitle'] );
+	}
+
 	public function test_hyperpress_banner_args_filter_can_adjust_the_banner(): void {
 		$seen = array();
 		add_filter(

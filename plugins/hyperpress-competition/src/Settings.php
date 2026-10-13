@@ -37,11 +37,21 @@ final class Settings {
 	}
 
 	/**
-	 * The competition banner subtitle: the saved text, or the default when nothing valid is saved.
+	 * The competition banner subtitle.
+	 *
+	 * Option row missing: the default_option filter makes get_option() return the defaults, so the default
+	 * text shows until the page is saved. Row present but key missing: Meta Box drops the key of an empty
+	 * field, so the editor cleared it and the subtitle is ''. Option not an array, or value not a string:
+	 * the default.
 	 */
 	public static function banner_subtitle(): string {
-		$option = get_option( self::OPTION, array() );
-		$value  = is_array( $option ) ? ( $option[ self::BANNER_SUBTITLE ] ?? null ) : null;
-		return is_string( $value ) ? $value : self::BANNER_SUBTITLE_DEFAULT;
+		$option = get_option( self::OPTION );
+		if ( ! is_array( $option ) ) {
+			return self::BANNER_SUBTITLE_DEFAULT;
+		}
+		if ( ! array_key_exists( self::BANNER_SUBTITLE, $option ) ) {
+			return '';
+		}
+		return is_string( $option[ self::BANNER_SUBTITLE ] ) ? $option[ self::BANNER_SUBTITLE ] : self::BANNER_SUBTITLE_DEFAULT;
 	}
 }

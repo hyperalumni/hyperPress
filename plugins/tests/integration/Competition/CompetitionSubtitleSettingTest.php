@@ -24,9 +24,11 @@ final class CompetitionSubtitleSettingTest extends WP_UnitTestCase {
 		$this->assertSame( '<b>Compete</b>', Settings::banner_subtitle() );
 	}
 
-	public function test_a_saved_array_without_the_key_gives_the_default(): void {
+	public function test_a_saved_array_without_the_key_means_the_subtitle_was_cleared(): void {
 		update_option( 'hyperpress_competition', array( 'something_else' => 'x' ) );
 
+		$this->assertSame( '', Settings::banner_subtitle() );
+		update_option( 'hyperpress_competition', array() );
 		$this->assertSame( '', Settings::banner_subtitle() );
 	}
 

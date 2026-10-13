@@ -52,6 +52,13 @@ final class CompetitionSubtitleTest extends WP_UnitTestCase {
 		$this->assertSame( '', $this->season_banner()['subtitle'] );
 	}
 
+	public function test_a_cleared_subtitle_stays_empty_on_the_archive(): void {
+		// Meta Box drops the key of an empty field but keeps the option row.
+		update_option( 'hyperpress_competition', array() );
+
+		$this->assertSame( '', $this->archive_banner()['subtitle'] );
+	}
+
 	public function test_a_saved_subtitle_is_joined_to_the_season(): void {
 		update_option( 'hyperpress_competition', array( 'hyperpress_competition_banner_subtitle' => 'Compete' ) );
 

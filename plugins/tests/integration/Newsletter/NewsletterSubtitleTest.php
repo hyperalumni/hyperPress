@@ -31,6 +31,13 @@ final class NewsletterSubtitleTest extends WP_UnitTestCase {
 		$this->assertSame( 'Custom subtitle', $this->archive_banner()['subtitle'] );
 	}
 
+	public function test_a_cleared_subtitle_stays_empty_on_the_banner(): void {
+		// Meta Box drops the key of an empty field but keeps the option row.
+		update_option( 'hyperpress_newsletter', array() );
+
+		$this->assertSame( '', $this->archive_banner()['subtitle'] );
+	}
+
 	public function test_the_customizer_has_no_newsletter_section_or_setting(): void {
 		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
 		$manager = new WP_Customize_Manager();

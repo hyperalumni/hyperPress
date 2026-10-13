@@ -14,7 +14,7 @@ final class BannerSanitizeTest extends WP_UnitTestCase {
 	}
 
 	public function test_removes_script_tags(): void {
-		$this->assertStringNotContainsString( '<script', Banner::sanitize_subtitle( 'ok<script>alert(1)</script>' ) );
+		$this->assertSame( 'okalert(1)', Banner::sanitize_subtitle( 'ok<script>alert(1)</script>' ) );
 	}
 
 	public function test_non_scalars_become_an_empty_string(): void {
