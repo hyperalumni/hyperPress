@@ -62,7 +62,7 @@ This list comes from a quick scan of the code, which has already been wrong (a n
 ### Settings pages (pattern from `hyperpress-contact`)
 
 - Each page is registered through the `mb_settings_pages` filter with `parent => AdminMenu::SLUG`, and its fields through `rwmb_meta_boxes`. Meta Box's MB Settings Page stores one option, an array keyed by field id, via `update_option`.
-- Option name `hyperpress_<plugin>`; field ids short and unprefixed within that array (my call, consistent with `hyperpress_contact`). General uses option `hyperpress_general`, page id `hyperpress_general`, field id `google_maps_api_key` (my call; a Meta Box settings page cannot write a bare string option, so the earlier flat option `hyperpress_google_maps_api_key` is retired).
+- Option name `hyperpress_<plugin>`; field ids are `hyperpress_<plugin>_<field>`, and the option array is keyed by them (required by `IdentifierConventionTest` and consistent with `hyperpress_contact_map` in option `hyperpress_contact`). General uses option `hyperpress_general`, page id `hyperpress_general`, field id `hyperpress_general_google_maps_api_key` (my call; a Meta Box settings page cannot write a bare string option, so the earlier flat option `hyperpress_google_maps_api_key` is retired).
 - Readers use `get_option` directly with defaults. Meta Box is not installed in the test environment (`rwmb_meta` is stubbed), so tests assert the `mb_settings_pages` and `rwmb_meta_boxes` filter output and the real UI is verified in a browser.
 - Sanitization: the sanitizers that exist today (`hyperpress_sanitize_home_categories`, `hyperpress_sanitize_home_post_types`) move to the new plugin as per-field `sanitize_callback`s (neither Front Page field is cloneable, so no `pre_update_option_` filter is needed there; the multi-select fields always submit arrays, so the old single-id case is dropped; my call). Because the theme must be robust with the plugin inactive and with hand-edited options, the theme also validates on read (unregistered or non-public post types dropped, ids cast to int). For any later cloneable group, whole-list rules belong in a `pre_update_option_{option}` filter, because Meta Box calls a cloneable group's `sanitize_callback` once per clone.
 - With `hyperpress-frontpage` inactive and no saved option, the front page behaves exactly as today with no theme mod set: empty category query, `post` only for post types. This is intended and asserted in `NoPluginsTest` and `FrontPageQueryTest`.
@@ -77,8 +77,8 @@ This list comes from a quick scan of the code, which has already been wrong (a n
 
 ### Google Maps key
 
-- General exposes one text field, saved in option `hyperpress_general` under `google_maps_api_key`.
-- `GoogleMapsKey::get()` reads only `hyperpress_general['google_maps_api_key']`; the flat option and the theme-mod fallback are removed. Existing tests that write the flat option (e.g. `ContactSettingsPageTest`, `MapShortcodeTest`) are updated.
+- General exposes one text field, saved in option `hyperpress_general` under `hyperpress_general_google_maps_api_key`.
+- `GoogleMapsKey::get()` reads only `hyperpress_general['hyperpress_general_google_maps_api_key']`; the flat option and the theme-mod fallback are removed. Existing tests that write the flat option (e.g. `ContactSettingsPageTest`, `MapShortcodeTest`) are updated.
 - Competition switches its reads to `GoogleMapsKey::get()` and drops its Customizer key setting. Both settings in its `Customizer` class (the key and the banner subtitle) move, so the class and its Customizer section are deleted; `CompetitionMapApiKeyTest` is rewritten for the accessor.
 - Meta Box's map field falls back to a hardcoded demo API key unless `api_key` is passed, so any map field must pass `GoogleMapsKey::get()`.
 

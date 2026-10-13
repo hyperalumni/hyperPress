@@ -6,63 +6,57 @@ use WP_UnitTestCase;
 
 final class GoogleMapsKeyTest extends WP_UnitTestCase {
 
-	private const LEGACY_MOD = 'hyperpress_competition_google_maps_api_key';
+	private const OPTION     = 'hyperpress_general';
+	private const OLD_OPTION = 'hyperpress_google_maps_api_key';
+	private const OLD_MOD    = 'hyperpress_competition_google_maps_api_key';
 
 	public function set_up(): void {
 		parent::set_up();
-		delete_option( GoogleMapsKey::OPTION );
-		remove_theme_mod( self::LEGACY_MOD );
+		$this->clear();
 	}
 
 	public function tear_down(): void {
-		delete_option( GoogleMapsKey::OPTION );
-		remove_theme_mod( self::LEGACY_MOD );
+		$this->clear();
 		parent::tear_down();
 	}
 
-	public function test_option_name_is_hyperpress_google_maps_api_key(): void {
-		$this->assertSame( 'hyperpress_google_maps_api_key', GoogleMapsKey::OPTION );
+	private function clear(): void {
+		delete_option( self::OPTION );
+		delete_option( self::OLD_OPTION );
+		remove_theme_mod( self::OLD_MOD );
 	}
 
-	public function test_returns_empty_string_when_nothing_is_set(): void {
+	public function test_returns_empty_string_when_nothing_is_saved(): void {
 		$this->assertSame( '', GoogleMapsKey::get() );
 	}
 
-	public function test_returns_the_global_option(): void {
-		update_option( GoogleMapsKey::OPTION, 'global-key' );
+	public function test_returns_the_trimmed_value_from_the_general_option(): void {
+		update_option( self::OPTION, array( 'hyperpress_general_google_maps_api_key' => "  global-key \n" ) );
 		$this->assertSame( 'global-key', GoogleMapsKey::get() );
 	}
 
-	public function test_global_option_wins_over_the_theme_mod(): void {
-		update_option( GoogleMapsKey::OPTION, 'global-key' );
-		set_theme_mod( self::LEGACY_MOD, 'theme-key' );
-		$this->assertSame( 'global-key', GoogleMapsKey::get() );
+	public function test_returns_empty_string_when_the_value_is_blank(): void {
+		update_option( self::OPTION, array( 'hyperpress_general_google_maps_api_key' => "  \t " ) );
+		$this->assertSame( '', GoogleMapsKey::get() );
 	}
 
-	public function test_falls_back_to_the_theme_mod_when_option_is_missing(): void {
-		set_theme_mod( self::LEGACY_MOD, 'theme-key' );
-		$this->assertSame( 'theme-key', GoogleMapsKey::get() );
+	public function test_returns_empty_string_when_the_value_is_not_a_string(): void {
+		update_option( self::OPTION, array( 'hyperpress_general_google_maps_api_key' => array( 'x' ) ) );
+		$this->assertSame( '', GoogleMapsKey::get() );
 	}
 
-	public function test_falls_back_to_the_theme_mod_when_option_is_empty(): void {
-		update_option( GoogleMapsKey::OPTION, '' );
-		set_theme_mod( self::LEGACY_MOD, 'theme-key' );
-		$this->assertSame( 'theme-key', GoogleMapsKey::get() );
+	public function test_returns_empty_string_when_the_option_is_a_string(): void {
+		update_option( self::OPTION, 'global-key' );
+		$this->assertSame( '', GoogleMapsKey::get() );
 	}
 
-	public function test_falls_back_to_the_theme_mod_when_option_is_only_whitespace(): void {
-		update_option( GoogleMapsKey::OPTION, "  \t " );
-		set_theme_mod( self::LEGACY_MOD, 'theme-key' );
-		$this->assertSame( 'theme-key', GoogleMapsKey::get() );
+	public function test_ignores_the_old_flat_option(): void {
+		update_option( self::OLD_OPTION, 'old-key' );
+		$this->assertSame( '', GoogleMapsKey::get() );
 	}
 
-	public function test_trims_the_global_option(): void {
-		update_option( GoogleMapsKey::OPTION, "  global-key \n" );
-		$this->assertSame( 'global-key', GoogleMapsKey::get() );
-	}
-
-	public function test_trims_the_theme_mod(): void {
-		set_theme_mod( self::LEGACY_MOD, "  theme-key\t" );
-		$this->assertSame( 'theme-key', GoogleMapsKey::get() );
+	public function test_ignores_the_old_theme_mod(): void {
+		set_theme_mod( self::OLD_MOD, 'theme-key' );
+		$this->assertSame( '', GoogleMapsKey::get() );
 	}
 }

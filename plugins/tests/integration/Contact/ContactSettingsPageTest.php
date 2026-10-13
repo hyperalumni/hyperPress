@@ -78,7 +78,7 @@ final class ContactSettingsPageTest extends WP_UnitTestCase {
 	}
 
 	public function test_the_map_field_uses_the_api_key_and_a_map_address_field(): void {
-		update_option( 'hyperpress_google_maps_api_key', 'abc' );
+		update_option( 'hyperpress_general', array( 'hyperpress_general_google_maps_api_key' => 'abc' ) );
 
 		$map = $this->field( 'hyperpress_contact_map' );
 

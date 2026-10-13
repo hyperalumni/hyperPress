@@ -19,9 +19,9 @@ final class MapShortcodeTest extends WP_UnitTestCase {
 	private function store( ?string $map, ?string $key ): void {
 		update_option( Settings::OPTION, null === $map ? array() : array( Settings::MAP => $map ) );
 		if ( null === $key ) {
-			delete_option( 'hyperpress_google_maps_api_key' );
+			delete_option( 'hyperpress_general' );
 		} else {
-			update_option( 'hyperpress_google_maps_api_key', $key );
+			update_option( 'hyperpress_general', array( 'hyperpress_general_google_maps_api_key' => $key ) );
 		}
 	}
 
