@@ -37,6 +37,19 @@ final class SeasonReadersTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'post', 'page' ), get_taxonomy( Plugin::TAXONOMY )->object_type );
 	}
 
+	public function test_a_cleared_post_type_list_attaches_the_taxonomy_to_nothing(): void {
+		// A saved row without the post types key is what Meta Box stores for a cleared multi-select.
+		update_option( 'hyperpress_season', array() );
+		Plugin::register();
+
+		$this->assertSame( array(), get_taxonomy( Plugin::TAXONOMY )->object_type );
+
+		update_option( 'hyperpress_season', array( 'other_key' => 'x' ) );
+		Plugin::register();
+
+		$this->assertSame( array(), get_taxonomy( Plugin::TAXONOMY )->object_type );
+	}
+
 	public function test_the_definition_object_types_is_the_saved_list(): void {
 		update_option( 'hyperpress_season', array( 'hyperpress_season_post_types' => array( 'page' ) ) );
 

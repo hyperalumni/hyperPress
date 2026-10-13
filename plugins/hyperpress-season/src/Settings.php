@@ -68,17 +68,28 @@ final class Settings {
 	/**
 	 * Post types that use the Season taxonomy.
 	 *
+	 * The default (posts) applies only while nothing is saved. Once the settings
+	 * row exists, a missing key means the list was cleared (Meta Box drops the
+	 * key for an empty multi-select), so it gives no post types; a key that
+	 * holds something other than an array gives the default.
+	 *
 	 * @return string[]
 	 */
 	public static function post_types(): array {
-		$saved = self::saved();
-		if ( ! isset( $saved[ self::POST_TYPES ] ) || ! is_array( $saved[ self::POST_TYPES ] ) ) {
+		$option = get_option( self::OPTION, false );
+		if ( ! is_array( $option ) ) {
+			return self::defaults()[ self::POST_TYPES ];
+		}
+		if ( ! array_key_exists( self::POST_TYPES, $option ) ) {
+			return array();
+		}
+		if ( ! is_array( $option[ self::POST_TYPES ] ) ) {
 			return self::defaults()[ self::POST_TYPES ];
 		}
 
 		return array_values(
 			array_filter(
-				$saved[ self::POST_TYPES ],
+				$option[ self::POST_TYPES ],
 				static fn( $post_type ) => is_string( $post_type ) && '' !== $post_type
 			)
 		);

@@ -30,6 +30,30 @@ final class ProgramSettingsTest extends WP_UnitTestCase {
 		$this->assertSame( array(), Settings::post_types() );
 	}
 
+	public function test_a_saved_row_without_the_key_means_none(): void {
+		update_option( 'hyperpress_program', array( 'other_key' => 'x' ) );
+
+		$this->assertSame( array(), Settings::post_types() );
+	}
+
+	public function test_a_saved_empty_option_means_none(): void {
+		update_option( 'hyperpress_program', array() );
+
+		$this->assertSame( array(), Settings::post_types() );
+	}
+
+	public function test_a_missing_option_gives_the_default(): void {
+		delete_option( 'hyperpress_program' );
+
+		$this->assertSame( array( 'post' ), Settings::post_types() );
+	}
+
+	public function test_a_non_array_key_value_gives_the_default(): void {
+		update_option( 'hyperpress_program', array( 'hyperpress_program_post_types' => 'post' ) );
+
+		$this->assertSame( array( 'post' ), Settings::post_types() );
+	}
+
 	public function test_a_non_array_option_gives_the_defaults(): void {
 		update_option( 'hyperpress_program', 'garbage' );
 

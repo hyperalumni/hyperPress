@@ -28,7 +28,6 @@ final class MetaBoxes {
 					'type'              => 'select_advanced',
 					'multiple'          => true,
 					'options'           => self::post_type_options(),
-					'std'               => array( 'post' ),
 					'sanitize_callback' => array( Sanitizers::class, 'post_types' ),
 				),
 			),

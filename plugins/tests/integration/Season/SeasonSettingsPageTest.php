@@ -85,7 +85,8 @@ final class SeasonSettingsPageTest extends WP_UnitTestCase {
 		$this->assertTrue( $fields['hyperpress_season_banner_subtitle']['raw'] );
 		$this->assertSame( array( Sanitizers::class, 'banner_subtitle' ), $fields['hyperpress_season_banner_subtitle']['sanitize_callback'] );
 		$this->assertTrue( $fields['hyperpress_season_post_types']['multiple'] );
-		$this->assertSame( array( 'post' ), $fields['hyperpress_season_post_types']['std'] );
+		// No std: Meta Box redisplays std for an empty or missing value, so the field could never be cleared. The default comes from default_option_hyperpress_season.
+		$this->assertArrayNotHasKey( 'std', $fields['hyperpress_season_post_types'] );
 		$this->assertSame( array( Sanitizers::class, 'post_types' ), $fields['hyperpress_season_post_types']['sanitize_callback'] );
 	}
 

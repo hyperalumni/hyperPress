@@ -70,7 +70,8 @@ final class ProgramSettingsPageTest extends WP_UnitTestCase {
 		$this->assertSame( 'Select the Post Types that will use the Program Taxonomy', $field['desc'] );
 		$this->assertSame( 'select_advanced', $field['type'] );
 		$this->assertTrue( $field['multiple'] );
-		$this->assertSame( array( 'post' ), $field['std'] );
+		// No std: Meta Box redisplays std for an empty or missing value, so the field could never be cleared. The default comes from default_option_hyperpress_program.
+		$this->assertArrayNotHasKey( 'std', $field );
 		$this->assertSame( array( Sanitizers::class, 'post_types' ), $field['sanitize_callback'] );
 	}
 
