@@ -35,6 +35,8 @@ final class Plugin {
 	public static function boot(): void {
 		add_action( 'init', array( self::class, 'register' ) );
 		add_action( 'init', array( self::class, 'seed_terms' ), 20 );
+		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
+		SettingsPage::register();
 		Customizer::register();
 		MetaBoxes::register();
 		Labels::register();
