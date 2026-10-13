@@ -22,15 +22,15 @@ final class CompetitionMapApiKeyTest extends WP_UnitTestCase {
 		$this->fail( 'map field not found' );
 	}
 
-	public function test_customizer_no_longer_registers_the_api_key_but_keeps_the_banner_subtitle(): void {
+	public function test_customizer_registers_no_competition_settings(): void {
 		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
 		$manager = new WP_Customize_Manager();
 		do_action( 'customize_register', $manager );
 
 		$this->assertNull( $manager->get_setting( self::OLD_SETTING ), 'key setting is gone' );
 		$this->assertNull( $manager->get_control( self::OLD_SETTING ), 'key control is gone' );
-		$this->assertNotNull( $manager->get_setting( self::SUBTITLE_SET ), 'banner subtitle setting remains' );
-		$this->assertNotNull( $manager->get_section( 'hyperpress_competition' ), 'section remains' );
+		$this->assertNull( $manager->get_setting( self::SUBTITLE_SET ), 'banner subtitle setting is gone' );
+		$this->assertNull( $manager->get_section( 'hyperpress_competition' ), 'section is gone' );
 	}
 
 	public function test_map_field_uses_the_key_saved_in_the_general_setting(): void {

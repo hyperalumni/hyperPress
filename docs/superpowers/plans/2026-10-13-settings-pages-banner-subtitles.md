@@ -98,11 +98,11 @@ Same for `hyperpress-competition`: option `hyperpress_competition`, field `hyper
 
 **Interfaces:** Same shapes as Task 2 under `HyperPress\Competition`. The existing `HyperPress\Competition\Settings` name must not collide: grep the plugin for an existing `Settings` class first and, if one exists, name the new class `SubtitleSettings` (decide and record it in the report).
 
-- [ ] **Step 1: Write failing tests** mirroring Task 2, plus: with the default `''` a competition season archive shows no subtitle and no joiner; with a saved subtitle `Banner::apply` joins `<subtitle> in <Season>` (use the existing season-archive banner test as the model).
-- [ ] **Step 2:** Run `composer test:integration -- --filter Competition`. Expected: FAIL.
-- [ ] **Step 3:** Implement, rewire, delete `Customizer.php`, migrate the other tests.
-- [ ] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and the theme's `composer test:integration` and `lint`. Expected: pass.
-- [ ] **Step 5:** Commit `feat(competition): move the banner subtitle to a settings page`.
+- [x] **Step 1: Write failing tests** mirroring Task 2, plus: with the default `''` a competition season archive shows no subtitle and no joiner; with a saved subtitle `Banner::apply` joins `<subtitle> in <Season>` (use the existing season-archive banner test as the model).
+- [x] **Step 2:** Run `composer test:integration -- --filter Competition`. Expected: FAIL.
+- [x] **Step 3:** Implement, rewire, delete `Customizer.php`, migrate the other tests.
+- [x] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and the theme's `composer test:integration` and `lint`. Expected: pass.
+- [x] **Step 5:** Commit `feat(competition): move the banner subtitle to a settings page`.
 
 ### Task 5: Remove `subtitle_mod`
 

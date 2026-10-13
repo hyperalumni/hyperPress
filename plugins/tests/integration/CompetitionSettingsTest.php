@@ -1,12 +1,9 @@
 <?php
 namespace HyperPress\Tests\Integration;
 
-use WP_Customize_Manager;
 use WP_UnitTestCase;
 
 final class CompetitionSettingsTest extends WP_UnitTestCase {
-
-	private const SUBTITLE = 'hyperpress_competition_banner_subtitle';
 
 	private function sanitizer_for( string $field_id ): callable {
 		foreach ( apply_filters( 'rwmb_meta_boxes', array() ) as $box ) {
@@ -18,23 +15,6 @@ final class CompetitionSettingsTest extends WP_UnitTestCase {
 			}
 		}
 		$this->fail( "$field_id not found" );
-	}
-
-	public function test_banner_subtitle_setting_and_matching_control_exist(): void {
-		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
-		$manager = new WP_Customize_Manager();
-		do_action( 'customize_register', $manager );
-
-		$setting = $manager->get_setting( self::SUBTITLE );
-		$this->assertNotNull( $setting, 'setting is registered' );
-		$this->assertSame( '', $setting->default );
-		$this->assertSame( 'x<b>ok</b>', $setting->sanitize( '<script>x</script><b>ok</b>' ), 'the script tag is stripped, allowed markup kept' );
-
-		$control = $manager->get_control( self::SUBTITLE );
-		$this->assertNotNull( $control, 'control id equals setting id' );
-		$this->assertSame( 'hyperpress_competition', $control->section );
-		$this->assertSame( 'text', $control->type );
-		$this->assertSame( 'Banner subtitle', $control->label );
 	}
 
 	/** @return array<string,array{0:string}> */

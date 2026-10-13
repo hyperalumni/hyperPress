@@ -26,7 +26,8 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'seed_terms' ), 20 );
 		Breadcrumbs::register( array( self::POST_TYPE ) );
 		add_action( 'init', array( self::class, 'register_banner' ) );
-		Customizer::register();
+		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
+		SettingsPage::register();
 		MetaBoxes::register();
 		Labels::register();
 	}
@@ -36,7 +37,7 @@ final class Plugin {
 			self::POST_TYPE,
 			array(
 				'type'          => 'competition',
-				'subtitle_mod'  => 'hyperpress_competition_banner_subtitle',
+				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
 				'color_mod'     => 'hyperpress_hyper_green',
 				'archive_title' => __( 'Competitions', 'hyperpress' ),
 				'term_joiner'   => 'in',
