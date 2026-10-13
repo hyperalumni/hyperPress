@@ -23,5 +23,8 @@ final class Plugin {
 		Renderer::register();
 		PostLabels::register();
 		Customizer::register();
+		SettingsPage::register();
+		MetaBoxes::register();
+		add_filter( 'pre_update_option_' . Settings::OPTION, array( Settings::class, 'normalize' ) );
 	}
 }

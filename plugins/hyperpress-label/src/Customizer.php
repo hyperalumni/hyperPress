@@ -27,30 +27,10 @@ final class Customizer {
 	/**
 	 * Post types that get controls, as name => plural label.
 	 *
-	 * Public types except `attachment`, plus any type named in a label's default types.
-	 *
 	 * @return array<string,string>
 	 */
 	public static function post_types(): array {
-		$types = array();
-		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $name => $object ) {
-			if ( 'attachment' !== $name ) {
-				$types[ $name ] = (string) $object->labels->name;
-			}
-		}
-
-		$registry = Registry::instance();
-		foreach ( $registry->ids() as $id ) {
-			foreach ( $registry->default_post_types( $id ) as $name ) {
-				if ( ! is_string( $name ) || '' === $name || isset( $types[ $name ] ) ) {
-					continue;
-				}
-				$object         = get_post_type_object( $name );
-				$types[ $name ] = null !== $object ? (string) $object->labels->name : $name;
-			}
-		}
-
-		return $types;
+		return Settings::post_types();
 	}
 
 	/**
@@ -121,16 +101,6 @@ final class Customizer {
 	 * @return string[]
 	 */
 	public static function sanitize_labels( $value ): array {
-		if ( ! is_array( $value ) ) {
-			return array();
-		}
-		$registered = Registry::instance()->ids();
-		$clean      = array();
-		foreach ( $value as $id ) {
-			if ( is_string( $id ) && in_array( $id, $registered, true ) && ! in_array( $id, $clean, true ) ) {
-				$clean[] = $id;
-			}
-		}
-		return $clean;
+		return Settings::sanitize_labels( $value );
 	}
 }
