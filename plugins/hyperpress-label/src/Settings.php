@@ -51,6 +51,38 @@ final class Settings {
 	}
 
 	/**
+	 * Post types the form was built with in this request, as name => plural label.
+	 *
+	 * @var array<string,string>|null
+	 */
+	private static ?array $listed = null;
+
+	/**
+	 * Remember the post types the form fields were built for.
+	 *
+	 * @param array<string,string> $types Post types, name => plural label.
+	 */
+	public static function remember_listed( array $types ): void {
+		self::$listed = $types;
+	}
+
+	/**
+	 * Forget the remembered post types (used by tests).
+	 */
+	public static function forget_listed(): void {
+		self::$listed = null;
+	}
+
+	/**
+	 * The post types the form listed in this request; the current post types when none were captured.
+	 *
+	 * @return array<string,string>
+	 */
+	public static function listed_post_types(): array {
+		return null !== self::$listed ? self::$listed : self::post_types();
+	}
+
+	/**
 	 * The saved option; an empty array when it is missing or not an array.
 	 *
 	 * @return array<string,mixed>
@@ -85,7 +117,9 @@ final class Settings {
 	 *
 	 * Meta Box drops the key of an empty field but keeps the option row, so a cleared checkbox
 	 * or list would look like "never configured". A save from the page carries the marker; then
-	 * every listed post type without a key gets `false` / `array()`. Other writes are untouched.
+	 * every post type the form listed without a key gets `false` / `array()`. Other writes are
+	 * untouched. The marker stays stored: Meta Box applies a field's `std` only until the page has
+	 * first been saved, so a removed marker would render empty and never be posted again.
 	 *
 	 * @param mixed $value Option value about to be saved.
 	 * @return mixed
@@ -94,9 +128,8 @@ final class Settings {
 		if ( ! is_array( $value ) || ! array_key_exists( self::MARKER, $value ) ) {
 			return $value;
 		}
-		unset( $value[ self::MARKER ] );
 
-		foreach ( array_keys( self::post_types() ) as $type ) {
+		foreach ( array_keys( self::listed_post_types() ) as $type ) {
 			$enabled = Resolver::enabled_key( $type );
 			$labels  = Resolver::labels_key( $type );
 			if ( ! array_key_exists( $enabled, $value ) ) {

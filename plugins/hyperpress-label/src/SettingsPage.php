@@ -1,4 +1,10 @@
 <?php
+/**
+ * The Labels settings page under the hyperPress menu.
+ *
+ * @package HyperPress\Label
+ */
+
 namespace HyperPress\Label;
 
 use HyperPress\Utils\AdminMenu;
@@ -6,7 +12,7 @@ use HyperPress\Utils\AdminMenu;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * The Labels settings page under the hyperPress menu.
+ * Registers the Labels settings page with Meta Box.
  */
 final class SettingsPage {
 

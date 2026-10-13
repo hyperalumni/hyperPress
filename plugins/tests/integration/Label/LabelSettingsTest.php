@@ -1,6 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration\Label;
 
+use HyperPress\Label\MetaBoxes;
 use HyperPress\Label\Registry;
 use HyperPress\Label\Resolver;
 use HyperPress\Label\Settings;
@@ -11,11 +12,16 @@ final class LabelSettingsTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		Registry::reset();
+		Settings::forget_listed();
 	}
 
 	public function tear_down(): void {
 		delete_option( 'hyperpress_label' );
 		Registry::reset();
+		Settings::forget_listed();
+		if ( post_type_exists( 'hyper_late' ) ) {
+			unregister_post_type( 'hyper_late' );
+		}
 		parent::tear_down();
 	}
 
@@ -73,7 +79,7 @@ final class LabelSettingsTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'hyperpress_label_post_enabled' => false ), Settings::saved() );
 	}
 
-	public function test_normalize_fills_the_missing_keys_for_every_type_and_removes_the_marker(): void {
+	public function test_normalize_fills_the_missing_keys_for_every_type_and_keeps_the_marker(): void {
 		$value = Settings::normalize(
 			array(
 				Settings::MARKER                    => '1',
@@ -82,7 +88,7 @@ final class LabelSettingsTest extends WP_UnitTestCase {
 			)
 		);
 
-		$this->assertArrayNotHasKey( Settings::MARKER, $value );
+		$this->assertSame( '1', $value[ Settings::MARKER ] );
 		$this->assertSame( '1', $value[ Resolver::enabled_key( 'post' ) ] );
 		$this->assertSame( array( 'post.date' ), $value[ Resolver::labels_key( 'post' ) ] );
 		$this->assertFalse( $value[ Resolver::enabled_key( 'page' ) ] );
@@ -110,12 +116,59 @@ final class LabelSettingsTest extends WP_UnitTestCase {
 		update_option( 'hyperpress_label', array( Settings::MARKER => '1' ) );
 		$saved = get_option( 'hyperpress_label' );
 
-		$this->assertArrayNotHasKey( Settings::MARKER, $saved );
+		$this->assertSame( '1', $saved[ Settings::MARKER ] );
 		$this->assertFalse( $saved[ Resolver::enabled_key( 'post' ) ] );
 		$this->assertSame( array(), $saved[ Resolver::labels_key( 'post' ) ] );
 
 		update_option( 'hyperpress_label', array( 'hyperpress_label_post_enabled' => true ) );
 
 		$this->assertSame( array( 'hyperpress_label_post_enabled' => true ), get_option( 'hyperpress_label' ) );
+	}
+
+	public function test_a_second_save_still_normalizes_cleared_values_because_the_marker_stays_stored(): void {
+		update_option(
+			'hyperpress_label',
+			array(
+				Settings::MARKER                => '1',
+				Resolver::enabled_key( 'post' ) => '1',
+				Resolver::labels_key( 'post' )  => array( 'post.date' ),
+				Resolver::enabled_key( 'page' ) => '1',
+				Resolver::labels_key( 'page' )  => array( 'post.date' ),
+			)
+		);
+
+		// What Meta Box posts the second time: the stored value, minus the keys of the cleared type.
+		$second = get_option( 'hyperpress_label' );
+		unset( $second[ Resolver::enabled_key( 'page' ) ], $second[ Resolver::labels_key( 'page' ) ] );
+		update_option( 'hyperpress_label', $second );
+
+		$saved = get_option( 'hyperpress_label' );
+		$this->assertFalse( $saved[ Resolver::enabled_key( 'page' ) ] );
+		$this->assertSame( array(), $saved[ Resolver::labels_key( 'page' ) ] );
+		$this->assertSame( '1', $saved[ Resolver::enabled_key( 'post' ) ] );
+		$this->assertSame( array( 'post.date' ), $saved[ Resolver::labels_key( 'post' ) ] );
+	}
+
+	public function test_normalize_only_touches_the_types_the_form_listed(): void {
+		MetaBoxes::boxes( array() );
+		register_post_type( 'hyper_late', array( 'public' => true ) );
+
+		$value = Settings::normalize( array( Settings::MARKER => '1' ) );
+
+		unregister_post_type( 'hyper_late' );
+		$this->assertArrayHasKey( Resolver::enabled_key( 'post' ), $value );
+		$this->assertArrayHasKey( Resolver::labels_key( 'page' ), $value );
+		$this->assertArrayNotHasKey( Resolver::enabled_key( 'hyper_late' ), $value );
+		$this->assertArrayNotHasKey( Resolver::labels_key( 'hyper_late' ), $value );
+	}
+
+	public function test_normalize_falls_back_to_the_current_types_when_nothing_was_listed(): void {
+		register_post_type( 'hyper_late', array( 'public' => true ) );
+
+		$value = Settings::normalize( array( Settings::MARKER => '1' ) );
+
+		unregister_post_type( 'hyper_late' );
+		$this->assertFalse( $value[ Resolver::enabled_key( 'hyper_late' ) ] );
+		$this->assertSame( array(), $value[ Resolver::labels_key( 'hyper_late' ) ] );
 	}
 }

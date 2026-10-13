@@ -77,6 +77,10 @@ final class Registry {
 	/**
 	 * All definitions, sorted by priority ascending (insertion order for ties).
 	 *
+	 * The first call after init collects the `hyperpress_label_register` listeners and freezes
+	 * them. The Labels settings page makes that call when Meta Box registers its boxes (init,
+	 * priority 20 as far as we know), so register listeners before then, normally on `plugins_loaded`.
+	 *
 	 * @return array<string, array{group:string,title:string,callback:callable,default_post_types:string[],priority:int}>
 	 */
 	public function all(): array {
