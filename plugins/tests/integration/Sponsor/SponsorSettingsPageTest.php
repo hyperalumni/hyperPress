@@ -1,6 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration\Sponsor;
 
+use HyperPress\Sponsor\Settings;
 use HyperPress\Utils\Banner;
 use WP_UnitTestCase;
 
@@ -54,6 +55,7 @@ final class SponsorSettingsPageTest extends WP_UnitTestCase {
 		$this->assertTrue( $fields[0]['raw'] );
 		$this->assertSame( array( Banner::class, 'sanitize_subtitle' ), $fields[0]['sanitize_callback'] );
 		$this->assertSame( 'Helping Make HYPER Happen', $fields[0]['std'] );
+		$this->assertSame( Settings::defaults()[ Settings::BANNER_SUBTITLE ], $fields[0]['std'] );
 	}
 
 	public function test_the_sponsor_information_box_remains(): void {

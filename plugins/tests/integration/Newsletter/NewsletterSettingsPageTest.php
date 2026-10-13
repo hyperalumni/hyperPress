@@ -1,6 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration\Newsletter;
 
+use HyperPress\Newsletter\Settings;
 use HyperPress\Utils\Banner;
 use WP_UnitTestCase;
 
@@ -54,6 +55,7 @@ final class NewsletterSettingsPageTest extends WP_UnitTestCase {
 		$this->assertTrue( $fields[0]['raw'] );
 		$this->assertSame( array( Banner::class, 'sanitize_subtitle' ), $fields[0]['sanitize_callback'] );
 		$this->assertSame( 'Updates on Team HYPER from our Marketing Team', $fields[0]['std'] );
+		$this->assertSame( Settings::defaults()[ Settings::BANNER_SUBTITLE ], $fields[0]['std'] );
 	}
 
 	public function test_the_canva_box_remains(): void {

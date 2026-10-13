@@ -24,6 +24,7 @@ final class BannerRegisterTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
+		unregister_post_type( 'hyper_widget' );
 		unregister_post_type( 'hyper_gizmo' );
 		parent::tear_down();
 	}
@@ -96,7 +97,6 @@ final class BannerRegisterTest extends WP_UnitTestCase {
 		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Widget' ) );
 		$this->assertSame( 'widget', $banner['type'] );
 		$this->assertSame( 'From callable', $banner['subtitle'] );
-		unregister_post_type( 'hyper_widget' );
 	}
 
 	public function test_hyperpress_banner_args_filter_can_adjust_the_banner(): void {

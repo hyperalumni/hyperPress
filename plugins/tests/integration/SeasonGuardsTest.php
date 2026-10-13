@@ -101,9 +101,9 @@ final class SeasonGuardsTest extends WP_UnitTestCase {
 		Banner::register(
 			'hyper_gizmo',
 			array(
-				'type'         => 'gizmo',
-				'subtitle' => static fn() => (string) get_theme_mod( 'hyperpress_gizmo_banner_subtitle' ),
-				'color_mod'    => 'hyperpress_hyper_green',
+				'type'          => 'gizmo',
+				'subtitle'      => static fn() => '',
+				'color_mod'     => 'hyperpress_hyper_green',
 				'archive_title' => 'Gizmos',
 			)
 		);
@@ -127,9 +127,9 @@ final class SeasonGuardsTest extends WP_UnitTestCase {
 		Banner::register(
 			'hyper_gizmo',
 			array(
-				'type'         => 'gizmo',
-				'subtitle' => static fn() => (string) get_theme_mod( 'hyperpress_gizmo_banner_subtitle' ),
-				'color_mod'    => 'hyperpress_hyper_green',
+				'type'          => 'gizmo',
+				'subtitle'      => static fn() => '',
+				'color_mod'     => 'hyperpress_hyper_green',
 				'archive_title' => 'Gizmos',
 			)
 		);

@@ -41,9 +41,6 @@ final class SponsorSubtitleTest extends WP_UnitTestCase {
 	}
 
 	public function test_the_sanitizer_drops_scripts(): void {
-		$sanitized = Banner::sanitize_subtitle( '<script>x</script><b>ok</b>' );
-
-		$this->assertStringNotContainsString( '<script', $sanitized );
-		$this->assertStringContainsString( '<b>ok</b>', $sanitized );
+		$this->assertSame( 'xalert(1)<b>ok</b>', Banner::sanitize_subtitle( 'x<script>alert(1)</script><b>ok</b>' ) );
 	}
 }

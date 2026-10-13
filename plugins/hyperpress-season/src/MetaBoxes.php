@@ -32,7 +32,7 @@ final class MetaBoxes {
 				array(
 					'id'                => Settings::BANNER_SUBTITLE,
 					'name'              => __( 'Season Banner Subtitle', 'hyperpress' ),
-					'desc'              => __( 'Shown under the title on season pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do bold, italic and line breaks; other markup is removed when the banner is displayed.', 'hyperpress' ),
+					'desc'              => __( 'Shown under the title on season pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do <strong>, <em> and <br> tags; other markup is removed when the banner is displayed.', 'hyperpress' ),
 					'type'              => 'textarea',
 					'raw'               => true,
 					'sanitize_callback' => array( Sanitizers::class, 'banner_subtitle' ),

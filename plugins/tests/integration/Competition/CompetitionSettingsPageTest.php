@@ -1,6 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration\Competition;
 
+use HyperPress\Competition\Settings;
 use HyperPress\Utils\Banner;
 use WP_UnitTestCase;
 
@@ -54,6 +55,7 @@ final class CompetitionSettingsPageTest extends WP_UnitTestCase {
 		$this->assertTrue( $fields[0]['raw'] );
 		$this->assertSame( array( Banner::class, 'sanitize_subtitle' ), $fields[0]['sanitize_callback'] );
 		$this->assertSame( '', $fields[0]['std'] );
+		$this->assertSame( Settings::defaults()[ Settings::BANNER_SUBTITLE ], $fields[0]['std'] );
 	}
 
 	public function test_the_competition_information_box_remains(): void {
