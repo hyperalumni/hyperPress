@@ -37,7 +37,6 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'seed_terms' ), 20 );
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 		SettingsPage::register();
-		Customizer::register();
 		MetaBoxes::register();
 		Labels::register();
 	}
@@ -61,7 +60,7 @@ final class Plugin {
 			'plural'             => __( 'Programs', 'hyperpress' ),
 			'description'        => __( 'Programs within FIRST', 'hyperpress' ),
 			'slug'               => 'programs',
-			'object_types'       => 'hyperpress_program_post_types',
+			'object_types'       => Settings::post_types(),
 			'public'             => true,
 			'publicly_queryable' => true,
 			'hierarchical'       => true,

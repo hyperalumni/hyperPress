@@ -92,6 +92,9 @@ final class RegistrationParityTest extends WP_UnitTestCase {
 
 		$object_types = array_map( array( self::class, 'map' ), $legacy['object_type'] );
 		$actual_types = $tax->object_type;
+		if ( in_array( $new, array( 'hyper_season', 'hyper_program' ), true ) ) {
+			$object_types = array( 'post' ); // Deliberate change: these follow their settings pages, which default to posts.
+		}
 		sort( $object_types );
 		sort( $actual_types );
 		$this->assertSame( $object_types, $actual_types, "$new: object types" );

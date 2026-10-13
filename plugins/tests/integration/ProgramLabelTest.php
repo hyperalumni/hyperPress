@@ -31,6 +31,9 @@ final class ProgramLabelTest extends WP_UnitTestCase {
 			unregister_taxonomy_for_object_type( $taxonomy, 'post' );
 			unregister_taxonomy_for_object_type( $taxonomy, 'page' );
 		}
+		// Put the settings-driven attachments back so later tests see the registered defaults.
+		\HyperPress\Program\Plugin::register();
+		\HyperPress\Season\Plugin::register();
 		remove_all_filters( 'hyperpress_labels_content' );
 		remove_all_filters( 'term_link' );
 		Registry::reset( true );

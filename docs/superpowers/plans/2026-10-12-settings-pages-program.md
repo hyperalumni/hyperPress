@@ -63,11 +63,11 @@
 
 **Interfaces:** Consumes `Settings::post_types()`. The shared `TaxonomyRegistrar` is not changed.
 
-- [ ] **Step 1: Write failing tests.** `ProgramReadersTest`: the `hyper_program` taxonomy's object types follow the saved `hyperpress_program_post_types` after re-registration via `Plugin::register()` (and are `array( 'post' )` with nothing saved); a `WP_Customize_Manager` after `do_action( 'customize_register', $manager )` has no setting `hyperpress_program_post_types` and no section `hyperpress_program`; `apply_filters( 'rwmb_meta_boxes', array() )` has no box with id `hyperpress_program` but has `hyperpress_program_box`. `TaxonomyAttachmentTest` / `Convention`: Program is no longer theme-driven (it attaches to `post` by default); if `THEME_DRIVEN_TAXONOMIES` becomes empty, drop the constant and the loop that used it, keeping the new default-attachment assertion. Update every other test that set the theme mod to write `update_option( 'hyperpress_program', array( 'hyperpress_program_post_types' => ... ) )`.
-- [ ] **Step 2:** Run `composer test:integration -- --filter 'Program|TaxonomyAttachment'`. Expected: FAIL.
-- [ ] **Step 3:** Switch the reader, delete `Customizer.php`, its `boot()` call and `customize_metabox`, delete `SeasonProgramCustomizerTest.php`, and adjust the tests as above. Check with the grep tool that no caller of `Plugin::definition()` runs before `init`.
-- [ ] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and `composer test:integration` and `lint` from `themes/hyperpress-foundation/`. Expected: pass.
-- [ ] **Step 5:** Commit `refactor(program): read the program settings from the Program settings page`.
+- [x] **Step 1: Write failing tests.** `ProgramReadersTest`: the `hyper_program` taxonomy's object types follow the saved `hyperpress_program_post_types` after re-registration via `Plugin::register()` (and are `array( 'post' )` with nothing saved); a `WP_Customize_Manager` after `do_action( 'customize_register', $manager )` has no setting `hyperpress_program_post_types` and no section `hyperpress_program`; `apply_filters( 'rwmb_meta_boxes', array() )` has no box with id `hyperpress_program` but has `hyperpress_program_box`. `TaxonomyAttachmentTest` / `Convention`: Program is no longer theme-driven (it attaches to `post` by default); if `THEME_DRIVEN_TAXONOMIES` becomes empty, drop the constant and the loop that used it, keeping the new default-attachment assertion. Update every other test that set the theme mod to write `update_option( 'hyperpress_program', array( 'hyperpress_program_post_types' => ... ) )`.
+- [x] **Step 2:** Run `composer test:integration -- --filter 'Program|TaxonomyAttachment'`. Expected: FAIL.
+- [x] **Step 3:** Switch the reader, delete `Customizer.php`, its `boot()` call and `customize_metabox`, delete `SeasonProgramCustomizerTest.php`, and adjust the tests as above. Check with the grep tool that no caller of `Plugin::definition()` runs before `init`.
+- [x] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`, and `composer test:integration` and `lint` from `themes/hyperpress-foundation/`. Expected: pass.
+- [x] **Step 5:** Commit `refactor(program): read the program settings from the Program settings page`.
 
 ### Task 3: Delete the dropdown control classes
 

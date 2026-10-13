@@ -21,15 +21,11 @@ final class TaxonomyAttachmentTest extends WP_UnitTestCase {
 		$this->assertEqualsCanonicalizing( $expected, $tax->object_type, "$taxonomy object types" );
 	}
 
-	public function test_theme_driven_taxonomies_attach_to_nothing_by_default(): void {
-		foreach ( Convention::THEME_DRIVEN_TAXONOMIES as $taxonomy ) {
-			$tax = get_taxonomy( $taxonomy );
-			$this->assertNotFalse( $tax, "$taxonomy is not registered" );
-			$this->assertSame( array(), $tax->object_type, "$taxonomy must not attach to any post type (incl. 'post') by default" );
-		}
-	}
-
 	public function test_season_attaches_to_posts_until_the_season_settings_page_says_otherwise(): void {
 		$this->assertSame( array( 'post' ), get_taxonomy( 'hyper_season' )->object_type );
+	}
+
+	public function test_program_attaches_to_posts_until_the_program_settings_page_says_otherwise(): void {
+		$this->assertSame( array( 'post' ), get_taxonomy( 'hyper_program' )->object_type );
 	}
 }
