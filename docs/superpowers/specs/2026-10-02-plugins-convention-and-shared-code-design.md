@@ -245,3 +245,5 @@ Non-goals:
   `breadcrumbs.php` or `banner.php` bodies remain.
 - Each CPT registers with its own capabilities, held by Administrator and Editor.
 - `php -l` is clean on every file and the phpcs ruleset passes.
+
+> Note (2026-10-12): superseded for season: its object types now come from `HyperPress\Season\Settings::post_types()` (option `hyperpress_season` on hyperPress > Season, default `array( 'post' )`), not the `hyperpress_season_post_types` theme mod, and the season Customizer settings no longer exist. `hyper_season` is no longer a theme-driven taxonomy; program is unchanged. See `docs/superpowers/plans/2026-10-12-settings-pages-season.md`.

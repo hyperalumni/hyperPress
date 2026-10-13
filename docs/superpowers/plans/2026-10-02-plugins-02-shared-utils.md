@@ -1764,3 +1764,5 @@ git commit -m "docs(plans): complete plugins-02-shared-utils" -- docs/superpower
 > Note (2026-10-11): seed entries may carry a `description` (`array( "name" => ..., "description" => ..., "children" => array( ... ) )`); it is filled in only when an existing term's description is empty, and a non-empty description is never overwritten.
 
 > Note (2026-10-11): `TaxonomyRegistrar` definitions accept `locked => true` (default false), which maps `edit_terms` and `delete_terms` to `do_not_allow` for taxonomies whose terms are managed only by code.
+
+> Note (2026-10-12): season no longer uses `PostTypeDropdownControl` (its post types are a Meta Box select on hyperPress > Season, option `hyperpress_season`); only program still uses it, so "Only the season Customizer uses it" in the 2026-10-11 note above is no longer true. The control classes stay in `hyperpress-utils`. `TaxonomyRegistrar` was not changed: it accepts a list of object types. See `docs/superpowers/plans/2026-10-12-settings-pages-season.md`.

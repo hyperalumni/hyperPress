@@ -1,5 +1,7 @@
 # Season settings page Implementation Plan
 
+> **STATUS: ✅ CODE COMPLETE, browser checks pending** (2026-10-12). Tasks 1-2 and Task 3 step 5 are done on `feat/settings-pages`; Task 3 steps 1-4 (Season page, banner and sponsor widget, Customizer section gone, optional dev-data copy) need a person in a browser.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Move the three `hyperpress-season` Customizer settings (current season, banner subtitle, post types) to a "Season" Meta Box settings page under the hyperPress menu, switch every reader to the new option, and delete season's Customizer section.
@@ -80,7 +82,14 @@
 - [ ] **Step 2 (manual):** confirm the season archive banner shows the saved subtitle (shortcodes use the `hyperpress_*` tags), the Display Sponsors widget filters by the saved current season, and the Season taxonomy appears on the selected post types' edit screens.
 - [ ] **Step 3 (manual):** open the Customizer and confirm the "Seasons" section is gone.
 - [ ] **Step 4 (dev data, optional):** after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old values once: `wpcli eval 'update_option( "hyperpress_season", array( "hyperpress_season_current" => get_theme_mod( "hyperpress_season_current", "" ), "hyperpress_season_banner_subtitle" => get_theme_mod( "hyperpress_season_banner_subtitle", "" ), "hyperpress_season_post_types" => get_theme_mod( "hyperpress_season_post_types", array( "post" ) ) ) );'`. Old subtitle text may still use the removed `[hyper_*]` shortcode tags; update them to `hyperpress_*`.
-- [ ] **Step 5:** Grep `docs/superpowers/plans/` for `hyperpress_season_`, `Customizer` with season, `SeasonProgramCustomizerTest` and `2026-10-02-plugins-03-core-plugins.md` (known: lines 179-292, 243); append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest.
+- [x] **Step 5:** Grep `docs/superpowers/plans/` for `hyperpress_season_`, `Customizer` with season, `SeasonProgramCustomizerTest` and `2026-10-02-plugins-03-core-plugins.md` (known: lines 179-292, 243); append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest.
 - [ ] **Step 6:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete season settings page`.
 
 ## Outcome / execution notes
+
+- **Default behaviour change (2026-10-12).** Season now attaches to `post` on a fresh install, because `Settings::post_types()` defaults to `array( 'post' )`. The old code attached it to nothing until the Customizer was saved, even though the Customizer displayed `post`. `hyper_season` was removed from `Convention::THEME_DRIVEN_TAXONOMIES`, and `TaxonomyAttachmentTest` covers the new default.
+- **No migration (2026-10-12).** There is no migration code, so on any existing site the old theme-mod values are ignored until Task 3 step 4's wpcli copy is run. Old `[hyper_*]` shortcode tags in a copied subtitle must become `[hyperpress_*]`.
+- **Sponsor widget (2026-10-12).** It reads `Settings::current()` behind a `class_exists` guard, because sponsor's code did not reference season classes before.
+- **Utils unchanged (2026-10-12).** The plugin `hyperpress-utils` was not changed (`TaxonomyRegistrar` accepts a list).
+- **Browser items to check (2026-10-12).** (1) Clearing every post type choice: does Meta Box drop the key so `post_types()` falls back to `post`, meaning the user cannot choose none? (2) Are the `desc` key and `sanitize_callback` honoured on settings pages? (3) How is the empty "None" choice of the current-season select stored?
+- **Deferred minors from reviews (2026-10-12).** The sponsor deleted-slug test lacks a positive control; `SeasonReadersTest::test_only_the_settings_page_box_is_registered` is misnamed; the Customizer-section absence check may pass trivially if the Meta Box customizer extension is not loaded in tests; `SeasonProgramCustomizerTest` is now program-only but keeps its name; the `Sanitizers::banner_subtitle` non-scalar case is untested.

@@ -128,3 +128,5 @@ git commit -m "docs: close out convention and test-toolchain plans" -- docs/supe
 - The smoke stack lived under the git-ignored `.superpowers/smoke/` and is gone; a tracked, repeatable version can be added later if wanted.
 
 > Note (2026-10-12): the shortcode tags used in the smoke test above (`[time-restrict]`, `[hyper_emphasis]`, `[hyper_season_count]`, `[raw]`) were renamed to `hyperpress_time_restrict`, `hyperpress_emphasis`, `hyperpress_season_count` and `hyperpress_raw` (all tags now carry the `hyperpress_` prefix, no aliases). See plugins-04 for the full mapping.
+
+> Note (2026-10-12): two statements in the smoke test above changed: `hyper_season` now attaches to `post` by default (season's post types default to `array( 'post' )` on the new hyperPress > Season page; only `hyper_program` still attaches to nothing), and the season dropdowns and the `hyperpress_season` Customizer section no longer exist (the "23 `hyperpress_*` Customizer controls" count and the "season/program dropdowns" check no longer include season). See `docs/superpowers/plans/2026-10-12-settings-pages-season.md`.

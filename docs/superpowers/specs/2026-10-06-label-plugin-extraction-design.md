@@ -133,3 +133,5 @@ The repos commit separately, and no commit should leave a site without labels.
 - Per-post overrides, per-role visibility, label reordering in the UI.
 - Changing the theme breadcrumbs (`get_category_link` on season terms there is a separate issue).
 - Translating the hard-coded label titles.
+
+> Note (2026-10-12): the amended sentence on `season.posted_during` (taxonomy attaches only via the `hyperpress_season_post_types` theme mod, default `array()`) is superseded: season's post types now live on the Season settings page and default to `array( 'post' )`, so the label defaults to posts on a fresh install. See `docs/superpowers/plans/2026-10-12-settings-pages-season.md`.

@@ -218,3 +218,4 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 
 - Saved selections are explicit lists, and post types registered after `customize_register` get no Customizer controls (they render with default labels).
 - `Renderer::render()` returns early when there are no labels, so a theme override template is never called with an empty list.
+- Note (2026-10-12): the 2026-10-07 consequence above ("until it is saved the label defaults attach to no post types") no longer holds. Season's post types now come from the Season settings page (option `hyperpress_season`, key `hyperpress_season_post_types`) and default to `array( 'post' )`, so `hyper_season` and the `season.posted_during` label default attach to posts on a fresh install. See `docs/superpowers/plans/2026-10-12-settings-pages-season.md`.
