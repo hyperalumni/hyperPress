@@ -80,11 +80,11 @@ Same as Task 2 for `hyperpress-sponsor`: option `hyperpress_sponsor`, field `hyp
 
 **Interfaces:** Produces the same shapes as Task 2 under `HyperPress\Sponsor`.
 
-- [ ] **Step 1: Write failing tests** mirroring Task 2 (page and box values, accessor defaults and edge cases, default shown until saved, saved value replaces it, no Customizer setting or section `hyperpress_sponsor`, box id `hyperpress_sponsor_box` present, no empty holder box).
-- [ ] **Step 2:** Run `composer test:integration -- --filter Sponsor`. Expected: FAIL.
-- [ ] **Step 3:** Implement, rewire, delete `Customizer.php`, migrate the other tests.
-- [ ] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`. Expected: pass.
-- [ ] **Step 5:** Commit `feat(sponsor): move the banner subtitle to a settings page`.
+- [x] **Step 1: Write failing tests** mirroring Task 2 (page and box values, accessor defaults and edge cases, default shown until saved, saved value replaces it, no Customizer setting or section `hyperpress_sponsor`, box id `hyperpress_sponsor_box` present, no empty holder box).
+- [x] **Step 2:** Run `composer test:integration -- --filter Sponsor`. Expected: FAIL.
+- [x] **Step 3:** Implement, rewire, delete `Customizer.php`, migrate the other tests.
+- [x] **Step 4:** Run the full `composer test:integration`, `test:unit` and `lint` from `plugins/`. Expected: pass.
+- [x] **Step 5:** Commit `feat(sponsor): move the banner subtitle to a settings page`.
 
 ### Task 4: Competition settings page
 

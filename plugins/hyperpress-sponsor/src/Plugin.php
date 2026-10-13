@@ -45,7 +45,8 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'register_banner' ) );
 		Archive::register();
 		Content::register();
-		Customizer::register();
+		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
+		SettingsPage::register();
 		Labels::register();
 		MetaBoxes::register();
 		Widgets::register();
@@ -56,7 +57,7 @@ final class Plugin {
 			self::POST_TYPE,
 			array(
 				'type'          => 'sponsor',
-				'subtitle_mod'  => 'hyperpress_sponsor_banner_subtitle',
+				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
 				'color_mod'     => 'hyperpress_hyper_red',
 				'archive_title' => __( 'Sponsors', 'hyperpress' ),
 				'term_joiner'   => 'in',

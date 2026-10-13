@@ -1,12 +1,9 @@
 <?php
 namespace HyperPress\Tests\Integration;
 
-use WP_Customize_Manager;
 use WP_UnitTestCase;
 
 final class SponsorSettingsTest extends WP_UnitTestCase {
-
-	private const SUBTITLE = 'hyperpress_sponsor_banner_subtitle';
 
 	private function sanitizer_for( string $field_id ): callable {
 		foreach ( apply_filters( 'rwmb_meta_boxes', array() ) as $box ) {
@@ -32,15 +29,5 @@ final class SponsorSettingsTest extends WP_UnitTestCase {
 		$callback = $this->sanitizer_for( 'hyperpress_sponsor_description' );
 
 		$this->assertSame( 'x<b>ok</b>', $callback( '<script>x</script><b>ok</b>' ) );
-	}
-
-	public function test_banner_subtitle_setting_strips_scripts_and_keeps_allowed_markup(): void {
-		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
-		$manager = new WP_Customize_Manager();
-		do_action( 'customize_register', $manager );
-
-		$setting = $manager->get_setting( self::SUBTITLE );
-		$this->assertNotNull( $setting, 'setting is registered' );
-		$this->assertSame( 'x<b>ok</b>', $setting->sanitize( '<script>x</script><b>ok</b>' ) );
 	}
 }

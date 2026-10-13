@@ -15,16 +15,4 @@ final class SponsorMetaBoxesTest extends WP_UnitTestCase {
 		}
 		$this->assertGreaterThan( 0, $found, 'the sponsor information box is registered' );
 	}
-
-	public function test_the_banner_subtitle_control_has_a_registered_section(): void {
-		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
-		$manager = new \WP_Customize_Manager();
-		do_action( 'customize_register', $manager );
-
-		$control = $manager->get_control( 'hyperpress_sponsor_banner_subtitle' );
-		$this->assertNotNull( $control );
-		$section = $manager->get_section( $control->section );
-		$this->assertNotNull( $section, 'the control\'s section is registered' );
-		$this->assertSame( 135, $section->priority, 'same position in the Customizer as the Meta Box section this replaced' );
-	}
 }
