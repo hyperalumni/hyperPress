@@ -29,6 +29,7 @@ final class FooterSocialsTest extends WP_UnitTestCase {
 		$this->saved_options = array(
 			'sidebars_widgets'          => get_option( 'sidebars_widgets' ),
 			'widget_hyperpress_social' => get_option( 'widget_hyperpress_social' ),
+			'hyperpress_social'         => get_option( 'hyperpress_social' ),
 		);
 
 		if ( ! class_exists( '\HyperPress\Social\Links' ) ) {
@@ -109,9 +110,14 @@ final class FooterSocialsTest extends WP_UnitTestCase {
 				'post_status' => 'publish',
 			)
 		);
-		set_theme_mod( 'hyperpress_social_github', 'https://github.com/hyper' );
-		set_theme_mod( 'hyperpress_social_youtube', get_site_url() . '/channel' );
-		set_theme_mod( 'hyperpress_social_contact', $page );
+		update_option(
+			'hyperpress_social',
+			array(
+				'hyperpress_social_github'  => 'https://github.com/hyper',
+				'hyperpress_social_youtube' => get_site_url() . '/channel',
+				'hyperpress_social_contact' => $page,
+			)
+		);
 
 		$html = $this->footer_html();
 
@@ -124,7 +130,7 @@ final class FooterSocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_a_socials_widget_in_the_area_replaces_the_default_list(): void {
-		set_theme_mod( 'hyperpress_social_github', 'https://github.com/hyper' );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => 'https://github.com/hyper' ) );
 		$this->place_the_socials_widget_in_the_footer_area( 'grid' );
 
 		$html = $this->footer_html();
@@ -134,7 +140,7 @@ final class FooterSocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_an_external_link_opens_in_a_new_tab_with_noopener_noreferrer(): void {
-		set_theme_mod( 'hyperpress_social_github', 'https://github.com/hyper' );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => 'https://github.com/hyper' ) );
 
 		$html = $this->footer_html();
 
@@ -142,7 +148,7 @@ final class FooterSocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_a_lookalike_url_containing_the_site_url_is_still_external(): void {
-		set_theme_mod( 'hyperpress_social_github', 'https://evil.example/?r=' . get_site_url() );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => 'https://evil.example/?r=' . get_site_url() ) );
 
 		$html = $this->footer_html();
 
@@ -150,7 +156,7 @@ final class FooterSocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_a_link_to_this_site_opens_in_the_same_tab_without_rel(): void {
-		set_theme_mod( 'hyperpress_social_github', get_site_url() . '/repo' );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => get_site_url() . '/repo' ) );
 
 		$html = $this->footer_html();
 
@@ -165,7 +171,7 @@ final class FooterSocialsTest extends WP_UnitTestCase {
 				'post_status' => 'draft',
 			)
 		);
-		set_theme_mod( 'hyperpress_social_contact', $page );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_contact' => $page ) );
 
 		$html = $this->footer_html();
 
@@ -179,7 +185,7 @@ final class FooterSocialsTest extends WP_UnitTestCase {
 				'post_status' => 'publish',
 			)
 		);
-		set_theme_mod( 'hyperpress_social_contact', $page );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_contact' => $page ) );
 
 		$html = $this->footer_html();
 
@@ -188,9 +194,14 @@ final class FooterSocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_the_links_follow_the_plugins_order_not_the_order_they_were_set(): void {
-		set_theme_mod( 'hyperpress_social_discord', 'https://discord.example/invite' );
-		set_theme_mod( 'hyperpress_social_facebook', 'https://facebook.example/page' );
-		set_theme_mod( 'hyperpress_social_github', 'https://github.example/repo' );
+		update_option(
+			'hyperpress_social',
+			array(
+				'hyperpress_social_discord'  => 'https://discord.example/invite',
+				'hyperpress_social_facebook' => 'https://facebook.example/page',
+				'hyperpress_social_github'   => 'https://github.example/repo',
+			)
+		);
 
 		$html = $this->footer_html();
 

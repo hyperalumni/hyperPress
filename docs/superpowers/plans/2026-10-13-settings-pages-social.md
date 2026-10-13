@@ -64,11 +64,11 @@
 
 **Interfaces:** Consumes `Settings::url()`, `Settings::contact_page()`. `Links::all()` output is unchanged.
 
-- [ ] **Step 1: Write failing tests.** Update the listed tests to write the option (keys are the prefixed field ids; keep every assertion). In `SocialsTest` delete the tests that exercised the Customizer controls (URL sanitizer through `get_setting`, the section/prefix test, the contact setting sanitizer) and move their intent to `Social/SocialSettingsPageTest`: every URL field's `sanitize_callback` drops a `javascript:` URL and keeps an https URL when called directly, the contact callback gives 0 for a non-existent id value `'abc'`. New `SocialReadersTest`: a `WP_Customize_Manager` after `do_action( 'customize_register', $manager )` has no section `hyperpress_social` and none of the 12 settings; `Links::all()` with the option never saved returns `array()`; values written straight into the option (a lookalike host, a relative URL) are classified as before (reuse the data from `SocialsTest::lookalikes`).
-- [ ] **Step 2:** Run `composer test:integration -- --filter 'Social|Footer'` from `plugins/` and the theme. Expected: FAIL.
-- [ ] **Step 3:** Switch the reads, delete `Customizer.php` and its `boot()` call, migrate the tests. Grep `plugins/` and `themes/` (exclude `vendor/`) for `hyperpress_social_` as a theme mod and for `Social\Customizer` afterwards: no hit.
-- [ ] **Step 4:** Run the full `composer test:unit`, `test:integration` and `lint` from `plugins/`, and `composer test:integration`, `test:unit` and `lint` from the theme. Expected: pass.
-- [ ] **Step 5:** Commit `refactor(social): read the social links from the Social settings page`.
+- [x] **Step 1: Write failing tests.** Update the listed tests to write the option (keys are the prefixed field ids; keep every assertion). In `SocialsTest` delete the tests that exercised the Customizer controls (URL sanitizer through `get_setting`, the section/prefix test, the contact setting sanitizer) and move their intent to `Social/SocialSettingsPageTest`: every URL field's `sanitize_callback` drops a `javascript:` URL and keeps an https URL when called directly, the contact callback gives 0 for a non-existent id value `'abc'`. New `SocialReadersTest`: a `WP_Customize_Manager` after `do_action( 'customize_register', $manager )` has no section `hyperpress_social` and none of the 12 settings; `Links::all()` with the option never saved returns `array()`; values written straight into the option (a lookalike host, a relative URL) are classified as before (reuse the data from `SocialsTest::lookalikes`).
+- [x] **Step 2:** Run `composer test:integration -- --filter 'Social|Footer'` from `plugins/` and the theme. Expected: FAIL.
+- [x] **Step 3:** Switch the reads, delete `Customizer.php` and its `boot()` call, migrate the tests. Grep `plugins/` and `themes/` (exclude `vendor/`) for `hyperpress_social_` as a theme mod and for `Social\Customizer` afterwards: no hit.
+- [x] **Step 4:** Run the full `composer test:unit`, `test:integration` and `lint` from `plugins/`, and `composer test:integration`, `test:unit` and `lint` from the theme. Expected: pass.
+- [x] **Step 5:** Commit `refactor(social): read the social links from the Social settings page`.
 
 ### Task 3: Verify in a browser and close out
 

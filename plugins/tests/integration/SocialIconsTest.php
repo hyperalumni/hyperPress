@@ -19,9 +19,7 @@ final class SocialIconsTest extends WP_UnitTestCase {
 				unlink( $file );
 			}
 		}
-		foreach ( self::KEYS as $key ) {
-			remove_theme_mod( 'hyperpress_social_' . $key );
-		}
+		delete_option( 'hyperpress_social' );
 		parent::tear_down();
 	}
 
@@ -46,9 +44,11 @@ final class SocialIconsTest extends WP_UnitTestCase {
 	}
 
 	private function set_networks(): void {
+		$option = array();
 		foreach ( self::KEYS as $key ) {
-			set_theme_mod( 'hyperpress_social_' . $key, 'https://example.test/' . $key );
+			$option[ 'hyperpress_social_' . $key ] = 'https://example.test/' . $key;
 		}
+		update_option( 'hyperpress_social', $option );
 	}
 
 	/** @return array<string, array{0: string}> */

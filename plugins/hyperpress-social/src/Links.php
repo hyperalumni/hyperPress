@@ -4,7 +4,7 @@ namespace HyperPress\Social;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * The social links configured in the Customizer Socials section, ready to print.
+ * The social links configured on the Social settings page, ready to print.
  */
 final class Links {
 
@@ -86,7 +86,7 @@ final class Links {
 		$links = array();
 
 		foreach ( $socials as $social ) {
-			$url = 'contact' === $social['key'] ? self::contact_url() : get_theme_mod( 'hyperpress_social_' . $social['key'] );
+			$url = 'contact' === $social['key'] ? self::contact_url() : Settings::url( $social['key'] );
 
 			if ( empty( $url ) ) {
 				continue;
@@ -111,10 +111,10 @@ final class Links {
 	}
 
 	/**
-	 * Permalink of the Customizer contact page, or an empty string when none is set or it is not published.
+	 * Permalink of the contact page from the Social settings page, or an empty string when none is set or it is not published.
 	 */
 	private static function contact_url(): string {
-		$page_id = absint( get_theme_mod( 'hyperpress_social_contact' ) );
+		$page_id = Settings::contact_page();
 
 		if ( 0 === $page_id || 'publish' !== get_post_status( $page_id ) ) {
 			return '';

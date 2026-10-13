@@ -21,16 +21,19 @@ final class SocialsLayoutTest extends WP_UnitTestCase {
 		. '</div>';
 
 	public function tear_down(): void {
-		foreach ( array( 'github', 'facebook', 'instagram' ) as $key ) {
-			remove_theme_mod( 'hyperpress_social_' . $key );
-		}
+		delete_option( 'hyperpress_social' );
 		parent::tear_down();
 	}
 
 	private function set_three_links(): void {
-		set_theme_mod( 'hyperpress_social_github', 'https://github.com/x' );
-		set_theme_mod( 'hyperpress_social_facebook', 'https://facebook.com/x' );
-		set_theme_mod( 'hyperpress_social_instagram', '/about/' );
+		update_option(
+			'hyperpress_social',
+			array(
+				'hyperpress_social_github'    => 'https://github.com/x',
+				'hyperpress_social_facebook'  => 'https://facebook.com/x',
+				'hyperpress_social_instagram' => '/about/',
+			)
+		);
 	}
 
 	/** @param array<string, mixed> $instance */

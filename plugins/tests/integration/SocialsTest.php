@@ -1,60 +1,13 @@
 <?php
 namespace HyperPress\Tests\Integration;
 
-use WP_Customize_Manager;
 use WP_UnitTestCase;
 
 final class SocialsTest extends WP_UnitTestCase {
 
-	private const URL_SETTINGS = array(
-		'firstinspires',
-		'thebluealliance',
-		'facebook',
-		'instagram',
-		'youtube',
-		'twitter',
-		'github',
-		'snapchat',
-		'tiktok',
-		'discord',
-		'add_calendar',
-	);
-
-	private function customizer(): WP_Customize_Manager {
-		require_once ABSPATH . WPINC . '/class-wp-customize-manager.php';
-		$manager = new WP_Customize_Manager();
-		do_action( 'customize_register', $manager );
-		return $manager;
-	}
-
 	public function tear_down(): void {
-		foreach ( self::URL_SETTINGS as $name ) {
-			remove_theme_mod( 'hyperpress_social_' . $name );
-		}
-		remove_theme_mod( 'hyperpress_social_contact' );
+		delete_option( 'hyperpress_social' );
 		parent::tear_down();
-	}
-
-	public function test_every_url_setting_drops_a_javascript_url(): void {
-		$manager = $this->customizer();
-
-		foreach ( self::URL_SETTINGS as $name ) {
-			$setting = $manager->get_setting( 'hyperpress_social_' . $name );
-			$this->assertNotNull( $setting, $name );
-			$this->assertSame( '', $setting->sanitize( 'javascript:alert(1)' ), $name );
-		}
-	}
-
-	public function test_every_url_setting_keeps_an_https_url(): void {
-		$manager = $this->customizer();
-
-		foreach ( self::URL_SETTINGS as $name ) {
-			$this->assertSame(
-				'https://github.com/x',
-				$manager->get_setting( 'hyperpress_social_' . $name )->sanitize( 'https://github.com/x' ),
-				$name
-			);
-		}
 	}
 
 	private function render(): string {
@@ -64,7 +17,7 @@ final class SocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_external_links_carry_rel_noopener_noreferrer(): void {
-		set_theme_mod( 'hyperpress_social_github', 'https://github.com/x' );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => 'https://github.com/x' ) );
 
 		$html = $this->render();
 
@@ -72,7 +25,7 @@ final class SocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_internal_links_open_in_self_without_rel(): void {
-		set_theme_mod( 'hyperpress_social_github', get_site_url() . '/about/' );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => get_site_url() . '/about/' ) );
 
 		$html = $this->render();
 
@@ -93,7 +46,7 @@ final class SocialsTest extends WP_UnitTestCase {
 
 	/** @dataProvider lookalikes */
 	public function test_lookalike_urls_are_treated_as_external( string $url ): void {
-		set_theme_mod( 'hyperpress_social_github', $url );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => $url ) );
 
 		$html = $this->render();
 
@@ -102,7 +55,7 @@ final class SocialsTest extends WP_UnitTestCase {
 	}
 
 	public function test_a_relative_url_is_internal(): void {
-		set_theme_mod( 'hyperpress_social_github', '/about/' );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => '/about/' ) );
 
 		$html = $this->render();
 
@@ -112,7 +65,7 @@ final class SocialsTest extends WP_UnitTestCase {
 
 	public function test_the_host_comparison_ignores_case(): void {
 		$site = get_site_url();
-		set_theme_mod( 'hyperpress_social_github', strtoupper( $site ) . '/About/' );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_github' => strtoupper( $site ) . '/About/' ) );
 
 		$html = $this->render();
 
@@ -158,31 +111,6 @@ final class SocialsTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'HyperPress\\Social\\Widgets\\DisplaySocialWidget', $GLOBALS['wp_widget_factory']->widgets );
 	}
 
-	public function test_every_customizer_setting_in_the_social_section_uses_the_hyperpress_social_prefix(): void {
-		$manager = $this->customizer();
-
-		$this->assertNotNull( $manager->get_section( 'hyperpress_social' ) );
-		$this->assertNull( $manager->get_section( 'hyperpress_socials' ) );
-
-		$ids = array();
-		foreach ( $manager->controls() as $control ) {
-			if ( 'hyperpress_social' !== $control->section ) {
-				continue;
-			}
-			foreach ( $control->settings as $setting ) {
-				$ids[] = $setting->id;
-			}
-		}
-
-		$this->assertNotEmpty( $ids );
-		foreach ( $ids as $id ) {
-			$this->assertStringStartsWith( 'hyperpress_social_', $id );
-		}
-		foreach ( array_merge( self::URL_SETTINGS, array( 'contact' ) ) as $name ) {
-			$this->assertContains( 'hyperpress_social_' . $name, $ids, $name );
-		}
-	}
-
 	public function test_no_plugin_source_file_uses_the_old_plural_identifiers(): void {
 		$files = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( dirname( __DIR__, 2 ) . '/hyperpress-social', \FilesystemIterator::SKIP_DOTS ) );
 
@@ -201,29 +129,22 @@ final class SocialsTest extends WP_UnitTestCase {
 		$this->assertGreaterThan( 0, $count );
 	}
 
-	public function test_the_contact_page_setting_is_an_absolute_integer(): void {
-		$setting = $this->customizer()->get_setting( 'hyperpress_social_contact' );
-
-		$this->assertSame( 5, $setting->sanitize( '5abc' ) );
-		$this->assertSame( 3, $setting->sanitize( -3 ) );
-	}
-
 	public function test_the_contact_link_shows_for_a_published_page(): void {
 		$page_id = self::factory()->post->create( array( 'post_type' => 'page', 'post_status' => 'publish' ) );
-		set_theme_mod( 'hyperpress_social_contact', $page_id );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_contact' => $page_id ) );
 
 		$this->assertStringContainsString( 'title="Contact Us"', $this->render() );
 	}
 
 	public function test_the_contact_link_is_omitted_when_the_page_does_not_exist(): void {
-		set_theme_mod( 'hyperpress_social_contact', 999999 );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_contact' => 999999 ) );
 
 		$this->assertStringNotContainsString( 'Contact Us', $this->render() );
 	}
 
 	public function test_the_contact_link_is_omitted_for_an_unpublished_page(): void {
 		$page_id = self::factory()->post->create( array( 'post_type' => 'page', 'post_status' => 'draft' ) );
-		set_theme_mod( 'hyperpress_social_contact', $page_id );
+		update_option( 'hyperpress_social', array( 'hyperpress_social_contact' => $page_id ) );
 
 		$this->assertStringNotContainsString( 'Contact Us', $this->render() );
 	}

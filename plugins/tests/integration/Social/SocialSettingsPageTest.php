@@ -130,4 +130,31 @@ final class SocialSettingsPageTest extends WP_UnitTestCase {
 		);
 		$this->assertSame( 'absint', $contact['sanitize_callback'] );
 	}
+
+	public function test_every_url_field_callback_drops_a_javascript_url_and_keeps_an_https_url(): void {
+		$seen = 0;
+		foreach ( $this->boxes()[0]['fields'] as $field ) {
+			if ( 'hyperpress_social_contact' === $field['id'] ) {
+				continue;
+			}
+			++$seen;
+			$this->assertSame( '', call_user_func( $field['sanitize_callback'], 'javascript:alert(1)' ), $field['id'] );
+			$this->assertSame( 'https://github.com/x', call_user_func( $field['sanitize_callback'], 'https://github.com/x' ), $field['id'] );
+		}
+		$this->assertSame( 11, $seen );
+	}
+
+	public function test_the_contact_callback_gives_zero_for_a_non_numeric_value_and_an_absolute_integer_otherwise(): void {
+		$contact = null;
+		foreach ( $this->boxes()[0]['fields'] as $field ) {
+			if ( 'hyperpress_social_contact' === $field['id'] ) {
+				$contact = $field;
+			}
+		}
+
+		$this->assertIsArray( $contact );
+		$this->assertSame( 0, call_user_func( $contact['sanitize_callback'], 'abc' ) );
+		$this->assertSame( 5, call_user_func( $contact['sanitize_callback'], '5abc' ) );
+		$this->assertSame( 3, call_user_func( $contact['sanitize_callback'], -3 ) );
+	}
 }

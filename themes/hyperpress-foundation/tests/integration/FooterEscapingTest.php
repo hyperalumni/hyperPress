@@ -25,11 +25,13 @@ final class FooterEscapingTest extends WP_UnitTestCase {
 	public function test_breakout_payloads_in_the_theme_mods_are_not_printed_raw(): void {
 		$payload = '"><img src=x onerror=1>';
 		set_theme_mod( 'hyperpress_site_copyright_name', $payload );
+		$socials = array();
 		foreach ( array( 'github', 'facebook', 'discord', 'add_calendar' ) as $network ) {
-			set_theme_mod( 'hyperpress_social_' . $network, 'https://example.org/' . $payload );
+			$socials[ 'hyperpress_social_' . $network ] = 'https://example.org/' . $payload;
 		}
 		// A link to this site is opened in the same tab, so both target values are exercised.
-		set_theme_mod( 'hyperpress_social_youtube', get_site_url() . '/' . $payload );
+		$socials['hyperpress_social_youtube'] = get_site_url() . '/' . $payload;
+		update_option( 'hyperpress_social', $socials );
 
 		$html = $this->footer_html();
 
@@ -39,8 +41,13 @@ final class FooterEscapingTest extends WP_UnitTestCase {
 	}
 
 	public function test_the_link_targets_and_icons_are_plain_attribute_values(): void {
-		set_theme_mod( 'hyperpress_social_github', 'https://github.com/hyper/repo' );
-		set_theme_mod( 'hyperpress_social_youtube', get_site_url() . '/channel' );
+		update_option(
+			'hyperpress_social',
+			array(
+				'hyperpress_social_github'  => 'https://github.com/hyper/repo',
+				'hyperpress_social_youtube' => get_site_url() . '/channel',
+			)
+		);
 
 		$html = $this->footer_html();
 
