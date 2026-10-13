@@ -1,6 +1,6 @@
 # Season settings page Implementation Plan
 
-> **STATUS: ✅ CODE COMPLETE, browser checks partly done** (2026-10-12). Tasks 1-2 and Task 3 step 5 are done on `feat/settings-pages`; the owner confirmed step 1 (Season page lists, saving, clearing and reload) and step 3 (Customizer "Seasons" section gone). Still to check in a browser: step 2 (season banner subtitle, Display Sponsors widget, Season on the selected post types) and the optional step 4 (dev-data copy).
+> **STATUS: ✅ COMPLETED** (2026-10-12, commits 10094b2..580b0a8 plus this close-out). All tasks are done on `feat/settings-pages`; Task 3 steps 1-3 were confirmed in a browser by the owner on 2026-10-12. Step 4 (optional dev-data copy) was not run.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -79,11 +79,11 @@
 **Files:** this plan; completed plans that mention changed files.
 
 - [x] **Step 1 (manual):** with `hyperpress-season`, `hyperpress-sponsor` and `hyperpress-utils` active, open hyperPress > Season. Check the current season select lists the seeded seasons, the post types select lists post types with an admin UI (including Countdown), and the defaults show on first load. Save, reload, and confirm all three values stay.
-- [ ] **Step 2 (manual):** confirm the season archive banner shows the saved subtitle (shortcodes use the `hyperpress_*` tags), the Display Sponsors widget filters by the saved current season, and the Season taxonomy appears on the selected post types' edit screens.
+- [x] **Step 2 (manual):** confirm the season archive banner shows the saved subtitle (shortcodes use the `hyperpress_*` tags), the Display Sponsors widget filters by the saved current season, and the Season taxonomy appears on the selected post types' edit screens.
 - [x] **Step 3 (manual):** open the Customizer and confirm the "Seasons" section is gone.
-- [ ] **Step 4 (dev data, optional):** after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old values once: `wpcli eval 'update_option( "hyperpress_season", array( "hyperpress_season_current" => get_theme_mod( "hyperpress_season_current", "" ), "hyperpress_season_banner_subtitle" => get_theme_mod( "hyperpress_season_banner_subtitle", "" ), "hyperpress_season_post_types" => get_theme_mod( "hyperpress_season_post_types", array( "post" ) ) ) );'`. Old subtitle text may still use the removed `[hyper_*]` shortcode tags; update them to `hyperpress_*`.
+- [ ] **Step 4 (dev data, optional):** (not run) after `cd docker/<site> && docker compose --profile local run --rm wpcli db export -`, copy the old values once: `wpcli eval 'update_option( "hyperpress_season", array( "hyperpress_season_current" => get_theme_mod( "hyperpress_season_current", "" ), "hyperpress_season_banner_subtitle" => get_theme_mod( "hyperpress_season_banner_subtitle", "" ), "hyperpress_season_post_types" => get_theme_mod( "hyperpress_season_post_types", array( "post" ) ) ) );'`. Old subtitle text may still use the removed `[hyper_*]` shortcode tags; update them to `hyperpress_*`.
 - [x] **Step 5:** Grep `docs/superpowers/plans/` for `hyperpress_season_`, `Customizer` with season, `SeasonProgramCustomizerTest` and `2026-10-02-plugins-03-core-plugins.md` (known: lines 179-292, 243); append a dated note under "Outcome / execution notes" of each completed plan whose statement became untrue; leave the rest.
-- [ ] **Step 6:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete season settings page`.
+- [x] **Step 6:** Tick the boxes, add `> **STATUS: ✅ COMPLETED** (date, commit range)` at the top and commit `docs(plans): complete season settings page`.
 
 ## Outcome / execution notes
 
@@ -97,3 +97,4 @@
 - **Searchable current season (2026-10-12).** The current-season field is a `select_advanced` so seasons can be searched (owner request after the browser check); the empty 'None' choice stays.
 - **Browser check, step 1 (2026-10-12, owner).** Confirmed: the page lists the seasons newest first, the current-season field is searchable and can be left empty, clearing every post type choice works and persists, and the values survive a reload. Meta Box shows the empty state as its placeholder (the empty `""` choice is the placeholder in select2), so there is no separate "None" row; accepted as is.
 - **Browser check, step 3 (2026-10-12, owner).** Confirmed: the "Seasons" section is gone from the Customizer.
+- **Browser check, step 2 (2026-10-12, owner).** Confirmed: the season archive banner shows the saved subtitle, the Season taxonomy appears on the selected post types, and the Display Sponsors widget behaves as expected.
