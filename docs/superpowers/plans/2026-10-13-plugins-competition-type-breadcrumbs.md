@@ -143,15 +143,15 @@
 - Produces: `final class HyperPress\Competition\TypeBreadcrumbs` with `public static function register(): void` (adds the `hyperpress_breadcrumbs_content` filter) and `public static function filter( $breadcrumbs )`. The class is named `TypeBreadcrumbs` because `Plugin.php` already imports `HyperPress\Utils\Breadcrumbs`.
   - When `is_tax()` (no argument), `! is_post_type_archive()` and `RequestTerm::get( Plugin::TYPE )` is a term, append the post-type crumb (title `get_post_type_object( Plugin::POST_TYPE )->labels->name`, `url` `get_post_type_archive_link( Plugin::POST_TYPE )`, classes `item-archive-<class>` / `bread-archive-<class>` as in `Utils\Breadcrumbs::build()`), then a crumb with the term's name and no `url`. Otherwise return `$breadcrumbs` unchanged.
 
-- [ ] **Step 1: Write failing tests** in `TypeBreadcrumbsTest.php`, loading the competition plugin the way the other plugin integration tests do:
+- [x] **Step 1: Write failing tests** in `TypeBreadcrumbsTest.php`, loading the competition plugin the way the other plugin integration tests do:
   - `test_type_archive_trail`: `go_to( get_term_link( $district ) )` then `apply_filters( 'hyperpress_breadcrumbs_content', array() )` gives titles `array( 'Competitions', 'District' )`, the first with the competitions archive URL.
   - `test_other_requests_unchanged`: on a plain page request the filter returns the input array unchanged.
   - `test_competition_archive_includes_type`: `go_to( '/?post_type=hyper_competition&hyper_season=<slug>&hyper_competition_type=district' )` gives titles `Competitions, District, <Season>`, with each crumb appearing once (the type-only filter does not also fire).
-- [ ] **Step 2:** Run `docker compose run --rm php composer test:integration -- --filter TypeBreadcrumbsTest`. Expected: FAIL (class not found).
-- [ ] **Step 3:** Create `TypeBreadcrumbs` as specified. In `Plugin::boot()`, change line 27 to `Breadcrumbs::register( array( self::POST_TYPE ), array( self::TYPE ) );` and add `TypeBreadcrumbs::register();` after it. The PSR-4 autoloader in `hyperpress-competition.php` needs no change.
-- [ ] **Step 4:** Run `docker compose run --rm php composer test:unit`, `composer test:integration` and `composer lint`. Expected: all pass, with no regressions in the newsletter, sponsor, robot, award or season tests.
-- [ ] **Step 5:** Manual check against the running site (`cd docker/hyperalumni && docker compose --profile local up -d`, WordPress on port 3080). Load `/seasons/season-31/competitions/?hyper_competition_type=district` and `/competition-types/district/`. Confirm the trails and that the crumb links resolve. If the combined request is not treated as a post-type archive, record that and fix `context()`.
-- [ ] **Step 6:** Tick this task's boxes and commit the competition plugin files, the test and this plan with `git commit -m "feat(competition): breadcrumb trails for competition types" -- <paths>`.
+- [x] **Step 2:** Run `docker compose run --rm php composer test:integration -- --filter TypeBreadcrumbsTest`. Expected: FAIL (class not found).
+- [x] **Step 3:** Create `TypeBreadcrumbs` as specified. In `Plugin::boot()`, change line 27 to `Breadcrumbs::register( array( self::POST_TYPE ), array( self::TYPE ) );` and add `TypeBreadcrumbs::register();` after it. The PSR-4 autoloader in `hyperpress-competition.php` needs no change.
+- [x] **Step 4:** Run `docker compose run --rm php composer test:unit`, `composer test:integration` and `composer lint`. Expected: all pass, with no regressions in the newsletter, sponsor, robot, award or season tests.
+- [ ] **Step 5:** Manual check against the running site (`cd docker/hyperalumni && docker compose --profile local up -d`, WordPress on port 3080). Load `/seasons/season-31/competitions/?hyper_competition_type=district` and `/competition-types/district/`. Confirm the trails and that the crumb links resolve. If the combined request is not treated as a post-type archive, record that and fix `context()`. (deferred to Task 5 Step 5)
+- [x] **Step 6:** Tick this task's boxes and commit the competition plugin files, the test and this plan with `git commit -m "feat(competition): breadcrumb trails for competition types" -- <paths>`.
 
 ### Task 5: Banner text for the competition taxonomies
 
