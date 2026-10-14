@@ -22,7 +22,7 @@ $season       = ! is_wp_error( $seasons ) && ! empty( $seasons ) ? $seasons[0] :
 	<?php if ( ! is_singular( 'hyper_newsletter' ) ) : ?>
 		<h2 class="entry-title">
 			<a href="<?php echo esc_url( get_permalink() ); ?>" rel="bookmark">
-				<?php if ( ! is_tax( 'hyper_season' ) ) : ?>
+				<?php if ( ! \HyperPress\Utils\RequestTerm::get( $hyper_season ) instanceof \WP_Term ) : ?>
 					<?php echo ! empty( $season ) ? esc_html( $season->name ) . ': ' : ''; ?>
 				<?php endif; ?>
 

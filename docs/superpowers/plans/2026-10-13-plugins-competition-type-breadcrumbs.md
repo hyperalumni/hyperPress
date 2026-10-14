@@ -207,7 +207,7 @@
 - Final-review fix wave, item 1: `Banner::register()` computes `extra_terms` only for requests that are legitimately the post type's own: not singular, and either its post-type archive or a taxonomy archive that is not any post type's archive (`is_tax() && ! is_post_type_archive()`). Another post type's archive, and any singular request (including a page carrying a taxonomy query var), leave the banner untouched. Tests in `Competition/BannerTest`.
 - Final-review fix wave, item 2: `BreadcrumbsRequestTest` registers `hyper_competition_type` only when it does not already exist and unregisters only what it registered, so the other tests no longer depend on suite order.
 - Deferred follow-ups from the final review:
-  - Newsletter `templates/content.php:25` still uses `is_tax( 'hyper_season' )` (outside the scan test's `src/` scope).
+  - [x] Newsletter `templates/content.php:25` still uses `is_tax( 'hyper_season' )` (outside the scan test's `src/` scope). Done 2026-10-13: the template reads `RequestTerm::get( 'hyper_season' )`, and `tests/unit/NoIsTaxWithArgumentTest.php` now scans `src/` and `templates/` for any `is_tax( <arg> )` call.
   - `RequestTerm` ignores multi-term query vars (`a,b`, `a+b`) and assumes query_var == taxonomy key.
   - `Breadcrumbs::build` has duplicate term/season crumb blocks, and `extra_terms` has a redundant orderby plus usort.
   - `SeasonGuardsTest`'s non-term-queried-object test is now vacuous (rename it or replace it with an unknown-slug test).
