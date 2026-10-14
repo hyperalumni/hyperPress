@@ -22,11 +22,18 @@ final class Plugin {
 	private const CAPS_OPTION = 'hyperpress_competition_caps_version';
 	private const SEED_OPTION = 'hyperpress_competition_terms_seeded';
 
+	/**
+	 * Taxonomies whose terms the competition archive and single trails show, in order, before the season.
+	 *
+	 * @var string[]
+	 */
+	public const BREADCRUMB_TAXONOMIES = array( self::TYPE, self::DISTRICT, self::WEEK );
+
 	public static function boot(): void {
 		add_action( 'init', array( self::class, 'register' ) );
 		add_action( 'init', array( self::class, 'ensure_capabilities' ), 20 );
 		add_action( 'init', array( self::class, 'seed_terms' ), 20 );
-		Breadcrumbs::register( array( self::POST_TYPE ), array( self::TYPE ) );
+		Breadcrumbs::register( array( self::POST_TYPE ), self::BREADCRUMB_TAXONOMIES );
 		TaxonomyBreadcrumbs::register();
 		Rewrite::register();
 		NotFound::register( array( self::TYPE, self::DISTRICT, self::WEEK ) );
