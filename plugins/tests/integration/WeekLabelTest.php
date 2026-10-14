@@ -92,7 +92,7 @@ final class WeekLabelTest extends WP_UnitTestCase {
 		$this->assertContains( 'week.week', Resolver::default_labels( 'post' ) );
 	}
 
-	public function test_week_label_is_unlinked_and_alert(): void {
+	public function test_week_label_is_unlinked_and_success(): void {
 		$this->go_to_post_with_terms( 'hyper_competition', array( 'Week 1' ) );
 
 		$week = $this->week_labels();
@@ -100,7 +100,7 @@ final class WeekLabelTest extends WP_UnitTestCase {
 		$this->assertCount( 1, $week );
 		$this->assertSame( 'Week 1', $week[0]['label'] );
 		$this->assertSame( 'Week', $week[0]['title'] );
-		$this->assertSame( array( 'alert' ), $week[0]['classes'] );
+		$this->assertSame( array( 'success' ), $week[0]['classes'] );
 		$this->assertSame( '', $week[0]['url'] );
 		$this->assertSame( '', $week[0]['rel'] );
 	}

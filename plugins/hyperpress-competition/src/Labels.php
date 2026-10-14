@@ -71,7 +71,7 @@ final class Labels {
 	 * @return array<int,array<string,mixed>>
 	 */
 	public static function week_label(): array {
-		return self::first_term_label( Plugin::WEEK, 'Week', 'alert' );
+		return self::first_term_label( Plugin::WEEK, 'Week', 'success' );
 	}
 
 	/**
