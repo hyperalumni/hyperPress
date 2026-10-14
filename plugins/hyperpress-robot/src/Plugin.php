@@ -30,12 +30,11 @@ final class Plugin {
 		Banner::register(
 			self::POST_TYPE,
 			array(
-				'type'                     => 'robot',
-				'subtitle'                 => array( Settings::class, 'banner_subtitle' ),
-				'color_mod'                => 'hyperpress_hyper_red',
-				'archive_title'            => __( 'Robots', 'hyperpress' ),
-				'term_joiner'              => 'in',
-				'always_set_archive_title' => true,
+				'type'          => 'robot',
+				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
+				'color_mod'     => 'hyperpress_hyper_red',
+				'archive_title' => __( 'Robots', 'hyperpress' ),
+				'term_joiner'   => 'in',
 			)
 		);
 	}
