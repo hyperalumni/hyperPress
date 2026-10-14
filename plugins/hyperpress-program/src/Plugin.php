@@ -40,6 +40,7 @@ final class Plugin {
 		MetaBoxes::register();
 		Labels::register();
 		ProgramBanner::register();
+		ProgramBreadcrumbs::register();
 	}
 
 	public static function register(): void {
