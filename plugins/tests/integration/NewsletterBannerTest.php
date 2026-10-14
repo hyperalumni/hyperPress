@@ -75,10 +75,10 @@ final class NewsletterBannerTest extends WP_UnitTestCase {
 		$this->assertSame( '#ff8800', $this->banner_for( $post_id )['backgroundColor'] );
 	}
 
-	public function test_archive_title_is_always_set(): void {
+	public function test_archive_title_is_set_when_empty(): void {
 		update_option( 'hyperpress_newsletter', array( 'hyperpress_newsletter_banner_subtitle' => 'News' ) );
 		$this->go_to( get_post_type_archive_link( 'hyper_newsletter' ) );
-		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Preset' ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
 		$this->assertSame( 'Newsletters', $banner['title'] );
 		$this->assertSame( 'News', $banner['subtitle'] );
 	}
@@ -87,7 +87,7 @@ final class NewsletterBannerTest extends WP_UnitTestCase {
 		update_option( 'hyperpress_newsletter', array( 'hyperpress_newsletter_banner_subtitle' => 'News' ) );
 		$term = self::factory()->term->create_and_get( array( 'taxonomy' => 'hyper_season', 'name' => '2026' ) );
 		$this->go_to( add_query_arg( 'post_type', 'hyper_newsletter', get_term_link( $term ) ) );
-		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Preset' ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
 		$this->assertSame( 'News from 2026', $banner['subtitle'] );
 	}
 }

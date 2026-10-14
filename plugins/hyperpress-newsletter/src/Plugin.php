@@ -32,12 +32,11 @@ final class Plugin {
 		Banner::register(
 			self::POST_TYPE,
 			array(
-				'type'                     => 'newsletter',
-				'subtitle'                 => array( Settings::class, 'banner_subtitle' ),
-				'color_mod'                => 'hyperpress_hyper_orange',
-				'archive_title'            => __( 'Newsletters', 'hyperpress' ),
-				'term_joiner'              => 'from',
-				'always_set_archive_title' => true,
+				'type'          => 'newsletter',
+				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
+				'color_mod'     => 'hyperpress_hyper_orange',
+				'archive_title' => __( 'Newsletters', 'hyperpress' ),
+				'term_joiner'   => 'from',
 			)
 		);
 	}
