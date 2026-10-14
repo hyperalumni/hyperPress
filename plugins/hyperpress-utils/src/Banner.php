@@ -41,7 +41,10 @@ final class Banner {
 					'term_name'     => $queried ? $queried->name : '',
 					'extra_terms'   => array(),
 				);
-				if ( ! $ctx['is_singular'] ) {
+				// Only this post type's requests: its archive, or a taxonomy archive that is not any post type's archive.
+				// Another post type's archive or singular (or a page carrying a taxonomy query var) must not take the taxonomy branch.
+				$own_request = ! is_singular() && ( $ctx['is_archive'] || ( is_tax() && ! is_post_type_archive() ) );
+				if ( $own_request ) {
 					foreach ( (array) ( $args['taxonomies'] ?? array() ) as $taxonomy ) {
 						// Not is_tax( $taxonomy ): it only matches the one taxonomy WP picked as the queried object.
 						$term = RequestTerm::get( (string) $taxonomy );

@@ -6,6 +6,13 @@ use WP_UnitTestCase;
 
 final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 
+	/**
+	 * Whether set_up() registered hyper_competition_type itself (and so must remove it).
+	 *
+	 * @var bool
+	 */
+	private bool $registered_type = false;
+
 	public function set_up(): void {
 		parent::set_up();
 		if ( ! taxonomy_exists( 'hyper_season' ) ) {
@@ -13,21 +20,31 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 		}
 		register_post_type( 'hyper_gizmo', array( 'public' => true, 'has_archive' => 'gizmos', 'labels' => array( 'name' => 'Gizmos' ) ) );
 		register_taxonomy_for_object_type( 'hyper_season', 'hyper_gizmo' );
-		register_taxonomy(
-			'hyper_competition_type',
-			array( 'hyper_gizmo' ),
-			array(
-				'public'       => true,
-				'hierarchical' => true,
-				'rewrite'      => array( 'slug' => 'competition-types' ),
-			)
-		);
+		// The competition plugin registers this taxonomy at init; only add (and later remove) a stand-in when it is absent.
+		$this->registered_type = ! taxonomy_exists( 'hyper_competition_type' );
+		if ( $this->registered_type ) {
+			register_taxonomy(
+				'hyper_competition_type',
+				array( 'hyper_gizmo' ),
+				array(
+					'public'       => true,
+					'hierarchical' => true,
+					'rewrite'      => array( 'slug' => 'competition-types' ),
+				)
+			);
+		} else {
+			register_taxonomy_for_object_type( 'hyper_competition_type', 'hyper_gizmo' );
+		}
 		flush_rewrite_rules();
 		Breadcrumbs::register( array( 'hyper_gizmo' ) );
 	}
 
 	public function tear_down(): void {
-		unregister_taxonomy( 'hyper_competition_type' );
+		if ( $this->registered_type ) {
+			unregister_taxonomy( 'hyper_competition_type' );
+		} else {
+			unregister_taxonomy_for_object_type( 'hyper_competition_type', 'hyper_gizmo' );
+		}
 		unregister_post_type( 'hyper_gizmo' );
 		parent::tear_down();
 	}

@@ -104,7 +104,7 @@
   - Banner and Season tests: on a request with both taxonomies queried, `Banner`'s `term_name` and `SeasonBanner`'s title are `Season 31`, and `Season\Breadcrumbs::filter` yields `Seasons`, `Season 31` for a season-only page request.
   - `NoQueriedObjectTest`: scan every `plugins/hyperpress-*/src/**/*.php` file. Fail if any contains `get_queried_object(` other than `hyperpress-utils/src/RequestTerm.php`. Before writing the allowlist, run `grep -rn "get_queried_object" plugins/hyperpress-*/src` and convert each remaining hit that reads a taxonomy term to `RequestTerm`. A hit that does not read a term (for example an author or a post) goes in an explicit per-file allowlist inside the test with a one-line reason.
 - [x] **Step 2:** Run `docker compose run --rm php composer test:integration -- --filter "RequestTerm|BreadcrumbsRequestTest|Banner|Season"` and `composer test:unit -- --filter NoQueriedObjectTest`. Expected: FAIL (`RequestTerm` does not exist; the scan finds the four current callers).
-- [x] **Step 3:** Create `RequestTerm::get()` as specified. Replace the four `get_queried_object()` reads: `Utils\Breadcrumbs::context()` (the `elseif ( is_tax( self::SEASON_TAXONOMY ) )` branch) and `Utils\Banner` take `RequestTerm::get( self::SEASON_TAXONOMY )`, and the two Season classes take `RequestTerm::get( 'hyper_season' )`. Keep each class's existing `is_tax()` and `! is_post_type_archive()` guards.
+- [x] **Step 3:** Create `RequestTerm::get()` as specified. Replace the four `get_queried_object()` reads: `Utils\Breadcrumbs::context()` (the `elseif ( is_tax( self::SEASON_TAXONOMY ) )` branch) and `Utils\Banner` take `RequestTerm::get( self::SEASON_TAXONOMY )`, and the two Season classes take `RequestTerm::get( 'hyper_season' )`. The guards are `is_tax()` (no argument) plus `RequestTerm::get( <taxonomy> )` returning a term, never `is_tax( self::SEASON_TAXONOMY )`; the existing `! is_post_type_archive()` guards stay.
 - [x] **Step 4:** Rerun the Step 2 commands, then `composer test:unit` and `composer test:integration`. Expected: PASS, including every existing breadcrumb, banner and season test.
 - [x] **Step 5:** `docker compose run --rm php composer lint`. Expected: no errors.
 - [x] **Step 6:** Tick this task's boxes. Commit the changed and created PHP files, the tests and this plan with `git commit -m "refactor(utils): resolve archive terms from their own query var" -- <paths>`.
@@ -201,3 +201,14 @@
 - The banner title word order (`District Competitions`) is built by concatenation and the joiners are not translated, which matches the existing code. Revisit if the site is ever translated.
 - A type-only page with `?hyper_season=...` shows the Season plugin's trail (`Seasons > Season 31`) and no type crumb: `TypeBreadcrumbs` defers to the Season plugin there (Task 4 ruling), because otherwise both trails would be appended. The banner on that URL is the competition banner (Task 5, Review Focus 6), so the two disagree on that one unlinked URL shape. Align them later if wanted.
 - The type-only trail uses the term's own name. If the term is named "District" the crumb reads "District"; rename the term in wp-admin if you want "Districts".
+
+## Outcome / execution notes
+
+- Final-review fix wave, item 1: `Banner::register()` computes `extra_terms` only for requests that are legitimately the post type's own: not singular, and either its post-type archive or a taxonomy archive that is not any post type's archive (`is_tax() && ! is_post_type_archive()`). Another post type's archive, and any singular request (including a page carrying a taxonomy query var), leave the banner untouched. Tests in `Competition/BannerTest`.
+- Final-review fix wave, item 2: `BreadcrumbsRequestTest` registers `hyper_competition_type` only when it does not already exist and unregisters only what it registered, so the other tests no longer depend on suite order.
+- Deferred follow-ups from the final review:
+  - Newsletter `templates/content.php:25` still uses `is_tax( 'hyper_season' )` (outside the scan test's `src/` scope).
+  - `RequestTerm` ignores multi-term query vars (`a,b`, `a+b`) and assumes query_var == taxonomy key.
+  - `Breadcrumbs::build` has duplicate term/season crumb blocks, and `extra_terms` has a redundant orderby plus usort.
+  - `SeasonGuardsTest`'s non-term-queried-object test is now vacuous (rename it or replace it with an unknown-slug test).
+  - Manual browser checks are still outstanding.

@@ -165,6 +165,39 @@ final class BannerTest extends WP_UnitTestCase {
 		// A competition taxonomy in the request does not leak into a banner registered without `taxonomies`.
 		$this->go_to( '/?post_type=hyper_newsletter&' . Plugin::TYPE . '=' . $district->slug );
 		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Preset' ) );
+		$this->assertSame( 'newsletter', $banner['type'] );
+		$this->assertSame( 'Newsletters', $banner['title'] );
 		$this->assertSame( 'News', $banner['subtitle'] );
+	}
+
+	public function test_competition_banner_ignores_another_post_types_archive(): void {
+		// Only the competition closure is registered, so nothing later can mask a leak.
+		$district = $this->term( 'District', 'district', Plugin::TYPE );
+		$registered = ! post_type_exists( 'hyper_newsletter' );
+		if ( $registered ) {
+			register_post_type( 'hyper_newsletter', array( 'public' => true, 'has_archive' => true ) );
+		}
+
+		$this->go_to( '/?post_type=hyper_newsletter&' . Plugin::TYPE . '=' . $district->slug );
+		$input  = array( 'title' => 'Theme title' );
+		$banner = apply_filters( 'hyperpress_banner_content', $input );
+
+		$this->assertSame( $input, $banner );
+		$this->assertArrayNotHasKey( 'type', $banner );
+		if ( $registered ) {
+			unregister_post_type( 'hyper_newsletter' );
+		}
+	}
+
+	public function test_competition_banner_ignores_a_page_carrying_a_competition_taxonomy(): void {
+		// Expected: a singular request (here a page) never takes the taxonomy-page branch, so the banner is untouched.
+		$week    = $this->term( 'Week 1', 'week-1', Plugin::WEEK );
+		$page_id = self::factory()->post->create( array( 'post_type' => 'page', 'post_title' => 'About' ) );
+
+		$this->go_to( '/?page_id=' . $page_id . '&' . Plugin::WEEK . '=' . $week->slug );
+		$input  = array( 'title' => 'Theme title' );
+		$banner = apply_filters( 'hyperpress_banner_content', $input );
+
+		$this->assertSame( $input, $banner );
 	}
 }
