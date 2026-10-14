@@ -13,6 +13,8 @@ defined( 'ABSPATH' ) || exit;
  * `Competitions > <taxonomy singular label> > <term>`, e.g. `Competitions > Type > District`.
  *
  * The middle crumb is read from the taxonomy object at filter time (the label registry may translate it) and has no url.
+ * Its `tooltip` (the theme's hover text) is the taxonomy's `full_singular_name` label, e.g. "Competition Type" for the
+ * "Type" crumb, or the singular label when the taxonomy has none (district, week).
  * The last crumb is the term's own name only, with no ancestors. The Home crumb comes from the theme.
  *
  * A request carrying more than one of these taxonomies gets the trail for the first of type, district, week only.
@@ -75,8 +77,11 @@ final class TaxonomyBreadcrumbs {
 
 		$taxonomy_object = get_taxonomy( $taxonomy );
 		if ( $taxonomy_object ) {
+			$singular      = $taxonomy_object->labels->singular_name;
+			$full          = isset( $taxonomy_object->labels->full_singular_name ) ? $taxonomy_object->labels->full_singular_name : '';
 			$breadcrumbs[] = array(
-				'title'   => $taxonomy_object->labels->singular_name,
+				'title'   => $singular,
+				'tooltip' => is_string( $full ) && '' !== $full ? $full : $singular,
 				'classes' => array(
 					'li'    => array(),
 					'bread' => array(),

@@ -104,6 +104,57 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'li' => array(), 'bread' => array() ), $trail[2]['classes'] );
 	}
 
+	public function test_type_label_crumb_hovers_as_competition_type(): void {
+		$district = $this->term( 'District', 'district', Plugin::TYPE );
+
+		$this->go_to( get_term_link( $district ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$this->assertSame( 'Type', $trail[1]['title'] );
+		$this->assertSame( 'Competition Type', $trail[1]['tooltip'] );
+	}
+
+	public function test_district_and_week_label_crumbs_hover_as_their_label(): void {
+		$district = $this->rt_term( 'RT Tip District', 'rt-tip-district', Plugin::DISTRICT );
+		$week     = $this->rt_term( 'RT Tip Week', 'rt-tip-week', Plugin::WEEK );
+
+		$this->go_to( get_term_link( $district ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$this->assertSame( $this->singular( Plugin::DISTRICT ), $trail[1]['title'] );
+		$this->assertSame( $trail[1]['title'], $trail[1]['tooltip'] );
+
+		$this->go_to( get_term_link( $week ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$this->assertSame( $this->singular( Plugin::WEEK ), $trail[1]['title'] );
+		$this->assertSame( $trail[1]['title'], $trail[1]['tooltip'] );
+	}
+
+	public function test_only_the_label_crumb_has_a_tooltip(): void {
+		$district = $this->term( 'District', 'district', Plugin::TYPE );
+
+		$this->go_to( get_term_link( $district ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$this->assertArrayNotHasKey( 'tooltip', $trail[0] );
+		$this->assertArrayHasKey( 'tooltip', $trail[1] );
+		$this->assertArrayNotHasKey( 'tooltip', $trail[2] );
+	}
+
+	public function test_tooltip_falls_back_to_the_singular_label_when_the_full_label_is_missing(): void {
+		$labels = get_taxonomy( Plugin::TYPE )->labels;
+		$full   = $labels->full_singular_name;
+		unset( $labels->full_singular_name );
+		$type = $this->rt_term( 'RT Tip Type', 'rt-tip-type', Plugin::TYPE );
+
+		try {
+			$this->go_to( get_term_link( $type ) );
+			$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+			$this->assertSame( 'Type', $trail[1]['tooltip'] );
+		} finally {
+			$labels->full_singular_name = $full;
+		}
+	}
+
 	public function test_single_competition_trail_has_the_type_term_and_no_label_crumb(): void {
 		$type    = $this->rt_term( 'RT Single Type', 'rt-single-type', Plugin::TYPE );
 		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE, 'post_title' => 'RT Single Competition' ) );
