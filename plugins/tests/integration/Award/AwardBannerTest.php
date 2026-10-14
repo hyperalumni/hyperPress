@@ -168,6 +168,17 @@ final class AwardBannerTest extends WP_UnitTestCase {
 		$this->assertSame( 'Award', $this->singular_banner_for( $post_id )['title'] );
 	}
 
+	public function test_a_single_award_keeps_its_type_colour_when_the_posts_page_has_a_colour(): void {
+		$posts_page = self::factory()->post->create( array( 'post_type' => 'page' ) );
+		update_option( 'page_for_posts', $posts_page );
+		$GLOBALS['hyperpress_test_rwmb_posts'][ $posts_page ]['hyperpress_banner_background_color'] = '#F15623';
+		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE ) );
+
+		$banner = $this->singular_banner_for( $post_id );
+		unset( $GLOBALS['hyperpress_test_rwmb_posts'] );
+		$this->assertSame( '#00f', $banner['backgroundColor'] );
+	}
+
 	public function test_a_single_award_banner_uses_the_post_colour_when_it_has_one(): void {
 		$GLOBALS['hyperpress_test_rwmb']['hyperpress_banner_background_color'] = '#123456';
 		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE ) );

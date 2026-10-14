@@ -16,7 +16,13 @@ require_once $hyperpress_tests_dir . '/includes/functions.php';
  */
 if ( ! function_exists( 'rwmb_meta' ) ) {
 	function rwmb_meta( $key, $args = array(), $post_id = null ) { // phpcs:ignore
-		// Tests set $GLOBALS['hyperpress_test_rwmb'][ $key ] to simulate stored meta.
+		// Tests set $GLOBALS['hyperpress_test_rwmb'][ $key ] to simulate stored meta, for any post (the post id is
+		// ignored), or $GLOBALS['hyperpress_test_rwmb_posts'][ $post_id ][ $key ] to simulate meta of one post. A
+		// post id of null means the current post, as in Meta Box; per-post values win over the global ones.
+		$id = null === $post_id ? get_the_ID() : $post_id;
+		if ( $id && isset( $GLOBALS['hyperpress_test_rwmb_posts'][ $id ][ $key ] ) ) {
+			return $GLOBALS['hyperpress_test_rwmb_posts'][ $id ][ $key ];
+		}
 		return $GLOBALS['hyperpress_test_rwmb'][ $key ] ?? '';
 	}
 }

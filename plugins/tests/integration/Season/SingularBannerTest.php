@@ -64,7 +64,7 @@ final class SingularBannerTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		global $wp_filter;
-		unset( $GLOBALS['hyperpress_test_rwmb'] );
+		unset( $GLOBALS['hyperpress_test_rwmb'], $GLOBALS['hyperpress_test_rwmb_posts'] );
 		SingularBanner::unregister( self::TYPE );
 		foreach ( $this->registered_post_types as $post_type ) {
 			unregister_post_type( $post_type );
@@ -122,8 +122,10 @@ final class SingularBannerTest extends WP_UnitTestCase {
 		$this->assertSame( '#123456', $this->banner_for( $this->post() )['backgroundColor'] );
 	}
 
-	public function test_the_theme_colour_stays_when_neither_post_nor_posts_page_has_one(): void {
-		update_option( 'page_for_posts', self::factory()->post->create( array( 'post_type' => 'page' ) ) );
+	public function test_the_theme_colour_stays_when_the_post_has_none_even_if_the_posts_page_has_one(): void {
+		$posts_page = self::factory()->post->create( array( 'post_type' => 'page' ) );
+		update_option( 'page_for_posts', $posts_page );
+		$GLOBALS['hyperpress_test_rwmb_posts'][ $posts_page ]['hyperpress_banner_background_color'] = '#F15623';
 		$this->assertSame( '#ff8800', $this->banner_for( $this->post() )['backgroundColor'] );
 	}
 

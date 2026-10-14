@@ -7,7 +7,7 @@ use HyperPress\Utils\Meta;
 
 /**
  * The banner of a single post of a season-based post type: "<latest season>: <post title>", plus the post's
- * (or the Posts page's) banner colour.
+ * banner colour when it has one (else the post type's own colour stands, never the Posts page's).
  *
  * Hooked on `hyperpress_banner_args`, which HyperPress\Utils\Banner applies only to the post type it was
  * registered for. The theme's own singular banner filters (library/banner/post.php, page.php) only act on
@@ -63,14 +63,9 @@ final class SingularBanner {
 			}
 		}
 
-		// Keep the theme color Banner::apply() set unless the post (or the Posts page) has its own.
+		// Keep the type colour Banner::apply() set unless the post has its own. The Posts page colour is for the
+		// blog's own banners (the theme's library/banner/blog-color.php) and must not leak onto a plugin type.
 		$color = Meta::get( 'hyperpress_banner_background_color' );
-		if ( empty( $color ) ) {
-			$blog_page_id = get_option( 'page_for_posts' );
-			if ( $blog_page_id > 0 ) {
-				$color = Meta::get( 'hyperpress_banner_background_color', $blog_page_id );
-			}
-		}
 		if ( ! empty( $color ) ) {
 			$banner['backgroundColor'] = $color;
 		}

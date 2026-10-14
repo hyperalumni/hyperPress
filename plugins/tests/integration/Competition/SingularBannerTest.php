@@ -73,7 +73,7 @@ final class SingularBannerTest extends WP_UnitTestCase {
 		if ( null !== $this->saved_filters ) {
 			$wp_filter['hyperpress_banner_content'] = $this->saved_filters;
 		}
-		unset( $GLOBALS['hyperpress_test_rwmb'] );
+		unset( $GLOBALS['hyperpress_test_rwmb'], $GLOBALS['hyperpress_test_rwmb_posts'] );
 		parent::tear_down();
 	}
 
@@ -139,6 +139,30 @@ final class SingularBannerTest extends WP_UnitTestCase {
 		$banner = $this->singular_banner_for( $post_id );
 
 		$this->assertSame( '#123456', $banner['backgroundColor'] );
+	}
+
+	public function test_a_single_competition_keeps_its_type_colour_when_the_posts_page_has_a_colour(): void {
+		// Reported: an orange banner on a single competition. The Posts page colour leaked onto plugin singulars.
+		$posts_page = self::factory()->post->create( array( 'post_type' => 'page' ) );
+		update_option( 'page_for_posts', $posts_page );
+		$GLOBALS['hyperpress_test_rwmb_posts'][ $posts_page ]['hyperpress_banner_background_color'] = '#F15623';
+		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE, 'post_title' => 'UNH District Event 2026' ) );
+		wp_set_object_terms( $post_id, array( $this->season()->term_id ), 'hyper_season' );
+
+		$banner = $this->singular_banner_for( $post_id );
+
+		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( '#0f0', $banner['backgroundColor'] );
+	}
+
+	public function test_a_single_competition_with_its_own_colour_beats_the_type_colour_and_the_posts_page(): void {
+		$posts_page = self::factory()->post->create( array( 'post_type' => 'page' ) );
+		update_option( 'page_for_posts', $posts_page );
+		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE ) );
+		$GLOBALS['hyperpress_test_rwmb_posts'][ $posts_page ]['hyperpress_banner_background_color'] = '#F15623';
+		$GLOBALS['hyperpress_test_rwmb_posts'][ $post_id ]['hyperpress_banner_background_color']    = '#123456';
+
+		$this->assertSame( '#123456', $this->singular_banner_for( $post_id )['backgroundColor'] );
 	}
 
 	public function test_the_competition_archive_banner_is_unchanged(): void {
