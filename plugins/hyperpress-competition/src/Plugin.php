@@ -3,6 +3,7 @@ namespace HyperPress\Competition;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Season\SingularBanner;
 use HyperPress\Utils\Banner;
 use HyperPress\Utils\Breadcrumbs;
 use HyperPress\Utils\Capabilities;
@@ -30,6 +31,7 @@ final class Plugin {
 		Rewrite::register();
 		NotFound::register( array( self::TYPE, self::DISTRICT, self::WEEK ) );
 		add_action( 'init', array( self::class, 'register_banner' ) );
+		SingularBanner::register( self::POST_TYPE, __( 'Competition', 'hyperpress' ) );
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 		SettingsPage::register();
 		MetaBoxes::register();
