@@ -208,7 +208,8 @@
 - Final-review fix wave, item 2: `BreadcrumbsRequestTest` registers `hyper_competition_type` only when it does not already exist and unregisters only what it registered, so the other tests no longer depend on suite order.
 - Deferred follow-ups from the final review:
   - [x] Newsletter `templates/content.php:25` still uses `is_tax( 'hyper_season' )` (outside the scan test's `src/` scope). Done 2026-10-13: the template reads `RequestTerm::get( 'hyper_season' )`, and `tests/unit/NoIsTaxWithArgumentTest.php` now scans `src/` and `templates/` for any `is_tax( <arg> )` call.
-  - `RequestTerm` ignores multi-term query vars (`a,b`, `a+b`) and assumes query_var == taxonomy key.
+  - [x] `RequestTerm` ignored multi-term query vars (`a,b`, `a+b`). Done 2026-10-14: `get()` splits the var on commas and literal plus signs like core's `parse_tax_query()` (trimmed, empty pieces skipped, last path segment per piece when hierarchical) and returns the first piece, in the order given, that resolves to a term.
+  - [x] `RequestTerm` assumed query_var == taxonomy key. Done 2026-10-14: `get()` reads `get_taxonomy( $taxonomy )->query_var` and returns null for an unregistered taxonomy or one with `query_var => false`.
   - `Breadcrumbs::build` has duplicate term/season crumb blocks, and `extra_terms` has a redundant orderby plus usort.
   - `SeasonGuardsTest`'s non-term-queried-object test is now vacuous (rename it or replace it with an unknown-slug test).
   - Manual browser checks are still outstanding.
