@@ -11,13 +11,14 @@ final class Breadcrumbs {
 	 * Add a trail for each post type to the theme's breadcrumb filter.
 	 *
 	 * @param string[] $post_types Post type keys.
+	 * @param string[] $taxonomies Extra taxonomy keys whose term is shown between the post type and the season.
 	 */
-	public static function register( array $post_types ): void {
+	public static function register( array $post_types, array $taxonomies = array() ): void {
 		foreach ( $post_types as $post_type ) {
 			add_filter(
 				'hyperpress_breadcrumbs_content',
-				static function ( $breadcrumbs ) use ( $post_type ) {
-					$ctx = self::context( $post_type );
+				static function ( $breadcrumbs ) use ( $post_type, $taxonomies ) {
+					$ctx = self::context( $post_type, $taxonomies );
 					return null === $ctx ? $breadcrumbs : self::build( (array) $breadcrumbs, $ctx );
 				}
 			);
@@ -87,9 +88,10 @@ final class Breadcrumbs {
 	 * Read the request into a context array, or null when the request is not this post type's
 	 * singular or archive.
 	 *
-	 * @param string $post_type Post type key.
+	 * @param string   $post_type Post type key.
+	 * @param string[] $taxonomies Extra taxonomy keys.
 	 */
-	private static function context( string $post_type ): ?array {
+	private static function context( string $post_type, array $taxonomies = array() ): ?array {
 		$is_singular = is_singular( $post_type );
 		if ( ! $is_singular && ! is_post_type_archive( $post_type ) ) {
 			return null;
@@ -131,6 +133,7 @@ final class Breadcrumbs {
 		}
 
 		return array(
+			'terms'       => self::extra_terms( $taxonomies, $is_singular ),
 			'post_type'   => $post_type,
 			'label'       => (string) ( $object->labels->name ?? '' ),
 			'archive_url' => (string) get_post_type_archive_link( $post_type ),
@@ -139,5 +142,44 @@ final class Breadcrumbs {
 			'title'       => $is_singular ? get_the_title() : '',
 			'id'          => $is_singular ? (int) get_the_ID() : 0,
 		);
+	}
+
+	/**
+	 * One crumb per registered extra taxonomy that has a term for this request.
+	 *
+	 * @param string[] $taxonomies  Taxonomy keys.
+	 * @param bool     $is_singular Whether the request is a single post.
+	 * @return array<int, array{name: string, slug: string, url: string}>
+	 */
+	private static function extra_terms( array $taxonomies, bool $is_singular ): array {
+		$crumbs = array();
+		foreach ( $taxonomies as $taxonomy ) {
+			if ( ! taxonomy_exists( $taxonomy ) ) {
+				continue;
+			}
+
+			$term = null;
+			if ( $is_singular ) {
+				$terms = wp_get_object_terms( get_the_ID(), $taxonomy, array( 'orderby' => 'name' ) );
+				if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+					usort( $terms, static fn( $a, $b ) => strnatcasecmp( $a->name, $b->name ) );
+					$term = $terms[0];
+				}
+			} else {
+				$term = RequestTerm::get( $taxonomy );
+			}
+
+			if ( ! $term ) {
+				continue;
+			}
+
+			$link     = get_term_link( $term );
+			$crumbs[] = array(
+				'name' => $term->name,
+				'slug' => $term->slug,
+				'url'  => is_wp_error( $link ) ? '' : $link,
+			);
+		}
+		return $crumbs;
 	}
 }

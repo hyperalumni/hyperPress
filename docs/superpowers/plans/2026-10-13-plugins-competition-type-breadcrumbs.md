@@ -23,7 +23,7 @@
 - Banner text for competition taxonomy archives (`hyper_competition_type`, `hyper_district`, `hyper_week`): title is the queried term names plus the archive title, e.g. `District Competitions`; subtitle is the competition subtitle setting, unchanged. The banner `type` is `competition` and the color is the competition color, as on the competition archive.
 - Banner subtitle on a competition post-type archive: `<subtitle> <joiner> <extra terms>, <season>`, e.g. `<subtitle> in District, Season 31`. Extra terms come first, in the order of the `taxonomies` list, then the season. With extra terms but no season it is `<subtitle> in District`. With neither it is unchanged. Joiners stay `in` for competition and `from` for newsletter.
 - Newsletter, sponsor and every other `Banner::register()` caller omit `taxonomies` and must behave exactly as today.
-- `is_tax( $taxonomy )` stays the way to ask whether a taxonomy is part of the request, since it is true whenever that taxonomy is queried. Only the lookup of the term changes.
+- Never use `is_tax( $taxonomy )` to ask whether a taxonomy is part of the request. Core compares it with `get_queried_object()->taxonomy`, so with two taxonomies queried it can be false for the one asked about (found in Task 2). Use `RequestTerm::get( $taxonomy ) instanceof \WP_Term` instead. `is_tax()` with no argument and `is_post_type_archive()` are fine.
 
 ## Review Focus
 
@@ -119,17 +119,17 @@
   - `public static function register( array $post_types, array $taxonomies = array() ): void`. `$taxonomies` is a list of taxonomy keys, and the default keeps current behavior.
   - `context()` adds `'terms' => list<array{name, slug, url}>`, one per extra taxonomy that is registered and has a term for the request. Singular: the first term of `wp_get_object_terms( get_the_ID(), $taxonomy )` ordered by name. Archive: `RequestTerm::get( $taxonomy )`. The URL is `get_term_link()`, or `''` for a `WP_Error` (Review Focus 5).
 
-- [ ] **Step 1: Write failing tests** in `BreadcrumbsRequestTest.php`. Register `hyper_competition_type` (hierarchical, `rewrite` slug `competition-types`, public) beside the existing `hyper_season` and `hyper_gizmo` setup, create `Qualifying` with child `District`, and season `Season 31`:
+- [x] **Step 1: Write failing tests** in `BreadcrumbsRequestTest.php`. Register `hyper_competition_type` (hierarchical, `rewrite` slug `competition-types`, public) beside the existing `hyper_season` and `hyper_gizmo` setup, create `Qualifying` with child `District`, and season `Season 31`:
   - `test_archive_trail_includes_type_between_post_type_and_season`: the combined request with `register( array( 'hyper_gizmo' ), array( 'hyper_competition_type' ) )` gives titles `array( 'Gizmos', 'District', 'Season 31' )`, and the District `url` equals `get_term_link( $district )`.
   - `test_singular_trail_uses_assigned_type`: a gizmo with `District` and `Season 31` assigned gives `Gizmos, District, Season 31, <title>`.
   - `test_singular_without_type_has_no_type_crumb`: Review Focus 3.
   - `test_unknown_type_slug_has_no_type_crumb`: Review Focus 4.
   - `test_child_term_yields_single_crumb`: no `Qualifying` title appears.
   - `test_register_without_taxonomies_is_unchanged`: the trail for the existing season-only request equals today's.
-- [ ] **Step 2:** Run `docker compose run --rm php composer test:integration -- --filter BreadcrumbsRequestTest`. Expected: the new tests FAIL (`register()` takes one argument).
-- [ ] **Step 3:** Implement `register()` and the `context()` additions as specified. `register()` passes `$taxonomies` into the per-post-type closure.
-- [ ] **Step 4:** Rerun the Step 2 command, then `composer test:unit` and `composer lint`. Expected: PASS.
-- [ ] **Step 5:** Tick this task's boxes. Commit `plugins/hyperpress-utils/src/Breadcrumbs.php`, the test and this plan with `git commit -m "feat(utils): show extra taxonomy terms in breadcrumbs" -- <paths>`.
+- [x] **Step 2:** Run `docker compose run --rm php composer test:integration -- --filter BreadcrumbsRequestTest`. Expected: the new tests FAIL (`register()` takes one argument).
+- [x] **Step 3:** Implement `register()` and the `context()` additions as specified. `register()` passes `$taxonomies` into the per-post-type closure.
+- [x] **Step 4:** Rerun the Step 2 command, then `composer test:unit` and `composer lint`. Expected: PASS.
+- [x] **Step 5:** Tick this task's boxes. Commit `plugins/hyperpress-utils/src/Breadcrumbs.php`, the test and this plan with `git commit -m "feat(utils): show extra taxonomy terms in breadcrumbs" -- <paths>`.
 
 ### Task 4: Wire `hyperpress-competition`, add the type-only trail
 
@@ -141,7 +141,7 @@
 **Interfaces:**
 - Consumes: `Breadcrumbs::register( array $post_types, array $taxonomies )` from Task 3; `RequestTerm::get()` from Task 2.
 - Produces: `final class HyperPress\Competition\TypeBreadcrumbs` with `public static function register(): void` (adds the `hyperpress_breadcrumbs_content` filter) and `public static function filter( $breadcrumbs )`. The class is named `TypeBreadcrumbs` because `Plugin.php` already imports `HyperPress\Utils\Breadcrumbs`.
-  - When `is_tax( Plugin::TYPE )`, `! is_post_type_archive()` and `RequestTerm::get( Plugin::TYPE )` is a term, append the post-type crumb (title `get_post_type_object( Plugin::POST_TYPE )->labels->name`, `url` `get_post_type_archive_link( Plugin::POST_TYPE )`, classes `item-archive-<class>` / `bread-archive-<class>` as in `Utils\Breadcrumbs::build()`), then a crumb with the term's name and no `url`. Otherwise return `$breadcrumbs` unchanged.
+  - When `is_tax()` (no argument), `! is_post_type_archive()` and `RequestTerm::get( Plugin::TYPE )` is a term, append the post-type crumb (title `get_post_type_object( Plugin::POST_TYPE )->labels->name`, `url` `get_post_type_archive_link( Plugin::POST_TYPE )`, classes `item-archive-<class>` / `bread-archive-<class>` as in `Utils\Breadcrumbs::build()`), then a crumb with the term's name and no `url`. Otherwise return `$breadcrumbs` unchanged.
 
 - [ ] **Step 1: Write failing tests** in `TypeBreadcrumbsTest.php`, loading the competition plugin the way the other plugin integration tests do:
   - `test_type_archive_trail`: `go_to( get_term_link( $district ) )` then `apply_filters( 'hyperpress_breadcrumbs_content', array() )` gives titles `array( 'Competitions', 'District' )`, the first with the competitions archive URL.
@@ -162,7 +162,7 @@
 **Interfaces:**
 - Consumes: `RequestTerm::get()` from Task 2.
 - Produces:
-  - `Banner::register()` accepts an optional `$args['taxonomies']`, a `list<string>` of taxonomy keys. The closure sets `ctx['extra_terms']` to a `list<string>` of term names: for each listed taxonomy, in list order, when `is_tax( $taxonomy )` and `RequestTerm::get( $taxonomy )` returns a term, that term's name. It stays empty on singular requests. The closure's early return changes to: return `$banner` unless `is_singular`, `is_archive` or `extra_terms` is non-empty.
+  - `Banner::register()` accepts an optional `$args['taxonomies']`, a `list<string>` of taxonomy keys. The closure sets `ctx['extra_terms']` to a `list<string>` of term names: for each listed taxonomy, in list order, when `RequestTerm::get( $taxonomy )` returns a term, that term's name (no `is_tax( $taxonomy )` check, see Global Constraints). It stays empty on singular requests. The closure's early return changes to: return `$banner` unless `is_singular`, `is_archive` or `extra_terms` is non-empty.
   - `Banner::apply()` reads `$ctx['extra_terms'] ?? array()`.
     - Taxonomy page (not singular, not a post-type archive, `extra_terms` non-empty): set `type`, `subtitle` and `backgroundColor` as for archives, and set `title` unconditionally to `implode( ' ', extra_terms ) . ' ' . $args['archive_title']`.
     - Post-type archive: in the existing archive-title block, build the names list as `extra_terms` followed by `term_name` when `is_tax_season`. If the list is non-empty and the subtitle is non-empty, the subtitle becomes `subtitle . ' ' . joiner . ' ' . implode( ', ', names )`. Without `extra_terms` the result must equal today's.
