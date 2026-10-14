@@ -161,6 +161,65 @@ final class ArchiveBannerPriorityTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Plain tag, category and date archives keep the generic "Archive" title (the specific fallbacks only set the
+	 * type and the subtitle), so the banner template never falls back to the first post's title.
+	 *
+	 * @dataProvider specific_archives
+	 */
+	public function test_a_plain_specific_archive_gets_the_archive_title_and_keeps_its_subtitle( string $query, string $conditional, string $type ): void {
+		if ( 'author' === $type ) {
+			$this->markTestSkipped( 'The author banner sets its own title; see AuthorBannerTest.' );
+		}
+		$this->go_to( $this->specific_url( $query, null ) );
+		$this->assertTrue( $conditional() );
+
+		$banner = apply_filters(
+			'hyperpress_banner_content',
+			array(
+				'type'     => '',
+				'title'    => '',
+				'subtitle' => '',
+			)
+		);
+
+		$this->assertSame( $type, $banner['type'] );
+		$this->assertSame( 'Archive', $banner['title'] );
+		$this->assertStringStartsWith( ucfirst( $type ) . ': <span class="emphasis">', $banner['subtitle'] );
+	}
+
+	public function test_a_category_archive_heading_is_not_the_first_post_title(): void {
+		$cat_id = self::factory()->category->create( array( 'slug' => 'hp-cat' ) );
+		self::factory()->post->create(
+			array(
+				'post_title'    => 'First Post Title Zed',
+				'post_date'     => '2025-10-14 12:00:00',
+				'post_category' => array( $cat_id ),
+			)
+		);
+		self::factory()->post->create(
+			array(
+				'post_title'    => 'Second Post Title Zed',
+				'post_date'     => '2025-10-13 12:00:00',
+				'post_category' => array( $cat_id ),
+			)
+		);
+		remove_action( 'wp_body_open', 'the_block_template_skip_link' );
+		$this->go_to( home_url( '/?category_name=hp-cat' ) );
+		$this->assertTrue( is_category() );
+		// The Loop is positioned on the first post, as it is when the template renders the banner.
+		$GLOBALS['wp_query']->the_post();
+
+		ob_start();
+		include get_template_directory() . '/template-parts/banner.php';
+		$html = ob_get_clean();
+		wp_reset_postdata();
+
+		$this->assertMatchesRegularExpression( '#<h2 class="entry-title">\s*Archive\s*</h2>#', $html );
+		$this->assertStringNotContainsString( 'Post Title Zed', $html );
+		$this->assertStringContainsString( 'Category: <span class="emphasis">', $html );
+	}
+
+	/**
 	 * @dataProvider specific_archives
 	 */
 	public function test_a_plain_specific_archive_still_gets_its_theme_banner( string $query, string $conditional, string $type ): void {
