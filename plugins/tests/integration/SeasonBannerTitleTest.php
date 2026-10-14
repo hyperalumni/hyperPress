@@ -42,12 +42,14 @@ final class SeasonBannerTitleTest extends WP_UnitTestCase {
 		$this->go_to( '/?hyper_season=season-31&hyper_competition_type=district' );
 	}
 
-	public function test_banner_title_is_the_season_when_type_is_also_queried(): void {
+	public function test_banner_title_is_the_competition_title_when_type_is_also_queried(): void {
 		$this->query_season_and_type();
 
 		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
 
-		$this->assertSame( 'Season 31', $banner['title'] );
+		// Both the season and the competition banner fire on this URL; the competition one names the type and wins (competition-type banner).
+		$this->assertSame( 'District Competitions', $banner['title'] );
+		$this->assertSame( 'competition', $banner['type'] );
 	}
 
 	public function test_utils_banner_term_name_is_the_season_when_type_is_also_queried(): void {

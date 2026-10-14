@@ -74,4 +74,60 @@ final class BannerTest extends TestCase {
 		$banner = Banner::apply( array( 'title' => '' ), $this->args(), $this->ctx( array( 'is_archive' => true, 'is_tax_season' => true, 'term_name' => '2026', 'subtitle' => '' ) ) );
 		$this->assertSame( '', $banner['subtitle'] );
 	}
+
+	public function test_taxonomy_page_title_is_term_names_plus_archive_title(): void {
+		$banner = Banner::apply(
+			array(),
+			$this->args( array( 'type' => 'competition', 'archive_title' => 'Competitions' ) ),
+			$this->ctx( array( 'extra_terms' => array( 'District' ) ) )
+		);
+		$this->assertSame( 'District Competitions', $banner['title'] );
+		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( 'Thank you', $banner['subtitle'] );
+		$this->assertSame( '#c00', $banner['backgroundColor'] );
+	}
+
+	public function test_taxonomy_page_joins_several_terms(): void {
+		$banner = Banner::apply( array(), $this->args( array( 'archive_title' => 'Competitions' ) ), $this->ctx( array( 'extra_terms' => array( 'District', 'Week 1' ) ) ) );
+		$this->assertSame( 'District Week 1 Competitions', $banner['title'] );
+	}
+
+	public function test_taxonomy_page_overwrites_an_existing_title(): void {
+		$banner = Banner::apply( array( 'title' => 'Season 31' ), $this->args( array( 'archive_title' => 'Competitions' ) ), $this->ctx( array( 'extra_terms' => array( 'District' ) ) ) );
+		$this->assertSame( 'District Competitions', $banner['title'] );
+	}
+
+	public function test_archive_subtitle_lists_extra_terms_then_season(): void {
+		$banner = Banner::apply(
+			array( 'title' => '' ),
+			$this->args(),
+			$this->ctx( array( 'is_archive' => true, 'is_tax_season' => true, 'term_name' => 'Season 31', 'subtitle' => 'Subtitle', 'extra_terms' => array( 'District' ) ) )
+		);
+		$this->assertSame( 'Subtitle in District, Season 31', $banner['subtitle'] );
+	}
+
+	public function test_archive_subtitle_with_extra_terms_and_no_season(): void {
+		$banner = Banner::apply(
+			array( 'title' => '' ),
+			$this->args(),
+			$this->ctx( array( 'is_archive' => true, 'subtitle' => 'Subtitle', 'extra_terms' => array( 'District' ) ) )
+		);
+		$this->assertSame( 'Subtitle in District', $banner['subtitle'] );
+		$this->assertSame( 'Sponsors', $banner['title'] );
+	}
+
+	public function test_apply_without_extra_terms_is_unchanged(): void {
+		$ctx    = $this->ctx( array( 'is_archive' => true, 'is_tax_season' => true, 'term_name' => '2026' ) );
+		$banner = Banner::apply( array( 'title' => '' ), $this->args(), $ctx );
+		$this->assertArrayNotHasKey( 'extra_terms', $ctx );
+		$this->assertSame( 'Thank you in 2026', $banner['subtitle'] );
+		$this->assertSame( 'Sponsors', $banner['title'] );
+
+		$same = Banner::apply( array( 'title' => '' ), $this->args(), array_merge( $ctx, array( 'extra_terms' => array() ) ) );
+		$this->assertSame( $banner, $same );
+	}
+
+	public function test_page_with_no_terms_is_unchanged(): void {
+		$this->assertSame( array( 'title' => 'T' ), Banner::apply( array( 'title' => 'T' ), $this->args(), $this->ctx( array( 'extra_terms' => array() ) ) ) );
+	}
 }

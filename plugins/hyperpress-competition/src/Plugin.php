@@ -42,6 +42,7 @@ final class Plugin {
 				'color_mod'     => 'hyperpress_hyper_green',
 				'archive_title' => __( 'Competitions', 'hyperpress' ),
 				'term_joiner'   => 'in',
+				'taxonomies'    => array( self::DISTRICT, self::WEEK, self::TYPE ),
 			)
 		);
 	}

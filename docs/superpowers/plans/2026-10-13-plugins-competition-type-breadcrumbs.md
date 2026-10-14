@@ -1,5 +1,7 @@
 # Plugins: Competition Type Breadcrumbs
 
+> **STATUS: ✅ COMPLETED, except the manual browser checks** (2026-10-13). Commits 2d5f9cb..HEAD; `composer test:unit` (171 tests), `composer test:integration` (953 tests, 6 skipped) and `composer lint` pass. Task 4 Step 5 and Task 5 Step 5 (manual check on hyperalumni) are open: the competition, season and newsletter plugins are inactive on the local site.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Show the competition type as a breadcrumb between the post type and the season (`Competitions > District > Season 31`), give the type-only archive `/competition-types/district/` its own trail (`Competitions > District`), give the competition type, district and week archives a real banner instead of the theme's "Archive" (`District Competitions` plus the competition subtitle), add the queried terms to the banner subtitle on competition archives (`<subtitle> in District, Season 31`), and make it impossible for a second taxonomy in the request to change which season a breadcrumb or banner shows.
@@ -150,7 +152,7 @@
 - [x] **Step 2:** Run `docker compose run --rm php composer test:integration -- --filter TypeBreadcrumbsTest`. Expected: FAIL (class not found).
 - [x] **Step 3:** Create `TypeBreadcrumbs` as specified. In `Plugin::boot()`, change line 27 to `Breadcrumbs::register( array( self::POST_TYPE ), array( self::TYPE ) );` and add `TypeBreadcrumbs::register();` after it. The PSR-4 autoloader in `hyperpress-competition.php` needs no change.
 - [x] **Step 4:** Run `docker compose run --rm php composer test:unit`, `composer test:integration` and `composer lint`. Expected: all pass, with no regressions in the newsletter, sponsor, robot, award or season tests.
-- [ ] **Step 5:** Manual check against the running site (`cd docker/hyperalumni && docker compose --profile local up -d`, WordPress on port 3080). Load `/seasons/season-31/competitions/?hyper_competition_type=district` and `/competition-types/district/`. Confirm the trails and that the crumb links resolve. If the combined request is not treated as a post-type archive, record that and fix `context()`. (deferred to Task 5 Step 5)
+- [ ] **Step 5:** Manual check against the running site (`cd docker/hyperalumni && docker compose --profile local up -d`, WordPress on port 3080). Load `/seasons/season-31/competitions/?hyper_competition_type=district` and `/competition-types/district/`. Confirm the trails and that the crumb links resolve. If the combined request is not treated as a post-type archive, record that and fix `context()`. (deferred to Task 5 Step 5) **Still open:** not confirmed, see Task 5 Step 5.
 - [x] **Step 6:** Tick this task's boxes and commit the competition plugin files, the test and this plan with `git commit -m "feat(competition): breadcrumb trails for competition types" -- <paths>`.
 
 ### Task 5: Banner text for the competition taxonomies
@@ -168,7 +170,7 @@
     - Post-type archive: in the existing archive-title block, build the names list as `extra_terms` followed by `term_name` when `is_tax_season`. If the list is non-empty and the subtitle is non-empty, the subtitle becomes `subtitle . ' ' . joiner . ' ' . implode( ', ', names )`. Without `extra_terms` the result must equal today's.
   - `Plugin::register_banner()` adds `'taxonomies' => array( self::DISTRICT, self::WEEK, self::TYPE )`.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
   - `BannerTest` (pure, using its `args()` and `ctx()` helpers):
     - `test_taxonomy_page_title_is_term_names_plus_archive_title`: `extra_terms = array( 'District' )`, `archive_title` `Competitions`, `is_archive` false: `title` is `District Competitions`, `type` and `subtitle` come from args and ctx.
     - `test_taxonomy_page_joins_several_terms`: `array( 'District', 'Week 1' )` gives `District Week 1 Competitions`.
@@ -184,11 +186,11 @@
     - `test_type_page_with_season_query_keeps_competition_banner`: Review Focus 6.
     - `test_unknown_type_slug_sets_no_banner_type`: Review Focus 7.
     - `test_other_post_type_banner_unchanged`: a newsletter-style registration without `taxonomies` produces the same banner as before for its archive.
-- [ ] **Step 2:** Run `docker compose run --rm php composer test:unit -- --filter BannerTest` and `composer test:integration -- --filter Competition`. Expected: FAIL (unknown `extra_terms` behavior, no taxonomy-page banner).
-- [ ] **Step 3:** Implement `register()` and `apply()` as specified, and update the `register()` and `apply()` docblocks (`taxonomies` arg, `extra_terms` ctx key). Add `'taxonomies'` to `Plugin::register_banner()`.
-- [ ] **Step 4:** Run `composer test:unit`, `composer test:integration` and `composer lint`. Expected: PASS, with no regressions in the newsletter, sponsor, season or theme-facing banner tests.
-- [ ] **Step 5:** Manual check on `hyperalumni` (port 3080): load `/competition-types/district/`, a district archive, a week archive and `/seasons/season-31/competitions/?hyper_competition_type=district`. Confirm the titles and subtitles, that "Archive" is gone, and that `/seasons/season-31/newsletters/` is unchanged. Note the real district and week URL slugs from `hyperpress-competition/src/Plugin.php` (`district_definition()` and the week definition).
-- [ ] **Step 6:** Tick this task's boxes, set the `STATUS: COMPLETED` banner on this plan with the date and commit range, and commit the changed files with `git commit -m "feat(competition): banner text for competition taxonomy archives" -- <paths>`.
+- [x] **Step 2:** Run `docker compose run --rm php composer test:unit -- --filter BannerTest` and `composer test:integration -- --filter Competition`. Expected: FAIL (unknown `extra_terms` behavior, no taxonomy-page banner).
+- [x] **Step 3:** Implement `register()` and `apply()` as specified, and update the `register()` and `apply()` docblocks (`taxonomies` arg, `extra_terms` ctx key). Add `'taxonomies'` to `Plugin::register_banner()`.
+- [x] **Step 4:** Run `composer test:unit`, `composer test:integration` and `composer lint`. Expected: PASS, with no regressions in the newsletter, sponsor, season or theme-facing banner tests.
+- [ ] **Step 5:** Manual check on `hyperalumni` (port 3080): load `/competition-types/district/`, a district archive, a week archive and `/seasons/season-31/competitions/?hyper_competition_type=district`. Confirm the titles and subtitles, that "Archive" is gone, and that `/seasons/season-31/newsletters/` is unchanged. Note the real district and week URL slugs from `hyperpress-competition/src/Plugin.php` (`district_definition()` and the week definition). **Not done (2026-10-13):** the local hyperalumni stack starts, but `hyperpress-season`, `hyperpress-competition` and `hyperpress-newsletter` are inactive there (taxonomies do not exist, `/competition-types/district/` is a 404), and activating them would change site data. Verify after activating them on the local site.
+- [x] **Step 6:** Tick this task's boxes, set the `STATUS: COMPLETED` banner on this plan with the date and commit range, and commit the changed files with `git commit -m "feat(competition): banner text for competition taxonomy archives" -- <paths>`.
 
 ---
 
@@ -197,5 +199,5 @@
 - Coverage: type crumb on the combined archive (Tasks 3-4), on single competitions (Task 3), the type-only page (Task 4), the wrong-term bug in breadcrumbs, banner and season page (Task 2 plus the scan guard), and no behavior change for other plugins (Task 3 `test_register_without_taxonomies_is_unchanged`).
 - Banner coverage: type, district and week archives (Task 5), the combined archive subtitle (Task 5), and no change for newsletter, sponsor or other callers (Task 5 `test_other_post_type_banner_unchanged`).
 - The banner title word order (`District Competitions`) is built by concatenation and the joiners are not translated, which matches the existing code. Revisit if the site is ever translated.
-- A type-only page with `?hyper_season=...` still shows only `Competitions > District`. Add a season crumb later if wanted.
+- A type-only page with `?hyper_season=...` shows the Season plugin's trail (`Seasons > Season 31`) and no type crumb: `TypeBreadcrumbs` defers to the Season plugin there (Task 4 ruling), because otherwise both trails would be appended. The banner on that URL is the competition banner (Task 5, Review Focus 6), so the two disagree on that one unlinked URL shape. Align them later if wanted.
 - The type-only trail uses the term's own name. If the term is named "District" the crumb reads "District"; rename the term in wp-admin if you want "Districts".
