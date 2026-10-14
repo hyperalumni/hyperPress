@@ -10,7 +10,7 @@
 
 **Spec:** none. The design was agreed in conversation (2026-10-13). Background: `docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md` and `docs/superpowers/plans/2026-10-02-plugins-02-shared-utils.md` (where `Breadcrumbs` and `Banner` were built).
 
-**Conventions:** run from `plugins/` with `docker compose run --rm php <cmd>` (never composer on the host). Commit from the repo root with `git add <paths>` then `git commit -m "..." -- <paths>`. Never a bare `git commit`, never `git add -A`. Match the commit style in `git log`.
+**Conventions:** run from `plugins/` with `docker compose run --rm php <cmd>` (never composer on the host). Commit from the repo root with `git add <paths>` then `git commit -m "..." -- <paths>`. Never a bare `git commit`, never `git add -A`. Commit messages use `type(scope): lowercase summary` as in `git log` (for example `fix(sponsor): ...`, `docs(plans): ...`); use the exact messages given in each task.
 
 ## Global Constraints
 
@@ -78,7 +78,7 @@
 - [x] **Step 2:** Run `docker compose run --rm php composer test:unit -- --filter BreadcrumbsTest`. Expected: the new tests FAIL (the term crumb is missing).
 - [x] **Step 3:** In `build()`, loop over `$ctx['terms'] ?? array()` and append one crumb per term after the post-type crumb block and before the season block. Extend the docblock's ctx description with `terms`.
 - [x] **Step 4:** Rerun the Step 2 command. Expected: PASS, including all existing `BreadcrumbsTest` tests.
-- [x] **Step 5:** Tick this task's boxes in this file. Commit: `git add plugins/hyperpress-utils/src/Breadcrumbs.php plugins/tests/unit/Utils/BreadcrumbsTest.php docs/superpowers/plans/2026-10-13-plugins-competition-type-breadcrumbs.md` then `git commit -m "Breadcrumbs: build() emits extra taxonomy term crumbs" -- <same paths>`.
+- [x] **Step 5:** Tick this task's boxes in this file. Commit: `git add plugins/hyperpress-utils/src/Breadcrumbs.php plugins/tests/unit/Utils/BreadcrumbsTest.php docs/superpowers/plans/2026-10-13-plugins-competition-type-breadcrumbs.md` then `git commit -m "feat(utils): emit extra taxonomy term crumbs in Breadcrumbs::build" -- <same paths>`.
 
 ### Task 2: `RequestTerm`, and move the season consumers to it
 
@@ -92,7 +92,7 @@
   - Reads `get_query_var( $taxonomy )`. For a hierarchical taxonomy it takes the last path segment (`wp_basename`). Returns `get_term_by( 'slug', $slug, $taxonomy )` when that is a `WP_Term`, else `null` (empty var, unknown slug, unregistered taxonomy, `WP_Error`, `false`).
   - It does not check `is_tax()`. Callers keep their existing `is_tax()` guard.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
   - `RequestTermTest`, with `hyper_season` and a hierarchical `hyper_competition_type` (`Qualifying` with child `District`) registered:
     - `test_returns_term_for_query_var`: after `go_to( '/?hyper_season=season-31' )`, `RequestTerm::get( 'hyper_season' )` is the `Season 31` term.
     - `test_each_taxonomy_gets_its_own_term`: after `go_to( '/?hyper_season=season-31&hyper_competition_type=district' )`, `get( 'hyper_season' )->slug` is `season-31` and `get( 'hyper_competition_type' )->slug` is `district`. Repeat with the terms created in the opposite order (Review Focus 1).
@@ -101,11 +101,11 @@
   - `BreadcrumbsRequestTest`: `test_season_crumb_is_season_when_type_also_queried`. On `go_to( '/?post_type=hyper_gizmo&hyper_season=season-31&hyper_competition_type=district' )` with `Breadcrumbs::register( array( 'hyper_gizmo' ) )`, the last title is `Season 31`.
   - Banner and Season tests: on a request with both taxonomies queried, `Banner`'s `term_name` and `SeasonBanner`'s title are `Season 31`, and `Season\Breadcrumbs::filter` yields `Seasons`, `Season 31` for a season-only page request.
   - `NoQueriedObjectTest`: scan every `plugins/hyperpress-*/src/**/*.php` file. Fail if any contains `get_queried_object(` other than `hyperpress-utils/src/RequestTerm.php`. Before writing the allowlist, run `grep -rn "get_queried_object" plugins/hyperpress-*/src` and convert each remaining hit that reads a taxonomy term to `RequestTerm`. A hit that does not read a term (for example an author or a post) goes in an explicit per-file allowlist inside the test with a one-line reason.
-- [ ] **Step 2:** Run `docker compose run --rm php composer test:integration -- --filter "RequestTerm|BreadcrumbsRequestTest|Banner|Season"` and `composer test:unit -- --filter NoQueriedObjectTest`. Expected: FAIL (`RequestTerm` does not exist; the scan finds the four current callers).
-- [ ] **Step 3:** Create `RequestTerm::get()` as specified. Replace the four `get_queried_object()` reads: `Utils\Breadcrumbs::context()` (the `elseif ( is_tax( self::SEASON_TAXONOMY ) )` branch) and `Utils\Banner` take `RequestTerm::get( self::SEASON_TAXONOMY )`, and the two Season classes take `RequestTerm::get( 'hyper_season' )`. Keep each class's existing `is_tax()` and `! is_post_type_archive()` guards.
-- [ ] **Step 4:** Rerun the Step 2 commands, then `composer test:unit` and `composer test:integration`. Expected: PASS, including every existing breadcrumb, banner and season test.
-- [ ] **Step 5:** `docker compose run --rm php composer lint`. Expected: no errors.
-- [ ] **Step 6:** Tick this task's boxes. Commit the changed and created PHP files, the tests and this plan with `git commit -m "Utils: RequestTerm replaces get_queried_object for taxonomy terms" -- <paths>`.
+- [x] **Step 2:** Run `docker compose run --rm php composer test:integration -- --filter "RequestTerm|BreadcrumbsRequestTest|Banner|Season"` and `composer test:unit -- --filter NoQueriedObjectTest`. Expected: FAIL (`RequestTerm` does not exist; the scan finds the four current callers).
+- [x] **Step 3:** Create `RequestTerm::get()` as specified. Replace the four `get_queried_object()` reads: `Utils\Breadcrumbs::context()` (the `elseif ( is_tax( self::SEASON_TAXONOMY ) )` branch) and `Utils\Banner` take `RequestTerm::get( self::SEASON_TAXONOMY )`, and the two Season classes take `RequestTerm::get( 'hyper_season' )`. Keep each class's existing `is_tax()` and `! is_post_type_archive()` guards.
+- [x] **Step 4:** Rerun the Step 2 commands, then `composer test:unit` and `composer test:integration`. Expected: PASS, including every existing breadcrumb, banner and season test.
+- [x] **Step 5:** `docker compose run --rm php composer lint`. Expected: no errors.
+- [x] **Step 6:** Tick this task's boxes. Commit the changed and created PHP files, the tests and this plan with `git commit -m "refactor(utils): resolve archive terms from their own query var" -- <paths>`.
 
 ### Task 3: Breadcrumbs for extra taxonomies
 
@@ -129,7 +129,7 @@
 - [ ] **Step 2:** Run `docker compose run --rm php composer test:integration -- --filter BreadcrumbsRequestTest`. Expected: the new tests FAIL (`register()` takes one argument).
 - [ ] **Step 3:** Implement `register()` and the `context()` additions as specified. `register()` passes `$taxonomies` into the per-post-type closure.
 - [ ] **Step 4:** Rerun the Step 2 command, then `composer test:unit` and `composer lint`. Expected: PASS.
-- [ ] **Step 5:** Tick this task's boxes. Commit `plugins/hyperpress-utils/src/Breadcrumbs.php`, the test and this plan with `git commit -m "Breadcrumbs: optional extra taxonomies between post type and season" -- <paths>`.
+- [ ] **Step 5:** Tick this task's boxes. Commit `plugins/hyperpress-utils/src/Breadcrumbs.php`, the test and this plan with `git commit -m "feat(utils): show extra taxonomy terms in breadcrumbs" -- <paths>`.
 
 ### Task 4: Wire `hyperpress-competition`, add the type-only trail
 
@@ -151,7 +151,7 @@
 - [ ] **Step 3:** Create `TypeBreadcrumbs` as specified. In `Plugin::boot()`, change line 27 to `Breadcrumbs::register( array( self::POST_TYPE ), array( self::TYPE ) );` and add `TypeBreadcrumbs::register();` after it. The PSR-4 autoloader in `hyperpress-competition.php` needs no change.
 - [ ] **Step 4:** Run `docker compose run --rm php composer test:unit`, `composer test:integration` and `composer lint`. Expected: all pass, with no regressions in the newsletter, sponsor, robot, award or season tests.
 - [ ] **Step 5:** Manual check against the running site (`cd docker/hyperalumni && docker compose --profile local up -d`, WordPress on port 3080). Load `/seasons/season-31/competitions/?hyper_competition_type=district` and `/competition-types/district/`. Confirm the trails and that the crumb links resolve. If the combined request is not treated as a post-type archive, record that and fix `context()`.
-- [ ] **Step 6:** Tick this task's boxes and commit the competition plugin files, the test and this plan with `git commit -m "Competition: type breadcrumb on archives, singles and the type archive" -- <paths>`.
+- [ ] **Step 6:** Tick this task's boxes and commit the competition plugin files, the test and this plan with `git commit -m "feat(competition): breadcrumb trails for competition types" -- <paths>`.
 
 ### Task 5: Banner text for the competition taxonomies
 
@@ -188,7 +188,7 @@
 - [ ] **Step 3:** Implement `register()` and `apply()` as specified, and update the `register()` and `apply()` docblocks (`taxonomies` arg, `extra_terms` ctx key). Add `'taxonomies'` to `Plugin::register_banner()`.
 - [ ] **Step 4:** Run `composer test:unit`, `composer test:integration` and `composer lint`. Expected: PASS, with no regressions in the newsletter, sponsor, season or theme-facing banner tests.
 - [ ] **Step 5:** Manual check on `hyperalumni` (port 3080): load `/competition-types/district/`, a district archive, a week archive and `/seasons/season-31/competitions/?hyper_competition_type=district`. Confirm the titles and subtitles, that "Archive" is gone, and that `/seasons/season-31/newsletters/` is unchanged. Note the real district and week URL slugs from `hyperpress-competition/src/Plugin.php` (`district_definition()` and the week definition).
-- [ ] **Step 6:** Tick this task's boxes, set the `STATUS: COMPLETED` banner on this plan with the date and commit range, and commit the changed files with `git commit -m "Banner: competition taxonomy archives and queried terms in the subtitle" -- <paths>`.
+- [ ] **Step 6:** Tick this task's boxes, set the `STATUS: COMPLETED` banner on this plan with the date and commit range, and commit the changed files with `git commit -m "feat(competition): banner text for competition taxonomy archives" -- <paths>`.
 
 ---
 

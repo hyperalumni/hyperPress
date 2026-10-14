@@ -1,6 +1,8 @@
 <?php
 namespace HyperPress\Season;
 
+use HyperPress\Utils\RequestTerm;
+
 defined( 'ABSPATH' ) || exit;
 
 final class SeasonBanner {
@@ -12,14 +14,15 @@ final class SeasonBanner {
 	public static function filter( $banner ) {
 		$hyper_season = 'season';
 
-		if ( is_tax( 'hyper_season' ) && ! is_post_type_archive() ) {
+		// is_tax( $taxonomy ) only matches the one taxonomy WP picks as the queried object, so ask the season itself.
+		$term = is_tax() ? RequestTerm::get( 'hyper_season' ) : null;
+		if ( $term && ! is_post_type_archive() ) {
 			$banner['type']            = $hyper_season;
 			$banner['backgroundColor'] = get_theme_mod( 'hyperpress_gear_blue' );
 
 			if ( empty( $banner['title'] ) ) {
 				$banner['title'] = __( 'Season', 'hyperpress' );
-				$term            = get_queried_object();
-				if ( $term instanceof \WP_Term && ! empty( $term->name ) ) {
+				if ( ! empty( $term->name ) ) {
 					$banner['title'] = $term->name;
 				}
 			}

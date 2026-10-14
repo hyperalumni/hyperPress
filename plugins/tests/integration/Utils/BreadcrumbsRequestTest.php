@@ -45,6 +45,23 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '/gizmos', $trail[1]['url'] );
 	}
 
+	public function test_season_crumb_is_season_when_type_also_queried(): void {
+		$registered = ! taxonomy_exists( 'hyper_competition_type' );
+		if ( $registered ) {
+			register_taxonomy( 'hyper_competition_type', array( 'hyper_gizmo' ), array( 'public' => true, 'hierarchical' => true ) );
+		}
+		// Created last, so get_queried_object() could hand back either term.
+		self::factory()->term->create( array( 'taxonomy' => 'hyper_season', 'name' => 'Season 31', 'slug' => 'season-31' ) );
+		self::factory()->term->create( array( 'taxonomy' => 'hyper_competition_type', 'name' => 'District', 'slug' => 'district' ) );
+
+		$this->go_to( '/?post_type=hyper_gizmo&hyper_season=season-31&hyper_competition_type=district' );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$this->assertSame( 'Season 31', end( $trail )['title'] );
+		if ( $registered ) {
+			unregister_taxonomy( 'hyper_competition_type' );
+		}
+	}
+
 	public function test_debug_output_is_gone(): void {
 		$this->go_to( get_post_type_archive_link( 'hyper_gizmo' ) );
 		ob_start();

@@ -26,8 +26,9 @@ final class Banner {
 		add_filter(
 			'hyperpress_banner_content',
 			static function ( $banner ) use ( $post_type, $args ) {
-				$is_tax_season = is_tax( self::SEASON_TAXONOMY );
-				$queried       = $is_tax_season ? get_queried_object() : null;
+				// is_tax( $taxonomy ) only matches the one taxonomy WP picks as the queried object, so ask the season itself.
+				$queried       = is_tax() ? RequestTerm::get( self::SEASON_TAXONOMY ) : null;
+				$is_tax_season = null !== $queried;
 				$subtitle      = call_user_func( $args['subtitle'] );
 				$ctx           = array(
 					'is_singular'   => is_singular( $post_type ),
@@ -35,7 +36,7 @@ final class Banner {
 					'is_tax_season' => $is_tax_season,
 					'subtitle'      => is_scalar( $subtitle ) ? (string) $subtitle : '',
 					'color'         => get_theme_mod( $args['color_mod'] ),
-					'term_name'     => $queried instanceof \WP_Term ? $queried->name : '',
+					'term_name'     => $queried ? $queried->name : '',
 				);
 				if ( ! $ctx['is_singular'] && ! $ctx['is_archive'] ) {
 					return $banner;

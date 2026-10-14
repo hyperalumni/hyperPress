@@ -119,7 +119,7 @@ final class SeasonGuardsTest extends WP_UnitTestCase {
 
 		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
 		$this->assertIsArray( $banner );
-		$this->assertSame( 'Season', $banner['title'], 'falls back to the generic title' );
+		$this->assertSame( '2026', $banner['title'], 'the term comes from the query var, not the queried object' );
 	}
 
 	public function test_banner_filter_accepts_a_null_starting_value(): void {

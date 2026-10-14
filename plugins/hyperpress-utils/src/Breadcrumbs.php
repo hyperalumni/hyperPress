@@ -115,9 +115,9 @@ final class Breadcrumbs {
 				usort( $terms, static fn( $a, $b ) => strnatcasecmp( $b->name, $a->name ) );
 				$term = $terms[0];
 			}
-		} elseif ( is_tax( self::SEASON_TAXONOMY ) ) {
-			$queried = get_queried_object();
-			$term    = $queried instanceof \WP_Term ? $queried : null;
+		} elseif ( is_tax() ) {
+			// is_tax( $taxonomy ) only matches the one taxonomy WP picks as the queried object, so ask the season itself.
+			$term = RequestTerm::get( self::SEASON_TAXONOMY );
 		}
 
 		$season = null;
