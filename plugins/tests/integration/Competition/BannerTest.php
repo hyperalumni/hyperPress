@@ -199,13 +199,13 @@ final class BannerTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Register the competition banner after a stand-in for the theme's `hyperpress_banner_archive` filter.
+	 * Register the competition banner next to a stand-in for the theme's `hyperpress_banner_archive` filter.
 	 *
-	 * The theme's library files load before `init`, the plugins register their banner filters at `init`, both at
-	 * priority 10, so on a live site the theme's filter runs first: when no banner type is set yet it sets
-	 * type 'archive' and title 'Archive' on any archive (themes/hyperpress-foundation/library/banner/archive.php).
+	 * The plugins register their banner filters at priority 10 and the theme's generic archive fallback runs at
+	 * priority 90, after them: when no banner type is set yet it sets type 'archive' and title 'Archive' on any
+	 * archive (themes/hyperpress-foundation/library/banner/archive.php).
 	 */
-	private function register_banner_after_theme_filter(): void {
+	private function register_banner_with_theme_filter(): void {
 		remove_all_filters( 'hyperpress_banner_content' );
 		add_filter(
 			'hyperpress_banner_content',
@@ -215,7 +215,8 @@ final class BannerTest extends WP_UnitTestCase {
 					$banner['title'] = 'Archive';
 				}
 				return $banner;
-			}
+			},
+			90
 		);
 		Plugin::register_banner();
 	}
@@ -231,7 +232,7 @@ final class BannerTest extends WP_UnitTestCase {
 	public function test_combined_archive_keeps_the_competition_title_over_the_theme_archive_title(): void {
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
 		$season   = $this->term( 'Season 31', 'season-31', 'hyper_season' );
-		$this->register_banner_after_theme_filter();
+		$this->register_banner_with_theme_filter();
 
 		$this->go_to( '/?post_type=' . Plugin::POST_TYPE . '&hyper_season=' . $season->slug . '&' . Plugin::TYPE . '=' . $district->slug );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
@@ -245,7 +246,7 @@ final class BannerTest extends WP_UnitTestCase {
 		$this->term( 'District', 'district', Plugin::TYPE );
 		$this->term( 'Season 31', 'season-31', 'hyper_season' );
 		$this->use_pretty_permalinks();
-		$this->register_banner_after_theme_filter();
+		$this->register_banner_with_theme_filter();
 
 		$this->go_to( home_url( '/seasons/season-31/competitions/district/' ) );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
@@ -259,7 +260,7 @@ final class BannerTest extends WP_UnitTestCase {
 	public function test_season_competitions_archive_keeps_the_competition_title_over_the_theme_archive_title(): void {
 		$this->term( 'Season 31', 'season-31', 'hyper_season' );
 		$this->use_pretty_permalinks();
-		$this->register_banner_after_theme_filter();
+		$this->register_banner_with_theme_filter();
 
 		$this->go_to( home_url( '/seasons/season-31/competitions/' ) );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
@@ -272,7 +273,7 @@ final class BannerTest extends WP_UnitTestCase {
 
 	public function test_plain_competitions_archive_keeps_the_competition_title_over_the_theme_archive_title(): void {
 		$this->use_pretty_permalinks();
-		$this->register_banner_after_theme_filter();
+		$this->register_banner_with_theme_filter();
 
 		$this->go_to( home_url( '/competitions/' ) );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
@@ -285,7 +286,7 @@ final class BannerTest extends WP_UnitTestCase {
 
 	public function test_type_taxonomy_page_is_not_affected_by_the_theme_archive_title(): void {
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
-		$this->register_banner_after_theme_filter();
+		$this->register_banner_with_theme_filter();
 
 		$this->go_to( get_term_link( $district ) );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
@@ -299,7 +300,7 @@ final class BannerTest extends WP_UnitTestCase {
 		$season   = $this->term( 'Season 31', 'season-31', 'hyper_season' );
 		// The competition default: no banner subtitle set, so there is nothing to append the terms to.
 		update_option( Settings::OPTION, array() );
-		$this->register_banner_after_theme_filter();
+		$this->register_banner_with_theme_filter();
 
 		$this->go_to( '/?post_type=' . Plugin::POST_TYPE . '&hyper_season=' . $season->slug . '&' . Plugin::TYPE . '=' . $district->slug );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
@@ -319,26 +320,25 @@ final class BannerTest extends WP_UnitTestCase {
 		Banner::register(
 			'hyper_newsletter',
 			array(
-				'type'                     => 'newsletter',
-				'subtitle'                 => static fn() => 'News',
-				'color_mod'                => 'hyperpress_hyper_orange',
-				'archive_title'            => 'Newsletters',
-				'term_joiner'              => 'from',
-				'always_set_archive_title' => true,
+				'type'          => 'newsletter',
+				'subtitle'      => static fn() => 'News',
+				'color_mod'     => 'hyperpress_hyper_orange',
+				'archive_title' => 'Newsletters',
+				'term_joiner'   => 'from',
 			)
 		);
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
 		$season   = $this->term( 'Season 31', 'season-31', 'hyper_season' );
 
 		$this->go_to( '/?post_type=hyper_newsletter&hyper_season=' . $season->slug );
-		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Preset' ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
 		$this->assertSame( 'Newsletters', $banner['title'] );
 		$this->assertSame( 'newsletter', $banner['type'] );
 		$this->assertSame( 'News from Season 31', $banner['subtitle'] );
 
 		// A competition taxonomy in the request does not leak into a banner registered without `taxonomies`.
 		$this->go_to( '/?post_type=hyper_newsletter&' . Plugin::TYPE . '=' . $district->slug );
-		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => 'Preset' ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
 		$this->assertSame( 'newsletter', $banner['type'] );
 		$this->assertSame( 'Newsletters', $banner['title'] );
 		$this->assertSame( 'News', $banner['subtitle'] );
