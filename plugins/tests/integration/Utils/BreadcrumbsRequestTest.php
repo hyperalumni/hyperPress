@@ -47,6 +47,7 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 		}
 		$GLOBALS['wp_query']->queried_object    = null;
 		$GLOBALS['wp_query']->queried_object_id = 0;
+		remove_all_filters( 'hyperpress_breadcrumbs_term_url' );
 		unregister_post_type( 'hyper_gizmo' );
 		parent::tear_down();
 	}
@@ -199,6 +200,109 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 		$this->assertSame( array( 'Gizmos', 'District' ), array_column( $trail, 'title' ) );
 		$this->assertSame( '', $trail[1]['url'] );
+	}
+
+	public function test_term_url_filter_gets_url_term_post_type_and_season_on_an_archive(): void {
+		list( , $district, $season ) = $this->make_terms();
+		$this->register_with_type();
+		$calls = array();
+		add_filter(
+			'hyperpress_breadcrumbs_term_url',
+			static function ( $url, $term, $post_type, $season_term ) use ( &$calls ) {
+				$calls[] = array( $url, $term, $post_type, $season_term );
+				return '/rewritten/' . $term->slug . '/';
+			},
+			10,
+			4
+		);
+
+		$this->go_to( '/?post_type=hyper_gizmo&hyper_season=season-31&hyper_competition_type=district' );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$this->assertCount( 1, $calls );
+		$this->assertSame( get_term_link( $district ), $calls[0][0] );
+		$this->assertInstanceOf( \WP_Term::class, $calls[0][1] );
+		$this->assertSame( $district->term_id, $calls[0][1]->term_id );
+		$this->assertSame( 'hyper_gizmo', $calls[0][2] );
+		$this->assertInstanceOf( \WP_Term::class, $calls[0][3] );
+		$this->assertSame( $season->term_id, $calls[0][3]->term_id );
+		$this->assertSame( '/rewritten/district/', $trail[2]['url'] );
+		// The season crumb is not an extra term: its link is not filtered.
+		$this->assertStringContainsString( '/gizmos', $trail[1]['url'] );
+		$this->assertStringNotContainsString( 'rewritten', $trail[1]['url'] );
+	}
+
+	public function test_term_url_filter_gets_url_term_post_type_and_season_on_a_singular(): void {
+		list( , $district, $season ) = $this->make_terms();
+		$this->register_with_type();
+		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_gizmo', 'post_title' => 'Widget One' ) );
+		wp_set_object_terms( $post_id, array( $district->term_id ), 'hyper_competition_type' );
+		wp_set_object_terms( $post_id, array( $season->term_id ), 'hyper_season' );
+		$calls = array();
+		add_filter(
+			'hyperpress_breadcrumbs_term_url',
+			static function ( $url, $term, $post_type, $season_term ) use ( &$calls ) {
+				$calls[] = array( $url, $term, $post_type, $season_term );
+				return '/rewritten/';
+			},
+			10,
+			4
+		);
+
+		$this->go_to( get_permalink( $post_id ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$this->assertCount( 1, $calls );
+		$this->assertSame( get_term_link( $district ), $calls[0][0] );
+		$this->assertSame( $district->term_id, $calls[0][1]->term_id );
+		$this->assertSame( 'hyper_gizmo', $calls[0][2] );
+		$this->assertSame( $season->term_id, $calls[0][3]->term_id );
+		$this->assertSame( '/rewritten/', $trail[2]['url'] );
+	}
+
+	public function test_term_url_filter_gets_a_null_season_without_one(): void {
+		$this->make_terms();
+		$this->register_with_type();
+		$seen = array();
+		add_filter(
+			'hyperpress_breadcrumbs_term_url',
+			static function ( $url, $term, $post_type, $season_term ) use ( &$seen ) {
+				$seen[] = $season_term;
+				return $url;
+			},
+			10,
+			4
+		);
+
+		$this->go_to( '/?post_type=hyper_gizmo&hyper_competition_type=district' );
+		apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$this->assertSame( array( null ), $seen );
+	}
+
+	public function test_term_url_filter_result_must_be_a_non_empty_string(): void {
+		list( , $district ) = $this->make_terms();
+		$this->register_with_type();
+
+		foreach ( array( '', null, false, array( 'x' ), 5 ) as $bad ) {
+			remove_all_filters( 'hyperpress_breadcrumbs_term_url' );
+			add_filter( 'hyperpress_breadcrumbs_term_url', static fn() => $bad );
+
+			$this->go_to( '/?post_type=hyper_gizmo&hyper_season=season-31&hyper_competition_type=district' );
+			$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+			$this->assertSame( get_term_link( $district ), $trail[2]['url'], 'Filter returned ' . wp_json_encode( $bad ) );
+		}
+	}
+
+	public function test_term_url_without_a_filter_is_the_term_link(): void {
+		list( , $district ) = $this->make_terms();
+		$this->register_with_type();
+
+		$this->go_to( '/?post_type=hyper_gizmo&hyper_season=season-31&hyper_competition_type=district' );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$this->assertSame( get_term_link( $district ), $trail[2]['url'] );
 	}
 
 	public function test_debug_output_is_gone(): void {

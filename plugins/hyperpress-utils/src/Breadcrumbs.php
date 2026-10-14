@@ -3,6 +3,18 @@ namespace HyperPress\Utils;
 
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
+/**
+ * Breadcrumb trails for a plugin post type's archive and singular pages.
+ *
+ * Filter `hyperpress_breadcrumbs_term_url` lets a plugin rewrite the link of an extra term crumb (not the
+ * season crumb), for example to a season-scoped archive:
+ *
+ *     apply_filters( 'hyperpress_breadcrumbs_term_url', string $url, \WP_Term $term, string $post_type, ?\WP_Term $season )
+ *
+ * `$url` is the term's `get_term_link()` ('' when that is an error); `$season` is the season term used for the
+ * season crumb, or null when the request has none. The result is used only when it is a non-empty string,
+ * otherwise `$url` stays.
+ */
 final class Breadcrumbs {
 
 	public const SEASON_TAXONOMY = 'hyper_season';
@@ -124,7 +136,8 @@ final class Breadcrumbs {
 			$term = RequestTerm::get( self::SEASON_TAXONOMY );
 		}
 
-		$season = null;
+		$season_term = $term;
+		$season      = null;
 		if ( $term ) {
 			$link   = get_term_link( $term );
 			$season = array(
@@ -135,7 +148,7 @@ final class Breadcrumbs {
 		}
 
 		return array(
-			'terms'       => self::extra_terms( $taxonomies, $is_singular ),
+			'terms'       => self::extra_terms( $taxonomies, $is_singular, $post_type, $season_term ),
 			'post_type'   => $post_type,
 			'label'       => (string) ( $object->labels->name ?? '' ),
 			'archive_url' => (string) get_post_type_archive_link( $post_type ),
@@ -149,11 +162,13 @@ final class Breadcrumbs {
 	/**
 	 * One crumb per registered extra taxonomy that has a term for this request.
 	 *
-	 * @param string[] $taxonomies  Taxonomy keys.
-	 * @param bool     $is_singular Whether the request is a single post.
+	 * @param string[]      $taxonomies  Taxonomy keys.
+	 * @param bool          $is_singular Whether the request is a single post.
+	 * @param string        $post_type   Post type key.
+	 * @param \WP_Term|null $season_term The season term used for the season crumb, or null.
 	 * @return array<int, array{name: string, slug: string, url: string}>
 	 */
-	private static function extra_terms( array $taxonomies, bool $is_singular ): array {
+	private static function extra_terms( array $taxonomies, bool $is_singular, string $post_type, ?\WP_Term $season_term ): array {
 		$crumbs = array();
 		foreach ( $taxonomies as $taxonomy ) {
 			if ( ! taxonomy_exists( $taxonomy ) ) {
@@ -176,11 +191,23 @@ final class Breadcrumbs {
 				continue;
 			}
 
-			$link     = get_term_link( $term );
+			$link = get_term_link( $term );
+			$url  = is_wp_error( $link ) ? '' : $link;
+
+			/**
+			 * Filters the link of an extra term crumb.
+			 *
+			 * @param string        $url       The term's archive link, or '' when it has none.
+			 * @param \WP_Term      $term      The crumb's term.
+			 * @param string        $post_type Post type key.
+			 * @param \WP_Term|null $season    The season term used for the season crumb, or null.
+			 */
+			$filtered = apply_filters( 'hyperpress_breadcrumbs_term_url', $url, $term, $post_type, $season_term );
+
 			$crumbs[] = array(
 				'name' => $term->name,
 				'slug' => $term->slug,
-				'url'  => is_wp_error( $link ) ? '' : $link,
+				'url'  => ( is_string( $filtered ) && '' !== $filtered ) ? $filtered : $url,
 			);
 		}
 		return $crumbs;
