@@ -37,7 +37,7 @@ final class Labels {
 				'title'              => 'Week',
 				'callback'           => array( self::class, 'week_label' ),
 				'default_post_types' => \HyperPress\Utils\TaxonomyPostTypes::for_taxonomy( Plugin::WEEK ),
-				'priority'           => 37,
+				'priority'           => 38,
 			)
 		);
 		$registry->add(
@@ -47,7 +47,7 @@ final class Labels {
 				'title'              => 'Competition Type',
 				'callback'           => array( self::class, 'type_label' ),
 				'default_post_types' => \HyperPress\Utils\TaxonomyPostTypes::for_taxonomy( Plugin::TYPE ),
-				'priority'           => 38,
+				'priority'           => 37,
 			)
 		);
 	}

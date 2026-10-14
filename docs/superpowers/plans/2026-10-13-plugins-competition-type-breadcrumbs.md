@@ -265,3 +265,5 @@ Moving the theme's specific archive fallbacks to priority 80 (a6055de) dropped t
 ## Outcome (2026-10-14, blog-related banners default to the Posts page colour)
 
 The generic archive and the category, tag, year, month, day and author archive banners now default to the Posts page's `hyperpress_banner_background_color` through a new theme filter, `hyperpress_banner_blog_color` (`library/banner/blog-color.php`, priority 95, after the specific fallbacks at 80 and the generic one at 90). It is keyed on the banner type, so plugin banner types and search, 404, front, page and attachment are never touched, and a colour already set by a plugin or earlier filter is kept. `library/banner/archive.php` no longer sets the colour itself (the note above that says it sets the type and the blog page colour describes the state before this change); `blog.php` and `post.php` still set theirs. Test: theme `BlogBannerColorTest`.
+
+Note (2026-10-14): the `competition.type` label-registry entry now has priority 37 and `week.week` priority 38, so the chips read Season | District | Type | Week; nothing else about the entry changed.

@@ -78,7 +78,7 @@ final class WeekLabelTest extends WP_UnitTestCase {
 
 		$this->assertSame( 'Week', $definition['group'] );
 		$this->assertSame( 'Week', $definition['title'] );
-		$this->assertSame( 37, $definition['priority'] );
+		$this->assertSame( 38, $definition['priority'] );
 		$this->assertSame( array( 'hyper_competition' ), $definition['default_post_types'] );
 		$this->assertTrue( Resolver::default_enabled( 'hyper_competition' ) );
 	}
