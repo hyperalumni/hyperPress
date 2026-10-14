@@ -26,7 +26,7 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'ensure_capabilities' ), 20 );
 		add_action( 'init', array( self::class, 'seed_terms' ), 20 );
 		Breadcrumbs::register( array( self::POST_TYPE ), array( self::TYPE ) );
-		TypeBreadcrumbs::register();
+		TaxonomyBreadcrumbs::register();
 		Rewrite::register();
 		NotFound::register( array( self::TYPE, self::DISTRICT, self::WEEK ) );
 		add_action( 'init', array( self::class, 'register_banner' ) );
