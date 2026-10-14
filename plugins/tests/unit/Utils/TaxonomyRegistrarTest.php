@@ -157,4 +157,43 @@ final class TaxonomyRegistrarTest extends TestCase {
 			$this->assertStringNotContainsString( '<b>', $e->getMessage() );
 		}
 	}
+
+	public function test_labels_override_wins_over_the_generated_label(): void {
+		$generated = TaxonomyRegistrar::build( $this->definition() )['args']['labels'];
+		$labels    = TaxonomyRegistrar::build( $this->definition( array( 'labels' => array( 'singular_name' => 'Kind' ) ) ) )['args']['labels'];
+
+		$this->assertSame( 'Kind', $labels['singular_name'] );
+		$this->assertSame( 'Add New District', $labels['add_new_item'] );
+		$this->assertSame( array_diff_key( $generated, array( 'singular_name' => true ) ), array_diff_key( $labels, array( 'singular_name' => true ) ) );
+	}
+
+	public function test_labels_override_ignores_non_string_values(): void {
+		$generated = TaxonomyRegistrar::build( $this->definition() )['args']['labels'];
+		$labels    = TaxonomyRegistrar::build(
+			$this->definition(
+				array(
+					'labels' => array(
+						'singular_name' => '',
+						'edit_item'     => array( 'x' ),
+						'view_item'     => 5,
+						'update_item'   => null,
+						'extra_label'   => 'Kept',
+					),
+				)
+			)
+		)['args']['labels'];
+
+		$this->assertSame( $generated['singular_name'], $labels['singular_name'] );
+		$this->assertSame( $generated['edit_item'], $labels['edit_item'] );
+		$this->assertSame( $generated['view_item'], $labels['view_item'] );
+		$this->assertSame( $generated['update_item'], $labels['update_item'] );
+		$this->assertSame( 'Kept', $labels['extra_label'] );
+	}
+
+	public function test_without_a_labels_override_the_generated_labels_are_unchanged(): void {
+		$this->assertSame(
+			\HyperPress\Utils\Labels::taxonomy( 'District', 'Districts' ),
+			TaxonomyRegistrar::build( $this->definition() )['args']['labels']
+		);
+	}
 }

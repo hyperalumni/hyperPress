@@ -65,7 +65,11 @@ final class TaxonomyRegistrar {
 	 *
 	 * Required: key, singular, plural, and the `slug` key (null disables rewrite).
 	 * Optional: description, public, publicly_queryable, hierarchical, show_tagcloud, show_in_quick_edit,
-	 * show_admin_column, meta_box_cb, locked, args (overrides, win last).
+	 * show_admin_column, meta_box_cb, locked, labels, args (overrides, win last).
+	 *
+	 * `labels` (label key => string) is merged over the labels generated from singular and plural, so a
+	 * definition can change one label (e.g. `singular_name`) without touching the rest. Empty and
+	 * non-string values are ignored.
 	 *
 	 * `locked` (default false) is for taxonomies whose terms are managed only by code (TermSeeder):
 	 * edit_terms and delete_terms map to do_not_allow, so nobody can add, edit or delete terms in the
@@ -90,6 +94,13 @@ final class TaxonomyRegistrar {
 			throw new InvalidArgumentException( esc_html( "Invalid taxonomy key '$key': use hyper_ + lowercase letters, digits, underscores, max 32 characters." ) );
 		}
 
+		$labels = Labels::taxonomy( $definition['singular'], $definition['plural'] );
+		foreach ( (array) ( $definition['labels'] ?? array() ) as $label_key => $label ) {
+			if ( is_string( $label ) && '' !== $label ) {
+				$labels[ $label_key ] = $label;
+			}
+		}
+
 		$rewrite = null === $definition['slug']
 			? false
 			: array(
@@ -101,7 +112,7 @@ final class TaxonomyRegistrar {
 		$derived = array(
 			'label'              => $definition['plural'],
 			'description'        => $definition['description'] ?? '',
-			'labels'             => Labels::taxonomy( $definition['singular'], $definition['plural'] ),
+			'labels'             => $labels,
 			'public'             => $definition['public'] ?? true,
 			'publicly_queryable' => $definition['publicly_queryable'] ?? true,
 			'hierarchical'       => $definition['hierarchical'] ?? true,
