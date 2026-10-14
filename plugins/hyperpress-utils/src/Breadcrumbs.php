@@ -25,10 +25,11 @@ final class Breadcrumbs {
 	}
 
 	/**
-	 * Pure: append the post type, season and current-item crumbs.
+	 * Pure: append the post type, extra term, season and current-item crumbs.
 	 *
 	 * @param array $breadcrumbs Existing crumbs.
-	 * @param array $ctx         post_type, label, archive_url, is_singular, season (name, slug, url) or null, title, id.
+	 * @param array $ctx         post_type, label, archive_url, is_singular, season (name, slug, url) or null, title, id,
+	 *                           and optionally terms (a list of name, slug, url), shown between the post type and season.
 	 */
 	public static function build( array $breadcrumbs, array $ctx ): array {
 		$label = (string) $ctx['label'];
@@ -41,6 +42,17 @@ final class Breadcrumbs {
 				'classes' => array(
 					'li'    => array( 'item-archive-' . $class ),
 					'bread' => array( 'bread-archive-' . $class ),
+				),
+			);
+		}
+
+		foreach ( $ctx['terms'] ?? array() as $term ) {
+			$breadcrumbs[] = array(
+				'title'   => $term['name'],
+				'url'     => $term['url'],
+				'classes' => array(
+					'li'    => array( 'item-' . $term['slug'] . '-' . $class ),
+					'bread' => array( 'bread-' . $term['slug'] . '-' . $class ),
 				),
 			);
 		}

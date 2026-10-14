@@ -29,6 +29,68 @@ final class BreadcrumbsTest extends TestCase {
 		);
 	}
 
+	private function term( string $name, string $slug ): array {
+		return array(
+			'name' => $name,
+			'slug' => $slug,
+			'url'  => "/competition-types/$slug/",
+		);
+	}
+
+	public function test_build_puts_term_between_post_type_and_season(): void {
+		$trail = Breadcrumbs::build(
+			array(),
+			$this->ctx(
+				array(
+					'label'  => 'Gizmos',
+					'season' => array(
+						'name' => 'Season 31',
+						'slug' => 'season-31',
+						'url'  => '/seasons/season-31/gizmos/',
+					),
+					'terms'  => array( $this->term( 'District', 'district' ) ),
+				)
+			)
+		);
+		$this->assertSame( array( 'Gizmos', 'District', 'Season 31' ), array_column( $trail, 'title' ) );
+	}
+
+	public function test_build_term_crumb_has_url_and_classes(): void {
+		$trail = Breadcrumbs::build(
+			array(),
+			$this->ctx(
+				array(
+					'label' => 'Gizmos',
+					'terms' => array( $this->term( 'District', 'district' ) ),
+				)
+			)
+		);
+		$this->assertSame( 'District', $trail[1]['title'] );
+		$this->assertSame( '/competition-types/district/', $trail[1]['url'] );
+		$this->assertSame( array( 'item-district-gizmos' ), $trail[1]['classes']['li'] );
+		$this->assertSame( array( 'bread-district-gizmos' ), $trail[1]['classes']['bread'] );
+	}
+
+	public function test_build_without_terms_is_unchanged(): void {
+		$without = Breadcrumbs::build( array(), $this->ctx( array( 'label' => 'Gizmos' ) ) );
+		$empty   = Breadcrumbs::build( array(), $this->ctx( array( 'label' => 'Gizmos', 'terms' => array() ) ) );
+		$this->assertSame( $without, $empty );
+		$this->assertSame( array( 'Gizmos' ), array_column( $without, 'title' ) );
+	}
+
+	public function test_build_term_without_season(): void {
+		$trail = Breadcrumbs::build(
+			array(),
+			$this->ctx(
+				array(
+					'label' => 'Gizmos',
+					'terms' => array( $this->term( 'District', 'district' ) ),
+				)
+			)
+		);
+		$this->assertSame( array( 'Gizmos', 'District' ), array_column( $trail, 'title' ) );
+	}
+
 	public function test_archive_adds_only_the_post_type_crumb(): void {
 		$trail = Breadcrumbs::build( array(), $this->ctx() );
 		$this->assertCount( 1, $trail );

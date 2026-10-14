@@ -70,15 +70,15 @@
 **Interfaces:**
 - Produces: `build()` accepts an optional `$ctx['terms']`, a `list<array{name: string, slug: string, url: string}>`. Each entry becomes a crumb `array( 'title' => name, 'url' => url, 'classes' => array( 'li' => array( 'item-' . slug . '-' . $class ), 'bread' => array( 'bread-' . slug . '-' . $class ) ) )`. Terms come after the post-type crumb, in order, and before the season crumb. A missing or empty `terms` changes nothing.
 
-- [ ] **Step 1: Write failing tests** in `BreadcrumbsTest.php`, using the existing `ctx()` and `season()` helpers and adding a `term( string $name, string $slug )` helper that returns `array( 'name', 'slug', 'url' => "/competition-types/$slug/" )`:
+- [x] **Step 1: Write failing tests** in `BreadcrumbsTest.php`, using the existing `ctx()` and `season()` helpers and adding a `term( string $name, string $slug )` helper that returns `array( 'name', 'slug', 'url' => "/competition-types/$slug/" )`:
   - `test_build_puts_term_between_post_type_and_season`: titles equal `array( 'Gizmos', 'District', 'Season 31' )` for `terms = array( term('District','district') )` with a season.
   - `test_build_term_crumb_has_url_and_classes`: the `District` crumb has `url` `/competition-types/district/` and `li` class `item-district-gizmos`.
   - `test_build_without_terms_is_unchanged`: the result for a ctx with no `terms` key equals the result for `terms => array()`, and neither contains a term crumb.
   - `test_build_term_without_season`: titles are `array( 'Gizmos', 'District' )`.
-- [ ] **Step 2:** Run `docker compose run --rm php composer test:unit -- --filter BreadcrumbsTest`. Expected: the new tests FAIL (the term crumb is missing).
-- [ ] **Step 3:** In `build()`, loop over `$ctx['terms'] ?? array()` and append one crumb per term after the post-type crumb block and before the season block. Extend the docblock's ctx description with `terms`.
-- [ ] **Step 4:** Rerun the Step 2 command. Expected: PASS, including all existing `BreadcrumbsTest` tests.
-- [ ] **Step 5:** Tick this task's boxes in this file. Commit: `git add plugins/hyperpress-utils/src/Breadcrumbs.php plugins/tests/unit/Utils/BreadcrumbsTest.php docs/superpowers/plans/2026-10-13-plugins-competition-type-breadcrumbs.md` then `git commit -m "Breadcrumbs: build() emits extra taxonomy term crumbs" -- <same paths>`.
+- [x] **Step 2:** Run `docker compose run --rm php composer test:unit -- --filter BreadcrumbsTest`. Expected: the new tests FAIL (the term crumb is missing).
+- [x] **Step 3:** In `build()`, loop over `$ctx['terms'] ?? array()` and append one crumb per term after the post-type crumb block and before the season block. Extend the docblock's ctx description with `terms`.
+- [x] **Step 4:** Rerun the Step 2 command. Expected: PASS, including all existing `BreadcrumbsTest` tests.
+- [x] **Step 5:** Tick this task's boxes in this file. Commit: `git add plugins/hyperpress-utils/src/Breadcrumbs.php plugins/tests/unit/Utils/BreadcrumbsTest.php docs/superpowers/plans/2026-10-13-plugins-competition-type-breadcrumbs.md` then `git commit -m "Breadcrumbs: build() emits extra taxonomy term crumbs" -- <same paths>`.
 
 ### Task 2: `RequestTerm`, and move the season consumers to it
 
