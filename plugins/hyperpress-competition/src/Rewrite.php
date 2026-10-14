@@ -82,6 +82,66 @@ final class Rewrite {
 		);
 	}
 
+	/**
+	 * The season-scoped archive URL of a type, district or week term: the URL the rules above route.
+	 *
+	 * Built from the same slugs() as the rules. A hierarchical term's path is its ancestors' slugs, top
+	 * down, then its own. Without pretty permalinks it is the equivalent query-string URL.
+	 *
+	 * @param \WP_Term $season The season term (hyper_season).
+	 * @param \WP_Term $term   A competition type, district or week term.
+	 * @return string The URL, or '' for any other taxonomy or when a slug or query var is unavailable.
+	 */
+	public static function archive_url( \WP_Term $season, \WP_Term $term ): string {
+		$slugs = self::slugs();
+		if ( null === $slugs || 'hyper_season' !== $season->taxonomy || '' === $season->slug ) {
+			return '';
+		}
+
+		$prefix = '';
+		if ( in_array( $term->taxonomy, self::PREFIXED, true ) ) {
+			if ( ! isset( $slugs['prefixes'][ $term->taxonomy ] ) ) {
+				return '';
+			}
+			$prefix = $slugs['prefixes'][ $term->taxonomy ];
+		} elseif ( Plugin::TYPE !== $term->taxonomy ) {
+			return '';
+		}
+
+		$taxonomy  = get_taxonomy( $term->taxonomy );
+		$query_var = $taxonomy ? $taxonomy->query_var : false;
+		if ( ! is_string( $query_var ) || '' === $query_var ) {
+			return '';
+		}
+
+		if ( '' === (string) get_option( 'permalink_structure' ) ) {
+			return add_query_arg(
+				array(
+					'hyper_season' => $season->slug,
+					'post_type'    => Plugin::POST_TYPE,
+					$query_var     => $term->slug,
+				),
+				home_url( '/' )
+			);
+		}
+
+		$path = array();
+		foreach ( array_reverse( get_ancestors( $term->term_id, $term->taxonomy, 'taxonomy' ) ) as $ancestor_id ) {
+			$ancestor = get_term( $ancestor_id, $term->taxonomy );
+			if ( $ancestor instanceof \WP_Term ) {
+				$path[] = $ancestor->slug;
+			}
+		}
+		$path[] = $term->slug;
+
+		$parts = array( $slugs['season'], $season->slug, $slugs['archive'] );
+		if ( '' !== $prefix ) {
+			$parts[] = $prefix;
+		}
+
+		return home_url( user_trailingslashit( implode( '/', array_merge( $parts, $path ) ) ) );
+	}
+
 	public static function add_rules(): void {
 		$slugs = self::slugs();
 		if ( null === $slugs ) {

@@ -26,7 +26,19 @@ final class RewriteTest extends WP_UnitTestCase {
 		$GLOBALS['wp_query']->queried_object    = null;
 		$GLOBALS['wp_query']->queried_object_id = 0;
 		remove_all_filters( 'hyperpress_breadcrumbs_content' );
+		remove_all_filters( 'pre_option_permalink_structure', 99 );
+		$this->set_permalink_structure( '/%postname%/' );
 		parent::tear_down();
+	}
+
+	/**
+	 * The integration bootstrap forces pretty permalinks through pre_option_permalink_structure,
+	 * so a later filter is needed for set_permalink_structure() to take effect.
+	 */
+	private function use_plain_permalinks(): void {
+		remove_all_filters( 'pre_option_permalink_structure', 99 );
+		add_filter( 'pre_option_permalink_structure', static fn (): string => '', 99 );
+		$this->set_permalink_structure( '' );
 	}
 
 	/**
@@ -35,7 +47,13 @@ final class RewriteTest extends WP_UnitTestCase {
 	private function term( string $name, string $slug, string $taxonomy ): \WP_Term {
 		$term = get_term_by( 'slug', $slug, $taxonomy );
 		if ( ! $term ) {
-			$term = self::factory()->term->create_and_get( array( 'taxonomy' => $taxonomy, 'name' => $name, 'slug' => $slug ) );
+			$term = self::factory()->term->create_and_get(
+				array(
+					'taxonomy' => $taxonomy,
+					'name'     => $name,
+					'slug'     => $slug,
+				)
+			);
 		}
 		return $term;
 	}
@@ -53,8 +71,21 @@ final class RewriteTest extends WP_UnitTestCase {
 	}
 
 	public function test_hierarchical_type_path_routes_to_the_child_term(): void {
-		$parent = self::factory()->term->create_and_get( array( 'taxonomy' => Plugin::TYPE, 'name' => 'rt-parent', 'slug' => 'rt-parent' ) );
-		$child  = self::factory()->term->create_and_get( array( 'taxonomy' => Plugin::TYPE, 'name' => 'rt-child', 'slug' => 'rt-child', 'parent' => $parent->term_id ) );
+		$parent = self::factory()->term->create_and_get(
+			array(
+				'taxonomy' => Plugin::TYPE,
+				'name'     => 'rt-parent',
+				'slug'     => 'rt-parent',
+			)
+		);
+		$child  = self::factory()->term->create_and_get(
+			array(
+				'taxonomy' => Plugin::TYPE,
+				'name'     => 'rt-child',
+				'slug'     => 'rt-child',
+				'parent'   => $parent->term_id,
+			)
+		);
 		$this->term( 'Season 31', 'season-31', 'hyper_season' );
 
 		$this->go_to( home_url( '/seasons/season-31/competitions/rt-parent/rt-child/' ) );
@@ -147,8 +178,21 @@ final class RewriteTest extends WP_UnitTestCase {
 	}
 
 	public function test_hierarchical_district_path_routes_to_the_child_term(): void {
-		$parent = self::factory()->term->create_and_get( array( 'taxonomy' => 'hyper_district', 'name' => 'rt-dparent', 'slug' => 'rt-dparent' ) );
-		$child  = self::factory()->term->create_and_get( array( 'taxonomy' => 'hyper_district', 'name' => 'rt-dchild', 'slug' => 'rt-dchild', 'parent' => $parent->term_id ) );
+		$parent = self::factory()->term->create_and_get(
+			array(
+				'taxonomy' => 'hyper_district',
+				'name'     => 'rt-dparent',
+				'slug'     => 'rt-dparent',
+			)
+		);
+		$child  = self::factory()->term->create_and_get(
+			array(
+				'taxonomy' => 'hyper_district',
+				'name'     => 'rt-dchild',
+				'slug'     => 'rt-dchild',
+				'parent'   => $parent->term_id,
+			)
+		);
 		$this->term( 'Season 31', 'season-31', 'hyper_season' );
 
 		$this->go_to( home_url( '/seasons/season-31/competitions/districts/rt-dparent/rt-dchild/' ) );
@@ -162,8 +206,21 @@ final class RewriteTest extends WP_UnitTestCase {
 	}
 
 	public function test_type_rule_still_routes_after_the_prefixed_rules(): void {
-		$parent = self::factory()->term->create_and_get( array( 'taxonomy' => Plugin::TYPE, 'name' => 'qualifying', 'slug' => 'rt-qualifying' ) );
-		self::factory()->term->create_and_get( array( 'taxonomy' => Plugin::TYPE, 'name' => 'district', 'slug' => 'rt-district-type', 'parent' => $parent->term_id ) );
+		$parent = self::factory()->term->create_and_get(
+			array(
+				'taxonomy' => Plugin::TYPE,
+				'name'     => 'qualifying',
+				'slug'     => 'rt-qualifying',
+			)
+		);
+		self::factory()->term->create_and_get(
+			array(
+				'taxonomy' => Plugin::TYPE,
+				'name'     => 'district',
+				'slug'     => 'rt-district-type',
+				'parent'   => $parent->term_id,
+			)
+		);
 		$this->term( 'Season 31', 'season-31', 'hyper_season' );
 
 		$this->go_to( home_url( '/seasons/season-31/competitions/rt-qualifying/' ) );
@@ -220,6 +277,255 @@ final class RewriteTest extends WP_UnitTestCase {
 		$this->assertSame( 'Compete in ' . $district->name . ', ' . $season->name, $banner['subtitle'] );
 	}
 
+	/**
+	 * A fresh, test-only term (optionally under a parent).
+	 */
+	private function rt_term( string $name, string $slug, string $taxonomy, int $parent = 0 ): \WP_Term {
+		return self::factory()->term->create_and_get(
+			array(
+				'taxonomy' => $taxonomy,
+				'name'     => $name,
+				'slug'     => $slug,
+				'parent'   => $parent,
+			)
+		);
+	}
+
+	/**
+	 * Own season, hierarchical type, district and week terms for the archive_url tests.
+	 *
+	 * @return array{season: \WP_Term, type: \WP_Term, child_type: \WP_Term, district: \WP_Term, child_district: \WP_Term, week: \WP_Term}
+	 */
+	private function url_terms(): array {
+		$type     = $this->rt_term( 'RT Qualifying', 'rt-qualifying', Plugin::TYPE );
+		$district = $this->rt_term( 'RT Parent District', 'rt-dparent', Plugin::DISTRICT );
+
+		return array(
+			'season'         => $this->term( 'Season 31', 'season-31', 'hyper_season' ),
+			'type'           => $type,
+			'child_type'     => $this->rt_term( 'RT District Type', 'rt-district-type', Plugin::TYPE, $type->term_id ),
+			'district'       => $district,
+			'child_district' => $this->rt_term( 'RT NE', 'rt-ne', Plugin::DISTRICT, $district->term_id ),
+			'week'           => $this->rt_term( 'RT Week 1', 'rt-week-1', Plugin::WEEK ),
+		);
+	}
+
+	public function test_archive_url_pretty_permalinks(): void {
+		$t    = $this->url_terms();
+		$base = home_url( '/seasons/season-31/competitions/' );
+
+		$this->assertSame( $base . 'rt-qualifying/', Rewrite::archive_url( $t['season'], $t['type'] ) );
+		$this->assertSame( $base . 'rt-qualifying/rt-district-type/', Rewrite::archive_url( $t['season'], $t['child_type'] ) );
+		$this->assertSame( $base . 'districts/rt-dparent/', Rewrite::archive_url( $t['season'], $t['district'] ) );
+		$this->assertSame( $base . 'districts/rt-dparent/rt-ne/', Rewrite::archive_url( $t['season'], $t['child_district'] ) );
+		$this->assertSame( $base . 'weeks/rt-week-1/', Rewrite::archive_url( $t['season'], $t['week'] ) );
+	}
+
+	public function test_archive_url_plain_permalinks(): void {
+		$t = $this->url_terms();
+		$this->use_plain_permalinks();
+		$base = home_url( '/' ) . '?hyper_season=season-31&post_type=' . Plugin::POST_TYPE;
+
+		$this->assertSame( $base . '&hyper_competition_type=rt-qualifying', Rewrite::archive_url( $t['season'], $t['type'] ) );
+		$this->assertSame( $base . '&hyper_competition_type=rt-district-type', Rewrite::archive_url( $t['season'], $t['child_type'] ) );
+		$this->assertSame( $base . '&hyper_district=rt-dparent', Rewrite::archive_url( $t['season'], $t['district'] ) );
+		$this->assertSame( $base . '&hyper_district=rt-ne', Rewrite::archive_url( $t['season'], $t['child_district'] ) );
+		$this->assertSame( $base . '&hyper_week=rt-week-1', Rewrite::archive_url( $t['season'], $t['week'] ) );
+	}
+
+	/**
+	 * @return array<string, array{0: bool}>
+	 */
+	public function permalink_modes(): array {
+		return array(
+			'pretty' => array( true ),
+			'plain'  => array( false ),
+		);
+	}
+
+	/**
+	 * @dataProvider permalink_modes
+	 */
+	public function test_archive_url_round_trips_to_the_competition_archive( bool $pretty ): void {
+		$t = $this->url_terms();
+		if ( ! $pretty ) {
+			$this->use_plain_permalinks();
+		}
+
+		$cases = array(
+			array( $t['type'], Plugin::TYPE, 'rt-qualifying' ),
+			array( $t['child_type'], Plugin::TYPE, 'rt-district-type' ),
+			array( $t['district'], 'hyper_district', 'rt-dparent' ),
+			array( $t['child_district'], 'hyper_district', 'rt-ne' ),
+			array( $t['week'], 'hyper_week', 'rt-week-1' ),
+		);
+		foreach ( $cases as list( $term, $taxonomy, $slug ) ) {
+			$url = Rewrite::archive_url( $t['season'], $term );
+			$this->assertNotSame( '', $url );
+
+			$this->go_to( $url );
+
+			$this->assertFalse( is_404(), $url );
+			$this->assertTrue( is_post_type_archive( Plugin::POST_TYPE ), $url );
+			$this->assertSame( 'season-31', get_query_var( 'hyper_season' ), $url );
+			$this->assertSame( $slug, get_query_var( $taxonomy ), $url );
+			$request_term = RequestTerm::get( $taxonomy );
+			$this->assertNotNull( $request_term, $url );
+			$this->assertSame( $term->term_id, $request_term->term_id, $url );
+		}
+	}
+
+	public function test_archive_url_is_empty_for_other_taxonomies_and_missing_pieces(): void {
+		$t        = $this->url_terms();
+		$category = self::factory()->term->create_and_get(
+			array(
+				'taxonomy' => 'category',
+				'name'     => 'RT Cat',
+			)
+		);
+
+		$this->assertSame( '', Rewrite::archive_url( $t['season'], $category ) );
+		$this->assertSame( '', Rewrite::archive_url( $t['season'], $t['season'] ) );
+		// A term that is not a season.
+		$this->assertSame( '', Rewrite::archive_url( $t['week'], $t['type'] ) );
+
+		$post_type = get_post_type_object( Plugin::POST_TYPE );
+		$district  = get_taxonomy( 'hyper_district' );
+		$season_tx = get_taxonomy( 'hyper_season' );
+		$saved     = array( $post_type->has_archive, $district->rewrite, $season_tx->rewrite );
+
+		try {
+			$post_type->has_archive = false;
+			$this->assertSame( '', Rewrite::archive_url( $t['season'], $t['type'] ), 'No archive slug.' );
+			$post_type->has_archive = $saved[0];
+
+			$district->rewrite = false;
+			$this->assertSame( '', Rewrite::archive_url( $t['season'], $t['district'] ), 'No district prefix slug.' );
+			$this->assertNotSame( '', Rewrite::archive_url( $t['season'], $t['type'] ), 'Type needs no prefix.' );
+			$district->rewrite = $saved[1];
+
+			$season_tx->rewrite = false;
+			$this->assertSame( '', Rewrite::archive_url( $t['season'], $t['type'] ), 'No season slug.' );
+		} finally {
+			$post_type->has_archive = $saved[0];
+			$district->rewrite      = $saved[1];
+			$season_tx->rewrite     = $saved[2];
+		}
+
+		$this->assertNotSame( '', Rewrite::archive_url( $t['season'], $t['type'] ) );
+	}
+
+	/**
+	 * Creates the season and the three terms and assigns them to a competition.
+	 *
+	 * @return array{0: int, 1: array} Post ID and url_terms().
+	 */
+	private function competition_with_terms(): array {
+		$t       = $this->url_terms();
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'  => Plugin::POST_TYPE,
+				'post_title' => 'RT Link Trail',
+			)
+		);
+		wp_set_object_terms( $post_id, array( $t['season']->term_id ), 'hyper_season' );
+		wp_set_object_terms( $post_id, array( $t['child_type']->term_id ), Plugin::TYPE );
+		wp_set_object_terms( $post_id, array( $t['child_district']->term_id ), Plugin::DISTRICT );
+		wp_set_object_terms( $post_id, array( $t['week']->term_id ), Plugin::WEEK );
+
+		return array( $post_id, $t );
+	}
+
+	public function test_boot_hooks_the_season_scoped_term_urls(): void {
+		$this->assertNotFalse( has_filter( 'hyperpress_breadcrumbs_term_url', array( Plugin::class, 'term_crumb_url' ) ) );
+	}
+
+	public function test_single_competition_crumbs_link_to_the_season_scoped_archives(): void {
+		list( $post_id, $t ) = $this->competition_with_terms();
+
+		$this->go_to( get_permalink( $post_id ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$base = home_url( '/seasons/season-31/competitions/' );
+		$this->assertSame(
+			array( 'Competitions', 'Season 31', 'RT District Type', 'RT NE', 'RT Week 1', 'RT Link Trail' ),
+			array_slice( array_column( $trail, 'title' ), -6 )
+		);
+		$by_title = array_column( $trail, 'url', 'title' );
+		$this->assertSame( $base . 'rt-qualifying/rt-district-type/', $by_title['RT District Type'] );
+		$this->assertSame( $base . 'districts/rt-dparent/rt-ne/', $by_title['RT NE'] );
+		$this->assertSame( $base . 'weeks/rt-week-1/', $by_title['RT Week 1'] );
+		// The season crumb keeps linking to the season's competitions archive.
+		$this->assertSame( untrailingslashit( $base ), $by_title['Season 31'] );
+	}
+
+	public function test_archive_with_a_season_crumbs_link_to_the_season_scoped_archives(): void {
+		$t = $this->url_terms();
+
+		$this->go_to( home_url( '/seasons/season-31/competitions/districts/rt-dparent/rt-ne/' ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$by_title = array_column( $trail, 'url', 'title' );
+		$this->assertSame( home_url( '/seasons/season-31/competitions/districts/rt-dparent/rt-ne/' ), $by_title['RT NE'] );
+		$this->assertSame( array( 'Season 31', 'RT NE' ), array_slice( array_column( $trail, 'title' ), -2 ) );
+		$this->assertSame( $t['child_district']->term_id, RequestTerm::get( 'hyper_district' )->term_id );
+	}
+
+	public function test_crumbs_without_a_season_keep_the_all_seasons_term_links(): void {
+		$t       = $this->url_terms();
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'  => Plugin::POST_TYPE,
+				'post_title' => 'RT No Season',
+			)
+		);
+		wp_set_object_terms( $post_id, array( $t['child_district']->term_id ), Plugin::DISTRICT );
+
+		$this->go_to( get_permalink( $post_id ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$by    = array_column( $trail, 'url', 'title' );
+		$this->assertSame( get_term_link( $t['child_district'] ), $by['RT NE'] );
+
+		$this->go_to( home_url( '/?post_type=' . Plugin::POST_TYPE . '&hyper_district=rt-ne' ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$by    = array_column( $trail, 'url', 'title' );
+		$this->assertSame( get_term_link( $t['child_district'] ), $by['RT NE'] );
+	}
+
+	public function test_crumbs_use_the_plain_season_scoped_urls_with_plain_permalinks(): void {
+		list( $post_id ) = $this->competition_with_terms();
+		$this->use_plain_permalinks();
+
+		$this->go_to( get_permalink( $post_id ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$by   = array_column( $trail, 'url', 'title' );
+		$base = home_url( '/' ) . '?hyper_season=season-31&post_type=' . Plugin::POST_TYPE;
+		$this->assertSame( $base . '&hyper_week=rt-week-1', $by['RT Week 1'] );
+		$this->assertSame( $base . '&hyper_district=rt-ne', $by['RT NE'] );
+		$this->assertSame( $base . '&hyper_competition_type=rt-district-type', $by['RT District Type'] );
+	}
+
+	public function test_taxonomy_only_pages_keep_their_trails(): void {
+		$t = $this->url_terms();
+
+		$this->go_to( get_term_link( $t['child_district'] ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+
+		$this->assertSame( array( 'Competitions', get_taxonomy( 'hyper_district' )->labels->singular_name, 'RT NE' ), array_column( $trail, 'title' ) );
+		$this->assertArrayNotHasKey( 'url', $trail[1] );
+		$this->assertArrayNotHasKey( 'url', $trail[2] );
+	}
+
+	public function test_term_crumb_url_leaves_other_post_types_and_missing_seasons_alone(): void {
+		$t = $this->url_terms();
+
+		$this->assertSame( 'x', Plugin::term_crumb_url( 'x', $t['type'], 'hyper_gizmo', $t['season'] ) );
+		$this->assertSame( 'x', Plugin::term_crumb_url( 'x', $t['type'], Plugin::POST_TYPE, null ) );
+		$this->assertSame( 'x', Plugin::term_crumb_url( 'x', self::factory()->term->create_and_get( array( 'taxonomy' => 'category' ) ), Plugin::POST_TYPE, $t['season'] ) );
+		$this->assertSame( Rewrite::archive_url( $t['season'], $t['type'] ), Plugin::term_crumb_url( 'x', $t['type'], Plugin::POST_TYPE, $t['season'] ) );
+	}
+
 	public function test_maybe_flush_reflushes_when_a_prefix_slug_changes(): void {
 		Rewrite::maybe_flush();
 
@@ -230,7 +536,10 @@ final class RewriteTest extends WP_UnitTestCase {
 		};
 		add_filter( 'pre_update_option_rewrite_rules', $counter );
 
-		foreach ( array( 'hyper_district' => 'rt-areas', 'hyper_week' => 'rt-rounds' ) as $taxonomy => $slug ) {
+		foreach ( array(
+			'hyper_district' => 'rt-areas',
+			'hyper_week'     => 'rt-rounds',
+		) as $taxonomy => $slug ) {
 			$previous                 = get_option( self::HASH_OPTION );
 			$taxonomy_object          = get_taxonomy( $taxonomy );
 			$original                 = $taxonomy_object->rewrite;

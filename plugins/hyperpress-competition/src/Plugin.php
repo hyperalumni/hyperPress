@@ -23,7 +23,7 @@ final class Plugin {
 	private const SEED_OPTION = 'hyperpress_competition_terms_seeded';
 
 	/**
-	 * Taxonomies whose terms the competition archive and single trails show, in order, before the season.
+	 * Taxonomies whose terms the competition archive and single trails show, in order, after the season.
 	 *
 	 * @var string[]
 	 */
@@ -36,6 +36,7 @@ final class Plugin {
 		Breadcrumbs::register( array( self::POST_TYPE ), self::BREADCRUMB_TAXONOMIES );
 		TaxonomyBreadcrumbs::register();
 		Rewrite::register();
+		add_filter( 'hyperpress_breadcrumbs_term_url', array( self::class, 'term_crumb_url' ), 10, 4 );
 		NotFound::register( array( self::TYPE, self::DISTRICT, self::WEEK ) );
 		add_action( 'init', array( self::class, 'register_banner' ) );
 		SingularBanner::register( self::POST_TYPE, __( 'Competition', 'hyperpress' ) );
@@ -43,6 +44,25 @@ final class Plugin {
 		SettingsPage::register();
 		MetaBoxes::register();
 		Labels::register();
+	}
+
+	/**
+	 * Breadcrumb filter: with a season, an extra term crumb of a competition links to its season-scoped archive.
+	 *
+	 * @param mixed $url       The term's all-seasons archive URL.
+	 * @param mixed $term      The crumb's term.
+	 * @param mixed $post_type Post type key.
+	 * @param mixed $season    The season term, or null.
+	 * @return mixed The season-scoped URL, else $url.
+	 */
+	public static function term_crumb_url( $url, $term, $post_type, $season ) {
+		if ( self::POST_TYPE !== $post_type || ! $term instanceof \WP_Term || ! $season instanceof \WP_Term ) {
+			return $url;
+		}
+
+		$scoped = Rewrite::archive_url( $season, $term );
+
+		return '' === $scoped ? $url : $scoped;
 	}
 
 	public static function register_banner(): void {
