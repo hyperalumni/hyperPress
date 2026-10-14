@@ -53,7 +53,7 @@ final class Labels {
 			$labels[] = array(
 				'label'   => $term->name,
 				'title'   => 'Program',
-				'classes' => array( 'success' ),
+				'classes' => array( 'alert' ),
 				'url'     => is_wp_error( $url ) ? '' : $url,
 				'rel'     => '',
 			);

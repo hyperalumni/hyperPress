@@ -122,7 +122,7 @@ final class ProgramLabelTest extends WP_UnitTestCase {
 		$this->assertCount( 4, $programs );
 		$this->assertSame( array( 'FLL 2', 'fll 5', 'FLL 10', 'FTC' ), array_column( $programs, 'label' ) );
 		foreach ( $programs as $program ) {
-			$this->assertSame( array( 'success' ), $program['classes'] );
+			$this->assertSame( array( 'alert' ), $program['classes'] );
 			$this->assertSame( 'Program', $program['title'] );
 		}
 		$ftc = get_term_by( 'name', 'FTC', 'hyper_program' );
