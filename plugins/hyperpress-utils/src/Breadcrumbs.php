@@ -143,7 +143,7 @@ final class Breadcrumbs {
 			$season = array(
 				'name' => $term->name,
 				'slug' => $term->slug,
-				'url'  => is_wp_error( $link ) ? '' : trailingslashit( $link ) . ( is_string( $object->has_archive ) ? $object->has_archive : '' ),
+				'url'  => is_wp_error( $link ) ? '' : self::season_archive_url( $link, $post_type, $object->has_archive ),
 			);
 		}
 
@@ -157,6 +157,27 @@ final class Breadcrumbs {
 			'title'       => $is_singular ? get_the_title() : '',
 			'id'          => $is_singular ? (int) get_the_ID() : 0,
 		);
+	}
+
+	/**
+	 * The season crumb link: the season's archive of the post type, or the plain term link when the post type has no
+	 * string archive slug. Pretty permalinks append the slug and follow the site's trailing slash setting; plain
+	 * permalinks keep hyper_season and add post_type, since a path segment is not valid in a query string.
+	 *
+	 * @param string      $link        The season's get_term_link().
+	 * @param string      $post_type   Post type key.
+	 * @param bool|string $has_archive The post type's has_archive.
+	 */
+	private static function season_archive_url( string $link, string $post_type, $has_archive ): string {
+		if ( ! is_string( $has_archive ) || '' === $has_archive ) {
+			return $link;
+		}
+
+		if ( '' === (string) get_option( 'permalink_structure' ) ) {
+			return add_query_arg( 'post_type', $post_type, $link );
+		}
+
+		return user_trailingslashit( trailingslashit( $link ) . $has_archive );
 	}
 
 	/**

@@ -455,8 +455,8 @@ final class RewriteTest extends WP_UnitTestCase {
 		$this->assertSame( $base . 'rt-qualifying/rt-district-type/', $by_title['RT District Type'] );
 		$this->assertSame( $base . 'districts/rt-dparent/rt-ne/', $by_title['RT NE'] );
 		$this->assertSame( $base . 'weeks/rt-week-1/', $by_title['RT Week 1'] );
-		// The season crumb keeps linking to the season's competitions archive.
-		$this->assertSame( untrailingslashit( $base ), $by_title['Season 31'] );
+		// The season crumb keeps linking to the season's competitions archive, with a trailing slash like the others.
+		$this->assertSame( $base, $by_title['Season 31'] );
 	}
 
 	public function test_archive_with_a_season_crumbs_link_to_the_season_scoped_archives(): void {
@@ -504,6 +504,44 @@ final class RewriteTest extends WP_UnitTestCase {
 		$this->assertSame( $base . '&hyper_week=rt-week-1', $by['RT Week 1'] );
 		$this->assertSame( $base . '&hyper_district=rt-ne', $by['RT NE'] );
 		$this->assertSame( $base . '&hyper_competition_type=rt-district-type', $by['RT District Type'] );
+	}
+
+	public function test_season_crumb_ends_with_a_slash_and_routes_to_the_season_archive(): void {
+		list( $post_id ) = $this->competition_with_terms();
+
+		$this->go_to( get_permalink( $post_id ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$url   = array_column( $trail, 'url', 'title' )['Season 31'];
+
+		$this->assertSame( home_url( '/seasons/season-31/competitions/' ), $url );
+		$this->assertStringEndsWith( '/', $url );
+
+		$this->go_to( $url );
+		$this->assertTrue( is_post_type_archive( Plugin::POST_TYPE ) );
+		$this->assertSame( 'season-31', RequestTerm::get( 'hyper_season' )->slug );
+	}
+
+	public function test_season_crumb_is_valid_with_plain_permalinks(): void {
+		list( $post_id ) = $this->competition_with_terms();
+		$this->use_plain_permalinks();
+
+		$this->go_to( get_permalink( $post_id ) );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$url   = array_column( $trail, 'url', 'title' )['Season 31'];
+
+		$query = array();
+		parse_str( (string) wp_parse_url( $url, PHP_URL_QUERY ), $query );
+		$this->assertSame(
+			array(
+				'hyper_season' => 'season-31',
+				'post_type'    => Plugin::POST_TYPE,
+			),
+			$query
+		);
+
+		$this->go_to( $url );
+		$this->assertTrue( is_post_type_archive( Plugin::POST_TYPE ) );
+		$this->assertSame( 'season-31', RequestTerm::get( 'hyper_season' )->slug );
 	}
 
 	public function test_taxonomy_only_pages_keep_their_trails(): void {
