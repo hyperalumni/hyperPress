@@ -85,7 +85,7 @@ git commit -m "refactor(countdown): migrate to hyper_countdown and the shared st
 
 **Requires Plugins:** `hyperpress-utils, hyperpress-season, meta-box-aio`. **Namespace:** `HyperPress\Newsletter`. **Legacy files:** `newsletter.php`, `lib/{banner,breadcrumbs,content,custom-post-type,customize,labels,meta-boxes,shortcodes}.php`.
 
-**Target files:** `hyperpress-newsletter.php`, `src/Plugin.php`, `src/BannerFilter.php`, `src/Content.php`, `src/Customizer.php`, `src/Labels.php`, `src/MetaBoxes.php`, `src/Shortcodes.php`.
+**Target files:** `hyperpress-newsletter.php`, `src/Plugin.php`, `src/BannerFilter.php`, `src/Content.php`, `src/Customizer.php`, `src/Labels.php`, `src/MetaBoxes.php`, `src/Shortcodes.php`. (Note 2026-10-14: `BannerFilter` moved into the shared `HyperPress\Season\SingularBanner` (`hyperpress-season/src/SingularBanner.php`), which the newsletter, award and robot plugins register; `src/BannerFilter.php` no longer exists.)
 
 - [x] **Step 1: Read the legacy files** (notably `labels.php`, `content.php`, `shortcodes.php`, which this plan has not seen) and print the legacy rewrite flags: newsletter's legacy rewrite is `{with_front:false, slug:newsletter, hierarchical:true}`.
 
@@ -203,7 +203,7 @@ It fails until Step 6 is done. If the legacy callback only returns a path for a 
 	}
 ```
 
-- [x] **Step 5: Write `src/BannerFilter.php`** (moves the season-aware singular logic out of the shared code; behavior copied from legacy `lib/banner.php`, including that the per-post color overwrites the theme-mod color even when empty):
+- [x] **Step 5: Write `src/BannerFilter.php`** (moves the season-aware singular logic out of the shared code; behavior copied from legacy `lib/banner.php`, including that the per-post color overwrites the theme-mod color even when empty): (Note 2026-10-14: `BannerFilter` moved into the shared `HyperPress\Season\SingularBanner` (`hyperpress-season/src/SingularBanner.php`), which the newsletter, award and robot plugins register; `src/BannerFilter.php` no longer exists.)
 
 ```php
 <?php

@@ -27,6 +27,29 @@ final class NewsletterBannerTest extends WP_UnitTestCase {
 		$this->assertSame( '2026: Kickoff', $banner['title'] );
 	}
 
+	public function test_singular_title_survives_the_themes_singular_banner_filters(): void {
+		// Stand-in for library/banner/post.php and page.php, which run before the plugin's banner filter and only
+		// act on `post` and pages: they leave the title of a newsletter empty.
+		$stand_in = static function ( $banner ) {
+			if ( is_singular( 'post' ) ) {
+				$banner['type']  = 'post';
+				$banner['title'] = 'Blog';
+			}
+			if ( is_page() ) {
+				$banner['type'] = 'page';
+			}
+			return $banner;
+		};
+		add_filter( 'hyperpress_banner_content', $stand_in, 5 );
+		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter', 'post_title' => 'Kickoff' ) );
+		wp_set_object_terms( $post_id, array( self::factory()->term->create( array( 'taxonomy' => 'hyper_season', 'name' => '2026' ) ) ), 'hyper_season' );
+
+		$banner = $this->banner_for( $post_id );
+		remove_filter( 'hyperpress_banner_content', $stand_in, 5 );
+		$this->assertSame( 'newsletter', $banner['type'] );
+		$this->assertSame( '2026: Kickoff', $banner['title'] );
+	}
+
 	public function test_singular_without_a_season_falls_back_to_newsletter(): void {
 		$post_id = self::factory()->post->create( array( 'post_type' => 'hyper_newsletter', 'post_title' => 'Kickoff' ) );
 		$this->assertSame( 'Newsletter', $this->banner_for( $post_id )['title'] );
