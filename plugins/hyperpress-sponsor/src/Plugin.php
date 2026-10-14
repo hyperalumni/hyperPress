@@ -56,12 +56,11 @@ final class Plugin {
 		Banner::register(
 			self::POST_TYPE,
 			array(
-				'type'                     => 'sponsor',
-				'subtitle'                 => array( Settings::class, 'banner_subtitle' ),
-				'color_mod'                => 'hyperpress_hyper_red',
-				'archive_title'            => __( 'Sponsors', 'hyperpress' ),
-				'term_joiner'              => 'in',
-				'always_set_archive_title' => true,
+				'type'          => 'sponsor',
+				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
+				'color_mod'     => 'hyperpress_hyper_red',
+				'archive_title' => __( 'Sponsors', 'hyperpress' ),
+				'term_joiner'   => 'in',
 			)
 		);
 	}

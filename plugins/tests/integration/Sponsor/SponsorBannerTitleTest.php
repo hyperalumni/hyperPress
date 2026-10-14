@@ -29,8 +29,8 @@ final class SponsorBannerTitleTest extends WP_UnitTestCase {
 	}
 
 	public function test_the_archive_keeps_the_sponsor_title_over_the_theme_archive_title(): void {
-		// Stand-in for the theme's `hyperpress_banner_archive`, which runs before the plugin's banner filter
-		// (themes/hyperpress-foundation/library/banner/archive.php).
+		// Stand-in for the theme's `hyperpress_banner_archive`, which runs after the plugin's banner filter, at
+		// priority 90 (themes/hyperpress-foundation/library/banner/archive.php).
 		remove_all_filters( 'hyperpress_banner_content' );
 		add_filter(
 			'hyperpress_banner_content',
@@ -40,7 +40,8 @@ final class SponsorBannerTitleTest extends WP_UnitTestCase {
 					$banner['title'] = 'Archive';
 				}
 				return $banner;
-			}
+			},
+			90
 		);
 		Plugin::register_banner();
 
