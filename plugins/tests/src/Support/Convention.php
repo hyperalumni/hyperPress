@@ -50,7 +50,7 @@ final class Convention {
 
 	/** Expected `Requires Plugins` per plugin (order-insensitive). */
 	public const REQUIRES_PLUGINS = array(
-		'hyperpress-award'       => array( 'hyperpress-utils', 'hyperpress-season' ),
+		'hyperpress-award'       => array( 'hyperpress-utils', 'hyperpress-season', 'meta-box-aio' ),
 		'hyperpress-competition' => array( 'hyperpress-utils', 'hyperpress-season', 'hyperpress-robot', 'meta-box-aio' ),
 		'hyperpress-contact'     => array( 'hyperpress-utils', 'meta-box-aio' ),
 		'hyperpress-countdown'   => array( 'hyperpress-utils', 'meta-box-aio' ),

@@ -3,6 +3,7 @@ namespace HyperPress\Award;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Utils\Banner;
 use HyperPress\Utils\Breadcrumbs;
 use HyperPress\Utils\Capabilities;
 use HyperPress\Utils\PostTypeRegistrar;
@@ -17,6 +18,24 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'register' ) );
 		add_action( 'init', array( self::class, 'ensure_capabilities' ), 20 );
 		Breadcrumbs::register( array( self::POST_TYPE ) );
+		add_action( 'init', array( self::class, 'register_banner' ) );
+		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
+		SettingsPage::register();
+		MetaBoxes::register();
+	}
+
+	public static function register_banner(): void {
+		Banner::register(
+			self::POST_TYPE,
+			array(
+				'type'                     => 'award',
+				'subtitle'                 => array( Settings::class, 'banner_subtitle' ),
+				'color_mod'                => 'hyperpress_hyper_blue',
+				'archive_title'            => __( 'Awards', 'hyperpress' ),
+				'term_joiner'              => 'in',
+				'always_set_archive_title' => true,
+			)
+		);
 	}
 
 	public static function register(): void {
