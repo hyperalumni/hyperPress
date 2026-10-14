@@ -11,7 +11,7 @@ final class Breadcrumbs {
 	 * Add a trail for each post type to the theme's breadcrumb filter.
 	 *
 	 * @param string[] $post_types Post type keys.
-	 * @param string[] $taxonomies Extra taxonomy keys whose term is shown between the post type and the season.
+	 * @param string[] $taxonomies Extra taxonomy keys whose term is shown after the season (broad to narrow).
 	 */
 	public static function register( array $post_types, array $taxonomies = array() ): void {
 		foreach ( $post_types as $post_type ) {
@@ -26,11 +26,11 @@ final class Breadcrumbs {
 	}
 
 	/**
-	 * Pure: append the post type, extra term, season and current-item crumbs.
+	 * Pure: append the post type, season, extra term and current-item crumbs, in that order (broad to narrow).
 	 *
 	 * @param array $breadcrumbs Existing crumbs.
 	 * @param array $ctx         post_type, label, archive_url, is_singular, season (name, slug, url) or null, title, id,
-	 *                           and optionally terms (a list of name, slug, url), shown between the post type and season.
+	 *                           and optionally terms (a list of name, slug, url), shown after the season.
 	 */
 	public static function build( array $breadcrumbs, array $ctx ): array {
 		$label = (string) $ctx['label'];
@@ -47,12 +47,12 @@ final class Breadcrumbs {
 			);
 		}
 
-		foreach ( $ctx['terms'] ?? array() as $term ) {
-			$breadcrumbs[] = self::term_crumb( $term, $class );
-		}
-
 		if ( ! empty( $ctx['season'] ) ) {
 			$breadcrumbs[] = self::term_crumb( $ctx['season'], $class );
+		}
+
+		foreach ( $ctx['terms'] ?? array() as $term ) {
+			$breadcrumbs[] = self::term_crumb( $term, $class );
 		}
 
 		if ( ! empty( $ctx['is_singular'] ) ) {

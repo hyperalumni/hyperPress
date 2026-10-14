@@ -8,7 +8,7 @@ use WP_UnitTestCase;
 
 /**
  * The competition archive and single trails: post type, then the type, district and week terms
- * (in that order, only those present), then the season.
+ * after the season (broad to narrow; in that order, only those present).
  */
 final class CompetitionBreadcrumbsTest extends WP_UnitTestCase {
 
@@ -53,7 +53,7 @@ final class CompetitionBreadcrumbsTest extends WP_UnitTestCase {
 		return array_column( apply_filters( 'hyperpress_breadcrumbs_content', array() ), 'title' );
 	}
 
-	public function test_archive_with_district_and_week_shows_both_terms_before_the_season(): void {
+	public function test_archive_with_district_and_week_shows_the_season_then_both_terms(): void {
 		$season   = $this->rt_term( 'RT Season 31', 'rt-season-31', 'hyper_season' );
 		$district = $this->rt_term( 'RT NE FIRST', 'rt-ne-first', Plugin::DISTRICT );
 		$week     = $this->rt_term( 'RT Week 0', 'rt-week-0', Plugin::WEEK );
@@ -63,7 +63,7 @@ final class CompetitionBreadcrumbsTest extends WP_UnitTestCase {
 		$GLOBALS['wp_query']->queried_object    = $season;
 		$GLOBALS['wp_query']->queried_object_id = $season->term_id;
 
-		$this->assertSame( array( $this->label(), 'RT NE FIRST', 'RT Week 0', 'RT Season 31' ), $this->titles() );
+		$this->assertSame( array( $this->label(), 'RT Season 31', 'RT NE FIRST', 'RT Week 0' ), $this->titles() );
 	}
 
 	public function test_archive_orders_terms_by_taxonomy_list_not_by_the_request(): void {
@@ -76,10 +76,10 @@ final class CompetitionBreadcrumbsTest extends WP_UnitTestCase {
 		$GLOBALS['wp_query']->queried_object    = $season;
 		$GLOBALS['wp_query']->queried_object_id = $season->term_id;
 
-		$this->assertSame( array( $this->label(), 'RT Type', 'RT District', 'RT Week 1', 'RT Season 32' ), $this->titles() );
+		$this->assertSame( array( $this->label(), 'RT Season 32', 'RT Type', 'RT District', 'RT Week 1' ), $this->titles() );
 	}
 
-	public function test_archive_with_only_a_district_shows_it_before_the_season(): void {
+	public function test_archive_with_only_a_district_shows_it_after_the_season(): void {
 		$season   = $this->rt_term( 'RT Season 33', 'rt-season-33', 'hyper_season' );
 		$district = $this->rt_term( 'RT PNW FIRST', 'rt-pnw-first', Plugin::DISTRICT );
 
@@ -87,10 +87,10 @@ final class CompetitionBreadcrumbsTest extends WP_UnitTestCase {
 		$GLOBALS['wp_query']->queried_object    = $season;
 		$GLOBALS['wp_query']->queried_object_id = $season->term_id;
 
-		$this->assertSame( array( $this->label(), 'RT PNW FIRST', 'RT Season 33' ), $this->titles() );
+		$this->assertSame( array( $this->label(), 'RT Season 33', 'RT PNW FIRST' ), $this->titles() );
 	}
 
-	public function test_single_competition_shows_type_district_and_week_before_the_season(): void {
+	public function test_single_competition_shows_the_season_then_type_district_and_week(): void {
 		$season   = $this->rt_term( 'RT Season 34', 'rt-season-34', 'hyper_season' );
 		$type     = $this->rt_term( 'RT Single Type', 'rt-single-type', Plugin::TYPE );
 		$district = $this->rt_term( 'RT Single District', 'rt-single-district', Plugin::DISTRICT );
@@ -104,7 +104,7 @@ final class CompetitionBreadcrumbsTest extends WP_UnitTestCase {
 		$this->go_to( get_permalink( $post_id ) );
 
 		$this->assertSame(
-			array( $this->label(), 'RT Single Type', 'RT Single District', 'RT Single Week', 'RT Season 34', 'RT Long Trail' ),
+			array( $this->label(), 'RT Season 34', 'RT Single Type', 'RT Single District', 'RT Single Week', 'RT Long Trail' ),
 			$this->titles()
 		);
 	}
@@ -118,7 +118,7 @@ final class CompetitionBreadcrumbsTest extends WP_UnitTestCase {
 
 		$this->go_to( get_permalink( $post_id ) );
 
-		$this->assertSame( array( $this->label(), 'RT Lone District', 'RT Season 35', 'RT Partial Trail' ), $this->titles() );
+		$this->assertSame( array( $this->label(), 'RT Season 35', 'RT Lone District', 'RT Partial Trail' ), $this->titles() );
 	}
 
 	public function test_single_competition_without_extra_terms_is_unchanged(): void {

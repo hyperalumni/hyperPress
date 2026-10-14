@@ -115,7 +115,7 @@ final class RewriteTest extends WP_UnitTestCase {
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 
 		$this->assertSame(
-			array( $label, $district->name, $season->name ),
+			array( $label, $season->name, $district->name ),
 			array_slice( array_column( $trail, 'title' ), -3 )
 		);
 	}
@@ -210,7 +210,7 @@ final class RewriteTest extends WP_UnitTestCase {
 		$label = get_post_type_object( Plugin::POST_TYPE )->labels->name;
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 		$this->assertSame(
-			array( $label, $district->name, $season->name ),
+			array( $label, $season->name, $district->name ),
 			array_slice( array_column( $trail, 'title' ), -3 )
 		);
 

@@ -200,7 +200,7 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 		$this->assertSame( $input, TaxonomyBreadcrumbs::filter( $input ) );
 	}
 
-	public function test_competition_archive_includes_type(): void {
+	public function test_competition_archive_includes_type_after_the_season(): void {
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
 		$season   = $this->term( 'Season 31', 'season-31', 'hyper_season' );
 
@@ -211,7 +211,7 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 
-		$this->assertSame( array( $this->label(), 'District', 'Season 31' ), array_column( $trail, 'title' ) );
+		$this->assertSame( array( $this->label(), 'Season 31', 'District' ), array_column( $trail, 'title' ) );
 		$this->assertNotContains( 'Type', array_column( $trail, 'title' ) );
 	}
 

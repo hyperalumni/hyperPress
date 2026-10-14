@@ -81,7 +81,7 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 		return array( $qualifying, $district, $season );
 	}
 
-	public function test_archive_trail_includes_type_between_post_type_and_season(): void {
+	public function test_archive_trail_puts_the_season_before_the_type(): void {
 		list( , $district ) = $this->make_terms();
 		$this->register_with_type();
 
@@ -91,8 +91,8 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 		$GLOBALS['wp_query']->queried_object_id = $district->term_id;
 
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
-		$this->assertSame( array( 'Gizmos', 'District', 'Season 31' ), array_column( $trail, 'title' ) );
-		$this->assertSame( get_term_link( $district ), $trail[1]['url'] );
+		$this->assertSame( array( 'Gizmos', 'Season 31', 'District' ), array_column( $trail, 'title' ) );
+		$this->assertSame( get_term_link( $district ), $trail[2]['url'] );
 	}
 
 	public function test_singular_trail_uses_assigned_type(): void {
@@ -104,7 +104,7 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 
 		$this->go_to( get_permalink( $post_id ) );
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
-		$this->assertSame( array( 'Gizmos', 'District', 'Season 31', 'Widget One' ), array_column( $trail, 'title' ) );
+		$this->assertSame( array( 'Gizmos', 'Season 31', 'District', 'Widget One' ), array_column( $trail, 'title' ) );
 	}
 
 	public function test_singular_without_type_has_no_type_crumb(): void {
@@ -177,7 +177,7 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 		$GLOBALS['wp_query']->queried_object    = $district;
 		$GLOBALS['wp_query']->queried_object_id = $district->term_id;
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
-		$this->assertSame( 'Season 31', end( $trail )['title'] );
+		$this->assertSame( 'Season 31', $trail[1]['title'] );
 	}
 
 	public function test_unregistered_extra_taxonomy_is_skipped(): void {
