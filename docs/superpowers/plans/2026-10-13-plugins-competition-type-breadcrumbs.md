@@ -241,3 +241,7 @@ A breadcrumb crumb may now carry an optional `tooltip` string, rendered by the t
 ## Outcome (2026-10-14, key renamed to title_attr)
 
 The optional crumb key described in the hover-text note above is called `title_attr`, not `tooltip` (the name was misleading: it is the HTML `title` attribute, not a Foundation tooltip). The theme (`template-parts/breadcrumbs.php`) and `TaxonomyBreadcrumbs` read and emit `title_attr`; behaviour is unchanged. Earlier notes that say `tooltip` mean `title_attr`.
+
+## Outcome (2026-10-14, breadcrumb_label instead of overriding singular_name)
+
+The type taxonomy's `singular_name` is "Competition Type" again (as `singular` says); the earlier notes that make it "Type" and add a `full_singular_name` label are superseded. The short crumb text is one custom label key, `breadcrumb_label` => "Type", set through the `labels` override in `Plugin::type_definition()` (WordPress keeps custom label keys on `get_taxonomy()->labels`). `TaxonomyBreadcrumbs` shows `breadcrumb_label` as the middle crumb's visible `title` when it is a non-empty string, otherwise `singular_name`, and always sets `title_attr` to `singular_name` ("Competition Type" for the type archive; district and week have no `breadcrumb_label`, so their title and `title_attr` are equal). The `TaxonomyRegistrar` `labels` override mechanism is unchanged.

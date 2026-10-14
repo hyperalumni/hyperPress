@@ -162,9 +162,8 @@ final class Plugin {
 			'singular'           => __( 'Competition Type', 'hyperpress' ),
 			'plural'             => __( 'Competition Types', 'hyperpress' ),
 			'labels'             => array(
-				'singular_name'      => __( 'Type', 'hyperpress' ),
-				// Hover text of the "Type" breadcrumb (TaxonomyBreadcrumbs); not a WordPress label key.
-				'full_singular_name' => __( 'Competition Type', 'hyperpress' ),
+				// Short text of the type archive's breadcrumb (TaxonomyBreadcrumbs); not a WordPress label key.
+				'breadcrumb_label' => __( 'Type', 'hyperpress' ),
 			),
 			'description'        => __( 'Kinds of competition: qualifying, championship or unofficial', 'hyperpress' ),
 			'slug'               => 'competition-types',
