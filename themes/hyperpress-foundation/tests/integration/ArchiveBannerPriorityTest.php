@@ -4,8 +4,9 @@ namespace HyperPress\ThemeTests\Integration;
 use WP_UnitTestCase;
 
 /**
- * The generic theme banner fallbacks run at priority 90, after the plugin banners (priority 10), so a plugin
- * claims its own archive before the theme's "Archive" fallback does.
+ * The theme's archive banner fallbacks run after the plugin banners (priority 10): the specific ones (tag,
+ * category, author, year, month, day) at priority 80 and the generic "Archive" one at priority 90. A plugin
+ * claims its own archive first, even when the request is also a tag, category, author or date archive.
  */
 final class ArchiveBannerPriorityTest extends WP_UnitTestCase {
 
@@ -14,6 +15,9 @@ final class ArchiveBannerPriorityTest extends WP_UnitTestCase {
 	/** @var callable|null */
 	private $plugin_filter = null;
 
+	/** @var array<string,mixed>|null Banner as the plugin filter received it. */
+	private $incoming = null;
+
 	public function set_up(): void {
 		parent::set_up();
 		register_post_type(
@@ -21,6 +25,7 @@ final class ArchiveBannerPriorityTest extends WP_UnitTestCase {
 			array(
 				'public'      => true,
 				'has_archive' => true,
+				'taxonomies'  => array( 'post_tag', 'category' ),
 			)
 		);
 	}
@@ -30,6 +35,7 @@ final class ArchiveBannerPriorityTest extends WP_UnitTestCase {
 			remove_filter( 'hyperpress_banner_content', $this->plugin_filter, 10 );
 			$this->plugin_filter = null;
 		}
+		$this->incoming = null;
 		unregister_post_type( self::POST_TYPE );
 		parent::tear_down();
 	}
@@ -78,5 +84,93 @@ final class ArchiveBannerPriorityTest extends WP_UnitTestCase {
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
 
 		$this->assertSame( 'category', $banner['type'] );
+	}
+
+	/**
+	 * Specific fallbacks: [ query args, conditional tag, theme banner type ].
+	 *
+	 * @return array<string,array{0:string,1:string,2:string}>
+	 */
+	public static function specific_archives(): array {
+		return array(
+			'tag'      => array( 'tag=hp-tag', 'is_tag', 'tag' ),
+			'category' => array( 'category_name=hp-cat', 'is_category', 'category' ),
+			'author'   => array( 'author={author}', 'is_author', 'author' ),
+			'year'     => array( 'year=2025', 'is_year', 'year' ),
+			'month'    => array( 'm=202510', 'is_month', 'month' ),
+			'day'      => array( 'year=2025&monthnum=10&day=14', 'is_day', 'day' ),
+		);
+	}
+
+	private function specific_url( string $query, ?string $post_type ): string {
+		$tag_id    = self::factory()->tag->create( array( 'slug' => 'hp-tag' ) );
+		$cat_id    = self::factory()->category->create( array( 'slug' => 'hp-cat' ) );
+		$author_id = self::factory()->user->create();
+		// A matching post, so a plain date or author request is not turned into a 404.
+		self::factory()->post->create(
+			array(
+				'post_author'   => $author_id,
+				'post_date'     => '2025-10-14 12:00:00',
+				'tags_input'    => array( $tag_id ),
+				'post_category' => array( $cat_id ),
+			)
+		);
+		$query     = str_replace( '{author}', (string) $author_id, $query );
+
+		return home_url( '/?' . ( null === $post_type ? '' : 'post_type=' . $post_type . '&' ) . $query );
+	}
+
+	/** Like HyperPress\Utils\Banner: priority 10, unconditional type, keeps a title that is already set. */
+	private function add_plugin_filter(): void {
+		$this->plugin_filter = function ( $banner ) {
+			$this->incoming = $banner;
+			if ( is_post_type_archive( self::POST_TYPE ) ) {
+				$banner['type'] = 'competition';
+				if ( empty( $banner['title'] ) ) {
+					$banner['title'] = 'Competitions';
+				}
+			}
+			return $banner;
+		};
+		add_filter( 'hyperpress_banner_content', $this->plugin_filter, 10 );
+	}
+
+	/**
+	 * @dataProvider specific_archives
+	 */
+	public function test_the_specific_fallbacks_run_at_priority_80( string $query, string $conditional, string $type ): void {
+		$this->assertSame( 80, has_filter( 'hyperpress_banner_content', 'hyperpress_banner_' . $type ) );
+	}
+
+	/**
+	 * @dataProvider specific_archives
+	 */
+	public function test_a_plugin_banner_at_priority_10_wins_on_a_plugin_archive_that_is_also_a_specific_archive( string $query, string $conditional, string $type ): void {
+		$this->add_plugin_filter();
+		$this->go_to( $this->specific_url( $query, self::POST_TYPE ) );
+		$this->assertTrue( is_post_type_archive( self::POST_TYPE ) );
+		$this->assertTrue( $conditional() );
+
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
+		// The theme has not claimed the banner before the plugin runs.
+		$this->assertEmpty( $this->incoming['type'] ?? '' );
+		$this->assertEmpty( $this->incoming['title'] ?? '' );
+		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( 'Competitions', $banner['title'] );
+	}
+
+	/**
+	 * @dataProvider specific_archives
+	 */
+	public function test_a_plain_specific_archive_still_gets_its_theme_banner( string $query, string $conditional, string $type ): void {
+		$this->add_plugin_filter();
+		$this->go_to( $this->specific_url( $query, null ) );
+		$this->assertTrue( $conditional() );
+		$this->assertFalse( is_post_type_archive( self::POST_TYPE ) );
+
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
+		$this->assertSame( $type, $banner['type'] );
 	}
 }

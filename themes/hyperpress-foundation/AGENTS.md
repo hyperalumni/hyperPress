@@ -39,7 +39,7 @@ plugins in `../../plugins`. Banner router, core breadcrumb trails, Customizer, n
   `hyperpress_breadcrumbs_content`, `content_template`. Labels moved to `hyperpress-label`: templates
   call `do_action( 'hyperpress_labels' )`, and `hyperpress-label` must be active for labels to show
   (the plugin applies the `hyperpress_labels_content` filter, the theme no longer fires it).
-- Banner filter order: the theme's generic banner fallback (`hyperpress_banner_archive`) runs at priority 90, after the plugin banners at priority 10 (`HyperPress\Utils\Banner`), so plugins claim the banner first. Specific cases (author, category, search, 404, ...) stay at 10.
+- Banner filter order: plugin banners run at priority 10 (`HyperPress\Utils\Banner`). The theme's specific archive fallbacks (tag, category, author, year, month, day) run at priority 80 and its generic archive fallback (`hyperpress_banner_archive`) at priority 90, both after the plugin banners and each guarded by an empty banner type, so plugins claim their own archives first. The other cases (blog, front, page, post, attachment, search, 404) stay at 10: they cannot coincide with a plugin-owned request.
 - Use the `hyperpress_` prefix for new code. Legacy `foundationpress_` and `hyper_` names are being renamed.
 
 ## Gotchas
