@@ -10,13 +10,8 @@ function hyperpress_banner_archive( $banner ) {
 	// Without it the banner template falls back to the title of the first post of the archive.
 	if ( is_archive() && empty( $banner['title'] ) ) {
 		if ( empty( $banner['type'] ) ) {
+			// The blog page colour is added by hyperpress_banner_blog_color() (priority 95).
 			$banner['type'] = 'archive';
-
-			$blog_page_id = get_option( 'page_for_posts' );
-			if ( $blog_page_id > 0 ) {
-				// if the blog page is not the front page, use its values
-				$banner['backgroundColor'] = hyperpress_meta( 'hyperpress_banner_background_color', $blog_page_id );
-			}
 		}
 		$banner['title'] = __( 'Archive', 'hyperpress' );
 	}

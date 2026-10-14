@@ -7,6 +7,7 @@ require_once __DIR__ . '/banner/archive.php';
 require_once __DIR__ . '/banner/attachment.php';
 require_once __DIR__ . '/banner/author.php';
 require_once __DIR__ . '/banner/blog.php';
+require_once __DIR__ . '/banner/blog-color.php';
 require_once __DIR__ . '/banner/category.php';
 require_once __DIR__ . '/banner/day.php';
 require_once __DIR__ . '/banner/front.php';
