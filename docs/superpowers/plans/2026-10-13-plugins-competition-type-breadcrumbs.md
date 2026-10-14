@@ -34,7 +34,7 @@
 3. A single competition with no type term assigned produces no type crumb, no empty crumb and no PHP notice.
 4. `?hyper_competition_type=does-not-exist` produces no type crumb and no fatal (`get_term_by` returns `false`).
 5. `get_term_link()` returning a `WP_Error` gives an empty `url`, as the season crumb already does.
-6. A taxonomy-only competition page that also carries `?hyper_season=...` still gets the competition title and `type`, even though `SeasonBanner` also fires (the Season plugin's filter runs first and sets a title). The competition banner overwrites the title unconditionally on taxonomy pages.
+6. A taxonomy-only competition page that also carries `?hyper_season=...` is the season's page: the competition banner defers to `SeasonBanner` (its title and `type` stand), as `TypeBreadcrumbs` defers to the Season plugin's trail, so banner and breadcrumb agree (changed 2026-10-14; the original rule had the competition banner overwrite the Season banner's title there). A type-only page without a season, and the post-type archive (`/seasons/<season>/competitions/<type>/`), are unaffected.
 7. An unknown term slug (`?hyper_competition_type=nope`) is not a taxonomy page for the banner: no `type` is set and the theme's behavior is unchanged.
 
 ---
@@ -164,7 +164,7 @@
 **Interfaces:**
 - Consumes: `RequestTerm::get()` from Task 2.
 - Produces:
-  - `Banner::register()` accepts an optional `$args['taxonomies']`, a `list<string>` of taxonomy keys. The closure sets `ctx['extra_terms']` to a `list<string>` of term names: for each listed taxonomy, in list order, when `RequestTerm::get( $taxonomy )` returns a term, that term's name (no `is_tax( $taxonomy )` check, see Global Constraints). It stays empty on singular requests. The closure's early return changes to: return `$banner` unless `is_singular`, `is_archive` or `extra_terms` is non-empty.
+  - `Banner::register()` accepts an optional `$args['taxonomies']`, a `list<string>` of taxonomy keys. On a taxonomy-only page that also carries a season (`RequestTerm::get( 'hyper_season' )` non-null) the closure reads no terms, so the Season plugin's banner stands (2026-10-14). Otherwise the closure sets `ctx['extra_terms']` to a `list<string>` of term names: for each listed taxonomy, in list order, when `RequestTerm::get( $taxonomy )` returns a term, that term's name (no `is_tax( $taxonomy )` check, see Global Constraints). It stays empty on singular requests. The closure's early return changes to: return `$banner` unless `is_singular`, `is_archive` or `extra_terms` is non-empty.
   - `Banner::apply()` reads `$ctx['extra_terms'] ?? array()`.
     - Taxonomy page (not singular, not a post-type archive, `extra_terms` non-empty): set `type`, `subtitle` and `backgroundColor` as for archives, and set `title` unconditionally to `implode( ' ', extra_terms ) . ' ' . $args['archive_title']`.
     - Post-type archive: in the existing archive-title block, build the names list as `extra_terms` followed by `term_name` when `is_tax_season`. If the list is non-empty and the subtitle is non-empty, the subtitle becomes `subtitle . ' ' . joiner . ' ' . implode( ', ', names )`. Without `extra_terms` the result must equal today's.
@@ -174,7 +174,7 @@
   - `BannerTest` (pure, using its `args()` and `ctx()` helpers):
     - `test_taxonomy_page_title_is_term_names_plus_archive_title`: `extra_terms = array( 'District' )`, `archive_title` `Competitions`, `is_archive` false: `title` is `District Competitions`, `type` and `subtitle` come from args and ctx.
     - `test_taxonomy_page_joins_several_terms`: `array( 'District', 'Week 1' )` gives `District Week 1 Competitions`.
-    - `test_taxonomy_page_overwrites_an_existing_title`: incoming `title` `Season 31` becomes `District Competitions` (Review Focus 6).
+    - `test_taxonomy_page_overwrites_an_existing_title`: incoming `title` `Season 31` becomes `District Competitions` when `apply()` is given `extra_terms` (the deferral to the season is decided earlier, in the `register()` closure; Review Focus 6).
     - `test_archive_subtitle_lists_extra_terms_then_season`: `is_archive`, `is_tax_season`, `term_name` `Season 31`, `extra_terms = array( 'District' )`, subtitle `Subtitle`: `Subtitle in District, Season 31`.
     - `test_archive_subtitle_with_extra_terms_and_no_season`: `Subtitle in District`.
     - `test_apply_without_extra_terms_is_unchanged`: the existing season and `from` joiner tests still pass untouched, and a ctx with no `extra_terms` key behaves like `array()`.
@@ -183,7 +183,7 @@
     - `test_type_archive_banner`: `go_to( get_term_link( $district_type ) )`, then `apply_filters( 'hyperpress_banner_content', array() )` has `title` `District Competitions`, `type` `competition` and the competition subtitle.
     - `test_district_and_week_archive_banners`: the same for a `hyper_district` term and a `hyper_week` term.
     - `test_combined_archive_banner`: `go_to( '/?post_type=hyper_competition&hyper_season=season-31&hyper_competition_type=district' )` gives `title` `Competitions` and a subtitle ending `in District, Season 31`.
-    - `test_type_page_with_season_query_keeps_competition_banner`: Review Focus 6.
+    - `test_type_page_with_season_query_defers_to_the_season_banner`: Review Focus 6 (renamed 2026-10-14; it first asserted the competition title). `test_type_page_without_season_query_keeps_competition_banner` and `test_combined_archive_with_a_season_is_not_deferred` cover the unchanged cases.
     - `test_unknown_type_slug_sets_no_banner_type`: Review Focus 7.
     - `test_other_post_type_banner_unchanged`: a newsletter-style registration without `taxonomies` produces the same banner as before for its archive.
 - [x] **Step 2:** Run `docker compose run --rm php composer test:unit -- --filter BannerTest` and `composer test:integration -- --filter Competition`. Expected: FAIL (unknown `extra_terms` behavior, no taxonomy-page banner).
@@ -199,7 +199,7 @@
 - Coverage: type crumb on the combined archive (Tasks 3-4), on single competitions (Task 3), the type-only page (Task 4), the wrong-term bug in breadcrumbs, banner and season page (Task 2 plus the scan guard), and no behavior change for other plugins (Task 3 `test_register_without_taxonomies_is_unchanged`).
 - Banner coverage: type, district and week archives (Task 5), the combined archive subtitle (Task 5), and no change for newsletter, sponsor or other callers (Task 5 `test_other_post_type_banner_unchanged`).
 - The banner title word order (`District Competitions`) is built by concatenation and the joiners are not translated, which matches the existing code. Revisit if the site is ever translated.
-- A type-only page with `?hyper_season=...` shows the Season plugin's trail (`Seasons > Season 31`) and no type crumb: `TypeBreadcrumbs` defers to the Season plugin there (Task 4 ruling), because otherwise both trails would be appended. The banner on that URL is the competition banner (Task 5, Review Focus 6), so the two disagree on that one unlinked URL shape. Align them later if wanted.
+- A type-only page with `?hyper_season=...` shows the Season plugin's trail (`Seasons > Season 31`) and no type crumb: `TypeBreadcrumbs` defers to the Season plugin there (Task 4 ruling), because otherwise both trails would be appended. The banner on that URL defers to the Season plugin's banner too (Task 5, Review Focus 6, aligned 2026-10-14), so the two agree on that URL shape.
 - The type-only trail uses the term's own name. If the term is named "District" the crumb reads "District"; rename the term in wp-admin if you want "Districts".
 
 ## Outcome / execution notes
@@ -216,3 +216,4 @@
   - Manual browser checks are still outstanding.
 - 2026-10-14: the pretty path `/seasons/<season>/competitions/<type>/` was missing from the original plan, which only covered the query-string form (`?hyper_competition_type=<type>`); it fell through to the season taxonomy's hierarchical rule and returned 404. Now added by `HyperPress\Competition\Rewrite`, which also accepts hierarchical type paths (`qualifying/district`). The first deploy needs the rewrite rules flushed: the plugin flushes once automatically through its own `hyperpress_competition_rewrite_hash` option; `wp rewrite flush` is the manual fallback.
 - 2026-10-14: an unknown term in a taxonomy query var of the competition (type, district, week) or season taxonomies now returns a 404 through `HyperPress\Utils\NotFound` (a `pre_handle_404` filter registered by both plugins). The earlier note that an unknown type slug gives an empty 200 archive no longer holds, so `BreadcrumbsRequestTest::test_unknown_type_slug_has_no_type_crumb` now has the single outcome (404, empty trail).
+- 2026-10-14: a taxonomy-only page that also carries a season (`/competition-types/district/?hyper_season=season-31`) now has a season-centric banner as well as breadcrumb: `Utils\Banner::register()` reads no extra terms there, so `SeasonBanner`'s title and `type` stand. This supersedes the earlier rule (Review Focus 6) that the competition banner overwrites the title on such a page, and the self-review note that banner and breadcrumb disagree there. The combined competition view is `/seasons/<season>/competitions/<type>/`, a post-type archive, which keeps `<subtitle> in District, Season 31`.

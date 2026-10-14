@@ -135,14 +135,15 @@ final class BannerTest extends WP_UnitTestCase {
 		$this->assertSame( 'Compete in District, Season 31', $banner['subtitle'] );
 	}
 
-	public function test_type_page_with_season_query_keeps_competition_banner(): void {
+	public function test_type_page_with_season_query_defers_to_the_season_banner(): void {
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
 		$season   = $this->term( 'Season 31', 'season-31', 'hyper_season' );
-		// Stands in for the Season plugin's banner, which runs first and sets its own title.
+		// Stands in for the Season plugin's banner, which runs first and sets its own title and type.
 		add_filter(
 			'hyperpress_banner_content',
 			static function ( $banner ) {
 				$banner['title'] = 'Season 31';
+				$banner['type']  = 'season';
 				return $banner;
 			},
 			5
@@ -152,12 +153,46 @@ final class BannerTest extends WP_UnitTestCase {
 		$this->set_queried( $season );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
 
-		$this->assertSame( 'District Competitions', $banner['title'] );
-		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( 'Season 31', $banner['title'] );
+		$this->assertSame( 'season', $banner['type'] );
 
 		$this->set_queried( $district );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
+		$this->assertSame( 'Season 31', $banner['title'] );
+		$this->assertSame( 'season', $banner['type'] );
+	}
+
+	public function test_type_page_without_season_query_keeps_competition_banner(): void {
+		$district = $this->term( 'District', 'district', Plugin::TYPE );
+		// Stands in for a banner that ran first and set its own title.
+		add_filter(
+			'hyperpress_banner_content',
+			static function ( $banner ) {
+				$banner['title'] = 'Earlier title';
+				return $banner;
+			},
+			5
+		);
+
+		$this->go_to( '/?' . Plugin::TYPE . '=' . $district->slug );
+		$this->set_queried( $district );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
 		$this->assertSame( 'District Competitions', $banner['title'] );
+		$this->assertSame( 'competition', $banner['type'] );
+	}
+
+	public function test_combined_archive_with_a_season_is_not_deferred(): void {
+		$district = $this->term( 'District', 'district', Plugin::TYPE );
+		$season   = $this->term( 'Season 31', 'season-31', 'hyper_season' );
+
+		$this->go_to( '/?post_type=' . Plugin::POST_TYPE . '&hyper_season=' . $season->slug . '&' . Plugin::TYPE . '=' . $district->slug );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
+		$this->assertTrue( is_post_type_archive( Plugin::POST_TYPE ) );
+		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( 'Competitions', $banner['title'] );
+		$this->assertSame( 'Compete in District, Season 31', $banner['subtitle'] );
 	}
 
 	public function test_unknown_type_slug_sets_no_banner_type(): void {

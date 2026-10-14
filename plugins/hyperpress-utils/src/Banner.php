@@ -20,7 +20,9 @@ final class Banner {
 	 *                          appended to the archive subtitle, and the title on a taxonomy page). The terms are
 	 *                          only read for non-singular requests that are this post type's archive or a
 	 *                          taxonomy-only archive (is_tax() with no post-type archive), never for another
-	 *                          post type's request.
+	 *                          post type's request. A taxonomy-only archive that also carries a season is the
+	 *                          season's page: no terms are read there, so the Season plugin's banner stands (the
+	 *                          combined view is the post-type archive).
 	 *
 	 * @throws InvalidArgumentException When subtitle is missing or not callable.
 	 */
@@ -46,7 +48,8 @@ final class Banner {
 				);
 				// Only this post type's requests: its archive, or a taxonomy archive that is not any post type's archive.
 				// Another post type's archive or singular (or a page carrying a taxonomy query var) must not take the taxonomy branch.
-				$own_request = ! is_singular() && ( $ctx['is_archive'] || ( is_tax() && ! is_post_type_archive() ) );
+				// A taxonomy archive that also carries a season is the season's page: the Season plugin's banner stands there.
+				$own_request = ! is_singular() && ( $ctx['is_archive'] || ( is_tax() && ! is_post_type_archive() && ! $is_tax_season ) );
 				if ( $own_request ) {
 					foreach ( (array) ( $args['taxonomies'] ?? array() ) as $taxonomy ) {
 						// Not is_tax( $taxonomy ): it only matches the one taxonomy WP picked as the queried object.
