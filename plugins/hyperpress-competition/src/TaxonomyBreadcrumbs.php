@@ -9,8 +9,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Breadcrumb trails for the competition taxonomy archives.
  *
- * - Type (`/competition-types/district/`): `Competitions > <type>`.
- * - District (`/districts/<district>/`) and week (`/weeks/<week>/`): `Competitions > <taxonomy singular label> > <term>`.
+ * Type (`/competition-types/district/`), district (`/districts/<district>/`) and week (`/weeks/<week>/`) all get
+ * `Competitions > <taxonomy singular label> > <term>`, e.g. `Competitions > Type > District`.
  *
  * The middle crumb is read from the taxonomy object at filter time (the label registry may translate it) and has no url.
  * The last crumb is the term's own name only, with no ancestors. The Home crumb comes from the theme.
@@ -22,12 +22,12 @@ defined( 'ABSPATH' ) || exit;
 final class TaxonomyBreadcrumbs {
 
 	/**
-	 * Taxonomies in priority order; the value says whether the trail gets a taxonomy label crumb.
+	 * Taxonomies in priority order.
 	 */
 	private const TAXONOMIES = array(
-		Plugin::TYPE     => false,
-		Plugin::DISTRICT => true,
-		Plugin::WEEK     => true,
+		Plugin::TYPE,
+		Plugin::DISTRICT,
+		Plugin::WEEK,
 	);
 
 	public static function register(): void {
@@ -43,7 +43,7 @@ final class TaxonomyBreadcrumbs {
 
 		$term     = null;
 		$taxonomy = '';
-		foreach ( array_keys( self::TAXONOMIES ) as $candidate ) {
+		foreach ( self::TAXONOMIES as $candidate ) {
 			$term = RequestTerm::get( $candidate );
 			if ( $term ) {
 				$taxonomy = $candidate;
@@ -73,7 +73,7 @@ final class TaxonomyBreadcrumbs {
 			),
 		);
 
-		$taxonomy_object = self::TAXONOMIES[ $taxonomy ] ? get_taxonomy( $taxonomy ) : null;
+		$taxonomy_object = get_taxonomy( $taxonomy );
 		if ( $taxonomy_object ) {
 			$breadcrumbs[] = array(
 				'title'   => $taxonomy_object->labels->singular_name,

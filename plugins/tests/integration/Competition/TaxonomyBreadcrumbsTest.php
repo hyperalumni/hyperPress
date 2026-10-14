@@ -83,11 +83,28 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 
 		$class = sanitize_html_class( sanitize_title( $this->label() ) );
 
-		$this->assertSame( array( $this->label(), 'District' ), array_column( $trail, 'title' ) );
+		$this->assertSame( array( $this->label(), $this->singular( Plugin::TYPE ), 'District' ), array_column( $trail, 'title' ) );
+		$this->assertSame( 'Type', $trail[1]['title'] );
 		$this->assertSame( get_post_type_archive_link( Plugin::POST_TYPE ), $trail[0]['url'] );
 		$this->assertArrayNotHasKey( 'url', $trail[1] );
+		$this->assertArrayNotHasKey( 'url', $trail[2] );
 		$this->assertSame( array( 'item-archive-' . $class ), $trail[0]['classes']['li'] );
 		$this->assertSame( array( 'bread-archive-' . $class ), $trail[0]['classes']['bread'] );
+		$this->assertSame( array( 'li' => array(), 'bread' => array() ), $trail[1]['classes'] );
+		$this->assertSame( array( 'li' => array(), 'bread' => array() ), $trail[2]['classes'] );
+	}
+
+	public function test_single_competition_trail_has_the_type_term_and_no_label_crumb(): void {
+		$type    = $this->rt_term( 'RT Single Type', 'rt-single-type', Plugin::TYPE );
+		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE, 'post_title' => 'RT Single Competition' ) );
+		wp_set_object_terms( $post_id, array( $type->term_id ), Plugin::TYPE );
+
+		$this->go_to( get_permalink( $post_id ) );
+		$titles = array_column( apply_filters( 'hyperpress_breadcrumbs_content', array() ), 'title' );
+
+		$this->assertContains( 'RT Single Type', $titles );
+		$this->assertNotContains( $this->singular( Plugin::TYPE ), $titles );
+		$this->assertNotContains( 'Type', $titles );
 	}
 
 	public function test_other_requests_unchanged(): void {
@@ -130,6 +147,7 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 
 		$this->assertSame( array( $this->label(), 'District', 'Season 31' ), array_column( $trail, 'title' ) );
+		$this->assertNotContains( 'Type', array_column( $trail, 'title' ) );
 	}
 
 	/**
@@ -186,11 +204,17 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 		$this->saved_labels = array(
 			Plugin::WEEK     => $this->singular( Plugin::WEEK ),
 			Plugin::DISTRICT => $this->singular( Plugin::DISTRICT ),
+			Plugin::TYPE     => $this->singular( Plugin::TYPE ),
 		);
 		get_taxonomy( Plugin::WEEK )->labels->singular_name     = 'Rt Wk Label';
 		get_taxonomy( Plugin::DISTRICT )->labels->singular_name = 'Rt Dist Label';
+		get_taxonomy( Plugin::TYPE )->labels->singular_name     = 'Rt Type Label';
 		$week     = $this->rt_term( 'RT Week 1', 'rt-week-1', Plugin::WEEK );
 		$district = $this->rt_term( 'RT Dist 1', 'rt-dist-1', Plugin::DISTRICT );
+		$type     = $this->rt_term( 'RT Type 1', 'rt-type-1', Plugin::TYPE );
+
+		$this->go_to( '/?' . Plugin::TYPE . '=' . $type->slug );
+		$this->assertSame( 'Rt Type Label', apply_filters( 'hyperpress_breadcrumbs_content', array() )[1]['title'] );
 
 		$this->go_to( '/?' . Plugin::WEEK . '=' . $week->slug );
 		$this->assertSame( 'Rt Wk Label', apply_filters( 'hyperpress_breadcrumbs_content', array() )[1]['title'] );
@@ -227,7 +251,7 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 
-		$this->assertSame( array( $this->label(), 'RT Type' ), array_column( $trail, 'title' ) );
+		$this->assertSame( array( $this->label(), $this->singular( Plugin::TYPE ), 'RT Type' ), array_column( $trail, 'title' ) );
 	}
 
 	public function test_district_and_week_request_shows_only_the_district_trail(): void {
