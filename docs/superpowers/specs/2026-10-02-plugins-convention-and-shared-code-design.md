@@ -46,7 +46,7 @@ Fixes, all verified against the current files:
 | student | Missing Author. Add it. |
 | label, student | Descriptions describe behavior that does not exist. Mark as placeholders. (Amended 2026-10-06: label now has behavior.) |
 | competition | Meta box queries the `robot` CPT (`lib/metaboxes/information.php:32`). Add `hyperpress-robot`. |
-| award, robot | Register no meta boxes. Drop `meta-box-aio`. (Amended 2026-10-14: award now has a Meta Box settings page for its banner subtitle and requires `meta-box-aio` again; see the table below. Robot follows.) |
+| award, robot | Register no meta boxes. Drop `meta-box-aio`. (Amended 2026-10-14: award now has a Meta Box settings page for its banner subtitle and requires `meta-box-aio` again; see the table below. Robot likewise.) |
 | socials | Customizer plus widget only. Drop `meta-box-aio`. (Amended 2026-10-07: plugin renamed `hyperpress-social`; see `2026-10-07-singular-plugin-names.md`. Superseded 2026-10-13: social now uses a Meta Box settings page and requires `hyperpress-utils` and `meta-box-aio`; see the table below.) |
 | label, student | No behavior. `Requires Plugins` is empty until behavior lands. (Amended 2026-10-06: label now has behavior; its `Requires Plugins` stays empty by design, see `2026-10-06-label-plugin-extraction-design.md`. Superseded 2026-10-13: label now has a Meta Box settings page and requires `hyperpress-utils` and `meta-box-aio`; see the table below.) |
 | season, program | Both register Meta Box panels (`rwmb_meta_boxes`). Keep `meta-box-aio`. |
@@ -59,7 +59,7 @@ Resulting `Requires Plugins`:
 | competition | hyperpress-utils, hyperpress-season, hyperpress-robot, meta-box-aio |
 | countdown | hyperpress-utils, meta-box-aio |
 | newsletter | hyperpress-utils, hyperpress-season, meta-box-aio |
-| robot | hyperpress-utils, hyperpress-season |
+| robot | hyperpress-utils, hyperpress-season, meta-box-aio (Amended 2026-10-14: as award, for its banner subtitle settings page.) |
 | sponsor | hyperpress-utils, hyperpress-season, meta-box-aio |
 | season, program | hyperpress-utils, meta-box-aio |
 | label | hyperpress-utils, meta-box-aio (Amended 2026-10-13: it was none, until its Customizer settings moved to a Meta Box settings page; see `docs/superpowers/plans/2026-10-13-settings-pages-label.md`.) |

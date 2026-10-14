@@ -56,7 +56,7 @@ final class Convention {
 		'hyperpress-countdown'   => array( 'hyperpress-utils', 'meta-box-aio' ),
 		'hyperpress-frontpage'   => array( 'hyperpress-utils', 'meta-box-aio' ),
 		'hyperpress-newsletter'  => array( 'hyperpress-utils', 'hyperpress-season', 'meta-box-aio' ),
-		'hyperpress-robot'       => array( 'hyperpress-utils', 'hyperpress-season' ),
+		'hyperpress-robot'       => array( 'hyperpress-utils', 'hyperpress-season', 'meta-box-aio' ),
 		'hyperpress-sponsor'     => array( 'hyperpress-utils', 'hyperpress-season', 'meta-box-aio' ),
 		'hyperpress-season'      => array( 'hyperpress-utils', 'meta-box-aio' ),
 		'hyperpress-program'     => array( 'hyperpress-utils', 'meta-box-aio' ),
