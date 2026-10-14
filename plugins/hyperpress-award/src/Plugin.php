@@ -30,12 +30,11 @@ final class Plugin {
 		Banner::register(
 			self::POST_TYPE,
 			array(
-				'type'                     => 'award',
-				'subtitle'                 => array( Settings::class, 'banner_subtitle' ),
-				'color_mod'                => 'hyperpress_hyper_blue',
-				'archive_title'            => __( 'Awards', 'hyperpress' ),
-				'term_joiner'              => 'in',
-				'always_set_archive_title' => true,
+				'type'          => 'award',
+				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
+				'color_mod'     => 'hyperpress_hyper_blue',
+				'archive_title' => __( 'Awards', 'hyperpress' ),
+				'term_joiner'   => 'in',
 			)
 		);
 	}

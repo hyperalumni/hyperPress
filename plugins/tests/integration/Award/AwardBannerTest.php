@@ -45,8 +45,8 @@ final class AwardBannerTest extends WP_UnitTestCase {
 		set_theme_mod( 'hyperpress_hyper_blue', '#00f' );
 		delete_option( Settings::OPTION );
 
-		// Stand-in for the theme's `hyperpress_banner_archive`, which runs before the plugin's banner filter
-		// (themes/hyperpress-foundation/library/banner/archive.php).
+		// Stand-in for the theme's `hyperpress_banner_archive`, which runs after the plugin's banner filter, at
+		// priority 90 (themes/hyperpress-foundation/library/banner/archive.php).
 		add_filter(
 			'hyperpress_banner_content',
 			static function ( $banner ) {
@@ -55,7 +55,8 @@ final class AwardBannerTest extends WP_UnitTestCase {
 					$banner['title'] = 'Archive';
 				}
 				return $banner;
-			}
+			},
+			90
 		);
 		Plugin::register_banner();
 	}
