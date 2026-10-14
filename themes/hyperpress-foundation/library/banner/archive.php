@@ -2,7 +2,8 @@
 // Don't load directly.
 defined( 'ABSPATH' ) || exit;
 
-add_filter( 'hyperpress_banner_content', 'hyperpress_banner_archive' );
+// Priority 90: this generic fallback runs after the plugin banners (priority 10), so a plugin claims its archive first.
+add_filter( 'hyperpress_banner_content', 'hyperpress_banner_archive', 90 );
 
 function hyperpress_banner_archive( $banner ) {
 	if ( empty( $banner['type'] ) ) {
