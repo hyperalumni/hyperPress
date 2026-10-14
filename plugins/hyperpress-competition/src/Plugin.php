@@ -26,6 +26,7 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'seed_terms' ), 20 );
 		Breadcrumbs::register( array( self::POST_TYPE ), array( self::TYPE ) );
 		TypeBreadcrumbs::register();
+		Rewrite::register();
 		add_action( 'init', array( self::class, 'register_banner' ) );
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 		SettingsPage::register();

@@ -214,3 +214,4 @@
   - [x] `extra_terms` had a redundant orderby plus usort. Done 2026-10-14: the `orderby` argument is gone and the natural-order `usort` stays, with a comment.
   - [x] `SeasonGuardsTest`'s non-term-queried-object test was vacuous. Done 2026-10-14: renamed to say the term comes from the query var, and a new unknown-season-slug test covers the fallback.
   - Manual browser checks are still outstanding.
+- 2026-10-14: the pretty path `/seasons/<season>/competitions/<type>/` was missing from the original plan, which only covered the query-string form (`?hyper_competition_type=<type>`); it fell through to the season taxonomy's hierarchical rule and returned 404. Now added by `HyperPress\Competition\Rewrite`, which also accepts hierarchical type paths (`qualifying/district`). The first deploy needs the rewrite rules flushed: the plugin flushes once automatically through its own `hyperpress_competition_rewrite_hash` option; `wp rewrite flush` is the manual fallback.
