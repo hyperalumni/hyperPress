@@ -40,12 +40,13 @@ final class Plugin {
 		Banner::register(
 			self::POST_TYPE,
 			array(
-				'type'          => 'competition',
-				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
-				'color_mod'     => 'hyperpress_hyper_green',
-				'archive_title' => __( 'Competitions', 'hyperpress' ),
-				'term_joiner'   => 'in',
-				'taxonomies'    => array( self::DISTRICT, self::WEEK, self::TYPE ),
+				'type'                     => 'competition',
+				'subtitle'                 => array( Settings::class, 'banner_subtitle' ),
+				'color_mod'                => 'hyperpress_hyper_green',
+				'archive_title'            => __( 'Competitions', 'hyperpress' ),
+				'term_joiner'              => 'in',
+				'always_set_archive_title' => true,
+				'taxonomies'               => array( self::DISTRICT, self::WEEK, self::TYPE ),
 			)
 		);
 	}

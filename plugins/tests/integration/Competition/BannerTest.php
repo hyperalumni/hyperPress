@@ -2,6 +2,7 @@
 namespace HyperPress\Tests\Integration\Competition;
 
 use HyperPress\Competition\Plugin;
+use HyperPress\Competition\Rewrite;
 use HyperPress\Competition\Settings;
 use HyperPress\Utils\Banner;
 use WP_UnitTestCase;
@@ -66,6 +67,8 @@ final class BannerTest extends WP_UnitTestCase {
 		}
 		$this->registered_post_types = array();
 		$this->registered_taxonomies = array();
+		remove_action( 'init', array( Rewrite::class, 'add_rules' ), 21 );
+		remove_action( 'init', array( Rewrite::class, 'maybe_flush' ), 99 );
 		remove_all_filters( 'hyperpress_banner_content' );
 		if ( null !== $this->saved_filters ) {
 			$wp_filter['hyperpress_banner_content'] = $this->saved_filters;
@@ -193,6 +196,116 @@ final class BannerTest extends WP_UnitTestCase {
 		$this->assertSame( 'competition', $banner['type'] );
 		$this->assertSame( 'Competitions', $banner['title'] );
 		$this->assertSame( 'Compete in District, Season 31', $banner['subtitle'] );
+	}
+
+	/**
+	 * Register the competition banner after a stand-in for the theme's `hyperpress_banner_archive` filter.
+	 *
+	 * The theme's library files load before `init`, the plugins register their banner filters at `init`, both at
+	 * priority 10, so on a live site the theme's filter runs first: when no banner type is set yet it sets
+	 * type 'archive' and title 'Archive' on any archive (themes/hyperpress-foundation/library/banner/archive.php).
+	 */
+	private function register_banner_after_theme_filter(): void {
+		remove_all_filters( 'hyperpress_banner_content' );
+		add_filter(
+			'hyperpress_banner_content',
+			static function ( $banner ) {
+				if ( empty( $banner['type'] ) && is_archive() ) {
+					$banner['type']  = 'archive';
+					$banner['title'] = 'Archive';
+				}
+				return $banner;
+			}
+		);
+		Plugin::register_banner();
+	}
+
+	private function use_pretty_permalinks(): void {
+		$this->set_permalink_structure( '/%postname%/' );
+		remove_action( 'init', array( Rewrite::class, 'add_rules' ), 21 );
+		Rewrite::register();
+		Rewrite::add_rules();
+		flush_rewrite_rules();
+	}
+
+	public function test_combined_archive_keeps_the_competition_title_over_the_theme_archive_title(): void {
+		$district = $this->term( 'District', 'district', Plugin::TYPE );
+		$season   = $this->term( 'Season 31', 'season-31', 'hyper_season' );
+		$this->register_banner_after_theme_filter();
+
+		$this->go_to( '/?post_type=' . Plugin::POST_TYPE . '&hyper_season=' . $season->slug . '&' . Plugin::TYPE . '=' . $district->slug );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
+		$this->assertSame( 'Competitions', $banner['title'] );
+		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( 'Compete in District, Season 31', $banner['subtitle'] );
+	}
+
+	public function test_pretty_combined_archive_keeps_the_competition_title_over_the_theme_archive_title(): void {
+		$this->term( 'District', 'district', Plugin::TYPE );
+		$this->term( 'Season 31', 'season-31', 'hyper_season' );
+		$this->use_pretty_permalinks();
+		$this->register_banner_after_theme_filter();
+
+		$this->go_to( home_url( '/seasons/season-31/competitions/district/' ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
+		$this->assertTrue( is_post_type_archive( Plugin::POST_TYPE ) );
+		$this->assertSame( 'Competitions', $banner['title'] );
+		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( 'Compete in District, Season 31', $banner['subtitle'] );
+	}
+
+	public function test_season_competitions_archive_keeps_the_competition_title_over_the_theme_archive_title(): void {
+		$this->term( 'Season 31', 'season-31', 'hyper_season' );
+		$this->use_pretty_permalinks();
+		$this->register_banner_after_theme_filter();
+
+		$this->go_to( home_url( '/seasons/season-31/competitions/' ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
+		$this->assertTrue( is_post_type_archive( Plugin::POST_TYPE ) );
+		$this->assertSame( 'Competitions', $banner['title'] );
+		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( 'Compete in Season 31', $banner['subtitle'] );
+	}
+
+	public function test_plain_competitions_archive_keeps_the_competition_title_over_the_theme_archive_title(): void {
+		$this->use_pretty_permalinks();
+		$this->register_banner_after_theme_filter();
+
+		$this->go_to( home_url( '/competitions/' ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
+		$this->assertTrue( is_post_type_archive( Plugin::POST_TYPE ) );
+		$this->assertSame( 'Competitions', $banner['title'] );
+		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( 'Compete', $banner['subtitle'] );
+	}
+
+	public function test_type_taxonomy_page_is_not_affected_by_the_theme_archive_title(): void {
+		$district = $this->term( 'District', 'district', Plugin::TYPE );
+		$this->register_banner_after_theme_filter();
+
+		$this->go_to( get_term_link( $district ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
+		$this->assertSame( 'District Competitions', $banner['title'] );
+		$this->assertSame( 'competition', $banner['type'] );
+	}
+
+	public function test_empty_subtitle_gets_no_term_suffix_on_the_combined_archive(): void {
+		$district = $this->term( 'District', 'district', Plugin::TYPE );
+		$season   = $this->term( 'Season 31', 'season-31', 'hyper_season' );
+		// The competition default: no banner subtitle set, so there is nothing to append the terms to.
+		update_option( Settings::OPTION, array() );
+		$this->register_banner_after_theme_filter();
+
+		$this->go_to( '/?post_type=' . Plugin::POST_TYPE . '&hyper_season=' . $season->slug . '&' . Plugin::TYPE . '=' . $district->slug );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+
+		$this->assertSame( 'Competitions', $banner['title'] );
+		$this->assertSame( '', $banner['subtitle'] );
 	}
 
 	public function test_unknown_type_slug_sets_no_banner_type(): void {
