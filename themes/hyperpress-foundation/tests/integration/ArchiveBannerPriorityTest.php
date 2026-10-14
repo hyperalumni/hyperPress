@@ -45,7 +45,7 @@ final class ArchiveBannerPriorityTest extends WP_UnitTestCase {
 
 	public function test_a_plugin_banner_at_priority_10_is_not_overwritten_by_the_archive_fallback(): void {
 		// Like HyperPress\Utils\Banner::register(): a plain filter at the default priority, added after the theme's.
-		// It sets the type and keeps a title that is already set (unless always_set_archive_title is passed).
+		// It sets the type and keeps a title that is already set.
 		$this->plugin_filter = static function ( $banner ) {
 			if ( is_post_type_archive( self::POST_TYPE ) ) {
 				$banner['type'] = 'competition';

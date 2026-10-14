@@ -15,7 +15,7 @@ final class Banner {
 	 * @param string $post_type Post type key.
 	 * @param array  $args      Required: type, subtitle (callable returning the subtitle string),
 	 *                          color_mod, archive_title.
-	 *                          Optional: term_joiner ('in' default), always_set_archive_title (false default),
+	 *                          Optional: term_joiner ('in' default),
 	 *                          taxonomies (list of taxonomy keys whose requested terms are named in the banner:
 	 *                          appended to the archive subtitle, and the title on a taxonomy page). The terms are
 	 *                          only read for non-singular requests that are this post type's archive or a
@@ -103,7 +103,7 @@ final class Banner {
 		$banner['subtitle']        = $ctx['subtitle'];
 		$banner['backgroundColor'] = $ctx['color'];
 
-		if ( $ctx['is_archive'] && ( ! empty( $args['always_set_archive_title'] ) || empty( $banner['title'] ) ) ) {
+		if ( $ctx['is_archive'] && empty( $banner['title'] ) ) {
 			$banner['title'] = $args['archive_title'];
 			$names           = $extra_terms;
 			if ( $ctx['is_tax_season'] ) {

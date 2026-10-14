@@ -53,13 +53,16 @@ final class BannerTest extends TestCase {
 		$this->assertSame( 'Custom', $set['title'] );
 	}
 
-	public function test_archive_title_can_always_be_overwritten(): void {
+	public function test_a_non_empty_incoming_archive_title_is_kept(): void {
 		$banner = Banner::apply(
-			array( 'title' => 'Custom' ),
-			$this->args( array( 'always_set_archive_title' => true ) ),
-			$this->ctx( array( 'is_archive' => true ) )
+			array( 'title' => 'Archive' ),
+			$this->args(),
+			$this->ctx( array( 'is_archive' => true, 'is_tax_season' => true, 'term_name' => '2026' ) )
 		);
-		$this->assertSame( 'Sponsors', $banner['title'] );
+		$this->assertSame( 'Archive', $banner['title'] );
+		$this->assertSame( 'sponsor', $banner['type'] );
+		$this->assertSame( 'Thank you', $banner['subtitle'] );
+		$this->assertSame( '#c00', $banner['backgroundColor'] );
 	}
 
 	public function test_season_archive_appends_the_term_with_the_configured_joiner(): void {
