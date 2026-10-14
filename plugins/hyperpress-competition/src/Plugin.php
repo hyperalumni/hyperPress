@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit;
 use HyperPress\Utils\Banner;
 use HyperPress\Utils\Breadcrumbs;
 use HyperPress\Utils\Capabilities;
+use HyperPress\Utils\NotFound;
 use HyperPress\Utils\PostTypeRegistrar;
 use HyperPress\Utils\TaxonomyRegistrar;
 use HyperPress\Utils\TermSeeder;
@@ -27,6 +28,7 @@ final class Plugin {
 		Breadcrumbs::register( array( self::POST_TYPE ), array( self::TYPE ) );
 		TypeBreadcrumbs::register();
 		Rewrite::register();
+		NotFound::register( array( self::TYPE, self::DISTRICT, self::WEEK ) );
 		add_action( 'init', array( self::class, 'register_banner' ) );
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 		SettingsPage::register();

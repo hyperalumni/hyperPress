@@ -89,15 +89,20 @@ final class RewriteTest extends WP_UnitTestCase {
 		$this->assertSame( $season->term_id, get_queried_object_id() );
 	}
 
-	public function test_unknown_type_slug_matches_no_competitions(): void {
+	public function test_unknown_type_slug_is_a_404(): void {
 		$this->term( 'Season 31', 'season-31', 'hyper_season' );
 
 		$this->go_to( home_url( '/seasons/season-31/competitions/rt-no-such-type/' ) );
 
-		// Core's own handling: the unknown term gives an empty archive (as does ?hyper_competition_type=rt-no-such-type), not a 404.
-		$this->assertTrue( is_post_type_archive( Plugin::POST_TYPE ) );
+		// Utils\NotFound: an unknown term in a taxonomy query var is a 404 (as is ?hyper_competition_type=rt-no-such-type).
+		$this->assertTrue( is_404() );
 		$this->assertSame( 'rt-no-such-type', get_query_var( Plugin::TYPE ) );
-		$this->assertFalse( have_posts() );
+	}
+
+	public function test_unknown_season_is_a_404(): void {
+		$this->go_to( home_url( '/seasons/rt-no-such-season/competitions/' ) );
+
+		$this->assertTrue( is_404() );
 	}
 
 	public function test_breadcrumbs_end_to_end(): void {

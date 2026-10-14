@@ -124,14 +124,9 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 
 		$this->go_to( '/?post_type=hyper_gizmo&hyper_season=season-31&hyper_competition_type=does-not-exist' );
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
-		// An unknown type slug matches no posts, and whether core then flags the request as a 404 (is_post_type_archive()
-		// is false, so the callback leaves the input alone) or keeps it as the Gizmos archive depends on global state
-		// left by other tests. Either way the trail is exact and never contains a type crumb.
-		if ( is_404() ) {
-			$this->assertSame( array(), $trail );
-		} else {
-			$this->assertSame( array( 'Gizmos', 'Season 31' ), array_column( $trail, 'title' ) );
-		}
+		// Utils\NotFound (booted with the competition plugin) makes an unknown type slug a 404, and a 404 gets no trail.
+		$this->assertTrue( is_404() );
+		$this->assertSame( array(), $trail );
 	}
 
 	public function test_child_term_yields_single_crumb(): void {

@@ -4,6 +4,7 @@ namespace HyperPress\Season;
 defined( 'ABSPATH' ) || exit;
 
 use HyperPress\Season\Shortcodes\SeasonCount;
+use HyperPress\Utils\NotFound;
 use HyperPress\Utils\TaxonomyRegistrar;
 use HyperPress\Utils\TermSeeder;
 
@@ -23,6 +24,7 @@ final class Plugin {
 		AdminFilter::register();
 		SeasonOrder::register();
 		Rewrite::register();
+		NotFound::register( array( self::TAXONOMY ) );
 		SeasonCount::register();
 		Labels::register();
 	}
