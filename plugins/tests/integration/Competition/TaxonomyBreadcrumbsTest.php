@@ -68,6 +68,13 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 		return get_post_type_object( Plugin::POST_TYPE )->labels->name;
 	}
 
+	public function test_type_taxonomy_is_called_type(): void {
+		$labels = get_taxonomy( Plugin::TYPE )->labels;
+
+		$this->assertSame( 'Type', $labels->singular_name );
+		$this->assertSame( 'Competition Types', $labels->name );
+	}
+
 	public function test_type_archive_trail(): void {
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
 

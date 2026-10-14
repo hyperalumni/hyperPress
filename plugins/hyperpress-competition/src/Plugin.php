@@ -159,7 +159,7 @@ final class Plugin {
 	public static function type_definition(): array {
 		return array(
 			'key'                => self::TYPE,
-			'singular'           => __( 'Competition Type', 'hyperpress' ),
+			'singular'           => __( 'Type', 'hyperpress' ),
 			'plural'             => __( 'Competition Types', 'hyperpress' ),
 			'description'        => __( 'Kinds of competition: qualifying, championship or unofficial', 'hyperpress' ),
 			'slug'               => 'competition-types',
