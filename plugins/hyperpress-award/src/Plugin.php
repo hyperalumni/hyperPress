@@ -3,6 +3,7 @@ namespace HyperPress\Award;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Season\SingularBanner;
 use HyperPress\Utils\Banner;
 use HyperPress\Utils\Breadcrumbs;
 use HyperPress\Utils\Capabilities;
@@ -19,6 +20,7 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'ensure_capabilities' ), 20 );
 		Breadcrumbs::register( array( self::POST_TYPE ) );
 		add_action( 'init', array( self::class, 'register_banner' ) );
+		SingularBanner::register( self::POST_TYPE, __( 'Award', 'hyperpress' ) );
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 		SettingsPage::register();
 		MetaBoxes::register();

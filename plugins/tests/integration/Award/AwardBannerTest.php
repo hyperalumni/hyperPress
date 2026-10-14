@@ -125,4 +125,54 @@ final class AwardBannerTest extends WP_UnitTestCase {
 		$this->assertSame( 'award', $banner['type'] );
 		$this->assertSame( 'Honours in ' . $season->name, $banner['subtitle'] );
 	}
+
+	/**
+	 * Stand-in for the theme's singular banner filters (library/banner/post.php and page.php), which run before the
+	 * plugin's banner filter and only act on `post` and pages: they leave the title of a award empty.
+	 */
+	private function singular_banner_for( int $post_id ): array {
+		add_filter(
+			'hyperpress_banner_content',
+			static function ( $banner ) {
+				if ( is_singular( 'post' ) ) {
+					$banner['type']  = 'post';
+					$banner['title'] = 'Blog';
+				}
+				if ( is_page() ) {
+					$banner['type'] = 'page';
+				}
+				return $banner;
+			},
+			5
+		);
+		$this->go_to( '/?post_type=' . Plugin::POST_TYPE . '&p=' . $post_id );
+		return apply_filters( 'hyperpress_banner_content', array() );
+	}
+
+	public function test_a_single_award_banner_is_prefixed_with_its_season_after_the_theme_filters(): void {
+		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE, 'post_title' => 'Award Winner' ) );
+		wp_set_object_terms( $post_id, array( $this->season()->term_id ), 'hyper_season' );
+
+		$banner = $this->singular_banner_for( $post_id );
+
+		$this->assertTrue( is_singular( Plugin::POST_TYPE ) );
+		$this->assertSame( 'award', $banner['type'] );
+		$this->assertSame( 'Season 31: Award Winner', $banner['title'] );
+		$this->assertSame( '#00f', $banner['backgroundColor'] );
+	}
+
+	public function test_a_single_award_without_a_season_falls_back_to_award(): void {
+		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE, 'post_title' => 'Award Winner' ) );
+
+		$this->assertSame( 'Award', $this->singular_banner_for( $post_id )['title'] );
+	}
+
+	public function test_a_single_award_banner_uses_the_post_colour_when_it_has_one(): void {
+		$GLOBALS['hyperpress_test_rwmb']['hyperpress_banner_background_color'] = '#123456';
+		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE ) );
+
+		$banner = $this->singular_banner_for( $post_id );
+		unset( $GLOBALS['hyperpress_test_rwmb'] );
+		$this->assertSame( '#123456', $banner['backgroundColor'] );
+	}
 }
