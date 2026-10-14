@@ -39,6 +39,7 @@ final class Plugin {
 		SettingsPage::register();
 		MetaBoxes::register();
 		Labels::register();
+		ProgramBanner::register();
 	}
 
 	public static function register(): void {
