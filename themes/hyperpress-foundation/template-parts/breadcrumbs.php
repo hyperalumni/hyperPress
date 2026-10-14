@@ -19,8 +19,8 @@ $breadcrumbs = apply_filters(
 <ul id="breadcrumbs" class="breadcrumbs">
 	<?php foreach ( $breadcrumbs as $breadcrumb ) : ?>
 		<?php
-		// Optional `tooltip` crumb key: the hover text (title attribute). Falls back to the visible title.
-		$hover = ( isset( $breadcrumb['tooltip'] ) && is_string( $breadcrumb['tooltip'] ) && '' !== $breadcrumb['tooltip'] ) ? $breadcrumb['tooltip'] : $breadcrumb['title'];
+		// Optional `title_attr` crumb key: the title attribute (native hover text). Falls back to the visible title.
+		$hover = ( isset( $breadcrumb['title_attr'] ) && is_string( $breadcrumb['title_attr'] ) && '' !== $breadcrumb['title_attr'] ) ? $breadcrumb['title_attr'] : $breadcrumb['title'];
 		?>
 		<li class="item <?php echo esc_attr( implode( ' ', $breadcrumb['classes']['li'] ) ); ?>">
 			<?php if ( ! empty( $breadcrumb['url'] ) ) : ?>

@@ -68,11 +68,11 @@ final class BreadcrumbsMarkupTest extends WP_UnitTestCase {
 		return array( $html, $node->getAttribute( 'title' ), trim( $node->textContent ) );
 	}
 
-	public function test_tooltip_is_the_hover_title_of_a_link_crumb_and_the_text_stays(): void {
+	public function test_title_attr_is_the_hover_title_of_a_link_crumb_and_the_text_stays(): void {
 		list( , $title, $text ) = $this->render_crumb(
 			array(
 				'title'   => 'Type',
-				'tooltip' => 'Competition Type',
+				'title_attr' => 'Competition Type',
 				'url'     => 'https://example.test/type/',
 			)
 		);
@@ -81,11 +81,11 @@ final class BreadcrumbsMarkupTest extends WP_UnitTestCase {
 		$this->assertSame( 'Type', $text );
 	}
 
-	public function test_tooltip_is_the_hover_title_of_a_span_crumb_and_the_text_stays(): void {
+	public function test_title_attr_is_the_hover_title_of_a_span_crumb_and_the_text_stays(): void {
 		list( $html, $title, $text ) = $this->render_crumb(
 			array(
 				'title'   => 'Type',
-				'tooltip' => 'Competition Type',
+				'title_attr' => 'Competition Type',
 			)
 		);
 
@@ -94,11 +94,11 @@ final class BreadcrumbsMarkupTest extends WP_UnitTestCase {
 		$this->assertSame( 'Type', $text );
 	}
 
-	public function test_tooltip_markup_and_quotes_are_escaped(): void {
+	public function test_title_attr_markup_and_quotes_are_escaped(): void {
 		list( $html, $title ) = $this->render_crumb(
 			array(
 				'title'   => 'Type',
-				'tooltip' => 'A "q" <b>bold</b> onmouseover="1',
+				'title_attr' => 'A "q" <b>bold</b> onmouseover="1',
 			)
 		);
 
@@ -107,7 +107,7 @@ final class BreadcrumbsMarkupTest extends WP_UnitTestCase {
 		$this->assertSame( 'A "q" <b>bold</b> onmouseover="1', $title );
 	}
 
-	public function test_crumb_without_tooltip_uses_its_title_for_both_variants(): void {
+	public function test_crumb_without_title_attr_uses_its_title_for_both_variants(): void {
 		list( , $link_title, $link_text ) = $this->render_crumb(
 			array(
 				'title' => 'Plain <i>x</i>',
@@ -122,13 +122,13 @@ final class BreadcrumbsMarkupTest extends WP_UnitTestCase {
 		$this->assertSame( 'Plain', $span_title );
 	}
 
-	public function test_empty_or_non_string_tooltip_falls_back_to_the_title(): void {
-		foreach ( array( '', null, 5, array( 'x' ), false ) as $tooltip ) {
+	public function test_empty_or_non_string_title_attr_falls_back_to_the_title(): void {
+		foreach ( array( '', null, 5, array( 'x' ), false ) as $title_attr ) {
 			remove_all_filters( 'hyperpress_breadcrumbs_content' );
 			list( , $link_title ) = $this->render_crumb(
 				array(
 					'title'   => 'Type',
-					'tooltip' => $tooltip,
+					'title_attr' => $title_attr,
 					'url'     => 'https://example.test/type/',
 				)
 			);
@@ -138,7 +138,7 @@ final class BreadcrumbsMarkupTest extends WP_UnitTestCase {
 			list( , $span_title ) = $this->render_crumb(
 				array(
 					'title'   => 'Type',
-					'tooltip' => $tooltip,
+					'title_attr' => $title_attr,
 				)
 			);
 			$this->assertSame( 'Type', $span_title );
