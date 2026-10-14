@@ -18,15 +18,19 @@ $breadcrumbs = apply_filters(
 ?>
 <ul id="breadcrumbs" class="breadcrumbs">
 	<?php foreach ( $breadcrumbs as $breadcrumb ) : ?>
+		<?php
+		// Optional `tooltip` crumb key: the hover text (title attribute). Falls back to the visible title.
+		$hover = ( isset( $breadcrumb['tooltip'] ) && is_string( $breadcrumb['tooltip'] ) && '' !== $breadcrumb['tooltip'] ) ? $breadcrumb['tooltip'] : $breadcrumb['title'];
+		?>
 		<li class="item <?php echo esc_attr( implode( ' ', $breadcrumb['classes']['li'] ) ); ?>">
 			<?php if ( ! empty( $breadcrumb['url'] ) ) : ?>
 				<a
 					class="breadcrumb <?php echo esc_attr( implode( ' ', $breadcrumb['classes']['bread'] ) ); ?>"
-					title="<?php echo esc_attr( $breadcrumb['title'] ); ?>"
+					title="<?php echo esc_attr( $hover ); ?>"
 					href="<?php echo esc_url( $breadcrumb['url'] ); ?>"><?php echo esc_html( $breadcrumb['title'] ); ?></a>
 			<?php else : ?>
 				<span class="<?php echo esc_attr( implode( ' ', $breadcrumb['classes']['bread'] ) ); ?>"
-						title="<?php echo esc_attr( $breadcrumb['title'] ); ?>"><?php echo esc_html( $breadcrumb['title'] ); ?></span>
+						title="<?php echo esc_attr( $hover ); ?>"><?php echo esc_html( $breadcrumb['title'] ); ?></span>
 			<?php endif; ?>
 		</li>
 	<?php endforeach; ?>
