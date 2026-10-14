@@ -111,7 +111,7 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 
 		$this->assertSame( 'Type', $trail[1]['title'] );
-		$this->assertSame( 'Competition Type', $trail[1]['tooltip'] );
+		$this->assertSame( 'Competition Type', $trail[1]['title_attr'] );
 	}
 
 	public function test_district_and_week_label_crumbs_hover_as_their_label(): void {
@@ -121,26 +121,26 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 		$this->go_to( get_term_link( $district ) );
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 		$this->assertSame( $this->singular( Plugin::DISTRICT ), $trail[1]['title'] );
-		$this->assertSame( $trail[1]['title'], $trail[1]['tooltip'] );
+		$this->assertSame( $trail[1]['title'], $trail[1]['title_attr'] );
 
 		$this->go_to( get_term_link( $week ) );
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 		$this->assertSame( $this->singular( Plugin::WEEK ), $trail[1]['title'] );
-		$this->assertSame( $trail[1]['title'], $trail[1]['tooltip'] );
+		$this->assertSame( $trail[1]['title'], $trail[1]['title_attr'] );
 	}
 
-	public function test_only_the_label_crumb_has_a_tooltip(): void {
+	public function test_only_the_label_crumb_has_a_title_attr(): void {
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
 
 		$this->go_to( get_term_link( $district ) );
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 
-		$this->assertArrayNotHasKey( 'tooltip', $trail[0] );
-		$this->assertArrayHasKey( 'tooltip', $trail[1] );
-		$this->assertArrayNotHasKey( 'tooltip', $trail[2] );
+		$this->assertArrayNotHasKey( 'title_attr', $trail[0] );
+		$this->assertArrayHasKey( 'title_attr', $trail[1] );
+		$this->assertArrayNotHasKey( 'title_attr', $trail[2] );
 	}
 
-	public function test_tooltip_falls_back_to_the_singular_label_when_the_full_label_is_missing(): void {
+	public function test_title_attr_falls_back_to_the_singular_label_when_the_full_label_is_missing(): void {
 		$labels = get_taxonomy( Plugin::TYPE )->labels;
 		$full   = $labels->full_singular_name;
 		unset( $labels->full_singular_name );
@@ -149,7 +149,7 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 		try {
 			$this->go_to( get_term_link( $type ) );
 			$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
-			$this->assertSame( 'Type', $trail[1]['tooltip'] );
+			$this->assertSame( 'Type', $trail[1]['title_attr'] );
 		} finally {
 			$labels->full_singular_name = $full;
 		}

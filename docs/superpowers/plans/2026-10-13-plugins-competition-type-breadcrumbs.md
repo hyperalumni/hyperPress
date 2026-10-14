@@ -237,3 +237,7 @@ Correction to the "type label crumb" note above: the generated wp-admin strings 
 ## Outcome (2026-10-14, hover text on the label crumb)
 
 A breadcrumb crumb may now carry an optional `tooltip` string, rendered by the theme (`template-parts/breadcrumbs.php`) as the crumb's hover `title` attribute; without one the hover text is the visible `title`, as before. `TaxonomyBreadcrumbs` sets it on the taxonomy label crumb only (not on `Competitions` or the term crumb), so the `Type` crumb reads "Type" and hovers as "Competition Type". The text comes from a new optional taxonomy label key `full_singular_name` (set in `Plugin::type_definition()` through the `labels` override); no generated WordPress label carries the full singular once `singular_name` is overridden (`name_admin_bar` is derived from the overridden `singular_name` by core, so it would read "Type"). District and week have no such label and fall back to their `singular_name`, so their hover text equals their visible text. The `Utils\Breadcrumbs` trails are unchanged.
+
+## Outcome (2026-10-14, key renamed to title_attr)
+
+The optional crumb key described in the hover-text note above is called `title_attr`, not `tooltip` (the name was misleading: it is the HTML `title` attribute, not a Foundation tooltip). The theme (`template-parts/breadcrumbs.php`) and `TaxonomyBreadcrumbs` read and emit `title_attr`; behaviour is unchanged. Earlier notes that say `tooltip` mean `title_attr`.
