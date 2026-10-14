@@ -75,6 +75,16 @@ final class TaxonomyBreadcrumbsTest extends WP_UnitTestCase {
 		$this->assertSame( 'Competition Types', $labels->name );
 	}
 
+	public function test_type_taxonomy_keeps_its_competition_type_admin_labels(): void {
+		$labels = get_taxonomy( Plugin::TYPE )->labels;
+
+		$this->assertSame( 'Add New Competition Type', $labels->add_new_item );
+		$this->assertSame( 'Edit Competition Type', $labels->edit_item );
+		$this->assertSame( 'View Competition Type', $labels->view_item );
+		$this->assertSame( 'Update Competition Type', $labels->update_item );
+		$this->assertSame( 'New Competition Type Name', $labels->new_item_name );
+	}
+
 	public function test_type_archive_trail(): void {
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
 

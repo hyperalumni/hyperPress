@@ -159,8 +159,9 @@ final class Plugin {
 	public static function type_definition(): array {
 		return array(
 			'key'                => self::TYPE,
-			'singular'           => __( 'Type', 'hyperpress' ),
+			'singular'           => __( 'Competition Type', 'hyperpress' ),
 			'plural'             => __( 'Competition Types', 'hyperpress' ),
+			'labels'             => array( 'singular_name' => __( 'Type', 'hyperpress' ) ),
 			'description'        => __( 'Kinds of competition: qualifying, championship or unofficial', 'hyperpress' ),
 			'slug'               => 'competition-types',
 			'object_types'       => array( self::POST_TYPE ),
