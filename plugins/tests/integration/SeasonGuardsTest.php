@@ -23,6 +23,8 @@ final class SeasonGuardsTest extends WP_UnitTestCase {
 		if ( null !== $this->previous ) {
 			add_shortcode( 'hyperpress_date_distance', $this->previous );
 		}
+		$GLOBALS['wp_query']->queried_object    = null;
+		$GLOBALS['wp_query']->queried_object_id = 0;
 		unregister_post_type( 'hyper_gizmo' );
 		parent::tear_down();
 	}
@@ -96,7 +98,7 @@ final class SeasonGuardsTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'Gizmos', 'Season 10', 'Widget' ), array_column( $trail, 'title' ) );
 	}
 
-	public function test_banner_filters_do_not_fail_when_the_queried_object_is_not_a_term(): void {
+	public function test_banner_term_comes_from_the_query_var_so_a_stubbed_non_term_queried_object_is_ignored(): void {
 		$this->register_gizmo();
 		Banner::register(
 			'hyper_gizmo',
@@ -113,13 +115,34 @@ final class SeasonGuardsTest extends WP_UnitTestCase {
 		$this->go_to( get_term_link( $term_id, 'hyper_season' ) );
 		$this->assertTrue( is_tax( 'hyper_season' ) );
 
-		// A queried object that is not a WP_Term (for example after a third party filter).
+		// A queried object that is not a WP_Term (for example after a third party filter); the code does not read it.
 		$GLOBALS['wp_query']->queried_object    = (object) array( 'taxonomy' => 'hyper_season' );
 		$GLOBALS['wp_query']->queried_object_id = 0;
 
 		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
 		$this->assertIsArray( $banner );
 		$this->assertSame( '2026', $banner['title'], 'the term comes from the query var, not the queried object' );
+	}
+
+	public function test_unknown_season_slug_leaves_the_banner_and_breadcrumbs_unchanged(): void {
+		$this->register_gizmo();
+		Banner::register(
+			'hyper_gizmo',
+			array(
+				'type'          => 'gizmo',
+				'subtitle'      => static fn() => '',
+				'color_mod'     => 'hyperpress_hyper_green',
+				'archive_title' => 'Gizmos',
+			)
+		);
+		SeasonBanner::register();
+
+		$this->go_to( '/?hyper_season=does-not-exist' );
+
+		$banner = array( 'title' => 'Theme title' );
+		$this->assertSame( $banner, apply_filters( 'hyperpress_banner_content', $banner ) );
+		$trail = array( array( 'title' => 'Home' ) );
+		$this->assertSame( $trail, apply_filters( 'hyperpress_breadcrumbs_content', $trail ) );
 	}
 
 	public function test_banner_filter_accepts_a_null_starting_value(): void {

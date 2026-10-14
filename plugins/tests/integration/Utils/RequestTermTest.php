@@ -19,7 +19,6 @@ final class RequestTermTest extends WP_UnitTestCase {
 			register_taxonomy( 'hyper_competition_type', array( 'post' ), array( 'public' => true, 'hierarchical' => true, 'rewrite' => array( 'slug' => 'competition-types' ) ) );
 			$this->registered[] = 'hyper_competition_type';
 		}
-		flush_rewrite_rules();
 	}
 
 	public function tear_down(): void {

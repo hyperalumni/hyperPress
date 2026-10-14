@@ -48,26 +48,11 @@ final class Breadcrumbs {
 		}
 
 		foreach ( $ctx['terms'] ?? array() as $term ) {
-			$breadcrumbs[] = array(
-				'title'   => $term['name'],
-				'url'     => $term['url'],
-				'classes' => array(
-					'li'    => array( 'item-' . $term['slug'] . '-' . $class ),
-					'bread' => array( 'bread-' . $term['slug'] . '-' . $class ),
-				),
-			);
+			$breadcrumbs[] = self::term_crumb( $term, $class );
 		}
 
 		if ( ! empty( $ctx['season'] ) ) {
-			$season        = $ctx['season'];
-			$breadcrumbs[] = array(
-				'title'   => $season['name'],
-				'url'     => $season['url'],
-				'classes' => array(
-					'li'    => array( 'item-' . $season['slug'] . '-' . $class ),
-					'bread' => array( 'bread-' . $season['slug'] . '-' . $class ),
-				),
-			);
+			$breadcrumbs[] = self::term_crumb( $ctx['season'], $class );
 		}
 
 		if ( ! empty( $ctx['is_singular'] ) ) {
@@ -82,6 +67,23 @@ final class Breadcrumbs {
 		}
 
 		return $breadcrumbs;
+	}
+
+	/**
+	 * One term or season crumb: title, url and the item-/bread- classes built from its slug.
+	 *
+	 * @param array  $term       name, slug and url.
+	 * @param string $class_slug Sanitized post type label slug.
+	 */
+	private static function term_crumb( array $term, string $class_slug ): array {
+		return array(
+			'title'   => $term['name'],
+			'url'     => $term['url'],
+			'classes' => array(
+				'li'    => array( 'item-' . $term['slug'] . '-' . $class_slug ),
+				'bread' => array( 'bread-' . $term['slug'] . '-' . $class_slug ),
+			),
+		);
 	}
 
 	/**
@@ -160,8 +162,9 @@ final class Breadcrumbs {
 
 			$term = null;
 			if ( $is_singular ) {
-				$terms = wp_get_object_terms( get_the_ID(), $taxonomy, array( 'orderby' => 'name' ) );
+				$terms = wp_get_object_terms( get_the_ID(), $taxonomy );
 				if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+					// Natural order (Week 2 before Week 10); get_terms ordering is not a natural sort.
 					usort( $terms, static fn( $a, $b ) => strnatcasecmp( $a->name, $b->name ) );
 					$term = $terms[0];
 				}

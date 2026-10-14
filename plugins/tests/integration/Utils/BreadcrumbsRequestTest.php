@@ -45,6 +45,8 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 		} else {
 			unregister_taxonomy_for_object_type( 'hyper_competition_type', 'hyper_gizmo' );
 		}
+		$GLOBALS['wp_query']->queried_object    = null;
+		$GLOBALS['wp_query']->queried_object_id = 0;
 		unregister_post_type( 'hyper_gizmo' );
 		parent::tear_down();
 	}
@@ -91,9 +93,6 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 		$this->assertSame( array( 'Gizmos', 'District', 'Season 31' ), array_column( $trail, 'title' ) );
 		$this->assertSame( get_term_link( $district ), $trail[1]['url'] );
-
-		$GLOBALS['wp_query']->queried_object    = null;
-		$GLOBALS['wp_query']->queried_object_id = 0;
 	}
 
 	public function test_singular_trail_uses_assigned_type(): void {
@@ -125,8 +124,14 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 
 		$this->go_to( '/?post_type=hyper_gizmo&hyper_season=season-31&hyper_competition_type=does-not-exist' );
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
-		// WordPress may 404 this request (no trail at all); either way no type crumb appears.
-		$this->assertSame( array(), array_diff( array_column( $trail, 'title' ), array( 'Gizmos', 'Season 31' ) ) );
+		// An unknown type slug matches no posts, and whether core then flags the request as a 404 (is_post_type_archive()
+		// is false, so the callback leaves the input alone) or keeps it as the Gizmos archive depends on global state
+		// left by other tests. Either way the trail is exact and never contains a type crumb.
+		if ( is_404() ) {
+			$this->assertSame( array(), $trail );
+		} else {
+			$this->assertSame( array( 'Gizmos', 'Season 31' ), array_column( $trail, 'title' ) );
+		}
 	}
 
 	public function test_child_term_yields_single_crumb(): void {
@@ -170,13 +175,35 @@ final class BreadcrumbsRequestTest extends WP_UnitTestCase {
 	}
 
 	public function test_season_crumb_is_season_when_type_also_queried(): void {
-		// Created last, so get_queried_object() could hand back either term.
-		self::factory()->term->create( array( 'taxonomy' => 'hyper_season', 'name' => 'Season 31', 'slug' => 'season-31' ) );
-		self::factory()->term->create( array( 'taxonomy' => 'hyper_competition_type', 'name' => 'District', 'slug' => 'district' ) );
+		list( , $district ) = $this->make_terms();
 
 		$this->go_to( '/?post_type=hyper_gizmo&hyper_season=season-31&hyper_competition_type=district' );
+		// Core may hand back the type term as the queried object; the old get_queried_object() code then showed 'District' as the season.
+		$GLOBALS['wp_query']->queried_object    = $district;
+		$GLOBALS['wp_query']->queried_object_id = $district->term_id;
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 		$this->assertSame( 'Season 31', end( $trail )['title'] );
+	}
+
+	public function test_unregistered_extra_taxonomy_is_skipped(): void {
+		$this->make_terms();
+		remove_all_filters( 'hyperpress_breadcrumbs_content' );
+		Breadcrumbs::register( array( 'hyper_gizmo' ), array( 'hyper_not_registered' ) );
+
+		$this->go_to( '/?post_type=hyper_gizmo&hyper_season=season-31&hyper_not_registered=whatever' );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$this->assertSame( array( 'Gizmos', 'Season 31' ), array_column( $trail, 'title' ) );
+	}
+
+	public function test_term_link_error_gives_an_empty_type_url(): void {
+		$this->make_terms();
+		$this->register_with_type();
+		add_filter( 'term_link', static fn() => new \WP_Error( 'no_link', 'no link' ) );
+
+		$this->go_to( '/?post_type=hyper_gizmo&hyper_competition_type=district' );
+		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
+		$this->assertSame( array( 'Gizmos', 'District' ), array_column( $trail, 'title' ) );
+		$this->assertSame( '', $trail[1]['url'] );
 	}
 
 	public function test_debug_output_is_gone(): void {

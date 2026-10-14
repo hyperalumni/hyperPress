@@ -71,6 +71,30 @@ final class BreadcrumbsTest extends TestCase {
 		$this->assertSame( array( 'bread-district-gizmos' ), $trail[1]['classes']['bread'] );
 	}
 
+	public function test_build_keeps_the_order_of_several_terms_between_post_type_and_season(): void {
+		$trail = Breadcrumbs::build(
+			array(),
+			$this->ctx(
+				array(
+					'label'  => 'Gizmos',
+					'season' => array(
+						'name' => 'Season 31',
+						'slug' => 'season-31',
+						'url'  => '/seasons/season-31/gizmos/',
+					),
+					'terms'  => array(
+						$this->term( 'NE FIRST', 'ne-first' ),
+						$this->term( 'District', 'district' ),
+						$this->term( 'Week 1', 'week-1' ),
+					),
+				)
+			)
+		);
+		$this->assertSame( array( 'Gizmos', 'NE FIRST', 'District', 'Week 1', 'Season 31' ), array_column( $trail, 'title' ) );
+		$this->assertSame( array( 'item-ne-first-gizmos' ), $trail[1]['classes']['li'] );
+		$this->assertSame( array( 'bread-week-1-gizmos' ), $trail[3]['classes']['bread'] );
+	}
+
 	public function test_build_without_terms_is_unchanged(): void {
 		$without = Breadcrumbs::build( array(), $this->ctx( array( 'label' => 'Gizmos' ) ) );
 		$empty   = Breadcrumbs::build( array(), $this->ctx( array( 'label' => 'Gizmos', 'terms' => array() ) ) );

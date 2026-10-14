@@ -8,12 +8,19 @@ use WP_UnitTestCase;
 
 final class TypeBreadcrumbsTest extends WP_UnitTestCase {
 
+	/**
+	 * Whether set_up() registered hyper_season itself (and so must remove it).
+	 *
+	 * @var bool
+	 */
+	private bool $registered_season = false;
+
 	public function set_up(): void {
 		parent::set_up();
-		if ( ! taxonomy_exists( 'hyper_season' ) ) {
+		$this->registered_season = ! taxonomy_exists( 'hyper_season' );
+		if ( $this->registered_season ) {
 			register_taxonomy( 'hyper_season', array( Plugin::POST_TYPE ), array( 'public' => true, 'rewrite' => array( 'slug' => 'seasons' ) ) );
 		}
-		flush_rewrite_rules();
 		// Same wiring as Plugin::boot(), without duplicates from earlier registrations.
 		remove_all_filters( 'hyperpress_breadcrumbs_content' );
 		Breadcrumbs::register( array( Plugin::POST_TYPE ), array( Plugin::TYPE ) );
@@ -21,7 +28,12 @@ final class TypeBreadcrumbsTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
+		$GLOBALS['wp_query']->queried_object    = null;
+		$GLOBALS['wp_query']->queried_object_id = 0;
 		remove_all_filters( 'hyperpress_breadcrumbs_content' );
+		if ( $this->registered_season ) {
+			unregister_taxonomy( 'hyper_season' );
+		}
 		parent::tear_down();
 	}
 
@@ -36,17 +48,26 @@ final class TypeBreadcrumbsTest extends WP_UnitTestCase {
 		return $term;
 	}
 
+	/**
+	 * The competition post type's plural label, as the breadcrumb shows it.
+	 */
+	private function label(): string {
+		return get_post_type_object( Plugin::POST_TYPE )->labels->name;
+	}
+
 	public function test_type_archive_trail(): void {
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
 
 		$this->go_to( get_term_link( $district ) );
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 
-		$this->assertSame( array( 'Competitions', 'District' ), array_column( $trail, 'title' ) );
+		$class = sanitize_html_class( sanitize_title( $this->label() ) );
+
+		$this->assertSame( array( $this->label(), 'District' ), array_column( $trail, 'title' ) );
 		$this->assertSame( get_post_type_archive_link( Plugin::POST_TYPE ), $trail[0]['url'] );
 		$this->assertArrayNotHasKey( 'url', $trail[1] );
-		$this->assertSame( array( 'item-archive-competitions' ), $trail[0]['classes']['li'] );
-		$this->assertSame( array( 'bread-archive-competitions' ), $trail[0]['classes']['bread'] );
+		$this->assertSame( array( 'item-archive-' . $class ), $trail[0]['classes']['li'] );
+		$this->assertSame( array( 'bread-archive-' . $class ), $trail[0]['classes']['bread'] );
 	}
 
 	public function test_other_requests_unchanged(): void {
@@ -88,6 +109,6 @@ final class TypeBreadcrumbsTest extends WP_UnitTestCase {
 
 		$trail = apply_filters( 'hyperpress_breadcrumbs_content', array() );
 
-		$this->assertSame( array( 'Competitions', 'District', 'Season 31' ), array_column( $trail, 'title' ) );
+		$this->assertSame( array( $this->label(), 'District', 'Season 31' ), array_column( $trail, 'title' ) );
 	}
 }

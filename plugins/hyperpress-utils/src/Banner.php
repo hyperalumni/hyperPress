@@ -17,7 +17,10 @@ final class Banner {
 	 *                          color_mod, archive_title.
 	 *                          Optional: term_joiner ('in' default), always_set_archive_title (false default),
 	 *                          taxonomies (list of taxonomy keys whose requested terms are named in the banner:
-	 *                          appended to the archive subtitle, and the title on a taxonomy page).
+	 *                          appended to the archive subtitle, and the title on a taxonomy page). The terms are
+	 *                          only read for non-singular requests that are this post type's archive or a
+	 *                          taxonomy-only archive (is_tax() with no post-type archive), never for another
+	 *                          post type's request.
 	 *
 	 * @throws InvalidArgumentException When subtitle is missing or not callable.
 	 */

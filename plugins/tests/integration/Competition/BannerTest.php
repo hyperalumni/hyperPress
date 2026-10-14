@@ -15,6 +15,20 @@ final class BannerTest extends WP_UnitTestCase {
 	 */
 	private $saved_filters;
 
+	/**
+	 * Taxonomies set_up() registered itself, removed again in tear_down().
+	 *
+	 * @var string[]
+	 */
+	private array $registered_taxonomies = array();
+
+	/**
+	 * Post types this test registered itself, removed again in tear_down().
+	 *
+	 * @var string[]
+	 */
+	private array $registered_post_types = array();
+
 	public function set_up(): void {
 		parent::set_up();
 		global $wp_filter;
@@ -23,16 +37,18 @@ final class BannerTest extends WP_UnitTestCase {
 
 		if ( ! taxonomy_exists( 'hyper_season' ) ) {
 			register_taxonomy( 'hyper_season', array( Plugin::POST_TYPE ), array( 'public' => true, 'rewrite' => array( 'slug' => 'seasons' ) ) );
+			$this->registered_taxonomies[] = 'hyper_season';
 		}
 		foreach ( array( Plugin::DISTRICT, Plugin::WEEK, Plugin::TYPE ) as $taxonomy ) {
 			if ( ! taxonomy_exists( $taxonomy ) ) {
 				register_taxonomy( $taxonomy, array( Plugin::POST_TYPE ), array( 'public' => true ) );
+				$this->registered_taxonomies[] = $taxonomy;
 			}
 		}
 		if ( ! post_type_exists( Plugin::POST_TYPE ) ) {
 			register_post_type( Plugin::POST_TYPE, array( 'public' => true, 'has_archive' => true ) );
+			$this->registered_post_types[] = Plugin::POST_TYPE;
 		}
-		flush_rewrite_rules();
 		update_option( Settings::OPTION, array( Settings::BANNER_SUBTITLE => 'Compete' ) );
 		set_theme_mod( 'hyperpress_hyper_green', '#0a0' );
 		Plugin::register_banner();
@@ -40,6 +56,16 @@ final class BannerTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		global $wp_filter;
+		$GLOBALS['wp_query']->queried_object    = null;
+		$GLOBALS['wp_query']->queried_object_id = 0;
+		foreach ( $this->registered_post_types as $post_type ) {
+			unregister_post_type( $post_type );
+		}
+		foreach ( $this->registered_taxonomies as $taxonomy ) {
+			unregister_taxonomy( $taxonomy );
+		}
+		$this->registered_post_types = array();
+		$this->registered_taxonomies = array();
 		remove_all_filters( 'hyperpress_banner_content' );
 		if ( null !== $this->saved_filters ) {
 			$wp_filter['hyperpress_banner_content'] = $this->saved_filters;
@@ -63,7 +89,7 @@ final class BannerTest extends WP_UnitTestCase {
 		$GLOBALS['wp_query']->queried_object_id = $term->term_id;
 	}
 
-	public function test_type_archive_banner(): void {
+	public function test_type_taxonomy_page_banner(): void {
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
 
 		$this->go_to( get_term_link( $district ) );
@@ -75,7 +101,7 @@ final class BannerTest extends WP_UnitTestCase {
 		$this->assertSame( '#0a0', $banner['backgroundColor'] );
 	}
 
-	public function test_district_and_week_archive_banners(): void {
+	public function test_district_and_week_taxonomy_page_banners(): void {
 		$district = $this->term( 'NE FIRST', 'ne-first', Plugin::DISTRICT );
 		$week     = $this->term( 'Week 1', 'week-1', Plugin::WEEK );
 
@@ -173,9 +199,9 @@ final class BannerTest extends WP_UnitTestCase {
 	public function test_competition_banner_ignores_another_post_types_archive(): void {
 		// Only the competition closure is registered, so nothing later can mask a leak.
 		$district = $this->term( 'District', 'district', Plugin::TYPE );
-		$registered = ! post_type_exists( 'hyper_newsletter' );
-		if ( $registered ) {
+		if ( ! post_type_exists( 'hyper_newsletter' ) ) {
 			register_post_type( 'hyper_newsletter', array( 'public' => true, 'has_archive' => true ) );
+			$this->registered_post_types[] = 'hyper_newsletter';
 		}
 
 		$this->go_to( '/?post_type=hyper_newsletter&' . Plugin::TYPE . '=' . $district->slug );
@@ -184,9 +210,6 @@ final class BannerTest extends WP_UnitTestCase {
 
 		$this->assertSame( $input, $banner );
 		$this->assertArrayNotHasKey( 'type', $banner );
-		if ( $registered ) {
-			unregister_post_type( 'hyper_newsletter' );
-		}
 	}
 
 	public function test_competition_banner_ignores_a_page_carrying_a_competition_taxonomy(): void {
