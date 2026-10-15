@@ -1,0 +1,28 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "@hyper/press",
+  "targets": {
+    "build": {
+      "cache": true,
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "test:node": {
+      "cache": true
+    },
+    "phpcs": {
+      "cache": false
+    },
+    "phpcbf": {
+      "cache": false
+    },
+    "package": {
+      "cache": false
+    },
+    "dev": {
+      "cache": false
+    },
+    "start": {
+      "cache": false
+    }
+  }
+}

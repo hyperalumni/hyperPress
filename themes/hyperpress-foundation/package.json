@@ -21,32 +21,6 @@
     "start": "gulp",
     "test:node": "node --test 'tests/node/*.test.mjs'"
   },
-  "nx": {
-    "targets": {
-      "build": {
-        "cache": true,
-        "outputs": ["{projectRoot}/dist"]
-      },
-      "test:node": {
-        "cache": true
-      },
-      "phpcs": {
-        "cache": false
-      },
-      "phpcbf": {
-        "cache": false
-      },
-      "package": {
-        "cache": false
-      },
-      "dev": {
-        "cache": false
-      },
-      "start": {
-        "cache": false
-      }
-    }
-  },
   "dependencies": {
     "foundation-sites": "~6.9.0",
     "jquery": "~4.0.0",

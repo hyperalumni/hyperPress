@@ -4,7 +4,7 @@
 
 **Goal:** Add Nx 23.x to the pnpm workspace, prove it runs on Node 26, and register the existing Foundation theme and plugins as Nx projects, with no change to how either builds.
 
-**Architecture:** `nx` is a root devDependency with a minimal `nx.json`. (Nx was first added as a direct version in commit b8b0d11, then moved to the pnpm catalog in the `build: pin Nx in a pnpm catalog` commit.) The Foundation theme (`@hyper/press`) is already a pnpm package, so Nx infers it from its `package.json`; a small `nx` block there adds cache outputs. The plugins have no `package.json`, so each gets a minimal `project.json`, and a `plugins-tooling` project wraps the Docker composer commands as uncached targets.
+**Architecture:** `nx` is a root devDependency with a minimal `nx.json`. (Nx was first added as a direct version in commit b8b0d11, then moved to the pnpm catalog in the `build: pin Nx in a pnpm catalog` commit.) The Foundation theme (`@hyper/press`) is already a pnpm package, so Nx infers its script targets from `package.json`; the theme's Nx config (cache, outputs) lives in `themes/hyperpress-foundation/project.json` (first added as a `package.json` `nx` block in f172690, then moved). The plugins have no `package.json`, so each gets a minimal `project.json`, and a `plugins-tooling` project wraps the Docker composer commands as uncached targets.
 
 **Tech Stack:** Nx 23.3.0 (latest at planning time), Node 26.12.0, pnpm 12.12.1, Docker Compose (PHP tooling only).
 
@@ -20,6 +20,7 @@
 - No behavior change to the Foundation theme or the plugins. Oxfmt stays outside Nx.
 - Completed plans keep their original wording (historical records), so Task 1 does not edit them.
 - Work is on branch `feature/uikit-stage-1-nx`. Nothing is pushed.
+- Nx project config lives in project.json for every project; package.json carries scripts and dependencies only.
 
 ## Review Focus
 
@@ -67,11 +68,11 @@
 ### Task 3: Register the Foundation theme
 
 **Files:**
-- Modify: `themes/hyperpress-foundation/package.json` (add an `nx` block)
+- Create: `themes/hyperpress-foundation/project.json` (target options; first added as a `package.json` `nx` block in f172690, then moved here and removed from `package.json`)
 
 **Interfaces:**
 - Consumes: `nx.json` target defaults from Task 2.
-- Produces: project `@hyper/press` with cached targets `build` (outputs `{projectRoot}/dist`) and `test:node`. Other scripts (`dev`, `start`, `phpcs`, `phpcbf`, `package`, `audit`) stay uncached.
+- Produces: project `@hyper/press` (script targets inferred from `package.json`, target options in `project.json`) with cached targets `build` (outputs `{projectRoot}/dist`) and `test:node`. Other scripts (`dev`, `start`, `phpcs`, `phpcbf`, `package`, `audit`) stay uncached.
 
 - [x] **Step 1: Add the `nx` block** to the theme's `package.json`: `targets.build.outputs = ["{projectRoot}/dist"]`, `targets.build.cache = true`, `targets["test:node"].cache = true`; set `cache: false` explicitly on `phpcs`, `phpcbf`, `package`, `dev` and `start`.
 - [x] **Step 2: Verify the build matches the baseline.** `rm -rf themes/hyperpress-foundation/dist`, then `pnpm exec nx build @hyper/press`. Expected: success, and the sorted `dist` file list equals `/tmp/opencode/stage1/dist-baseline.txt`.
