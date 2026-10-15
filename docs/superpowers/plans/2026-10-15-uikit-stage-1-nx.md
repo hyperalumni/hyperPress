@@ -42,11 +42,11 @@
 **Interfaces:**
 - Produces: Node 26.12.0 as the single pinned runtime. Later tasks assume it.
 
-- [ ] **Step 1: Record the pre-change baseline.** Under the shell setup, with the old pin still in place and using Node 26.12.0 via `nvm use 26.12.0`, run `pnpm install` then `pnpm --filter @hyper/press build`. Save `find themes/hyperpress-foundation/dist -type f | sort` to `/tmp/opencode/stage1/dist-baseline.txt` (create the directory). Expected: both commands exit 0 and the file list is non-empty.
-- [ ] **Step 2: Bump the pin** in the four files above and in `AGENTS.md` (Node 26.12.0; add `export PATH="$HOME/.local/share/pnpm/bin:$PATH"` to the Environment shell line). Do not edit completed plans.
-- [ ] **Step 3: Correct the spec:** pnpm 12.12.1 (was 12.11.2), Node 26.12.0, 16 plugins (was 14, in the Plugins row and the Docker mounts text), stage 0 and 0b marked done in the Staged rollout, Nx pinned to 23.3.0 in the Decisions table.
-- [ ] **Step 4: Verify.** Run `nvm use` (reads `.nvmrc`), `node -v` -> `v26.12.0`; `pnpm install` exits 0 with no engine error; `pnpm --filter @hyper/press build` exits 0 and `find ... | sort` equals the baseline file.
-- [ ] **Step 5: Commit** `chore: pin Node 26.12.0 and correct the uikit spec` over exactly the files above.
+- [x] **Step 1: Record the pre-change baseline.** Under the shell setup, with the old pin still in place and using Node 26.12.0 via `nvm use 26.12.0`, run `pnpm install` then `pnpm --filter @hyper/press build`. Save `find themes/hyperpress-foundation/dist -type f | sort` to `/tmp/opencode/stage1/dist-baseline.txt` (create the directory). Expected: both commands exit 0 and the file list is non-empty.
+- [x] **Step 2: Bump the pin** in the four files above and in `AGENTS.md` (Node 26.12.0; add `export PATH="$HOME/.local/share/pnpm/bin:$PATH"` to the Environment shell line). Do not edit completed plans.
+- [x] **Step 3: Correct the spec:** pnpm 12.12.1 (was 12.11.2), Node 26.12.0, 16 plugins (was 14, in the Plugins row and the Docker mounts text), stage 0 and 0b marked done in the Staged rollout, Nx pinned to 23.3.0 in the Decisions table.
+- [x] **Step 4: Verify.** Run `nvm use` (reads `.nvmrc`), `node -v` -> `v26.12.0`; `pnpm install` exits 0 with no engine error; `pnpm --filter @hyper/press build` exits 0 and `find ... | sort` equals the baseline file.
+- [x] **Step 5: Commit** `chore: pin Node 26.12.0 and correct the uikit spec` over exactly the files above.
 
 ### Task 2: Install Nx and add `nx.json`
 

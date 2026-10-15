@@ -1,6 +1,6 @@
 # UIkit + Nx + pnpm WordPress workspace: design
 
-Status: draft for review (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root)
+Status: draft for review (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root; 2026-10-15: pins bumped to Node 26.12.0 and pnpm 12.12.1, plugin count corrected to 16, stages 0 and 0b done, Nx pinned to 23.3.0)
 
 ## Purpose
 
@@ -17,11 +17,11 @@ repo is added under `plugins/` (rebased on top, no merge commit), and root works
 | Area | Decision |
 |---|---|
 | Repo | `uikit/` is a working clone of the hyperPress history (branch `master`, original commit hashes kept, so the FoundationPress lineage and the fork relationship of `hyperalumni/hyperPress` are intact). Restructured by new commits. Nothing is pushed in this design. `../theme`, `../plugins` and the Docker stacks that mount them are untouched |
-| Workspace | pnpm workspace from stage 0; Nx 23.x (latest; all `@nx/*` packages on the same 23.x version) from stage 1 |
-| Runtime | Node 26.11.1 and pnpm 12.11.2, as already pinned by the theme (`.nvmrc`, `devEngines`); `only-allow pnpm` preinstall |
+| Workspace | pnpm workspace from stage 0; Nx 23.3.0 (exact pin; all `@nx/*` packages on the same 23.x version) from stage 1 |
+| Runtime | Node 26.12.0 and pnpm 12.12.1, as already pinned by the theme (`.nvmrc`, `devEngines`); `only-allow pnpm` preinstall |
 | Docs | One location: the repo-root `docs/superpowers/{specs,plans,audit}/`, holding workspace (`uikit-*`), theme (`theme-*`) and plugins (`plugins-*`) documents. Checked: no filename collisions between the three sets |
 | Foundation theme | Existing theme moves unchanged, by one rename commit, to `themes/hyperpress-foundation/` (gulp/webpack build kept as is). Its `docs/` is not moved; it stays at the root |
-| Plugins | The `../plugins` repo is imported with its history (rebased on top of the move commit, so no merge commit): everything under `plugins/` as-is (14 `hyperpress-*` plugins plus its shared `composer.json`, `phpcs.xml.dist`, `phpunit.xml.dist`, `tests/`, `bin/`, `AGENTS.md`, Docker files), except its `docs/`, which goes to the root `docs/`. Hoisting shared tooling to the root is a later, separate step |
+| Plugins | The `../plugins` repo is imported with its history (rebased on top of the move commit, so no merge commit): everything under `plugins/` as-is (16 `hyperpress-*` plugins plus its shared `composer.json`, `phpcs.xml.dist`, `phpunit.xml.dist`, `tests/`, `bin/`, `AGENTS.md`, Docker files), except its `docs/`, which goes to the root `docs/`. Hoisting shared tooling to the root is a later, separate step |
 | New theme | Classic PHP theme `themes/hyperpress-uikit/`, Timber (Twig) templating, TypeScript, Sass |
 | UIkit | Consumed from Sass source (`uikit/src/scss`, shipped in the npm package); variables overridden, only used components imported |
 | Bundler | Vite via `@nx/vite` for the new theme; emits a manifest |
@@ -91,7 +91,7 @@ Commits:
      `minimumReleaseAgeStrict`, and the rest), because pnpm reads these only at the workspace root.
    - Remove the theme's own `pnpm-workspace.yaml` and `pnpm-lock.yaml`; generate a root
      `pnpm-lock.yaml`.
-   - Root `.nvmrc` (26.11.1) and `.gitignore` (`node_modules`, `dist`, `.idea`, `.env*`).
+   - Root `.nvmrc` (26.12.0) and `.gitignore` (`node_modules`, `dist`, `.idea`, `.env*`).
    - A root `AGENTS.md` for the workspace, short and cross-cutting: what the repo is and its layout;
      one-time environment setup (`source ~/.nvm/nvm.sh && nvm use`, pnpm only, PHP tooling in
      Docker); that this is now a single git repo (commit from the root with explicit pathspecs, never
@@ -172,7 +172,7 @@ Rules:
 - Project names (`name: hyperalumni`, `name: hyperonline`), the named volumes (`db`, `wp`), service names, container-side mount paths (`wp-content/themes/hyperPress`, `wp-content/plugins/hyperpress-*`), the `local` profile, `restart`, `pull_policy` and the healthcheck are unchanged. The existing databases and uploads are therefore reused when they still exist (recreating them is acceptable for local development). The theme slug `hyperPress` is stored in each site's database, so it is not renamed.
 - Each wrapper `include`s `../compose.main.yaml` with `project_directory: .` and `env_file: [../.env, .env.local, ../.env.versions]`. A spike with Docker Compose 5.5.1 showed that this resolves bind-mount sources and service `env_file` paths relative to the wrapper directory (so `compose.main.yaml` uses `../php/...`, `../.env.db`, `../../plugins/...`) and keeps the volume names `<project>_db` and `<project>_wp`. Without `project_directory` that layout did not produce a usable config.
 - Only host paths change: `../theme` becomes `../../themes/hyperpress-foundation`, and `../plugins/hyperpress-*` becomes `../../plugins/hyperpress-*`. The theme mount source and slug are parameters, `THEME_SRC` (default `../../themes/hyperpress-foundation`) and `THEME_SLUG` (default `hyperPress`), so the new theme is served by the same file from its own `.env.local` (spike-verified).
-- The 14 per-plugin mounts stay (not one `plugins/` mount), because third-party plugins such as `meta-box-aio` live in the `wp` volume.
+- The 16 per-plugin mounts stay (not one `plugins/` mount), because third-party plugins such as `meta-box-aio` live in the `wp` volume.
 - Secrets: the agent's shell rejects commands containing `.env` and EnvSitter works only inside the project, so the owner copies the real `.env*` files with a command block from the plan. The agent then checks key names and that the templates are empty with EnvSitter, without reading values. Templates list names only for secret-bearing files (`.env.db`, `.env.mariadb`, `.env.wordpress`); the other templates are plain copies. The root `.gitignore` gains `!.env*.example`.
 - A `tooling` service (PHP 8.3 + Composer, for `composer install` and PHPCS) and the `uikit` site are added in later stages.
 
@@ -207,8 +207,8 @@ Verification: both sites start from the new location; the old directories are un
 
 ## Staged rollout
 
-0. Restructure the hyperPress repo into a monorepo: move the theme, rebase the plugins on top, add root files.
-0b. Migrate the `hyperalumni` and `hyperonline` Docker stacks into `docker/` (see Docker stack).
+0. Restructure the hyperPress repo into a monorepo: move the theme, rebase the plugins on top, add root files. (done)
+0b. Migrate the `hyperalumni` and `hyperonline` Docker stacks into `docker/` (see Docker stack). (done)
 1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects.
 2. Docker stack and a bare `hyperpress-uikit` theme rendering through Timber.
 3. Vite build, manifest-based asset loading, UIkit from `libs/uikit-tokens`.
@@ -240,12 +240,12 @@ and any change to `../theme` or `../plugins`. The old `hyperalumni/` and `hypero
   everyone using it; it needs its own decision (branch vs `master`, and what happens to
   `hyperPressPlugins`).
 - Vite runs on the host while WordPress runs in Docker; CORS and host-networking need an early test.
-- Node 26 is in the Current phase. The theme already pins 26.11.1; compatibility of Nx, Vite, Sass
+- Node 26 is in the Current phase. The theme already pins 26.12.0; compatibility of Nx, Vite, Sass
   and the Oxc tools with it is verified in stage 1, not assumed.
 - Oxfmt runs outside Nx (root scripts over the whole repo), so formatting is not cached by Nx and is
   not part of `nx run-many`; it is a separate gate. Nx is pinned to the latest 23.x release, with
   `@nx/oxlint` and `@nx/vite` on the same version.
-- The theme's own `AGENTS.md` says Node >=24 while its `package.json` pins 26.11.1; the pin is the
+- The theme's own `AGENTS.md` says Node >=24 while its `package.json` pins 26.12.0; the pin is the
   source of truth.
 - Exact Vite, Timber and UIkit versions are chosen when the plan is written, after checking current
   releases.
