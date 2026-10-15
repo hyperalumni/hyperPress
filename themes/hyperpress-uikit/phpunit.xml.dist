@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<phpunit
+    bootstrap="tests/bootstrap-unit.php"
+    colors="true"
+    backupGlobals="false"
+    convertDeprecationsToExceptions="false"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+>
+    <testsuites>
+        <testsuite name="unit">
+            <directory suffix="Test.php">tests/unit</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

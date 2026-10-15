@@ -109,7 +109,7 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 - Modify: `docker/compose.main.yaml` (add `tooling` service, profile `tools`), root `.gitignore` if `docker/uikit/.env.local` is not already covered
 
 **Interfaces:**
-- Produces: `docker compose --profile tools run --rm tooling <cmd>` from `docker/uikit/` (image `php:8.5-cli` + Composer 2 + `git unzip libicu-dev` + `intl`, matching `plugins/Dockerfile`; mounts the repo `themes/` and `dist/` at `/themes` and `/dist`), and a site with project name `hyperuikit`, `THEME_SRC=../../dist/themes/hyperpress-uikit`, `THEME_SLUG=hyperpress-uikit`, `extra_hosts: ["host.docker.internal:host-gateway"]` on the `wordpress` service, ports not clashing with 3080/3090/4080/4090.
+- Produces: `docker compose run --rm --user "$(id -u):$(id -g)" -e COMPOSER_HOME=/tmp/composer [-w /themes/<theme>] tooling <cmd>` (no `--profile tools`) from `docker/uikit/` (image `php:8.5-cli` + Composer 2 + `git unzip libicu-dev` + `intl`, matching `plugins/Dockerfile`; mounts the repo `themes/` and `dist/` at `/themes` and `/dist`), and a site with project name `hyperuikit`, `THEME_SRC=../../dist/themes/hyperpress-uikit`, `THEME_SLUG=hyperpress-uikit`, `extra_hosts: ["host.docker.internal:host-gateway"]` on the `wordpress` service, ports not clashing with 3080/3090/4080/4090.
 
 - [x] **Step 1: Write the failing check:** `docker compose -f docker/uikit/compose.yaml --profile local config --format json` must parse and show the theme bind source ending in `dist/themes/hyperpress-uikit`; today it fails (no file).
 - [x] **Step 2: Create the files.** Copy the `hyperalumni` wrapper pattern (`include` with `project_directory: .`, `env_file: [../.env, .env.local, ../.env.versions]`). Keep the existing services, volume names and mounts unchanged; the `extra_hosts` addition applies to all sites and must not change their `config` output otherwise (compare `hyperalumni` before and after).
@@ -131,11 +131,11 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
   `notice(): ?string` (message when the manifest or `vendor/autoload.php` is missing and not in dev mode),
   `register(): void` (hooks `wp_enqueue_scripts`, `admin_notices`, `script_loader_tag` to add `type="module"`).
 
-- [ ] **Step 1: Write failing tests** in `AssetsTest.php` using a temp directory per test: `testEntryReturnsFileAndCssIncludingImportedChunks`, `testEntryIsNullWhenManifestMissing`, `testNoticeWhenManifestMissing`, `testNoticeWhenVendorMissing`, `testIsDevTrueWhenMarkerAndProbeSucceeds`, `testIsDevFalseWhenMarkerButProbeFails` (stale marker), `testIsDevFalseWhenMarkerIsInvalidJson`, `testDevServerReturnsBothUrls`, `testIsDevTrueWhenConstantDefined` (run in a separate process).
-- [ ] **Step 2: Run** `docker compose --profile tools run --rm tooling composer test:unit` from `docker/uikit/`. Expected: FAIL (class not found).
-- [ ] **Step 3: Implement** `Assets` to satisfy the tests; `composer.json` requires `php >=8.3`, `timber/timber` (Task 1 pin), dev `phpunit/phpunit ^9.6` and `yoast/phpunit-polyfills`, scripts `test:unit`, PSR-4 `HyperPress\Uikit\` -> `inc/`; commit the generated `composer.lock`.
-- [ ] **Step 4: Run** the tests again. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(uikit-theme): add the Assets class` over `themes/hyperpress-uikit`.
+- [x] **Step 1: Write failing tests** in `AssetsTest.php` using a temp directory per test: `testEntryReturnsFileAndCssIncludingImportedChunks`, `testEntryIsNullWhenManifestMissing`, `testNoticeWhenManifestMissing`, `testNoticeWhenVendorMissing`, `testIsDevTrueWhenMarkerAndProbeSucceeds`, `testIsDevFalseWhenMarkerButProbeFails` (stale marker), `testIsDevFalseWhenMarkerIsInvalidJson`, `testDevServerReturnsBothUrls`, `testIsDevTrueWhenConstantDefined` (run in a separate process).
+- [x] **Step 2: Run** `docker compose run --rm --user "$(id -u):$(id -g)" -e COMPOSER_HOME=/tmp/composer -w /themes/hyperpress-uikit tooling composer test:unit` from `docker/uikit/`. Expected: FAIL (class not found).
+- [x] **Step 3: Implement** `Assets` to satisfy the tests; `composer.json` requires `php >=8.3`, `timber/timber` (Task 1 pin), dev `phpunit/phpunit ^9.6` and `yoast/phpunit-polyfills`, scripts `test:unit`, PSR-4 `HyperPress\Uikit\` -> `inc/`; commit the generated `composer.lock`.
+- [x] **Step 4: Run** the tests again. Expected: PASS.
+- [x] **Step 5: Commit** `feat(uikit-theme): add the Assets class` over `themes/hyperpress-uikit`.
 
 ### Task 6: Theme skeleton, Vite entry, Nx build
 
