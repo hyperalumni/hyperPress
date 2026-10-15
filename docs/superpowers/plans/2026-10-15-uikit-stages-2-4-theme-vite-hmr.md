@@ -156,7 +156,7 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 
 **Files:**
 - Create: `docker/uikit/smoke.mjs`
-- Modify: `themes/hyperpress-uikit/project.json` (targets `up`, `down`, `smoke`; `composer-install` made uncached)
+- Modify: `themes/hyperpress-uikit/project.json` (targets `up`, `down`, `smoke`; `build` gets `outputs: []`)
 - Modify: `themes/hyperpress-uikit/index.php` (graceful fallback page when Timber/`vendor/` is missing)
 
 **Interfaces:**
@@ -167,13 +167,14 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 - [x] **Step 3: Owner step.** The owner runs the WordPress install and theme activation from `docker/uikit/` (placeholders for the admin values; use real ones locally, never commit them):
   `docker compose --profile local run --rm wpcli core install --url=http://localhost:5080 --title="HyperPress UIkit" --admin_user=<USER> --admin_password=<PASSWORD> --admin_email=<EMAIL> --skip-email`, then `docker compose --profile local run --rm wpcli theme activate hyperpress-uikit`. The theme mount and the 16 plugin mounts exist in the container.
 - [x] **Step 4: Run** `pnpm exec nx smoke @hyper/press-uikit`. Expected: exit 0. With `dist/themes/hyperpress-uikit/vendor` deleted, the homepage still returns 200 (fallback page naming `vendor/` and `nx build @hyper/press-uikit`, no PHP fatal) and with `.vite` moved aside it returns 200 without production assets. The admin notice itself is covered by the `Assets` unit tests, not checked in a browser.
-- [x] **Step 5: Commit** `feat(uikit-theme): add up, down and smoke targets`, then `fix(uikit-theme): bound the smoke test retries by time` and `fix(uikit-theme): keep the theme bind mount valid across builds`.
+- [x] **Step 5: Commit** `feat(uikit-theme): add up, down and smoke targets`, then `fix(uikit-theme): bound the smoke test retries by time` `fix(uikit-theme): keep the theme bind mount valid across builds` and `fix(uikit-theme): verify the bind mount across cache restores`.
 
 **Task 7 notes:**
 - Compose needs `--profile local` for every command (`up`, `stop`, `run wpcli`, `ps`): `COMPOSE_PROFILES` in the env file only feeds the included file's interpolation and does not select profiles; never use `--profile tools`.
 - `smoke.mjs` bounds every request at 3 s and retries connection errors/timeouts until `SMOKE_RETRY_SECONDS` (default 30; `0` = single attempt; non-numeric falls back to 30).
 - Fallback behavior: without Timber/`vendor/`, `index.php` serves HTTP 200 with a minimal page (`wp_head()`/`wp_footer()` still print the asset tags); without `.vite/manifest.json` the page renders but prints no production assets.
-- Bind-mount gotcha: Docker bind-mounts the directory itself, so if `dist/themes/hyperpress-uikit` is recreated (observed when Nx restored `composer-install` from its cache) the running container sees an empty folder, the homepage returns an empty 200 and assets 404. `composer-install` is therefore uncached (it is idempotent and keeps the directory). If it still happens, run `docker compose --profile local up -d --force-recreate wordpress` (a plain `restart` fails with "no such file or directory").
+- Bind-mount gotcha: Docker bind-mounts the directory itself, so any event that recreates `dist/themes/hyperpress-uikit` leaves the running container with an empty, stale folder (homepage returns an empty 200, assets 404). Cause found: the `nx:noop` `build` target had no `outputs`, so Nx used its default `{workspaceRoot}/dist/{projectRoot}`, and every cache restore of `build` replaced the whole theme directory. `build` now declares `"outputs": []`. Tested with a live mount, each time with the target restored from cache: removing `assets`+`.vite`, removing the `copy-theme` outputs, removing `vendor`, and emptying the directory while keeping it. In all four the inode stayed the same and the container still served the files (HTTP 200, 18986 bytes). Still unavoidable: a full `rm -rf dist` or `rm -rf dist/themes/hyperpress-uikit` followed by a build/`nx up` recreates the directory (verified: container empty, HTTP 200 with a 0-byte body); recover with `docker compose --profile local up -d --force-recreate wordpress` (a plain `restart` fails with "no such file or directory").
+- `build` runs composer inside Docker only when `composer.json`/`composer.lock` change or `vendor` is missing (cached target); a fully cached `nx build` takes about 0.5 s, a forced composer install about 5 s.
 
 ### Task 8: Dev server and HMR
 
