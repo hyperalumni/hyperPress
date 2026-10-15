@@ -1,0 +1,6 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "hyperpress-utils",
+  "projectType": "library",
+  "tags": ["type:plugin"]
+}

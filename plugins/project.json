@@ -1,0 +1,30 @@
+{
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "name": "plugins-tooling",
+  "targets": {
+    "lint": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "docker compose run --rm php composer lint",
+        "cwd": "plugins"
+      }
+    },
+    "test:unit": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "docker compose run --rm php composer test:unit",
+        "cwd": "plugins"
+      }
+    },
+    "test:integration": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "docker compose run --rm php composer test:integration",
+        "cwd": "plugins"
+      }
+    }
+  }
+}

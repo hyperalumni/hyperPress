@@ -88,12 +88,12 @@
 **Interfaces:**
 - Produces: 16 projects named `hyperpress-<name>` (`projectType: "library"`, tags `["type:plugin"]`, no targets) and `plugins-tooling` with uncached targets `lint`, `test:unit`, `test:integration`, each an `nx:run-commands` with `cwd: "plugins"` running `docker compose run --rm php composer <script>`. Plan B and C add per-plugin targets and dependency edges to these projects.
 
-- [ ] **Step 1: Read `plugins/composer.json` scripts and `plugins/AGENTS.md`** and confirm the script names `lint`, `test:unit`, `test:integration` exist; use the real names if they differ. Pin them in the target definitions.
-- [ ] **Step 2: Create the 17 `project.json` files** (minimal; `$schema` `../../node_modules/nx/schemas/project-schema.json` for plugins, `../node_modules/...` for `plugins/project.json`).
-- [ ] **Step 3: Verify nesting.** `pnpm exec nx show projects` lists `@hyper/press`, `plugins-tooling` and exactly 16 `hyperpress-*` names. If Nx rejects `plugins-tooling` because its root contains the plugin roots, move the tooling project to `plugins/bin/project.json` (`cwd` unchanged) and rerun; record which layout worked.
-- [ ] **Step 4: Verify the tooling target** (Docker running, `vendor/` installed via `docker compose run --rm php composer install` from `plugins/`): `pnpm exec nx run plugins-tooling:lint` exits with the same status and output as running `composer lint` directly, and a second run is not served from cache (no `[local cache]` line).
-- [ ] **Step 5: Verify the failure mode.** With Docker stopped (or `docker compose` pointed at a missing file via a temporary `--file` argument), the target exits non-zero with Docker's own error and is not cached. Restore the environment afterwards.
-- [ ] **Step 6: Commit** `build(plugins): register plugins and composer tooling as Nx projects` over `plugins/project.json plugins/hyperpress-*/project.json`.
+- [x] **Step 1: Read `plugins/composer.json` scripts and `plugins/AGENTS.md`** and confirm the script names `lint`, `test:unit`, `test:integration` exist; use the real names if they differ. Pin them in the target definitions.
+- [x] **Step 2: Create the 17 `project.json` files** (minimal; `$schema` `../../node_modules/nx/schemas/project-schema.json` for plugins, `../node_modules/...` for `plugins/project.json`).
+- [x] **Step 3: Verify nesting.** `pnpm exec nx show projects` lists `@hyper/press`, `plugins-tooling` and exactly 16 `hyperpress-*` names. If Nx rejects `plugins-tooling` because its root contains the plugin roots, move the tooling project to `plugins/bin/project.json` (`cwd` unchanged) and rerun; record which layout worked. Layout used: `plugins/project.json` (root `plugins`) worked; no move to `plugins/bin/` needed.
+- [x] **Step 4: Verify the tooling target** (Docker running, `vendor/` installed via `docker compose run --rm php composer install` from `plugins/`): `pnpm exec nx run plugins-tooling:lint` exits with the same status and output as running `composer lint` directly, and a second run is not served from cache (no `[local cache]` line).
+- [x] **Step 5: Verify the failure mode.** With Docker stopped (or `docker compose` pointed at a missing file via a temporary `--file` argument), the target exits non-zero with Docker's own error and is not cached. Restore the environment afterwards.
+- [x] **Step 6: Commit** `build(plugins): register plugins and composer tooling as Nx projects` over `plugins/project.json plugins/hyperpress-*/project.json`.
 
 ### Task 5: Prove graph and cache, then close out
 
