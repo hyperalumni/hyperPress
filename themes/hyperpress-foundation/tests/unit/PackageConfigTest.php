@@ -20,7 +20,7 @@ final class PackageConfigTest extends TestCase {
 		$this->assertStringContainsString( 'resolveVersion(', $gulpfile, 'the version is the nearest tag, not package.json' );
 		$this->assertStringNotContainsString( 'pkg.version', $gulpfile );
 		$this->assertStringContainsString( "'yyyy-mm-dd'", $gulpfile );
-		$this->assertStringNotContainsString( 'pkg.name', $gulpfile, 'the scoped npm name (@hyper/press) would create a subdirectory' );
+		$this->assertStringNotContainsString( 'pkg.name', $gulpfile, 'the scoped npm name (@hyper/press-foundation) would create a subdirectory' );
 		$this->assertDoesNotMatchRegularExpression( "/dateFormat\([^)]*'[^']*(HH|MM|hh|ss)/", $gulpfile, 'no time of day in the title' );
 	}
 

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@hyper/press",
+  "name": "@hyper/press-foundation",
   "title": "HYPER Press",
   "description": "hyperPress is a fork of FoundationPress (based on Foundation 6 by Zurb) for HYPER WordPress sites",
   "homepage": "https://hyperpress.idesign.co",

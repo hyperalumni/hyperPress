@@ -125,3 +125,4 @@
 - Nx config was moved from the theme's `package.json` `nx` block to `themes/hyperpress-foundation/project.json` (dd82228); package.json holds scripts and dependencies only.
 - Cache check: second build shows `[existing outputs match the cache, left as is]`; after `rm -rf dist` it shows `[local cache]` and the restored 12-file `dist` list equals the baseline.
 - Deferred: migrating the theme's existing dependencies into the catalog; the `test:integration` target was not run.
+- Project renamed `@hyper/press` -> `@hyper/press-foundation` after this plan (see commit), because a second theme is coming; text above uses the old name.

@@ -105,7 +105,7 @@ Commits:
      `plugins/AGENTS.md` and `plugins/README.md`, and the docs references in
      `themes/hyperpress-foundation/AGENTS.md`, now point to the root `docs/`. Other edits to the
      moved `AGENTS.md` files are limited to paths or commands the restructure changes (for example commands
-     now run via `pnpm --filter @hyper/press`).
+     now run via `pnpm --filter @hyper/press-foundation`).
    - The theme's existing `docs/superpowers/plans/README.md` stays at the root and now serves the
      whole workspace; it is edited only if it is theme-specific.
    - Completed plans keep their original wording, including plugin paths written relative to the old
@@ -123,7 +123,7 @@ Fork and upstream:
 
 Verification (stage 0 gate):
 - `pnpm install` succeeds at the root.
-- `pnpm --filter @hyper/press build` succeeds and its output file list matches a build from the
+- `pnpm --filter @hyper/press-foundation build` succeeds and its output file list matches a build from the
   original `../theme`.
 - `git log --follow -- themes/hyperpress-foundation/functions.php` shows pre-move history with the
   original hashes, and `git log -- plugins/hyperpress-media` shows plugin history.
