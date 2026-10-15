@@ -9,13 +9,14 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - `plugins/`: the `hyperpress-*` plugins plus shared PHP tooling (`composer.json`, phpcs, phpunit, `bin/`, `tests/`). Read its `AGENTS.md` before working there.
 - `docs/superpowers/{specs,plans,audit}/`: all specs, plans and audits for the workspace (`uikit-*`), theme (`theme-*`) and plugins (`plugins-*`).
 - `docker/`: shared Compose file and per-site wrappers for the local WordPress sites `hyperalumni` and `hyperonline`.
-- Planned, not built yet (see the spec): Nx, `themes/hyperpress-uikit/`, `libs/`.
+- Nx is set up (root `nx.json`; stage 1 of the spec). Planned, not built yet (see the spec): `themes/hyperpress-uikit/`, `libs/`.
 
 ## Environment
 - Node comes from nvm and is not on the default PATH. Load it first in each shell: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"` (root `.nvmrc`, Node 26.12.0).
 - pnpm only (enforced by `preinstall`; no npm/yarn). The root `devEngines` pins pnpm 12.12.1. Run `pnpm install` once at the root.
 - Shared dependency versions (Nx and `@nx/*`) are pinned in the `catalog:` in `pnpm-workspace.yaml`; use `"catalog:"` in package.json, and bump them there.
 - Nx project config (targets, cache, tags) lives in each project's `project.json`; `package.json` holds scripts and dependencies only.
+- Nx commands (run with `pnpm exec`): `nx show projects`, `nx build @hyper/press`, `nx run plugins-tooling:lint|test:unit|test:integration`. Nx caches only the theme's `build` and `test:node`; the `plugins-tooling` targets run Docker composer and are never cached.
 - Theme scripts: `pnpm --filter @hyper/press <script>`, or run `pnpm <script>` from `themes/hyperpress-foundation/`.
 - PHP tooling runs in Docker only, never composer on the host: from the theme or plugins directory, `docker compose run --rm php composer lint|test:unit|test:integration`. `vendor/` is git-ignored, so run `composer install` the same way first. The two tooling compose files set their own project names (`hyperpress-plugins`, `hyperpress-theme`), the same as the standalone repos, so their ephemeral containers and the composer cache volume are shared with those repos; do not run both copies at the same time. Their mounts use the monorepo layout: `plugins/` mounts `themes/hyperpress-foundation` as `/theme`, and the theme mounts `plugins/` as `/plugins`.
 - `.env*` files are git-ignored. Do not read or print them.

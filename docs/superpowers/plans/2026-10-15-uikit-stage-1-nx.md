@@ -1,3 +1,5 @@
+> **STATUS: ✅ COMPLETED** (2026-10-15). Nx 23.3.0 runs on Node 26.12.0: second `nx build @hyper/press` is a cache hit, a cache restore after deleting `dist` matches the baseline file list, the graph holds exactly `@hyper/press`, `plugins-tooling` and the 16 plugins (no `.worktrees`), `pnpm install --frozen-lockfile` passes, and the theme build and plugin `composer lint` / `test:unit` pass without Nx. Nothing pushed.
+
 # UIkit Stage 1: Add Nx Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -103,10 +105,23 @@
 - Modify: `docs/superpowers/specs/2026-10-07-uikit-nx-wordpress-design.md` (Staged rollout: stage 1 done, with the Node 26 result)
 - Modify: this plan (tick boxes, COMPLETED banner, execution notes)
 
-- [ ] **Step 1: Cache hit.** Run `pnpm exec nx build @hyper/press` twice. Expected: the second run prints `existing outputs match the cache` or `[local cache]` and finishes faster.
-- [ ] **Step 2: Cache restore is faithful.** `rm -rf themes/hyperpress-foundation/dist`, run `pnpm exec nx build @hyper/press` again (cache hit), and confirm the sorted `dist` list equals the baseline file.
-- [ ] **Step 3: Graph.** `pnpm exec nx graph --file=/tmp/opencode/stage1/graph.json` writes a graph whose nodes are exactly `@hyper/press`, `plugins-tooling` and the 16 plugins; no `.worktrees` paths appear.
-- [ ] **Step 4: Isolation.** `git status --short` shows no stray files (`.nx/` is ignored); `pnpm install --frozen-lockfile` exits 0.
-- [ ] **Step 5: Gate from the spec.** `pnpm --filter @hyper/press build` and the plugins' `composer lint` / `composer test:unit` (via Docker) still pass directly, without Nx.
-- [ ] **Step 6: Docs and banner.** Make the three edits above, add `> **STATUS: ✅ COMPLETED** (<date>). <what passed>` and an "Outcome / execution notes" section (Nx version, daemon result, release-age exclusions, plugin layout chosen).
-- [ ] **Step 7: Commit** `docs: describe Nx commands and mark stage 1 completed` over `AGENTS.md`, the spec and this plan.
+- [x] **Step 1: Cache hit.** Run `pnpm exec nx build @hyper/press` twice. Expected: the second run prints `existing outputs match the cache` or `[local cache]` and finishes faster.
+- [x] **Step 2: Cache restore is faithful.** `rm -rf themes/hyperpress-foundation/dist`, run `pnpm exec nx build @hyper/press` again (cache hit), and confirm the sorted `dist` list equals the baseline file.
+- [x] **Step 3: Graph.** `pnpm exec nx graph --file=/tmp/opencode/stage1/graph.json` writes a graph whose nodes are exactly `@hyper/press`, `plugins-tooling` and the 16 plugins; no `.worktrees` paths appear.
+- [x] **Step 4: Isolation.** `git status --short` shows no stray files (`.nx/` is ignored); `pnpm install --frozen-lockfile` exits 0.
+- [x] **Step 5: Gate from the spec.** `pnpm --filter @hyper/press build` and the plugins' `composer lint` / `composer test:unit` (via Docker) still pass directly, without Nx.
+- [x] **Step 6: Docs and banner.** Make the three edits above, add `> **STATUS: ✅ COMPLETED** (<date>). <what passed>` and an "Outcome / execution notes" section (Nx version, daemon result, release-age exclusions, plugin layout chosen).
+- [x] **Step 7: Commit** `docs: describe Nx commands and mark stage 1 completed` over `AGENTS.md`, the spec and this plan.
+
+## Outcome / execution notes
+
+- Nx 23.3.0, exact pin via the pnpm catalog (`pnpm-workspace.yaml`); `"catalog:"` in package.json.
+- The Nx daemon (default) works on Node 26.12.0; no `NX_DAEMON=false` fallback needed.
+- `nx: false` in `allowBuilds`: the `nx` postinstall is blocked and not needed.
+- No `minimumReleaseAgeExclude` entry was needed.
+- `.worktrees/` is not discovered by Nx.
+- Task 1 needed `--runtime-on-fail=ignore` for the baseline install (done before the Node pin bump).
+- Plugin tooling layout: `plugins/project.json` (project `plugins-tooling`, root `plugins`); no move to `plugins/bin/` needed.
+- Nx config was moved from the theme's `package.json` `nx` block to `themes/hyperpress-foundation/project.json` (dd82228); package.json holds scripts and dependencies only.
+- Cache check: second build shows `[existing outputs match the cache, left as is]`; after `rm -rf dist` it shows `[local cache]` and the restored 12-file `dist` list equals the baseline.
+- Deferred: migrating the theme's existing dependencies into the catalog; the `test:integration` target was not run.

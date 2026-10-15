@@ -209,7 +209,7 @@ Verification: both sites start from the new location; the old directories are un
 
 0. Restructure the hyperPress repo into a monorepo: move the theme, rebase the plugins on top, add root files. (done)
 0b. Migrate the `hyperalumni` and `hyperonline` Docker stacks into `docker/` (see Docker stack). (done)
-1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects.
+1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects. (done) On Node 26.12.0 the Nx daemon works, the `nx` postinstall is blocked via `allowBuilds` (`nx: false`) and not needed, Nx is pinned in the pnpm catalog, the theme's Nx config lives in `project.json`, and the plugin tooling project is `plugins/project.json`.
 2. Docker stack and a bare `hyperpress-uikit` theme rendering through Timber.
 3. Vite build, manifest-based asset loading, UIkit from `libs/uikit-tokens`.
 4. Dev HMR against the Dockerized WordPress.
