@@ -8,9 +8,11 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - `themes/hyperpress-foundation/`: the classic Foundation theme (gulp/webpack). Read its `AGENTS.md` before working there.
 - `plugins/`: the `hyperpress-*` plugins plus shared PHP tooling (`composer.json`, phpcs, phpunit, `bin/`, `tests/`). Read its `AGENTS.md` before working there.
 - `docs/superpowers/{specs,plans,audit}/`: all specs, plans and audits for the workspace (`uikit-*`), theme (`theme-*`) and plugins (`plugins-*`).
-- `docker/`: shared Compose file and per-site wrappers for the local WordPress sites `hyperalumni` and `hyperonline`.
-- `dist/` rule (both git-ignored): Foundation keeps its build output in-theme (`themes/hyperpress-foundation/dist`, served from its source folder); projects with a non-deployable source folder, such as the planned uikit theme, build an assembled artifact to the repo-level `dist/<type>/<name>` (e.g. `dist/themes/hyperpress-uikit`) that compose mounts.
-- Nx is set up (root `nx.json`; stage 1 of the spec). Planned, not built yet (see the spec): `themes/hyperpress-uikit/`, `libs/`.
+- `docker/`: shared Compose file (with the `tooling` PHP/Composer service) and per-site wrappers for the local WordPress sites `hyperalumni`, `hyperonline` and `uikit`.
+- `dist/` rule (both git-ignored): Foundation keeps its build output in-theme (`themes/hyperpress-foundation/dist`, served from its source folder); projects with a non-deployable source folder, such as the uikit theme, build an assembled artifact to the repo-level `dist/<type>/<name>` (e.g. `dist/themes/hyperpress-uikit`) that compose mounts.
+- `themes/hyperpress-uikit/`: the experimental Timber + UIkit theme (PHP `Assets` class, Twig views, Vite entry).
+- `libs/uikit-tokens/` (Sass: UIkit variable overrides and component imports) and `libs/ui/` (TypeScript: UIkit init, tested with Vitest and happy-dom).
+- Nx is set up (root `nx.json`; stages 0-4 of the spec are done, including the `@nx/vite/plugin` inferred `vite-*` targets). Still unbuilt (see the spec): the stub plugin (stage 5), Oxlint/Stylelint/PHPCS targets and Oxfmt (stage 6), packaging (stage 7).
 
 ## Environment
 - Node comes from nvm and is not on the default PATH. Load it first in each shell: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"` (root `.nvmrc`, Node 26.12.0).
@@ -18,6 +20,7 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - Shared dependency versions (Nx and `@nx/*`) are pinned in the `catalog:` in `pnpm-workspace.yaml`; use `"catalog:"` in package.json, and bump them there.
 - Nx project config (targets, cache, tags) lives in each project's `project.json`; `package.json` holds scripts and dependencies only.
 - Nx commands (run with `pnpm exec`): `nx show projects`, `nx build @hyper/press-foundation`, `nx run plugins-tooling:lint|test:unit|test:integration`. Nx caches only the theme's `build` and `test:node`; the `plugins-tooling` targets run Docker composer and are never cached.
+- uikit theme: `pnpm exec nx build @hyper/press-uikit` assembles `dist/themes/hyperpress-uikit` (PHP, Twig, Vite output, Composer `vendor/`). `nx up|down|smoke|serve @hyper/press-uikit`: `up` builds then starts the stack, `smoke` checks the running site, `serve` is the Vite dev loop with HMR (it writes a `.vite-dev` marker while running).
 - Theme scripts: `pnpm --filter @hyper/press-foundation <script>`, or run `pnpm <script>` from `themes/hyperpress-foundation/`.
 - PHP tooling runs in Docker only, never composer on the host: from the theme or plugins directory, `docker compose run --rm php composer lint|test:unit|test:integration`. `vendor/` is git-ignored, so run `composer install` the same way first. The two tooling compose files set their own project names (`hyperpress-plugins`, `hyperpress-theme`), the same as the standalone repos, so their ephemeral containers and the composer cache volume are shared with those repos; do not run both copies at the same time. Their mounts use the monorepo layout: `plugins/` mounts `themes/hyperpress-foundation` as `/theme`, and the theme mounts `plugins/` as `/plugins`.
 - `.env*` files are git-ignored. Do not read or print them.
@@ -29,6 +32,11 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - The project names keep the existing volumes (`hyperalumni_*`, `hyperonline_*`). `docker compose down -v` deletes a site's database and WordPress files: fine for local development, but do it on purpose.
 - The theme and the 16 plugins are bind-mounted from `themes/hyperpress-foundation/` and `plugins/`. Design: the spec's "Docker stack" section.
 - Docker Desktop creates a missing bind-mount source as an empty root-owned folder instead of failing, and Compose's `create_host_path: false` does not change that here. After changing a mount path or `THEME_SRC`, look for strays with `find . -maxdepth 4 -type d -empty -user root -not -path '*/node_modules/*'` and remove them with `rmdir`. The theme's integration tests also leave an empty root-owned `themes/hyperpress-foundation/.superpowers`; that one is harmless.
+
+### uikit site
+- `cd docker/uikit && docker compose --profile local up -d` (or `nx up @hyper/press-uikit`). WordPress http://localhost:5080, phpMyAdmin 5090 (ports and project name `hyperuikit` come from the git-ignored local env file; copy the committed example on a new checkout). The owner installs WordPress and activates the theme once with wpcli: `docker compose --profile local run --rm wpcli <command>`.
+- PHP/Composer tooling (never on the host): from `docker/uikit`, `docker compose run --rm --user "$(id -u):$(id -g)" -e COMPOSER_HOME=/tmp/composer tooling <cmd>`; add `-w /themes/hyperpress-uikit` for the theme's composer scripts (e.g. `composer test:unit`). Always pass `--user` (the service runs as root) and not `--profile tools`.
+- Bind-mount gotcha: `dist/themes/hyperpress-uikit` is mounted into the container. Never `rm -rf` the directory itself; anything that recreates it leaves a stale mount, repaired with `docker compose --profile local up -d --force-recreate wordpress`.
 
 ## Git
 - One repo: commit from the root with explicit paths. Run `git add <paths>` then `git commit -m "..." -- <paths>`. Never a bare `git commit` and never `git add -A`.

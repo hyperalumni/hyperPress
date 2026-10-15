@@ -1,6 +1,6 @@
 # UIkit + Nx + pnpm WordPress workspace: design
 
-Status: draft for review (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root; 2026-10-15: pins bumped to Node 26.12.0 and pnpm 12.12.1, plugin count corrected to 16, stages 0 and 0b done, Nx pinned to 23.3.0; 2026-10-15: two `dist/` conventions recorded, Foundation keeps its in-theme `dist/`)
+Status: draft for review (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root; 2026-10-15: pins bumped to Node 26.12.0 and pnpm 12.12.1, plugin count corrected to 16, stages 0 and 0b done, Nx pinned to 23.3.0; 2026-10-15: two `dist/` conventions recorded, Foundation keeps its in-theme `dist/`; 2026-10-15: stages 2-4 done, tooling image is PHP 8.5, Vite runs through the inferred `@nx/vite` plugin)
 
 ## Purpose
 
@@ -24,7 +24,7 @@ repo is added under `plugins/` (rebased on top, no merge commit), and root works
 | Plugins | The `../plugins` repo is imported with its history (rebased on top of the move commit, so no merge commit): everything under `plugins/` as-is (16 `hyperpress-*` plugins plus its shared `composer.json`, `phpcs.xml.dist`, `phpunit.xml.dist`, `tests/`, `bin/`, `AGENTS.md`, Docker files), except its `docs/`, which goes to the root `docs/`. Hoisting shared tooling to the root is a later, separate step |
 | New theme | Classic PHP theme `themes/hyperpress-uikit/`, Timber (Twig) templating, TypeScript, Sass |
 | UIkit | Consumed from Sass source (`uikit/src/scss`, shipped in the npm package); variables overridden, only used components imported |
-| Bundler | Vite via `@nx/vite` for the new theme; emits a manifest |
+| Bundler | Vite via the inferred `@nx/vite/plugin` for the new theme (the `@nx/vite:build` executor is deprecated and broke on Nx 23.3); emits a manifest |
 | JS/TS lint | Oxlint via the first-party `@nx/oxlint` Nx plugin |
 | Format (JS/TS/SCSS/JSON/YAML/MD) | Oxfmt, run over the whole monorepo by root `package.json` scripts (`"fmt": "oxfmt"`, `"fmt:check": "oxfmt --check"`), not as per-project Nx targets |
 | SCSS lint | Stylelint (Oxlint does not cover CSS) |
@@ -147,12 +147,19 @@ Verification (stage 0 gate):
   `dist/` is deliberately not done: it would need an assembled artifact, a new copy/install pipeline,
   a changed `THEME_SRC` for the live stacks, reworked gulp watch/browser-sync, and changes to the
   `package` task and tests. Revisit only if the UIkit theme becomes the main theme.
-- Dev: `nx serve` runs the Vite dev server on the host at a fixed port. A theme `Assets` class
+- Dev: `nx serve` runs the Vite dev server on the host at a fixed port (5173, `strictPort`). A theme `Assets` class
   detects a dev marker (`VITE_DEV` constant or a `.vite-dev` file Nx writes while serving) and prints
-  module script tags for the Vite client and entry. Sass and TS hot-reload. PHP and Twig changes
-  trigger a full reload.
+  module script tags for the Vite client and entry. The marker is JSON with both URLs,
+  `{"browser": "http://localhost:5173", "internal": "http://host.docker.internal:5173"}`: the browser
+  and the WordPress container reach the host differently. `Assets` probes `<internal>/@vite/client`
+  (the Vite root URL returns 404) before trusting the marker. Sass and TS hot-reload. PHP and Twig
+  changes trigger a full reload.
 - Production: `Assets` reads `manifest.json` and enqueues hashed assets through `wp_enqueue_*`.
 - `nx up` builds first, then starts compose, because the mount is empty until a build completes.
+- The assembling `build` target is a noop that depends on the copy, Vite and Composer targets; it needs
+  `outputs: []`. Without it Nx defaults the outputs to `dist/{projectRoot}`, restores that folder from
+  the cache, recreates `dist/themes/hyperpress-uikit` and leaves the WordPress bind mount stale
+  (repair: `docker compose --profile local up -d --force-recreate wordpress` from `docker/uikit`).
 
 ## Stub plugin
 
@@ -183,7 +190,7 @@ Rules:
 - Only host paths change: `../theme` becomes `../../themes/hyperpress-foundation`, and `../plugins/hyperpress-*` becomes `../../plugins/hyperpress-*`. The theme mount source and slug are parameters, `THEME_SRC` (default `../../themes/hyperpress-foundation`) and `THEME_SLUG` (default `hyperPress`), so the new theme is served by the same file from its own `.env.local` (spike-verified).
 - The 16 per-plugin mounts stay (not one `plugins/` mount), because third-party plugins such as `meta-box-aio` live in the `wp` volume.
 - Secrets: the agent's shell rejects commands containing `.env` and EnvSitter works only inside the project, so the owner copies the real `.env*` files with a command block from the plan. The agent then checks key names and that the templates are empty with EnvSitter, without reading values. Templates list names only for secret-bearing files (`.env.db`, `.env.mariadb`, `.env.wordpress`); the other templates are plain copies. The root `.gitignore` gains `!.env*.example`.
-- A `tooling` service (PHP 8.3 + Composer, for `composer install` and PHPCS) and the `uikit` site are added in later stages.
+- The `tooling` service (PHP 8.5 + Composer, for `composer install` and PHPCS) and the `uikit` site exist since stage 2 (`docker/uikit`, project `hyperuikit`, WordPress on 5080, phpMyAdmin on 5090). The theme still declares `php >=8.3` and its lock pins platform php 8.3.0. The tooling service runs as root, so every run passes `--user "$(id -u):$(id -g)" -e COMPOSER_HOME=/tmp/composer` (otherwise `vendor/` and `dist/` files become root-owned). The shared `wordpress` service gets `extra_hosts: host.docker.internal:host-gateway`, needed on Linux so the container reaches the host's Vite server.
 
 ### Stage 0b: migrate the existing stacks
 
@@ -219,9 +226,9 @@ Verification: both sites start from the new location; the old directories are un
 0. Restructure the hyperPress repo into a monorepo: move the theme, rebase the plugins on top, add root files. (done)
 0b. Migrate the `hyperalumni` and `hyperonline` Docker stacks into `docker/` (see Docker stack). (done)
 1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects. (done) On Node 26.12.0 the Nx daemon works, the `nx` postinstall is blocked via `allowBuilds` (`nx: false`) and not needed, Nx is pinned in the pnpm catalog, the theme's Nx config lives in `project.json`, and the plugin tooling project is `plugins/project.json`.
-2. Docker stack and a bare `hyperpress-uikit` theme rendering through Timber.
-3. Vite build, manifest-based asset loading, UIkit from `libs/uikit-tokens`.
-4. Dev HMR against the Dockerized WordPress.
+2. Docker stack and a bare `hyperpress-uikit` theme rendering through Timber. (done)
+3. Vite build, manifest-based asset loading, UIkit from `libs/uikit-tokens`. (done)
+4. Dev HMR against the Dockerized WordPress. (done; the automated websocket proof passed, browser confirmation by the owner pending)
 5. Stub (or real) plugin consuming the shared lib; prove `nx affected` and cache hits.
 6. Oxlint (`@nx/oxlint`), Stylelint and PHPCS as Nx targets; Oxfmt as root `fmt`/`fmt:check` scripts.
 7. Packaging and an experiment write-up.
@@ -248,7 +255,7 @@ and any change to `../theme` or `../plugins`. The old `hyperalumni/` and `hypero
 - Pushing the restructured `master` to `hyperalumni/hyperPress` changes the shared repo layout for
   everyone using it; it needs its own decision (branch vs `master`, and what happens to
   `hyperPressPlugins`).
-- Vite runs on the host while WordPress runs in Docker; CORS and host-networking need an early test.
+- Vite runs on the host while WordPress runs in Docker; CORS and host-networking need an early test. Result of the stage 4 spike: Vite blocks requests with an unknown `Host` header, so `host.docker.internal` is in `server.allowedHosts`; CORS allows the WordPress origin (`UIKIT_WP_ORIGIN`, default `http://localhost:5080`); on Linux the container needs the `extra_hosts` entry above.
 - Node 26 is in the Current phase. The theme already pins 26.12.0; compatibility of Nx, Vite, Sass
   and the Oxc tools with it is verified in stage 1, not assumed.
 - Oxfmt runs outside Nx (root scripts over the whole repo), so formatting is not cached by Nx and is

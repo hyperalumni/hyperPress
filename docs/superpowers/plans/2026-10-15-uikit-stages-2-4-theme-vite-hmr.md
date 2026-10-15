@@ -1,5 +1,7 @@
 # UIkit Stages 2-4: Timber Theme, Vite Build, Dev HMR Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-10-15). Gate passed: `nx run-many -t build test typecheck` (10 tasks), `nx up` and `nx smoke` against the running `hyperuikit` stack, the Foundation build and `test:node`, `plugins-tooling:lint` and `test:unit`, the uikit theme's PHPUnit (15 tests), and `pnpm install --frozen-lockfile`. Automated HMR proof passed (websocket css update and full reload on a Twig edit); browser confirmation by the owner pending (Task 8 Step 4 stays unticked).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** A `hyperpress-uikit` Timber theme built with Vite and styled with UIkit from Sass source, served by a Dockerized WordPress site, with hot reload working against it.
@@ -205,6 +207,26 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 **Files:**
 - Modify: root `AGENTS.md` (uikit commands, `docker/uikit`, tooling service, the dist mount rule), the spec (stages 2-4 done, PHP 8.5 tooling image instead of 8.3, results of the CORS spike), this plan (boxes, banner, execution notes)
 
-- [ ] **Step 1: Gate.** `pnpm exec nx run-many -t build test typecheck` passes for all projects; `nx up` then `nx smoke` passes; the Foundation theme build and plugin `composer lint`/`test:unit` still pass; `pnpm install --frozen-lockfile` exits 0; `git status --short` is clean (no real `.env*`, no `dist/`, no root-owned stray folders per the `find ... -user root` check in `AGENTS.md`).
-- [ ] **Step 2: Docs** per the Files list, then add `> **STATUS: ✅ COMPLETED** (<date>). <what passed>` and an "Outcome / execution notes" section.
-- [ ] **Step 3: Commit** `docs: describe the uikit theme and mark stages 2-4 completed` over the three docs.
+- [x] **Step 1: Gate.** `pnpm exec nx run-many -t build test typecheck` passes for all projects; `nx up` then `nx smoke` passes; the Foundation theme build and plugin `composer lint`/`test:unit` still pass; `pnpm install --frozen-lockfile` exits 0; `git status --short` is clean (no real `.env*`, no `dist/`, no root-owned stray folders per the `find ... -user root` check in `AGENTS.md`).
+- [x] **Step 2: Docs** per the Files list, then add `> **STATUS: ✅ COMPLETED** (<date>). <what passed>` and an "Outcome / execution notes" section.
+- [x] **Step 3: Commit** `docs: describe the uikit theme and mark stages 2-4 completed` over the three docs.
+
+## Outcome / execution notes
+
+- **Pins used** (Pins table): vite 8.3.4, `@nx/vite` 23.3.0, uikit 3.25.26, `@types/uikit` 3.23.4, sass 1.105.1, typescript 7.0.2, vitest 5.0.4 (5.0.5 was inside the 24 h release-age window), Timber ^2.5.1, PHPUnit ^9.6, `yoast/phpunit-polyfills` ^2.0. The owner chose happy-dom 21.0.1 instead of jsdom for `libs/ui`. `@nx/vitest` was skipped. No `minimumReleaseAgeExclude` entries were needed.
+- **`allowBuilds`:** `@parcel/watcher: false` (sass uses it only for `--watch` and ships prebuilt binaries), in line with the existing all-false policy.
+- **Owner steps performed:** the local env file for `docker/uikit` (ports 5080/5090) and the WordPress install and theme activation with `wpcli`. The browser HMR check (Task 8 Step 4) is still the owner's.
+- **PHP floor:** kept `>=8.3` (matches plugins and Foundation); the theme's `composer.lock` has a platform pin of php 8.3.0; the tooling image is PHP 8.5. The production PHP version is unknown; revisit repo-wide if hosts run 8.4+.
+- **`@nx/vite`:** the `@nx/vite:build` executor is deprecated and broke on Nx 23.3, so the inferred `@nx/vite/plugin` is adopted (8 inferred `vite-*` targets plus `serve`; individual targets cannot be omitted in 23.3). `vite-build` stays disjoint from the other build outputs.
+- **Cached noop finding:** the `build` target (`nx:noop`) had no `outputs`, so Nx defaulted to `dist/{projectRoot}`, restored it from cache and recreated `dist/themes/hyperpress-uikit`, which left the WordPress bind mount stale. Fixed with `outputs: []`. Anything that recreates that folder itself needs `docker compose --profile local up -d --force-recreate wordpress` from `docker/uikit`.
+- **`Assets::defaultProbe` fix:** the dev-server reachability probe now requests `<internal>/@vite/client`, because the Vite root URL returns 404.
+- **CORS/host spike:** Vite blocks unknown Host headers, so `host.docker.internal` is in `allowedHosts`; `extra_hosts` is added to the shared `wordpress` service for Linux. The existing sites' rendered config differs only by that `extra_hosts`.
+
+### Known follow-ups (deferred minors)
+
+- `pnpm-lock.yaml` still resolves a stale `jsdom@30.1.2` (nothing declares it); try `pnpm install --fix-lockfile` before merge.
+- `serve.mjs`: a second `nx serve` clobbers the first one's marker; no debounce; the copy exit code is ignored; SIGHUP is unhandled. `UIKIT_WP_ORIGIN` is undocumented in the env example.
+- `Assets::defaultProbe` is untested (extract a `probeUrl()` seam) and should be private; no tests for "probe not called" or a trailing-slash `$themeUri`.
+- `vite-build` inputs are too broad (PHP/Twig edits re-run Vite); `libs/uikit-tokens` inputs likewise; `vite-typecheck` duplicates the explicit `typecheck`.
+- `script_loader_tag` replaces every ` src=` and does not drop an existing `type=`; Twig `post.title` may be printed unescaped (Timber 2 autoescape unverified).
+- The smoke script's retry loop is shared by asset URLs, and `SMOKE_RETRY_SECONDS` accepts floats; the admin notice for a missing manifest or `vendor/` is only unit-tested (owner visual check).
