@@ -9,6 +9,7 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - `plugins/`: the `hyperpress-*` plugins plus shared PHP tooling (`composer.json`, phpcs, phpunit, `bin/`, `tests/`). Read its `AGENTS.md` before working there.
 - `docs/superpowers/{specs,plans,audit}/`: all specs, plans and audits for the workspace (`uikit-*`), theme (`theme-*`) and plugins (`plugins-*`).
 - `docker/`: shared Compose file and per-site wrappers for the local WordPress sites `hyperalumni` and `hyperonline`.
+- `dist/` rule (both git-ignored): Foundation keeps its build output in-theme (`themes/hyperpress-foundation/dist`, served from its source folder); projects with a non-deployable source folder, such as the planned uikit theme, build an assembled artifact to the repo-level `dist/<type>/<name>` (e.g. `dist/themes/hyperpress-uikit`) that compose mounts.
 - Nx is set up (root `nx.json`; stage 1 of the spec). Planned, not built yet (see the spec): `themes/hyperpress-uikit/`, `libs/`.
 
 ## Environment

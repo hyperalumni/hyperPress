@@ -1,6 +1,6 @@
 # UIkit + Nx + pnpm WordPress workspace: design
 
-Status: draft for review (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root; 2026-10-15: pins bumped to Node 26.12.0 and pnpm 12.12.1, plugin count corrected to 16, stages 0 and 0b done, Nx pinned to 23.3.0)
+Status: draft for review (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root; 2026-10-15: pins bumped to Node 26.12.0 and pnpm 12.12.1, plugin count corrected to 16, stages 0 and 0b done, Nx pinned to 23.3.0; 2026-10-15: two `dist/` conventions recorded, Foundation keeps its in-theme `dist/`)
 
 ## Purpose
 
@@ -138,6 +138,15 @@ Verification (stage 0 gate):
 - `nx build` writes the finished theme to `dist/themes/hyperpress-uikit/`: PHP, Twig, built
   `assets/`, `.vite/manifest.json`, and Composer `vendor/` (Timber) installed by the tooling container.
 - The `wordpress` service bind-mounts the `dist/` theme and plugin folders into `wp-content/`.
+- Two `dist/` conventions (decided 2026-10-15). A project that is itself the deployable theme, served
+  from its own source folder, keeps its build output inside it: `themes/hyperpress-foundation/dist`
+  stays unchanged (gulp/webpack, PHP reads `dist/assets` relative to the theme, compose mounts the
+  source folder). A project whose source folder is not deployable builds an assembled artifact into the
+  repo-level, git-ignored `dist/<type>/<name>` (e.g. `dist/themes/hyperpress-uikit`,
+  `dist/libs/uikit-tokens`), and compose mounts that artifact. Moving Foundation to the repo-level
+  `dist/` is deliberately not done: it would need an assembled artifact, a new copy/install pipeline,
+  a changed `THEME_SRC` for the live stacks, reworked gulp watch/browser-sync, and changes to the
+  `package` task and tests. Revisit only if the UIkit theme becomes the main theme.
 - Dev: `nx serve` runs the Vite dev server on the host at a fixed port. A theme `Assets` class
   detects a dev marker (`VITE_DEV` constant or a `.vite-dev` file Nx writes while serving) and prints
   module script tags for the Vite client and entry. Sass and TS hot-reload. PHP and Twig changes
