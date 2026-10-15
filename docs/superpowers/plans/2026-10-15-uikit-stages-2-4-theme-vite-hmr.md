@@ -96,11 +96,11 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 **Interfaces:**
 - Produces: `@hyper/ui` exporting `initUikit(root?: Document): void` (loads UIkit and its Icons plugin, calls `UIkit.use(Icons)` once, idempotent) and the ambient `declare module 'uikit'` types. Targets: `test` (Vitest with jsdom or happy-dom, cached), `typecheck` (`tsc --noEmit`, cached).
 
-- [ ] **Step 1: Write the failing test:** `initUikit()` twice calls `UIkit.use` exactly once (spy), and after init a `<span uk-icon="icon: home">` in the document gains an `svg` child.
-- [ ] **Step 2: Run** `pnpm exec nx test @hyper/ui`. Expected: FAIL.
-- [ ] **Step 3: Implement** `initUikit` using the import path recorded in Task 1; `@hyper/ui` is TypeScript only and does not depend on `@hyper/uikit-tokens`.
-- [ ] **Step 4: Run** `pnpm exec nx run-many -t test typecheck -p @hyper/ui`. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(libs): add ui library with UIkit init` over `libs/ui pnpm-workspace.yaml pnpm-lock.yaml`.
+- [x] **Step 1: Write the failing test:** `initUikit()` twice calls `UIkit.use` exactly once (spy), and after init a `<span uk-icon="icon: home">` in the document gains an `svg` child.
+- [x] **Step 2: Run** `pnpm exec nx test @hyper/ui`. Expected: FAIL.
+- [x] **Step 3: Implement** `initUikit` using the import path recorded in Task 1; `@hyper/ui` is TypeScript only and does not depend on `@hyper/uikit-tokens`.
+- [x] **Step 4: Run** `pnpm exec nx run-many -t test typecheck -p @hyper/ui`. Expected: PASS.
+- [x] **Step 5: Commit** `feat(libs): add ui library with UIkit init` over `libs/ui pnpm-workspace.yaml pnpm-lock.yaml`.
 
 ### Task 4: Docker tooling service and `docker/uikit` site
 

@@ -1,0 +1,18 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "@hyper/ui",
+  "targets": {
+    "test": {
+      "executor": "nx:run-script",
+      "options": { "script": "test" },
+      "cache": true,
+      "inputs": ["default", "^default"]
+    },
+    "typecheck": {
+      "executor": "nx:run-script",
+      "options": { "script": "typecheck" },
+      "cache": true,
+      "inputs": ["default", "^default"]
+    }
+  }
+}
