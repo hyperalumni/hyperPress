@@ -96,7 +96,7 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 - Create: `libs/ui/{package.json,project.json,tsconfig.json,src/index.ts,src/uikit.ts,src/types.d.ts,tests/uikit.test.ts}`
 
 **Interfaces:**
-- Produces: `@hyper/ui` exporting `initUikit(root?: Document): void` (loads UIkit and its Icons plugin, calls `UIkit.use(Icons)` once, idempotent) and the ambient `declare module 'uikit'` types. Targets: `test` (Vitest with jsdom or happy-dom, cached), `typecheck` (`tsc --noEmit`, cached).
+- Produces: `@hyper/ui` exporting `initUikit(root?: Document): void` (loads UIkit and its Icons plugin, calls `UIkit.use(Icons)` once, idempotent) and the ambient `declare module 'uikit'` types. Targets: `test` (Vitest with happy-dom, cached), `typecheck` (`tsc --noEmit`, cached).
 
 - [x] **Step 1: Write the failing test:** `initUikit()` twice calls `UIkit.use` exactly once (spy), and after init a `<span uk-icon="icon: home">` in the document gains an `svg` child.
 - [x] **Step 2: Run** `pnpm exec nx test @hyper/ui`. Expected: FAIL.
@@ -200,7 +200,7 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 - Live homepage with the server up has one `type="module"` script each for `http://localhost:5173/@vite/client` and `http://localhost:5173/src/main.ts` and no `assets/main-*`; `/src/main.scss` is transformed to CSS (200).
 - HMR over Vite's websocket (automated, `/tmp/opencode/task8/hmr.mjs`, not committed): changing a colour in `libs/uikit-tokens/src/_variables.scss` produced an `update` message for `/src/main.scss` (no reload); editing `views/index.twig` produced `full-reload` and the dist copy contained the edit. Both edits were reverted.
 - Step 4 (browser confirmation) is left unticked: only this automated proof exists. Owner: run `nx serve`, open http://localhost:5080, edit a colour in `_variables.scss` and watch the page restyle without a reload; edit `views/index.twig` and watch a full reload; Ctrl+C the server, the marker disappears and a refresh serves the production assets.
-- Plugin decision: `@nx/vite/plugin` is registered in `nx.json` (limited with `include` to `themes/hyperpress-uikit/**/*`, every inferred target given a `vite-*` name). The plugin must resolve from the workspace root, so `@nx/vite` moved from the theme's devDependencies to the root. No target of other projects changed; on `@hyper/press-uikit` the only additions are `serve` and the inferred `vite-serve`, `vite-dev`, `vite-preview`, `vite-serve-static`, `vite-typecheck`, `vite-build-deps`, `vite-watch-deps`. The explicit `vite-build` and `build` targets are unchanged and the dist file list is identical.
+- Plugin decision: `@nx/vite/plugin` is registered in `nx.json` (limited with `include` to `themes/hyperpress-uikit/**/*`, every inferred target given a `vite-*` name). The plugin must resolve from the workspace root, so `@nx/vite` moved from the theme's devDependencies to the root. No target of other projects changed; on `@hyper/press-uikit` the only additions are `serve` and 7 new inferred targets (`vite-build` is the 8th inferred name and merges into the explicit one): `vite-serve`, `vite-dev`, `vite-preview`, `vite-serve-static`, `vite-typecheck`, `vite-build-deps`, `vite-watch-deps`. The explicit `vite-build` and `build` targets are unchanged and the dist file list is identical.
 
 ### Task 9: Gate and close-out
 
@@ -217,16 +217,21 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 - **`allowBuilds`:** `@parcel/watcher: false` (sass uses it only for `--watch` and ships prebuilt binaries), in line with the existing all-false policy.
 - **Owner steps performed:** the local env file for `docker/uikit` (ports 5080/5090) and the WordPress install and theme activation with `wpcli`. The browser HMR check (Task 8 Step 4) is still the owner's.
 - **PHP floor:** kept `>=8.3` (matches plugins and Foundation); the theme's `composer.lock` has a platform pin of php 8.3.0; the tooling image is PHP 8.5. The production PHP version is unknown; revisit repo-wide if hosts run 8.4+.
-- **`@nx/vite`:** the `@nx/vite:build` executor is deprecated and broke on Nx 23.3, so the inferred `@nx/vite/plugin` is adopted (8 inferred `vite-*` targets plus `serve`; individual targets cannot be omitted in 23.3). `vite-build` stays disjoint from the other build outputs.
+- **`@nx/vite`:** the `@nx/vite:build` executor is deprecated and broke on Nx 23.3, so the inferred `@nx/vite/plugin` is adopted (8 inferred `vite-*` names, of which `vite-build` merges into the explicit target and 7 are new, plus `serve`: 16 targets in all; individual targets cannot be omitted in 23.3). `vite-build` stays disjoint from the other build outputs.
 - **Cached noop finding:** the `build` target (`nx:noop`) had no `outputs`, so Nx defaulted to `dist/{projectRoot}`, restored it from cache and recreated `dist/themes/hyperpress-uikit`, which left the WordPress bind mount stale. Fixed with `outputs: []`. Anything that recreates that folder itself needs `docker compose --profile local up -d --force-recreate wordpress` from `docker/uikit`.
 - **`Assets::defaultProbe` fix:** the dev-server reachability probe now requests `<internal>/@vite/client`, because the Vite root URL returns 404.
 - **CORS/host spike:** Vite blocks unknown Host headers, so `host.docker.internal` is in `allowedHosts`; `extra_hosts` is added to the shared `wordpress` service for Linux. The existing sites' rendered config differs only by that `extra_hosts`.
 
 ### Known follow-ups (deferred minors)
 
-- `pnpm-lock.yaml` still resolves a stale `jsdom@30.1.2` (nothing declares it); try `pnpm install --fix-lockfile` before merge.
-- `serve.mjs`: a second `nx serve` clobbers the first one's marker; no debounce; the copy exit code is ignored; SIGHUP is unhandled. `UIKIT_WP_ORIGIN` is undocumented in the env example.
-- `Assets::defaultProbe` is untested (extract a `probeUrl()` seam) and should be private; no tests for "probe not called" or a trailing-slash `$themeUri`.
+- `Assets::defaultProbe` is still public and only covered through `probeUrl()`; no test for a trailing-slash `$themeUri`.
 - `vite-build` inputs are too broad (PHP/Twig edits re-run Vite); `libs/uikit-tokens` inputs likewise; `vite-typecheck` duplicates the explicit `typecheck`.
 - `script_loader_tag` replaces every ` src=` and does not drop an existing `type=`; Twig `post.title` may be printed unescaped (Timber 2 autoescape unverified).
 - The smoke script's retry loop is shared by asset URLs, and `SMOKE_RETRY_SECONDS` accepts floats; the admin notice for a missing manifest or `vendor/` is only unit-tested (owner visual check).
+- Stage 7 packaging must strip `.vite-dev` and rebuild `assets/` and `.vite/` from clean (`emptyOutDir` is false, so stale hashed files accumulate).
+- `copy-theme` does rm+cp per entry, so the served theme is briefly incomplete during a copy.
+- Twig prints `post.title`, `post.link` and `site.url` unescaped and Timber 2's autoescape default is unverified.
+- Sass `@import` must move to `@use` before Dart Sass 3 (the silenced `import` deprecation hides it).
+- Add PHPCompatibilityWP with `testVersion 8.3` in stage 6 (the theme code is only exercised on PHP 8.5).
+- `script_loader_tag` could use WordPress 6.5 script modules instead of string replacement.
+- The owner's browser HMR confirmation (Task 8 Step 4) is still pending.

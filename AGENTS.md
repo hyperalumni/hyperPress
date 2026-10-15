@@ -36,6 +36,8 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 ### uikit site
 - `cd docker/uikit && docker compose --profile local up -d` (or `nx up @hyper/press-uikit`). WordPress http://localhost:5080, phpMyAdmin 5090 (ports and project name `hyperuikit` come from the git-ignored local env file; copy the committed example on a new checkout). The owner installs WordPress and activates the theme once with wpcli: `docker compose --profile local run --rm wpcli <command>`.
 - PHP/Composer tooling (never on the host): from `docker/uikit`, `docker compose run --rm --user "$(id -u):$(id -g)" -e COMPOSER_HOME=/tmp/composer tooling <cmd>`; add `-w /themes/hyperpress-uikit` for the theme's composer scripts (e.g. `composer test:unit`). Always pass `--user` (the service runs as root) and not `--profile tools`.
+- Dev loop: use `nx serve @hyper/press-uikit`, not the inferred `vite-serve`/`vite-dev`/`vite-preview` targets (they do not write the `.vite-dev` marker, so WordPress keeps serving the production assets). Vite binds `0.0.0.0` (`host: true`) so the WordPress container can reach it via `host.docker.internal`; the dev server is therefore reachable from the LAN while it runs, so use it only on trusted networks.
+- `UIKIT_WP_ORIGIN` is a host shell environment variable read by the theme's Vite config (CORS origin of the site, default `http://localhost:5080`); set it if you change the site port.
 - Bind-mount gotcha: `dist/themes/hyperpress-uikit` is mounted into the container. Never `rm -rf` the directory itself; anything that recreates it leaves a stale mount, repaired with `docker compose --profile local up -d --force-recreate wordpress`.
 
 ## Git

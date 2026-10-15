@@ -30,7 +30,7 @@ repo is added under `plugins/` (rebased on top, no merge commit), and root works
 | SCSS lint | Stylelint (Oxlint does not cover CSS) |
 | PHP lint | PHPCS (WordPress standard), in Docker only |
 | Twig | No formatter or linter (none available) |
-| Dev environment | One shared Docker Compose file in `docker/` with thin per-site wrappers (`docker/hyperalumni/`, `docker/hyperonline/`, later `docker/uikit/`); PHP/Composer run in a tooling container, never on the host |
+| Dev environment | One shared Docker Compose file in `docker/` with thin per-site wrappers (`docker/hyperalumni/`, `docker/hyperonline/`, `docker/uikit/`); PHP/Composer run in a tooling container, never on the host |
 | Stub plugin | `plugins/hyperpress-example/` was planned when no real plugins were in scope; revisit in stage 5 (a real plugin may serve instead) |
 
 ## Workspace layout
