@@ -126,3 +126,4 @@
 - Cache check: second build shows `[existing outputs match the cache, left as is]`; after `rm -rf dist` it shows `[local cache]` and the restored 12-file `dist` list equals the baseline.
 - Deferred: migrating the theme's existing dependencies into the catalog; the `test:integration` target was not run.
 - Project renamed `@hyper/press` -> `@hyper/press-foundation` after this plan (see commit), because a second theme is coming; text above uses the old name.
+- Root package renamed `@hyper/workspace` -> `@hyper/press` to name the whole repo; before the earlier theme rename `@hyper/press` meant the theme, so older plan text using it refers to the Foundation theme.

@@ -1,5 +1,5 @@
 {
-  "name": "@hyper/workspace",
+  "name": "@hyper/press",
   "private": true,
   "scripts": {
     "preinstall": "npx only-allow pnpm"
