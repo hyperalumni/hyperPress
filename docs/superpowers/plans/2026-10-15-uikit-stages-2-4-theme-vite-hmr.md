@@ -156,17 +156,24 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 
 **Files:**
 - Create: `docker/uikit/smoke.mjs`
-- Modify: `themes/hyperpress-uikit/project.json` (targets `up`, `down`, `smoke`)
+- Modify: `themes/hyperpress-uikit/project.json` (targets `up`, `down`, `smoke`; `composer-install` made uncached)
+- Modify: `themes/hyperpress-uikit/index.php` (graceful fallback page when Timber/`vendor/` is missing)
 
 **Interfaces:**
-- Produces: `nx up @hyper/press-uikit` (runs `build`, then `docker compose --profile local up -d` in `docker/uikit/`), `nx smoke @hyper/press-uikit` (uncached) running `node docker/uikit/smoke.mjs <base-url>`: the homepage returns 200, every URL in `.vite/manifest.json` (entry file and css) returns 200, the body contains `uk-` classes; exit non-zero with the failing URL otherwise.
+- Produces: `nx up @hyper/press-uikit` (runs `build`, then `docker compose --profile local up -d` in `docker/uikit/`), `nx smoke @hyper/press-uikit` (uncached) running `node docker/uikit/smoke.mjs [base-url]`: the homepage returns 200, every URL in `.vite/manifest.json` (entry file and css) returns 200, the body contains `uk-` classes; exit non-zero with the failing URL otherwise.
 
 - [x] **Step 1: Write `smoke.mjs`** and run it against the stopped stack. Expected: FAIL with a connection error.
 - [x] **Step 2: Add the targets,** then `pnpm exec nx up @hyper/press-uikit`.
-- [ ] **Step 3: Owner step.** The owner runs the WordPress install and theme activation with `docker compose --profile local run --rm wpcli core install ...` then `theme activate hyperpress-uikit` (command block with placeholders for URL, title, admin user, password, email, written into the execution notes). Check that the theme and plugin mounts exist in the container.
-  (Owner command block: see the Task 7 report; the working form is `docker compose --profile local run --rm wpcli ...`.)
-- [ ] **Step 4: Run** `pnpm exec nx smoke @hyper/press-uikit`. Expected: exit 0. With `dist/themes/hyperpress-uikit/vendor` deleted, the homepage still returns 200 and the admin shows the notice.
-- [ ] **Step 5: Commit** `feat(uikit-theme): add up, down and smoke targets` over the two files.
+- [x] **Step 3: Owner step.** The owner runs the WordPress install and theme activation from `docker/uikit/` (placeholders for the admin values; use real ones locally, never commit them):
+  `docker compose --profile local run --rm wpcli core install --url=http://localhost:5080 --title="HyperPress UIkit" --admin_user=<USER> --admin_password=<PASSWORD> --admin_email=<EMAIL> --skip-email`, then `docker compose --profile local run --rm wpcli theme activate hyperpress-uikit`. The theme mount and the 16 plugin mounts exist in the container.
+- [x] **Step 4: Run** `pnpm exec nx smoke @hyper/press-uikit`. Expected: exit 0. With `dist/themes/hyperpress-uikit/vendor` deleted, the homepage still returns 200 (fallback page naming `vendor/` and `nx build @hyper/press-uikit`, no PHP fatal) and with `.vite` moved aside it returns 200 without production assets. The admin notice itself is covered by the `Assets` unit tests, not checked in a browser.
+- [x] **Step 5: Commit** `feat(uikit-theme): add up, down and smoke targets`, then `fix(uikit-theme): bound the smoke test retries by time` and `fix(uikit-theme): keep the theme bind mount valid across builds`.
+
+**Task 7 notes:**
+- Compose needs `--profile local` for every command (`up`, `stop`, `run wpcli`, `ps`): `COMPOSE_PROFILES` in the env file only feeds the included file's interpolation and does not select profiles; never use `--profile tools`.
+- `smoke.mjs` bounds every request at 3 s and retries connection errors/timeouts until `SMOKE_RETRY_SECONDS` (default 30; `0` = single attempt; non-numeric falls back to 30).
+- Fallback behavior: without Timber/`vendor/`, `index.php` serves HTTP 200 with a minimal page (`wp_head()`/`wp_footer()` still print the asset tags); without `.vite/manifest.json` the page renders but prints no production assets.
+- Bind-mount gotcha: Docker bind-mounts the directory itself, so if `dist/themes/hyperpress-uikit` is recreated (observed when Nx restored `composer-install` from its cache) the running container sees an empty folder, the homepage returns an empty 200 and assets 404. `composer-install` is therefore uncached (it is idempotent and keeps the directory). If it still happens, run `docker compose --profile local up -d --force-recreate wordpress` (a plain `restart` fails with "no such file or directory").
 
 ### Task 8: Dev server and HMR
 
