@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 if ( ! class_exists( 'Timber\Timber' ) ) {
 	// Degrade gracefully: a missing vendor/ must not turn the site into an error page.
-	status_header( 200 );
+	if ( ! is_404() ) {
+		status_header( 200 );
+	}
 	?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
