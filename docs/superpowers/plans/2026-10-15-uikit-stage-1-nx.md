@@ -58,11 +58,11 @@
 **Interfaces:**
 - Produces: the `nx` binary at the root (`pnpm exec nx`) and `nx.json` with `targetDefaults` for `build` and `test:node` (`cache: true`, `inputs: ["default", "^default"]`) plus `namedInputs.default = ["{projectRoot}/**/*", "!{projectRoot}/dist/**/*", "!{projectRoot}/vendor/**/*", "!{projectRoot}/node_modules/**/*"]`.
 
-- [ ] **Step 1: Install.** `pnpm add -D -w --save-exact nx@23.3.0`. If pnpm rejects it as younger than the release-age window, add the named packages to `minimumReleaseAgeExclude`, note the reason in a comment-free commit message, and retry. Expected: exit 0.
-- [ ] **Step 2: Create `nx.json`** as specified in Interfaces, with `"$schema": "./node_modules/nx/schemas/nx-schema.json"` and `useDaemonProcess` left default.
-- [ ] **Step 3: Verify the toolchain on Node 26.** `pnpm exec nx --version` prints `23.3.0`; `pnpm exec nx show projects` prints `@hyper/press` and nothing from `.worktrees/`. If the daemon or native binding errors, rerun with `NX_DAEMON=false`; if that works, add `"useDaemonProcess": false` to `nx.json` and record the error text in this plan's execution notes. If neither works, stop and report: the Node 26 risk in the spec has materialised.
-- [ ] **Step 4: Verify the lockfile** has no unrelated changes: `git diff --stat pnpm-lock.yaml` shows only additions for `nx` and its dependencies.
-- [ ] **Step 5: Commit** `build: add Nx 23.3.0` over `package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json .gitignore` (drop `pnpm-workspace.yaml` if unchanged).
+- [x] **Step 1: Install.** `pnpm add -D -w --save-exact nx@23.3.0`. If pnpm rejects it as younger than the release-age window, add the named packages to `minimumReleaseAgeExclude`, note the reason in a comment-free commit message, and retry. Expected: exit 0.
+- [x] **Step 2: Create `nx.json`** as specified in Interfaces, with `"$schema": "./node_modules/nx/schemas/nx-schema.json"` and `useDaemonProcess` left default.
+- [x] **Step 3: Verify the toolchain on Node 26.** `pnpm exec nx --version` prints `23.3.0`; `pnpm exec nx show projects` prints `@hyper/press` and nothing from `.worktrees/`. If the daemon or native binding errors, rerun with `NX_DAEMON=false`; if that works, add `"useDaemonProcess": false` to `nx.json` and record the error text in this plan's execution notes. If neither works, stop and report: the Node 26 risk in the spec has materialised.
+- [x] **Step 4: Verify the lockfile** has no unrelated changes: `git diff --stat pnpm-lock.yaml` shows only additions for `nx` and its dependencies.
+- [x] **Step 5: Commit** `build: add Nx 23.3.0` over `package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json .gitignore` (drop `pnpm-workspace.yaml` if unchanged).
 
 ### Task 3: Register the Foundation theme
 

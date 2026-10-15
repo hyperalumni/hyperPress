@@ -314,3 +314,5 @@ vendor/
 !.env*.example
 
 .superpowers/
+
+.nx/

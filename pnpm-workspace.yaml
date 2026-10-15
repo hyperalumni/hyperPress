@@ -18,6 +18,7 @@ allowBuilds:
   gifsicle: false
   jpegtran-bin: false
   mozjpeg: false
+  nx: false
   optipng-bin: false
   uglifyjs-webpack-plugin: false
 minimumReleaseAgeExclude:
