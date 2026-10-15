@@ -9,6 +9,8 @@ services:
       - ../.env.wordpress
     ports:
       - ${WORDPRESS_EXTERNAL_PORT}:${WORDPRESS_INTERNAL_PORT}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ../php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
       - wp:/var/www/html
@@ -47,6 +49,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  tooling:
+    build: ./tooling
+    profiles: [ "tools" ]
+    volumes:
+      - ../../themes:/themes
+      - ../../dist:/dist
   db:
     image: mariadb:${MARIADB_VERSION:-latest}
     restart: unless-stopped
