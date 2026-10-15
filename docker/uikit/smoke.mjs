@@ -4,7 +4,9 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const base = (process.argv[2] ?? 'http://localhost:5080').replace(/\/$/, '');
-const retrySeconds = Number(process.env.SMOKE_RETRY_SECONDS ?? 30);
+const REQUEST_TIMEOUT_MS = 3000;
+const requested = parseFloat(process.env.SMOKE_RETRY_SECONDS ?? '');
+const retrySeconds = Number.isFinite(requested) && requested >= 0 ? requested : 30;
 const manifestPath = fileURLToPath(
   new URL('../../dist/themes/hyperpress-uikit/.vite/manifest.json', import.meta.url),
 );
@@ -15,12 +17,17 @@ const fail = (url, reason) => {
   process.exit(1);
 };
 
+// Every request (headers and body) is bounded by REQUEST_TIMEOUT_MS; failed attempts are
+// retried until the deadline. Returns { status, body }.
 async function get(url) {
-  for (let attempt = 0; ; attempt++) {
+  const deadline = Date.now() + retrySeconds * 1000;
+  for (;;) {
     try {
-      return await fetch(url, { redirect: 'manual' });
+      const response = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+      return { status: response.status, body: await response.text() };
     } catch (error) {
-      if (attempt >= retrySeconds) fail(url, `connection error: ${error.cause?.code ?? error.message}`);
+      const reason = error.name === 'TimeoutError' ? 'timeout' : `connection error: ${error.cause?.code ?? error.message}`;
+      if (Date.now() >= deadline) fail(url, reason);
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
@@ -42,10 +49,10 @@ if (!entry) fail(manifestPath, 'no src/main.ts entry');
 
 for (const path of [entry.file, ...(entry.css ?? [])]) {
   const url = `${themeUrl}/${path}`;
-  const response = await get(url);
-  if (response.status !== 200) fail(url, `status ${response.status}`);
+  const { status } = await get(url);
+  if (status !== 200) fail(url, `status ${status}`);
   console.log(`ok ${url}`);
 }
 
-if (!(await home.text()).includes('uk-')) fail(`${base}/`, 'body contains no uk- classes');
+if (!home.body.includes('uk-')) fail(`${base}/`, 'body contains no uk- classes');
 console.log(`ok ${base}/ contains uk-`);
