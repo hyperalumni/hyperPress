@@ -59,6 +59,31 @@
       "dependsOn": ["^build", "copy-theme", "vite-build", "composer-install"],
       "cache": true,
       "inputs": ["default", "^default"]
+    },
+    "up": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}/docker/uikit",
+        "command": "docker compose --profile local up -d"
+      },
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "down": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}/docker/uikit",
+        "command": "docker compose --profile local stop"
+      },
+      "cache": false
+    },
+    "smoke": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "node docker/uikit/smoke.mjs"
+      },
+      "cache": false
     }
   }
 }

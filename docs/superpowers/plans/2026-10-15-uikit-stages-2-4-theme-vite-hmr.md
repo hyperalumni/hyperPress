@@ -161,9 +161,10 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 **Interfaces:**
 - Produces: `nx up @hyper/press-uikit` (runs `build`, then `docker compose --profile local up -d` in `docker/uikit/`), `nx smoke @hyper/press-uikit` (uncached) running `node docker/uikit/smoke.mjs <base-url>`: the homepage returns 200, every URL in `.vite/manifest.json` (entry file and css) returns 200, the body contains `uk-` classes; exit non-zero with the failing URL otherwise.
 
-- [ ] **Step 1: Write `smoke.mjs`** and run it against the stopped stack. Expected: FAIL with a connection error.
-- [ ] **Step 2: Add the targets,** then `pnpm exec nx up @hyper/press-uikit`.
+- [x] **Step 1: Write `smoke.mjs`** and run it against the stopped stack. Expected: FAIL with a connection error.
+- [x] **Step 2: Add the targets,** then `pnpm exec nx up @hyper/press-uikit`.
 - [ ] **Step 3: Owner step.** The owner runs the WordPress install and theme activation with `docker compose --profile local run --rm wpcli core install ...` then `theme activate hyperpress-uikit` (command block with placeholders for URL, title, admin user, password, email, written into the execution notes). Check that the theme and plugin mounts exist in the container.
+  (Owner command block: see the Task 7 report; the working form is `docker compose --profile local run --rm wpcli ...`.)
 - [ ] **Step 4: Run** `pnpm exec nx smoke @hyper/press-uikit`. Expected: exit 0. With `dist/themes/hyperpress-uikit/vendor` deleted, the homepage still returns 200 and the admin shows the notice.
 - [ ] **Step 5: Commit** `feat(uikit-theme): add up, down and smoke targets` over the two files.
 
