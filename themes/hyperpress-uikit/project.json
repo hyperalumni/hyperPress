@@ -47,12 +47,7 @@
         "command": "docker compose run --rm --user \"$(id -u):$(id -g)\" -e COMPOSER_HOME=/tmp/composer -w /dist/themes/hyperpress-uikit tooling composer install --no-dev --optimize-autoloader --no-interaction"
       },
       "dependsOn": ["copy-theme"],
-      "cache": true,
-      "inputs": [
-        "{projectRoot}/composer.json",
-        "{projectRoot}/composer.lock"
-      ],
-      "outputs": ["{workspaceRoot}/dist/themes/hyperpress-uikit/vendor"]
+      "cache": false
     },
     "build": {
       "executor": "nx:noop",
