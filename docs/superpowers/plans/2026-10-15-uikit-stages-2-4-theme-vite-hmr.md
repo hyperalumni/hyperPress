@@ -24,7 +24,30 @@
 
 ## Pins (re-verified in Task 1 before use)
 
-Reported at planning time, unverified: vite 8.3.4, uikit 3.25.26, sass 1.105.1, typescript 7.0.2, vitest 5.0.5, `@nx/vite` and `@nx/vitest` 23.3.0, timber/timber 2.5.1 (PHP ^8.2). UIkit ships `src/scss/uikit.scss`, `variables.scss`, `mixins.scss` and 77 files in `src/scss/components/`; the report claims `src/js` is not shipped.
+Verified 2026-10-15 (Task 1) against the npm registry (`pnpm view`) and Packagist, with pnpm 12.12.1 on Node 26.12.0. Release age is checked against pnpm's default `minimumReleaseAge` of 1440 minutes (24 h; the setting is not set in `pnpm-workspace.yaml`, but `minimumReleaseAgeStrict: true` is), cutoff at check time 2026-10-14T20:58Z.
+
+| Package | Pin | Published | Notes |
+| --- | --- | --- | --- |
+| `vite` | 8.3.4 | 2026-10-08 | `engines.node` `^20.19.0 \|\| >=22.12.0` allows Node 26.12.0 |
+| `@nx/vite` | 23.3.0 | 2026-10-07 | peer `vite ^5 \|\| ^6 \|\| ^7 \|\| ^8`, allows 8.3.4; provides the `@nx/vite:build` executor |
+| `@nx/vitest` | 23.3.0 | 2026-10-07 | exists; peers `vite ^5..^8`, `vitest ^3 \|\| ^4 \|\| ^5`, `@nx/eslint 23.3.0`. Not needed unless we use its inferred plugin or executor; run vitest through a plain `vitest run` script. Skip it |
+| `uikit` | 3.25.26 | 2026-10-05 | dist-tag `latest`; `dev` is 3.25.27-dev (do not use) |
+| `@types/uikit` | 3.23.4 | 2026-10-12 | lags uikit by two minors; `export = UIkit` |
+| `sass` | 1.105.1 | 2026-09-29 | |
+| `typescript` | 7.0.2 | 2026-07-08 | dist-tag `latest` is 7.0.2 (7.1.0-dev is `next`) |
+| `vitest` | **5.0.4** | 2026-10-12 | the reported 5.0.5 was published 2026-10-15T14:29Z, inside the 24 h window, so `pnpm add` fails with `minimumReleaseAge` (reproduced in a probe). Use 5.0.4, or 5.0.5 after 2026-10-16T14:29Z. `engines.node` `^22.12 \|\| ^24 \|\| >=26` allows Node 26.12.0; peers `vite ^6.4 \|\| ^7 \|\| ^8` |
+| `oxlint` | 1.88.0 | 2026-10-13 | latest on the registry; stage 6 only, not added here |
+| `timber/timber` | ^2.5.1 | 2026-05-29 | requires PHP ^8.2 |
+| `phpunit/phpunit` | ^9.6 | 9.6.38 on 2026-10-05 | latest 9.x is 9.6.38 (the repo's 9.6.37 is current-ish; the earlier "9.6.9" claim was wrong). Packagist's newest overall is 13.4.2; stay on `^9.6` to match plugins and theme |
+| `yoast/phpunit-polyfills` | ^2.0 | n/a | plugins and theme use `^2.0`; the newest is 4.0.0. Match `^2.0` for consistency (PHPUnit 9 supports it) |
+
+Release age: no pin other than `vitest@5.0.5` is younger than 24 h, so with `vitest` at 5.0.4 **no `minimumReleaseAgeExclude` entries are needed**. If a task bumps `vitest` to 5.0.5 before 2026-10-16T14:29Z, it needs a `vitest` entry in `minimumReleaseAgeExclude`.
+
+UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted afterwards): the npm package ships `src/scss/uikit.scss` (a single `@import "components/_import.scss"`), `variables.scss` (1191 lines of `!default` variables), `mixins.scss`, the theme variants `uikit-theme.scss`, `variables-theme.scss`, `mixins-theme.scss`, and 77 files in `src/scss/components/` (including `variables.scss` and `_import.scss`). It also ships `src/js` (listing showed `api`, `component.js`, `components`), `src/less`, and prebuilt `dist/js` and `dist/css`. The earlier claim that `src/js` is not shipped is wrong, but we use `dist/js` anyway.
+
+- **JS import path (Task 3):** `package.json` has only `"main": "dist/js/uikit.js"` (no `exports`, no `module`, no `types`); it is a UMD bundle (`module.exports = factory()`). Use `import UIkit from 'uikit'` (resolves to `dist/js/uikit.js`; Vite interops UMD default) and `import Icons from 'uikit/dist/js/uikit-icons'` (resolves to `dist/js/uikit-icons.js`, also UMD), then `UIkit.use(Icons)`.
+- **Types:** `@types/uikit@3.23.4` provides `index.d.ts` with `export = UIkit`, so TypeScript needs `esModuleInterop` (or `allowSyntheticDefaultImports`) for the default import. It has no declaration for `uikit/dist/js/uikit-icons`; add `declare module 'uikit/dist/js/uikit-icons'` in a local `.d.ts` (typed as a UIkit plugin).
+- **Sass import order (Task 3):** UIkit's Sass uses `@import`. `components/_import.scss` does not pull in the root `variables.scss` or `mixins.scss`; compiling `@import "uikit/src/scss/uikit"` alone fails with `Undefined variable`. The order that works, and lets overrides win because every UIkit variable is `!default`, is: (1) our variable overrides (`$global-primary-background: ...;`), (2) `@import "uikit/src/scss/variables";`, (3) `@import "uikit/src/scss/mixins";`, (4) `@import "uikit/src/scss/uikit";`. Probe result: override `#ff0066` appears 18 times in the 381 KB output, a font override appears 4 times. Compile with `--load-path=node_modules`. Without silencing, sass prints about 5 `[import]` deprecation warnings plus "75 repetitive deprecation warnings omitted"; silence with `silenceDeprecations: ['import', 'global-builtin', 'color-functions']` in Vite's `css.preprocessorOptions.scss` and `quietDeps: true`. `mixed-decls` is obsolete in sass 1.105.1 (naming it only prints a warning), so do not list it.
 
 ## Review Focus
 
@@ -45,10 +68,10 @@ Reported at planning time, unverified: vite 8.3.4, uikit 3.25.26, sass 1.105.1, 
 **Interfaces:**
 - Produces: the exact versions every later task adds to `pnpm-workspace.yaml` `catalog:` and `composer.json`.
 
-- [ ] **Step 1: Re-check each pin** with `pnpm view <pkg> version` (and `pnpm view uikit dist-tags`); packagist versions via `curl -s https://repo.packagist.org/p2/<vendor>/<pkg>.json`. Check `pnpm view vite engines` allows Node 26.12.0, and `pnpm view @nx/vite@23.3.0 peerDependencies` allows the chosen vite. Replace the Pins paragraph with a table of verified values.
-- [ ] **Step 2: Check the UIkit package contents** in a throwaway install under `/tmp/opencode/uikit-probe` (not in the repo): confirm `src/scss/uikit.scss` and `components/*.scss`, whether `src/js` exists, and what `main`/`exports` give a TypeScript `import UIkit from 'uikit'`. Record the import path to use in Task 3.
-- [ ] **Step 3: Check `minimumReleaseAge`.** For each pin run a dry `pnpm add -D -w --dry-run`-style check or note any `ERR_PNPM_NO_MATURE_MATCHING_VERSION`; list needed `minimumReleaseAgeExclude` entries.
-- [ ] **Step 4: Commit** `docs(plans): verify stage 2-4 version pins` over this plan.
+- [x] **Step 1: Re-check each pin** with `pnpm view <pkg> version` (and `pnpm view uikit dist-tags`); packagist versions via `curl -s https://repo.packagist.org/p2/<vendor>/<pkg>.json`. Check `pnpm view vite engines` allows Node 26.12.0, and `pnpm view @nx/vite@23.3.0 peerDependencies` allows the chosen vite. Replace the Pins paragraph with a table of verified values.
+- [x] **Step 2: Check the UIkit package contents** in a throwaway install under `/tmp/opencode/uikit-probe` (not in the repo): confirm `src/scss/uikit.scss` and `components/*.scss`, whether `src/js` exists, and what `main`/`exports` give a TypeScript `import UIkit from 'uikit'`. Record the import path to use in Task 3.
+- [x] **Step 3: Check `minimumReleaseAge`.** For each pin run a dry `pnpm add -D -w --dry-run`-style check or note any `ERR_PNPM_NO_MATURE_MATCHING_VERSION`; list needed `minimumReleaseAgeExclude` entries.
+- [x] **Step 4: Commit** `docs(plans): verify stage 2-4 version pins` over this plan.
 
 ### Task 2: `libs/uikit-tokens`
 
