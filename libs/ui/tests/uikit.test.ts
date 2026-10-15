@@ -15,6 +15,7 @@ describe('initUikit', () => {
     document.body.innerHTML = '<span uk-icon="icon: home"></span>';
     initUikit();
     const span = document.querySelector('span[uk-icon]');
+    expect(span).not.toBeNull();
     await vi.waitFor(() => expect(span?.querySelector('svg')).not.toBeNull());
   });
 });
