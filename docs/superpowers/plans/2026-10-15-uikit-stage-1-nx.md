@@ -4,7 +4,7 @@
 
 **Goal:** Add Nx 23.x to the pnpm workspace, prove it runs on Node 26, and register the existing Foundation theme and plugins as Nx projects, with no change to how either builds.
 
-**Architecture:** `nx` is a root devDependency with a minimal `nx.json`. The Foundation theme (`@hyper/press`) is already a pnpm package, so Nx infers it from its `package.json`; a small `nx` block there adds cache outputs. The plugins have no `package.json`, so each gets a minimal `project.json`, and a `plugins-tooling` project wraps the Docker composer commands as uncached targets.
+**Architecture:** `nx` is a root devDependency with a minimal `nx.json`. (Nx was first added as a direct version in commit b8b0d11, then moved to the pnpm catalog in the `build: pin Nx in a pnpm catalog` commit.) The Foundation theme (`@hyper/press`) is already a pnpm package, so Nx infers it from its `package.json`; a small `nx` block there adds cache outputs. The plugins have no `package.json`, so each gets a minimal `project.json`, and a `plugins-tooling` project wraps the Docker composer commands as uncached targets.
 
 **Tech Stack:** Nx 23.3.0 (latest at planning time), Node 26.12.0, pnpm 12.12.1, Docker Compose (PHP tooling only).
 
@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Nx 23.x, exact-pinned; every `@nx/*` package, when added later, on the same 23.x version.
+- Nx 23.x pinned exactly in the default pnpm catalog (`pnpm-workspace.yaml` `catalog:`), referenced as `"catalog:"` in package.json; every `@nx/*` package added later must use `"catalog:"` and the same version.
 - Node 26.12.0 (bumped from 26.11.1 in Task 1; 26.12.0 is what is installed) and pnpm 12.12.1, pnpm only (`preinstall: npx only-allow pnpm`).
 - Shell setup per command: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"` (run `nvm use` without a pipe, or it runs in a subshell).
 - PHP tooling runs in Docker only, never composer on the host.

@@ -14,6 +14,7 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 ## Environment
 - Node comes from nvm and is not on the default PATH. Load it first in each shell: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"` (root `.nvmrc`, Node 26.12.0).
 - pnpm only (enforced by `preinstall`; no npm/yarn). The root `devEngines` pins pnpm 12.12.1. Run `pnpm install` once at the root.
+- Shared dependency versions (Nx and `@nx/*`) are pinned in the `catalog:` in `pnpm-workspace.yaml`; use `"catalog:"` in package.json, and bump them there.
 - Theme scripts: `pnpm --filter @hyper/press <script>`, or run `pnpm <script>` from `themes/hyperpress-foundation/`.
 - PHP tooling runs in Docker only, never composer on the host: from the theme or plugins directory, `docker compose run --rm php composer lint|test:unit|test:integration`. `vendor/` is git-ignored, so run `composer install` the same way first. The two tooling compose files set their own project names (`hyperpress-plugins`, `hyperpress-theme`), the same as the standalone repos, so their ephemeral containers and the composer cache volume are shared with those repos; do not run both copies at the same time. Their mounts use the monorepo layout: `plugins/` mounts `themes/hyperpress-foundation` as `/theme`, and the theme mounts `plugins/` as `/plugins`.
 - `.env*` files are git-ignored. Do not read or print them.

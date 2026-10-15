@@ -163,12 +163,18 @@ settings:
   dedupePeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    nx:
+      specifier: 23.3.0
+      version: 23.3.0
+
 importers:
 
   .:
     devDependencies:
       nx:
-        specifier: 23.3.0
+        specifier: 'catalog:'
         version: 23.3.0
 
   themes/hyperpress-foundation:

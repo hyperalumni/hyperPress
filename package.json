@@ -20,6 +20,6 @@
     "node": "26.12.0"
   },
   "devDependencies": {
-    "nx": "23.3.0"
+    "nx": "catalog:"
   }
 }

@@ -2,6 +2,9 @@ packages:
   - themes/*
   - plugins/*
 
+catalog:
+  nx: 23.3.0
+
 supportedArchitectures:
   os: [current]
   cpu: [current]
