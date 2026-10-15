@@ -220,4 +220,29 @@ final class AssetsTest extends TestCase {
 			$this->assets()->devServer()
 		);
 	}
+
+	public function testProbeUrlAppendsTheViteClientPath(): void {
+		$this->assertSame( 'http://host.docker.internal:5173/@vite/client', Assets::probeUrl( 'http://host.docker.internal:5173' ) );
+	}
+
+	public function testProbeUrlIgnoresATrailingSlash(): void {
+		$this->assertSame( 'http://host.docker.internal:5173/@vite/client', Assets::probeUrl( 'http://host.docker.internal:5173/' ) );
+	}
+
+	public function testIsDevProbesAtMostOncePerInstance(): void {
+		$this->writeMarker( $this->markerJson() );
+		$calls  = 0;
+		$assets = $this->assets(
+			static function ( string $url ) use ( &$calls ): bool {
+				++$calls;
+				return true;
+			}
+		);
+
+		$this->assertTrue( $assets->isDev() );
+		$this->assertTrue( $assets->isDev() );
+		$this->assertNull( $assets->notice() );
+		$this->assertNotNull( $assets->devServer() );
+		$this->assertSame( 1, $calls );
+	}
 }

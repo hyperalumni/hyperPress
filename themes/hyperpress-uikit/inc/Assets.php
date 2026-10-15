@@ -15,6 +15,9 @@ final class Assets {
 	/** @var callable(string): bool */
 	private $probe;
 
+	/** Memoized dev decision: the probe runs at most once per instance (one HTTP check per request). */
+	private ?bool $dev = null;
+
 	/**
 	 * @param callable(string): bool|null $probe Reachability check for the dev server's internal URL.
 	 */
@@ -27,11 +30,11 @@ final class Assets {
 	}
 
 	public function isDev(): bool {
-		if ( $this->constantDev() ) {
-			return true;
+		if ( null === $this->dev ) {
+			$marker    = $this->constantDev() ? null : $this->readMarker();
+			$this->dev = $this->constantDev() || ( null !== $marker && (bool) ( $this->probe )( $marker['internal'] ) );
 		}
-		$marker = $this->readMarker();
-		return null !== $marker && (bool) ( $this->probe )( $marker['internal'] );
+		return $this->dev;
 	}
 
 	/**
@@ -118,12 +121,19 @@ final class Assets {
 		wp_enqueue_script( 'hp-uikit-main', $entry['file'], [], null, true );
 	}
 
+	/**
+	 * The URL the default probe requests. Vite has no index.html here, so its root answers 404;
+	 * the client script is what a healthy dev server serves.
+	 */
+	public static function probeUrl( string $internal ): string {
+		return rtrim( $internal, '/' ) . '/@vite/client';
+	}
+
 	public static function defaultProbe( string $url ): bool {
 		if ( ! function_exists( 'wp_remote_get' ) ) {
 			return false;
 		}
-		// Vite has no index.html here, so its root answers 404; probe the client script instead.
-		$response = wp_remote_get( rtrim( $url, '/' ) . '/@vite/client', [ 'timeout' => 0.5 ] );
+		$response = wp_remote_get( self::probeUrl( $url ), [ 'timeout' => 0.5 ] );
 		if ( is_wp_error( $response ) ) {
 			return false;
 		}
