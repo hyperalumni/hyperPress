@@ -52,7 +52,12 @@ for (const path of [entry.file, ...(entry.css ?? [])]) {
   const { status } = await get(url);
   if (status !== 200) fail(url, `status ${status}`);
   console.log(`ok ${url}`);
+  if (!home.body.includes(url)) fail(`${base}/`, `page does not reference ${url}`);
+  console.log(`ok ${base}/ references ${path}`);
 }
+
+if (!home.body.includes('type="module"')) fail(`${base}/`, 'body contains no type="module" script');
+console.log(`ok ${base}/ has a module script`);
 
 if (!home.body.includes('uk-')) fail(`${base}/`, 'body contains no uk- classes');
 console.log(`ok ${base}/ contains uk-`);
