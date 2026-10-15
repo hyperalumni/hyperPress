@@ -50,7 +50,7 @@ services:
       db:
         condition: service_healthy
   tooling:
-    build: ./tooling
+    build: ../tooling
     profiles: [ "tools" ]
     volumes:
       - ../../themes:/themes

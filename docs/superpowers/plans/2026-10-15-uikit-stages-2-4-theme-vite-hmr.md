@@ -113,9 +113,9 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 
 - [x] **Step 1: Write the failing check:** `docker compose -f docker/uikit/compose.yaml --profile local config --format json` must parse and show the theme bind source ending in `dist/themes/hyperpress-uikit`; today it fails (no file).
 - [x] **Step 2: Create the files.** Copy the `hyperalumni` wrapper pattern (`include` with `project_directory: .`, `env_file: [../.env, .env.local, ../.env.versions]`). Keep the existing services, volume names and mounts unchanged; the `extra_hosts` addition applies to all sites and must not change their `config` output otherwise (compare `hyperalumni` before and after).
-- [ ] **Step 3: Owner step.** The owner creates `docker/uikit/.env.local` from the example, choosing free ports (command block in the execution notes; the agent verifies key names with EnvSitter, never values).
-- [ ] **Step 4: Verify.** `mkdir -p dist/themes/hyperpress-uikit`; `docker compose --profile tools run --rm tooling composer --version` prints Composer 2.x; `config` for `hyperalumni` and `hyperonline` is unchanged apart from `extra_hosts`.
-- [ ] **Step 5: Commit** `feat(docker): add tooling service and the uikit site` over `docker/tooling docker/uikit/compose.yaml docker/uikit/.env.local.example docker/compose.main.yaml .gitignore`.
+- [x] **Step 3: Owner step.** The owner creates `docker/uikit/.env.local` from the example, choosing free ports (command block in the execution notes; the agent verifies key names with EnvSitter, never values).
+- [x] **Step 4: Verify.** `mkdir -p dist/themes/hyperpress-uikit`; `docker compose run --rm --user "$(id -u):$(id -g)" -e COMPOSER_HOME=/tmp/composer tooling composer --version` (no `--profile tools`: with it alone `wpcli` needs `db`, which lives in the `local` profile; `COMPOSE_PROFILES=local` comes from `.env.local` and running the service enables its own profile) prints Composer 2.x; `config` for `hyperalumni` and `hyperonline` is unchanged apart from `extra_hosts`.
+- [x] **Step 5: Commit** `feat(docker): add tooling service and the uikit site` over `docker/tooling docker/uikit/compose.yaml docker/uikit/.env.local.example docker/compose.main.yaml .gitignore`.
 
 ### Task 5: Theme `Assets` class (TDD)
 
