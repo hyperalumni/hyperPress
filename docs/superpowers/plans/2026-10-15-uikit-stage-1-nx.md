@@ -73,11 +73,11 @@
 - Consumes: `nx.json` target defaults from Task 2.
 - Produces: project `@hyper/press` with cached targets `build` (outputs `{projectRoot}/dist`) and `test:node`. Other scripts (`dev`, `start`, `phpcs`, `phpcbf`, `package`, `audit`) stay uncached.
 
-- [ ] **Step 1: Add the `nx` block** to the theme's `package.json`: `targets.build.outputs = ["{projectRoot}/dist"]`, `targets.build.cache = true`, `targets["test:node"].cache = true`; set `cache: false` explicitly on `phpcs`, `phpcbf`, `package`, `dev` and `start`.
-- [ ] **Step 2: Verify the build matches the baseline.** `rm -rf themes/hyperpress-foundation/dist`, then `pnpm exec nx build @hyper/press`. Expected: success, and the sorted `dist` file list equals `/tmp/opencode/stage1/dist-baseline.txt`.
-- [ ] **Step 3: Verify the test target.** `pnpm exec nx run @hyper/press:test:node` exits 0 and runs the same tests as `pnpm --filter @hyper/press test:node`.
-- [ ] **Step 4: Verify config.** `pnpm exec nx show project @hyper/press --json` lists `build` with `cache: true` and the `dist` output, and `phpcs` with `cache: false`.
-- [ ] **Step 5: Commit** `build(theme): register the Foundation theme as an Nx project` over the theme `package.json`.
+- [x] **Step 1: Add the `nx` block** to the theme's `package.json`: `targets.build.outputs = ["{projectRoot}/dist"]`, `targets.build.cache = true`, `targets["test:node"].cache = true`; set `cache: false` explicitly on `phpcs`, `phpcbf`, `package`, `dev` and `start`.
+- [x] **Step 2: Verify the build matches the baseline.** `rm -rf themes/hyperpress-foundation/dist`, then `pnpm exec nx build @hyper/press`. Expected: success, and the sorted `dist` file list equals `/tmp/opencode/stage1/dist-baseline.txt`.
+- [x] **Step 3: Verify the test target.** `pnpm exec nx run @hyper/press:test:node` exits 0 and runs the same tests as `pnpm --filter @hyper/press test:node`.
+- [x] **Step 4: Verify config.** `pnpm exec nx show project @hyper/press --json` lists `build` with `cache: true` and the `dist` output, and `phpcs` with `cache: false`.
+- [x] **Step 5: Commit** `build(theme): register the Foundation theme as an Nx project` over the theme `package.json`.
 
 ### Task 4: Register the plugins and their tooling
 
