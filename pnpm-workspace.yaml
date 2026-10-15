@@ -4,12 +4,14 @@ packages:
   - libs/*
 
 catalog:
+  '@nx/vite': 23.3.0
   '@types/uikit': 3.23.4
   happy-dom: 21.0.1
   nx: 23.3.0
   sass: 1.105.1
   typescript: 7.0.2
   uikit: 3.25.26
+  vite: 8.3.4
   vitest: 5.0.4
 
 supportedArchitectures:

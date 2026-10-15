@@ -1,0 +1,23 @@
+{
+  "name": "@hyper/press-uikit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "hyperPress UIkit theme: Timber views, Vite build.",
+  "scripts": {
+    "copy-theme": "node bin/copy-theme.mjs",
+    "vite-build": "vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hyper/ui": "workspace:*",
+    "@hyper/uikit-tokens": "workspace:*",
+    "uikit": "catalog:"
+  },
+  "devDependencies": {
+    "@nx/vite": "catalog:",
+    "sass": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

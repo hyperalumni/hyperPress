@@ -1,0 +1,64 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "@hyper/press-uikit",
+  "targets": {
+    "copy-theme": {
+      "executor": "nx:run-script",
+      "options": { "script": "copy-theme" },
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/style.css",
+        "{projectRoot}/functions.php",
+        "{projectRoot}/index.php",
+        "{projectRoot}/composer.json",
+        "{projectRoot}/composer.lock",
+        "{projectRoot}/inc/**/*",
+        "{projectRoot}/views/**/*",
+        "{projectRoot}/bin/copy-theme.mjs"
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/style.css",
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/functions.php",
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/index.php",
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/composer.json",
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/composer.lock",
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/inc",
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/views"
+      ]
+    },
+    "vite-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "pnpm exec vite build"
+      },
+      "dependsOn": ["^build"],
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "outputs": [
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/.vite",
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/assets"
+      ]
+    },
+    "composer-install": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}/docker/uikit",
+        "command": "docker compose run --rm --user \"$(id -u):$(id -g)\" -e COMPOSER_HOME=/tmp/composer -w /dist/themes/hyperpress-uikit tooling composer install --no-dev --optimize-autoloader --no-interaction"
+      },
+      "dependsOn": ["copy-theme"],
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/composer.json",
+        "{projectRoot}/composer.lock"
+      ],
+      "outputs": ["{workspaceRoot}/dist/themes/hyperpress-uikit/vendor"]
+    },
+    "build": {
+      "executor": "nx:noop",
+      "dependsOn": ["^build", "copy-theme", "vite-build", "composer-install"],
+      "cache": true,
+      "inputs": ["default", "^default"]
+    }
+  }
+}

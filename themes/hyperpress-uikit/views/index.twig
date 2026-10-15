@@ -1,0 +1,14 @@
+{% extends "base.twig" %}
+
+{% block content %}
+	{% for post in posts %}
+		<article class="uk-card uk-card-default uk-card-body uk-margin">
+			<h2 class="uk-card-title"><a href="{{ post.link }}">{{ post.title }}</a></h2>
+			<div>{{ post.preview }}</div>
+		</article>
+	{% else %}
+		<div class="uk-card uk-card-default uk-card-body">
+			<p>No posts found.</p>
+		</div>
+	{% endfor %}
+{% endblock %}
