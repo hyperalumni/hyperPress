@@ -1,9 +1,14 @@
 packages:
   - themes/*
   - plugins/*
+  - libs/*
 
 catalog:
   nx: 23.3.0
+  sass: 1.105.1
+  typescript: 7.0.2
+  uikit: 3.25.26
+  vitest: 5.0.4
 
 supportedArchitectures:
   os: [current]
@@ -22,6 +27,7 @@ allowBuilds:
   jpegtran-bin: false
   mozjpeg: false
   nx: false
+  '@parcel/watcher': false
   optipng-bin: false
   uglifyjs-webpack-plugin: false
 minimumReleaseAgeExclude:

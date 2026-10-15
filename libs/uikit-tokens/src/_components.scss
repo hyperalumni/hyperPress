@@ -1,0 +1,14 @@
+// UIkit core (variables and mixins), then only the components the theme uses.
+// Order follows uikit/src/scss/components/_import.scss.
+@import "uikit/src/scss/variables";
+@import "uikit/src/scss/mixins";
+
+@import "uikit/src/scss/components/base";
+@import "uikit/src/scss/components/button";
+@import "uikit/src/scss/components/section";
+@import "uikit/src/scss/components/container";
+@import "uikit/src/scss/components/card";
+@import "uikit/src/scss/components/grid";
+@import "uikit/src/scss/components/nav";
+@import "uikit/src/scss/components/navbar";
+@import "uikit/src/scss/components/utility";

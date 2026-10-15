@@ -82,11 +82,11 @@ UIkit package contents (probe install under `/tmp/opencode/uikit-probe`, deleted
 **Interfaces:**
 - Produces: package `@hyper/uikit-tokens` with Sass entry `@hyper/uikit-tokens/src/index.scss` (variable overrides forwarded before UIkit's `variables`, then the used components only) and Nx targets `build` (compiles to `dist/libs/uikit-tokens/index.css`, cached) and `test` (Vitest, cached).
 
-- [ ] **Step 1: Write the failing test** `tests/tokens.test.ts`: compile `src/index.scss` with `sass` (`loadPaths: ['node_modules']`, `quietDeps: true`, `silenceDeprecations: ['import']`) and assert (a) the CSS contains the overridden `$global-primary-background` colour inside `.uk-button-primary`, (b) it contains `.uk-button` and `.uk-card`, (c) it contains no `.uk-slider` rule, (d) compiling emits no error.
-- [ ] **Step 2: Run** `pnpm exec nx test @hyper/uikit-tokens`. Expected: FAIL (no entry file).
-- [ ] **Step 3: Implement** `_variables.scss` (override at least `$global-primary-background` and `$global-font-family`), `_components.scss` (import UIkit `variables`, `mixins`, and only: base, container, grid, section, nav, navbar, button, card, utility), `index.scss` (variables first, then components). Add `package.json`, `project.json` (targets `build`, `test`, cache true, outputs `{workspaceRoot}/dist/libs/uikit-tokens`).
-- [ ] **Step 4: Run** the test again, then `pnpm exec nx build @hyper/uikit-tokens` twice (second is a cache hit). Expected: PASS and `dist/libs/uikit-tokens/index.css` exists.
-- [ ] **Step 5: Commit** `feat(libs): add uikit-tokens Sass library` over `libs/uikit-tokens pnpm-workspace.yaml pnpm-lock.yaml package.json`.
+- [x] **Step 1: Write the failing test** `tests/tokens.test.ts`: compile `src/index.scss` with `sass` (`loadPaths: ['node_modules']`, `quietDeps: true`, `silenceDeprecations: ['import']`) and assert (a) the CSS contains the overridden `$global-primary-background` colour inside `.uk-button-primary`, (b) it contains `.uk-button` and `.uk-card`, (c) it contains no `.uk-slider` rule, (d) compiling emits no error.
+- [x] **Step 2: Run** `pnpm exec nx test @hyper/uikit-tokens`. Expected: FAIL (no entry file).
+- [x] **Step 3: Implement** `_variables.scss` (override at least `$global-primary-background` and `$global-font-family`), `_components.scss` (import UIkit `variables`, `mixins`, and only: base, container, grid, section, nav, navbar, button, card, utility), `index.scss` (variables first, then components). Add `package.json`, `project.json` (targets `build`, `test`, cache true, outputs `{workspaceRoot}/dist/libs/uikit-tokens`).
+- [x] **Step 4: Run** the test again, then `pnpm exec nx build @hyper/uikit-tokens` twice (second is a cache hit). Expected: PASS and `dist/libs/uikit-tokens/index.css` exists.
+- [x] **Step 5: Commit** `feat(libs): add uikit-tokens Sass library` over `libs/uikit-tokens pnpm-workspace.yaml pnpm-lock.yaml package.json`.
 
 ### Task 3: `libs/ui`
 

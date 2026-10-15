@@ -1,0 +1,15 @@
+{
+  "name": "@hyper/uikit-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "UIkit Sass variable overrides and the used component imports for the hyperPress uikit theme.",
+  "scripts": {
+    "build": "sass --load-path=node_modules --quiet-deps --silence-deprecation=import --silence-deprecation=global-builtin --silence-deprecation=color-functions src/index.scss ../../dist/libs/uikit-tokens/index.css",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "sass": "catalog:",
+    "uikit": "catalog:",
+    "vitest": "catalog:"
+  }
+}
