@@ -61,6 +61,16 @@
       "outputs": [],
       "inputs": ["default", "^default"]
     },
+    "serve": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "node themes/hyperpress-uikit/bin/serve.mjs"
+      },
+      "dependsOn": ["build"],
+      "cache": false
+    },
     "up": {
       "executor": "nx:run-commands",
       "options": {

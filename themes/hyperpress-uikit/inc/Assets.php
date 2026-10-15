@@ -122,7 +122,8 @@ final class Assets {
 		if ( ! function_exists( 'wp_remote_get' ) ) {
 			return false;
 		}
-		$response = wp_remote_get( $url, [ 'timeout' => 0.5 ] );
+		// Vite has no index.html here, so its root answers 404; probe the client script instead.
+		$response = wp_remote_get( rtrim( $url, '/' ) . '/@vite/client', [ 'timeout' => 0.5 ] );
 		if ( is_wp_error( $response ) ) {
 			return false;
 		}

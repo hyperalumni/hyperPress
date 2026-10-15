@@ -15,7 +15,6 @@
     "uikit": "catalog:"
   },
   "devDependencies": {
-    "@nx/vite": "catalog:",
     "sass": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
