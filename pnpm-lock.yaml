@@ -192,9 +192,6 @@ catalogs:
     oxlint-tsgolint:
       specifier: 7.0.2004
       version: 7.0.2004
-    postcss-scss:
-      specifier: 4.0.9
-      version: 4.0.9
     sass:
       specifier: 1.105.1
       version: 1.105.1
@@ -239,9 +236,6 @@ importers:
       oxlint-tsgolint:
         specifier: 'catalog:'
         version: 7.0.2004
-      postcss-scss:
-        specifier: 'catalog:'
-        version: 4.0.9(postcss@8.5.30)
       stylelint:
         specifier: 'catalog:'
         version: 17.16.0(supports-color@8.1.1)(typescript@6.0.3)

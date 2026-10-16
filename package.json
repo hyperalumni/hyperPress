@@ -28,7 +28,6 @@
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
-    "postcss-scss": "catalog:",
     "stylelint": "catalog:",
     "stylelint-config-standard-scss": "catalog:"
   }
