@@ -228,7 +228,7 @@ Verification: both sites start from the new location; the old directories are un
 1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects. (done) On Node 26.12.0 the Nx daemon works, the `nx` postinstall is blocked via `allowBuilds` (`nx: false`) and not needed, Nx is pinned in the pnpm catalog, the theme's Nx config lives in `project.json`, and the plugin tooling project is `plugins/project.json`.
 2. Docker stack and a bare `hyperpress-uikit` theme rendering through Timber. (done)
 3. Vite build, manifest-based asset loading, UIkit from `libs/uikit-tokens`. (done)
-4. Dev HMR against the Dockerized WordPress. (done; the automated websocket proof passed, browser confirmation by the owner pending)
+4. Dev HMR against the Dockerized WordPress. (done; the automated websocket proof passed, and the owner confirmed Sass hot reload in the browser on 2026-10-16)
 5. Stub (or real) plugin consuming the shared lib; prove `nx affected` and cache hits.
 6. Oxlint (`@nx/oxlint`), Stylelint and PHPCS as Nx targets; Oxfmt as root `fmt`/`fmt:check` scripts.
 7. Packaging and an experiment write-up.
