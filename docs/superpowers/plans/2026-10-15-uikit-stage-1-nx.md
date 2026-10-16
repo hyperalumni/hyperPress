@@ -127,6 +127,7 @@
 - Nx 23.3.0, exact pin via the pnpm catalog (`pnpm-workspace.yaml`); `"catalog:"` in package.json.
 - The Nx daemon (default) works on Node 26.12.0; no `NX_DAEMON=false` fallback needed.
 - `nx: false` in `allowBuilds`: the `nx` postinstall is blocked and not needed.
+- Correction (2026-10-16): the owner later set `nx: true` in `allowBuilds`, so Nx's postinstall is allowed; the line above is the historical state.
 - No `minimumReleaseAgeExclude` entry was needed.
 - `.worktrees/` is not discovered by Nx.
 - Task 1 needed `--runtime-on-fail=ignore` for the baseline install (done before the Node pin bump).

@@ -1,5 +1,7 @@
 # UIkit Stages 5-7: Shared-Lib Plugin, Lint and Format, Packaging, Verdict Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-10-16). Gate passed: `pnpm fmt:check` (147 files); `nx run-many -t lint-js lint-css lint-php lint build test typecheck` (21 tasks, 18 from cache); `nx up` and `SMOKE_EXPECT=hp-uikit-card nx smoke @hyper/press-uikit` against the running `hyperuikit` stack; Foundation `build` and `test:node` (8 tests); plugin unit (176 tests) and integration (1,128 tests, 6 skipped); the uikit theme PHPUnit (18 tests); `nx package @hyper/press-uikit` (408-file zip); `pnpm install --frozen-lockfile`; clean `git status`. Verdict: `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Prove a plugin can consume the shared UIkit Sass lib with Nx tracking the dependency, add Oxlint, Oxfmt, Stylelint and PHPCS as gates, package the uikit theme, and write the experiment verdict on Nx and Oxc for WordPress work.
@@ -368,7 +370,33 @@ Execution notes:
 - Create: `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md`
 - Modify: root `AGENTS.md` (format, lint, package and setup commands), the spec (stages 5-7 done, success criteria with evidence, `nx: true` in `allowBuilds` replacing the stale `nx: false` mentions), this plan (boxes, banner, notes)
 
-- [ ] **Step 1: Gate.** `pnpm fmt:check`; `pnpm exec nx run-many -t lint-js lint-css lint-php lint build test typecheck`; `nx up` then `SMOKE_EXPECT=hp-uikit-card pnpm exec nx smoke @hyper/press-uikit`; Foundation build and `test:node`; plugin lint and unit tests; `nx package @hyper/press-uikit`; `pnpm install --frozen-lockfile`; `git status --short` clean; no root-owned files outside the known ones.
-- [ ] **Step 2: Write the verdict** from the plans' execution notes, the Task 7 timings and the commit history: what each tool bought (Nx caching and affected, `@nx/vite` plugin, UIkit Sass from source, Vite, Timber, Oxlint, Oxfmt, Stylelint, PHPCS), measured numbers, friction found (executor deprecation, stale bind mount, `--profile` quirks, root-owned tooling), and a recommendation per tool (adopt, adopt with caveats, skip). Leave an `Owner verdict:` line under each recommendation for the owner to fill in.
-- [ ] **Step 3: Docs and banner** per the Files list; add `> **STATUS: ✅ COMPLETED** (<date>). <what passed>` and an "Outcome / execution notes" section.
-- [ ] **Step 4: Commit** `docs: describe stages 5-7 and add the experiment verdict`.
+- [x] **Step 1: Gate.** `pnpm fmt:check`; `pnpm exec nx run-many -t lint-js lint-css lint-php lint build test typecheck`; `nx up` then `SMOKE_EXPECT=hp-uikit-card pnpm exec nx smoke @hyper/press-uikit`; Foundation build and `test:node`; plugin lint and unit tests; `nx package @hyper/press-uikit`; `pnpm install --frozen-lockfile`; `git status --short` clean; no root-owned files outside the known ones.
+- [x] **Step 2: Write the verdict** from the plans' execution notes, the Task 7 timings and the commit history: what each tool bought (Nx caching and affected, `@nx/vite` plugin, UIkit Sass from source, Vite, Timber, Oxlint, Oxfmt, Stylelint, PHPCS), measured numbers, friction found (executor deprecation, stale bind mount, `--profile` quirks, root-owned tooling), and a recommendation per tool (adopt, adopt with caveats, skip). Leave an `Owner verdict:` line under each recommendation for the owner to fill in.
+- [x] **Step 3: Docs and banner** per the Files list; add `> **STATUS: ✅ COMPLETED** (<date>). <what passed>` and an "Outcome / execution notes" section.
+- [x] **Step 4: Commit** `docs: describe stages 5-7 and add the experiment verdict`.
+
+**Task 11 gate results (2026-10-16):** `pnpm fmt:check` clean on 147 files; `run-many` 21 of 21 tasks succeeded in 10.6 s (the uncached ones were `@hyper/press-uikit:typecheck`, `lint-php` and `plugins-tooling:lint`); smoke printed `ok expect hp-uikit-card` plus the asset checks; Foundation `test:node` 8 pass; plugin unit 176 tests (481 assertions), integration 1,128 tests (3,348 assertions, 6 skipped); the uikit theme PHPUnit 18 tests (32 assertions); the zip holds 408 files (677,813 bytes) and no `.vite-dev` or `tests/` entries; `pnpm install --frozen-lockfile` up to date; `git status --short` clean; the only empty root-owned folder is the known harmless `themes/hyperpress-foundation/.superpowers`. The `hyperuikit` containers were not recreated (WordPress up for 2 hours, the others 4) and the homepage answered 200.
+
+## Outcome / execution notes
+
+- **Pins used:** oxfmt 0.73.0, oxlint 1.88.0, oxlint-tsgolint 7.0.2004, `@nx/oxlint` 23.3.0, stylelint 17.16.0, stylelint-config-standard-scss 17.0.0, fflate 0.8.3, WPCS `^3.1` (3.4.1), PHPCompatibilityWP `^3.0@alpha` (3.0.0-alpha2), phpcodesniffer-composer-installer `^1.2.0`. `postcss-scss` 4.0.9 was added in Task 4 and removed in Task 11: it was unused, `stylelint-config-standard-scss` brings it in transitively, `lint-css` still passes, and the lockfile diff was only that removal.
+- **Owner decisions:** keep the stub plugin `hyperpress-example` (stage 5) and run Oxfmt over the whole repo instead of per project.
+- **Rulings that changed the plan:** the lint targets are `lint-js`, `lint-css` and `lint-php` (`lint` is the composer PHPCS target on `plugins-tooling`); `composer.json` files are not re-indented and `composer.lock` is ignored by Oxfmt; `sortPackageJson` is off; the demo template prints `post.content` (not `post.preview`, which strips shortcodes); `setup` takes the admin password from the environment and never prints it (container argv exposure inside the throwaway `wp` process is accepted for a local dev site); `nx: true` in `allowBuilds` replaces the stale `nx: false` in the spec.
+- **Measured numbers:** cold build 6.3 s, cached 0.8 s, partial rebuild 2.7 s, lint and format timings and the affected sets are in the Task 7 block above and collected in the verdict.
+- **Verdict:** `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md` carries a recommendation per tool and an empty `Owner verdict:` line under each for the owner to fill in.
+- **Other plans:** the non-completed plans are `2026-10-07-singular-plugin-names.md` (mentions `plugins/tests` convention files, plugin folders and the `AGENTS.md`/`README.md` files; this branch also changed files under `plugins/`, so re-check it before resuming) and `plans/README.md` (a convention document; no file changed here is mentioned in it). No completed plan was edited except the Stage-1 correction note.
+
+### Known follow-ups (deferred minors)
+
+- Foundation `_links.scss` has a selector quirk, left alone (Foundation Sass is not linted by `lint-css`).
+- Path-scope the PHPCS camelCase relaxations in the uikit theme's ruleset instead of applying them to all files.
+- `docker/uikit/setup.mjs`: add the `docker inspect` note and `--post_status=any` to the seed-post lookup.
+- No test covers `[hp_uikit_card]` with empty attributes or with nested shortcodes.
+- The plugins' `bin/package` would zip `hyperpress-example` without `dist/uikit.css`; build it first or exclude it.
+- `package.mjs` silently ignores files that the manifest references but that are missing from `assets/`.
+- Older zips accumulate in `dist/packages` (one per version).
+- The `build` noop aggregate is counted as a rebuilt task in the Task 7 timing table.
+- Type-aware Oxlint (`--type-aware`) is not part of the Nx target; it found a real floating promise and could become an opt-in target.
+- Foundation `gulpfile.mjs` has an Oxlint `consistent-return` finding that was deferred (the file is also ignored by Oxfmt).
+- Carried over from the stages 2-4 plan: `Assets::defaultProbe` has no direct test, `vite-build` inputs are too broad, `script_loader_tag` uses string replacement, Twig autoescape of `post.title`, `post.link` and `site.url` is unverified, the Twig full reload and the marker removal on Ctrl+C are not confirmed by eye, and the Sass `@import` to `@use` move is needed before Dart Sass 3.
+- Merge strategy for the three stacked stage branches and the production PHP version are open (see the verdict).

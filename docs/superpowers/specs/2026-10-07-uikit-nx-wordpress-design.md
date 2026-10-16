@@ -1,6 +1,6 @@
 # UIkit + Nx + pnpm WordPress workspace: design
 
-Status: draft for review (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root; 2026-10-15: pins bumped to Node 26.12.0 and pnpm 12.12.1, plugin count corrected to 16, stages 0 and 0b done, Nx pinned to 23.3.0; 2026-10-15: two `dist/` conventions recorded, Foundation keeps its in-theme `dist/`; 2026-10-15: stages 2-4 done, tooling image is PHP 8.5, Vite runs through the inferred `@nx/vite` plugin)
+Status: stages 0-7 done; verdict in `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md` (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root; 2026-10-15: pins bumped to Node 26.12.0 and pnpm 12.12.1, plugin count corrected to 16, stages 0 and 0b done, Nx pinned to 23.3.0; 2026-10-15: two `dist/` conventions recorded, Foundation keeps its in-theme `dist/`; 2026-10-15: stages 2-4 done, tooling image is PHP 8.5, Vite runs through the inferred `@nx/vite` plugin; 2026-10-16: stages 5-7 done, `allowBuilds` has `nx: true`)
 
 ## Purpose
 
@@ -31,7 +31,7 @@ repo is added under `plugins/` (rebased on top, no merge commit), and root works
 | PHP lint                         | PHPCS (WordPress standard), in Docker only                                                                                                                                                                                                                                                                                                                                                                      |
 | Twig                             | No formatter or linter (none available)                                                                                                                                                                                                                                                                                                                                                                         |
 | Dev environment                  | One shared Docker Compose file in `docker/` with thin per-site wrappers (`docker/hyperalumni/`, `docker/hyperonline/`, `docker/uikit/`); PHP/Composer run in a tooling container, never on the host                                                                                                                                                                                                             |
-| Stub plugin                      | `plugins/hyperpress-example/` was planned when no real plugins were in scope; revisit in stage 5 (a real plugin may serve instead)                                                                                                                                                                                                                                                                              |
+| Stub plugin                      | `plugins/hyperpress-example/` (kept in stage 5; whether it stays is an open question in the verdict)                                                                                                                                                                                                                                                                                                            |
 
 ## Workspace layout
 
@@ -169,8 +169,8 @@ Verification (stage 0 gate):
 
 `hyperpress-example` registers `[hp_uikit_card]`, rendering UIkit-class markup and importing compiled
 CSS from `libs/uikit-tokens`. It exists to prove a plugin can consume a shared lib and that Nx
-tracks the dependency, so a change to the lib rebuilds the theme and the plugin. With the real
-plugins now in the repo, stage 5 decides whether to keep it or use an existing plugin instead.
+tracks the dependency, so a change to the lib rebuilds the theme and the plugin. Stage 5 kept it as
+a stub rather than using an existing plugin; whether it stays is an open question in the verdict.
 
 ## Docker stack
 
@@ -230,23 +230,23 @@ Verification: both sites start from the new location; the old directories are un
 
 0. Restructure the hyperPress repo into a monorepo: move the theme, rebase the plugins on top, add root files. (done)
    0b. Migrate the `hyperalumni` and `hyperonline` Docker stacks into `docker/` (see Docker stack). (done)
-1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects. (done) On Node 26.12.0 the Nx daemon works, the `nx` postinstall is blocked via `allowBuilds` (`nx: false`) and not needed, Nx is pinned in the pnpm catalog, the theme's Nx config lives in `project.json`, and the plugin tooling project is `plugins/project.json`.
+1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects. (done) On Node 26.12.0 the Nx daemon works, the `nx` postinstall is allowed via `allowBuilds` (`nx: true`, the owner's decision; the first run listed it among the ignored builds), Nx is pinned in the pnpm catalog, the theme's Nx config lives in `project.json`, and the plugin tooling project is `plugins/project.json`.
 2. Docker stack and a bare `hyperpress-uikit` theme rendering through Timber. (done)
 3. Vite build, manifest-based asset loading, UIkit from `libs/uikit-tokens`. (done)
 4. Dev HMR against the Dockerized WordPress. (done; the automated websocket proof passed, and the owner confirmed Sass hot reload in the browser on 2026-10-16)
-5. Stub (or real) plugin consuming the shared lib; prove `nx affected` and cache hits.
-6. Oxlint (`@nx/oxlint`), Stylelint and PHPCS as Nx targets; Oxfmt as root `fmt`/`fmt:check` scripts.
-7. Packaging and an experiment write-up.
+5. Stub (or real) plugin consuming the shared lib; prove `nx affected` and cache hits. (done) `plugins/hyperpress-example` builds the shared Sass into its own `dist/uikit.css` and renders `[hp_uikit_card]`; a token change rebuilt exactly the tokens, the plugin and the theme's Vite build, and a repeat build was a 7/7 cache hit (0.8 s against 6.3 s cold).
+6. Oxlint (`@nx/oxlint`), Stylelint and PHPCS as Nx targets; Oxfmt as root `fmt`/`fmt:check` scripts. (done) The Nx targets are named `lint-js`, `lint-css` and `lint-php` because `lint` already means composer PHPCS on `plugins-tooling`; Oxfmt reformatted 82 files once, with `gulpfile.mjs` and vendored paths ignored.
+7. Packaging and an experiment write-up. (done) `nx package @hyper/press-uikit` writes a deterministic zip of the assembled theme, `nx setup @hyper/press-uikit` takes a fresh clone to a rendered site, and the write-up is `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md`.
 
 ## Success criteria
 
 - Stage 0: one repo, theme history and fork lineage intact, plugin history preserved, all docs in
-  one place, one root `pnpm install`, Foundation theme builds as before.
+  one place, one root `pnpm install`, Foundation theme builds as before. Met (stage 0 gate); the Foundation `dist` hashes were also unchanged after the Oxfmt reformat.
 - Changing `libs/uikit-tokens` rebuilds only the new theme and the plugin (`nx affected`); a repeat
-  build hits the Nx cache.
-- HMR works against the Dockerized WordPress.
-- A fresh clone goes from `pnpm install` to a rendered site in one command.
-- A written verdict on Nx and Oxc for WordPress work.
+  build hits the Nx cache. Met: the affected set was the tokens, the theme and `hyperpress-example`, the partial rebuild was 3 of 7 tasks cached (2.7 s), and a repeat build was 7 of 7 (0.8 s).
+- HMR works against the Dockerized WordPress. Met for Sass: the automated websocket proof passed and the owner confirmed Sass hot reload in the browser on 2026-10-16.
+- A fresh clone goes from `pnpm install` to a rendered site in one command. Met with prerequisites: copy the local env example for `docker/uikit`, export `UIKIT_ADMIN_USER`, `UIKIT_ADMIN_PASSWORD` and `UIKIT_ADMIN_EMAIL`, then `nx setup @hyper/press-uikit`; verified on a scratch project and idempotent.
+- A written verdict on Nx and Oxc for WordPress work. Met: `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md` (the owner fills in the verdict lines).
 
 ## Out of scope
 
