@@ -2,7 +2,9 @@
   "name": "@hyper/press",
   "private": true,
   "scripts": {
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "devEngines": {
     "packageManager": {
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@nx/vite": "catalog:",
-    "nx": "catalog:"
+    "nx": "catalog:",
+    "oxfmt": "catalog:"
   }
 }

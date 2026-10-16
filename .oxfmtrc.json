@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "**/composer.lock",
+    "plugins/hyperpress-countdown/assets/**",
+    "plugins/tests/fixtures/**",
+    "themes/hyperpress-foundation/CHANGELOG.md",
+    "themes/hyperpress-foundation/gulpfile.mjs"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "themes/hyperpress-foundation/**/*.{yml,yaml}",
+        "**/compose.yaml",
+        "**/compose.main.yaml"
+      ],
+      "options": { "singleQuote": false }
+    }
+  ]
+}
