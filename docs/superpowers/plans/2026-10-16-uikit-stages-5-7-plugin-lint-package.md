@@ -303,10 +303,15 @@ Execution notes:
 
 - Modify: `docker/uikit/smoke.mjs` (env `SMOKE_EXPECT`: comma-separated substrings the homepage body must contain, each an `ok`/`FAIL` line)
 
-- [ ] **Step 1: Failing check:** with the plugin not activated and no post using the shortcode, `SMOKE_EXPECT=hp-uikit-card node docker/uikit/smoke.mjs` fails naming `hp-uikit-card`.
-- [ ] **Step 2: Activate and seed** with wpcli from `docker/uikit` (`docker compose --profile local run --rm wpcli plugin activate hyperpress-example`, then `post create` a published post whose content is `[hp_uikit_card title="Hello"]World[/hp_uikit_card]`).
-- [ ] **Step 3: Verify:** `SMOKE_EXPECT=hp-uikit-card pnpm exec nx smoke @hyper/press-uikit` passes, the page references the plugin's stylesheet, and the stylesheet URL returns 200; the plain smoke (no `SMOKE_EXPECT`) still passes.
-- [ ] **Step 4: Commit** `feat(uikit-theme): let the smoke test expect shortcode output`.
+- [x] **Step 1: Failing check:** with the plugin not activated and no post using the shortcode, `SMOKE_EXPECT=hp-uikit-card node docker/uikit/smoke.mjs` fails naming `hp-uikit-card`.
+- [x] **Step 2: Activate and seed** with wpcli from `docker/uikit` (`docker compose --profile local run --rm wpcli plugin activate hyperpress-example`, then `post create` a published post whose content is `[hp_uikit_card title="Hello"]World[/hp_uikit_card]`).
+- [x] **Step 3: Verify:** `SMOKE_EXPECT=hp-uikit-card pnpm exec nx smoke @hyper/press-uikit` passes, the page references the plugin's stylesheet, and the stylesheet URL returns 200; the plain smoke (no `SMOKE_EXPECT`) still passes.
+- [x] **Step 4: Commit** `feat(uikit-theme): let the smoke test expect shortcode output`.
+
+- Container: the uikit `wordpress` container was recreated with `docker compose --profile local up -d` from `docker/uikit` (volumes persisted, no repair needed) so it sees the 17th plugin mount; `hyperpress-example.php` and `dist/uikit.css` were visible inside it.
+- Template finding: `views/index.twig` printed `{{ post.preview }}`, which strips shortcodes, so the card never reached the page. It now prints `{{ post.content }}`; the rendered HTML is not escaped (real `<div class="uk-card uk-card-default uk-card-body hp-uikit-card">`), so no `|raw` is needed. `nx build @hyper/press-uikit` copies it into the mounted dist.
+- Seed: published post slug `hello-uikit-card` (id 6), content `[hp_uikit_card title="Hello"]World[/hp_uikit_card]`; seeding is idempotent via `wp post list --name=hello-uikit-card --post_type=post --field=ID`.
+- Smoke: `SMOKE_EXPECT=hp-uikit-card pnpm exec nx smoke @hyper/press-uikit` (comma-separated substrings; the failing form prints `FAIL expect <text> not found in <homepage URL>` and exits 1). The page links `hyperpress-example/dist/uikit.css` (handle `hp-example-uikit`), which returns 200 and contains `uk-card`.
 
 ### Task 9: Packaging
 

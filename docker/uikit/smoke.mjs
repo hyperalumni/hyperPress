@@ -1,5 +1,6 @@
 // Smoke test for the uikit site. Usage: node docker/uikit/smoke.mjs [base-url]
 // SMOKE_RETRY_SECONDS (default 30) bounds how long connection errors are retried.
+// SMOKE_EXPECT is a comma-separated list of substrings the homepage body must contain.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -67,3 +68,15 @@ console.log(`ok ${base}/ has a module script`);
 
 if (!home.body.includes('uk-')) fail(`${base}/`, 'body contains no uk- classes');
 console.log(`ok ${base}/ contains uk-`);
+
+const expected = (process.env.SMOKE_EXPECT ?? '')
+  .split(',')
+  .map((text) => text.trim())
+  .filter(Boolean);
+for (const text of expected) {
+  if (!home.body.includes(text)) {
+    console.error(`FAIL expect ${text} not found in ${base}/`);
+    process.exit(1);
+  }
+  console.log(`ok expect ${text}`);
+}
