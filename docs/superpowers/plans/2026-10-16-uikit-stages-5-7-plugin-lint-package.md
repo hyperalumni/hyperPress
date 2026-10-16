@@ -160,11 +160,19 @@ Reasons: the Foundation override keeps the unmodified FoundationPress-era code (
 
 - Produces: `pnpm fmt` and `pnpm fmt:check` (exit 0 when clean); the config decisions from Task 1.
 
-- [ ] **Step 1: Write the failing check:** after installing, `pnpm fmt:check` exits non-zero on the unformatted repo and lists files.
-- [ ] **Step 2: Add config and scripts,** commit `build: add Oxfmt` (config, package.json, lockfile only).
-- [ ] **Step 3: Run `pnpm fmt`,** review the diff by category (no semantic edits to PHP, none to lock files), commit `style: format the repo with Oxfmt` containing only formatting changes.
-- [ ] **Step 4: Verify nothing changed in behavior:** `pnpm fmt:check` exits 0; `pnpm exec nx build @hyper/press-foundation` gives the same `dist` file list and file contents as before the reformat (compare hashes; if hashes differ, diff the minified outputs and report); `nx run @hyper/press-foundation:test:node`, `nx run plugins-tooling:lint` and `test:unit`, the uikit theme PHPUnit, and `nx run-many -t build test typecheck` all pass; `git diff --stat` shows no PHP file changed.
-- [ ] **Step 5: Record** the number of files reformatted in the plan notes.
+- [x] **Step 1: Write the failing check:** after installing, `pnpm fmt:check` exits non-zero on the unformatted repo and lists files.
+- [x] **Step 2: Add config and scripts,** commit `build: add Oxfmt` (config, package.json, lockfile only).
+- [x] **Step 3: Run `pnpm fmt`,** review the diff by category (no semantic edits to PHP, none to lock files), commit `style: format the repo with Oxfmt` containing only formatting changes.
+- [x] **Step 4: Verify nothing changed in behavior:** `pnpm fmt:check` exits 0; `pnpm exec nx build @hyper/press-foundation` gives the same `dist` file list and file contents as before the reformat (compare hashes; if hashes differ, diff the minified outputs and report); `nx run @hyper/press-foundation:test:node`, `nx run plugins-tooling:lint` and `test:unit`, the uikit theme PHPUnit, and `nx run-many -t build test typecheck` all pass; `git diff --stat` shows no PHP file changed.
+- [x] **Step 5: Record** the number of files reformatted in the plan notes.
+
+**Task 2 notes:**
+
+- Commits: `a8b07cf` `build: add Oxfmt` (config, `package.json`, lockfile); `2ade45e` `style: format the repo with Oxfmt` (82 files, formatting only). RED: `pnpm fmt:check` with no config exited 1 listing 95 of 144 files; after the config 82 files were left, and `pnpm fmt:check` now exits 0 on 139 files with a second `pnpm fmt` leaving `git status` clean.
+- Files reformatted: `docs` 36 (Markdown), `themes` 36 (Foundation 31: 25 under `src`, `gulp` 1, `tests` 1, `webpack.config.js`, `composer.json`, `AGENTS.md`, `README.md`; uikit theme 5), `plugins` 3 (`AGENTS.md`, `README.md`, `composer.json`), `libs` 3 (SCSS), `docker` 2 (`compose.main.yaml`, `uikit/smoke.mjs`), root 2 (`nx.json`, `AGENTS.md`). No `.php` and no lock file changed. By extension: md 41, scss 27, json 4, mjs 5, js 3, ts 1, yaml 1.
+- Final `.oxfmtrc.json`: `singleQuote: true`, `sortPackageJson: false`; ignored `**/composer.lock`, the vendored countdown `assets/**`, `plugins/tests/fixtures/**`, Foundation `CHANGELOG.md`, and Foundation `gulpfile.mjs` (`PackageConfigTest` regex-matches `gulp.src(`). Override `singleQuote: false` for Foundation `*.yml|yaml`, `**/compose.yaml` and `**/compose.main.yaml` (`BuildConfigTest` requires double-quoted entries in `config-default.yml`; the Task 1 pattern `**/compose.*.yaml` matched nothing). No `composer.json` override (Composer keeps the 2-space indent; Oxfmt only expands the `lint` script arrays one entry per line, which is how Composer writes them), and `composer validate` passes for the uikit theme, Foundation and the plugins.
+- `dist`, `vendor`, `node_modules`, `.nx`, `.worktrees` and `.superpowers` are skipped (decoy unformatted files in each were not reported). The 36 Markdown files keep every `### Task N:` heading and `- [ ]`/`- [x]` box (counts identical before and after in all 31 plan files).
+- Baseline equality: the Foundation `dist` has the same 12-file list and identical sha256 for every file; `test:node` 8 pass, `nx run-many -t build test typecheck` 10 tasks green (Vitest 2 + 4), `plugins-tooling:lint` (140 files) and `test:unit` (176 tests, 481 assertions), the uikit PHPUnit (18 tests) and Foundation PHPUnit (41 tests) all equal the baselines.
 
 ### Task 3: Oxlint through `@nx/oxlint`
 
