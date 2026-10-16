@@ -23,9 +23,98 @@
 - Commit from the root with explicit pathspecs written out; never `git add -A`. Nothing is pushed. Work is on branch `feature/uikit-stages-5-7`.
 - Out of scope: Block editor / `theme.json`, content migration, CI, Vite+, Twig linting, hoisting the plugins' PHP tooling, pushing history.
 
-## Pins (re-verified in Task 1 before use)
+## Pins (verified in Task 1, 2026-10-16 19:47 UTC)
 
-Reported at planning time, unverified: oxlint 1.88.0, oxfmt 0.73.0, `@nx/oxlint` 23.3.0 (peer `oxlint ^1.43.0`; infers a target per project that has an Oxlint config and lintable files; option `targetName`, default `lint`), stylelint 17.16.0, stylelint-config-standard-scss 17.0.0, postcss-scss 4.0.9. Oxfmt facts (oxc.rs docs): supports JS/TS/JSON/YAML/CSS/SCSS/Markdown; config `.oxfmtrc.json`; `ignorePatterns` uses `.gitignore` syntax; honours `.gitignore`, `.editorconfig` and `.prettierignore`; always skips lock files; `sortPackageJson` defaults to on.
+| Package | Pin | Published (UTC) | Notes |
+| --- | --- | --- | --- |
+| `oxfmt` | 0.73.0 | 2026-10-13 | latest; older than the 24 h `minimumReleaseAge`; already in the catalog |
+| `oxlint` | 1.88.0 | 2026-10-13 | latest; already in the catalog |
+| `oxlint-tsgolint` | 7.0.2004 | 2026-10-10 | latest; already in the catalog. Runs with TypeScript 7.0.2 (see "Measured scope") |
+| `@nx/oxlint` | 23.3.0 | 2026-10-07 | already in the catalog; `main`/`exports["."]` is `dist/index.js`, exporting only `createNodes`/`createNodesV2`/`createDependencies`, so the `nx.json` entry `"@nx/oxlint"` is correct (no `./plugin` subpath); executor `@nx/oxlint:lint`; option `targetName`, default `lint`; peer `oxlint ^1.43.0` |
+| `stylelint` | 17.16.0 | 2026-10-01 | latest; add to the catalog in Task 4 |
+| `stylelint-config-standard-scss` | 17.0.0 | 2026-01-15 | latest; add in Task 4 |
+| `postcss-scss` | 4.0.9 | 2023-09-28 | latest (old but current); add in Task 4 |
+| `fflate` | 0.8.3 | 2026-05-16 | zip library for Task 9 (pure JS, no build script); add in Task 9 |
+| `wp-coding-standards/wpcs` | `^3.1` (locked 3.4.1) | n/a | plugins and Foundation use the same constraint and lock; mirror `^3.1` |
+| `phpcompatibility/phpcompatibility-wp` | `^3.0@alpha` (locked 3.0.0-alpha2) | n/a | with `phpcompatibility/php-compatibility` `^10.0@alpha` (10.0.0-alpha2) and `phpcompatibility/phpcompatibility-paragonie` `^2.0@alpha` (2.0.0-alpha2); mirror all three |
+| `dealerdirect/phpcodesniffer-composer-installer` | `^1.0` in plugins, `^1.2.0` in Foundation (both locked 1.2.1) | n/a | mirror `^1.2.0`; `config.allow-plugins` must allow it; PHPCS is `squizlabs/php_codesniffer` 3.13.6 (transitive) |
+
+All JavaScript pins are at least three days past publication, so `minimumReleaseAgeStrict: true` does not block them. Oxfmt facts (oxc.rs docs, confirmed by the measurements below): supports JS/TS/JSON/YAML/CSS/SCSS/Markdown; config `.oxfmtrc.json`; `ignorePatterns` uses `.gitignore` syntax; honours `.gitignore` and `.prettierignore`; `sortPackageJson` defaults to on.
+
+### Measured scope (probe in `/tmp/opencode/stage6-probe` on a `git archive HEAD` copy; nothing in the repo was touched)
+
+**Oxfmt.** `themes/hyperpress-foundation` has no `.prettierrc` (none is tracked, and `package.json` has no `prettier` key), so there is no Prettier setting to mirror; its `.editorconfig` (2-space indent, LF, UTF-8, final newline, tabs for `*.php`/`*.html`) is nested and Oxfmt does not read it from the repo root. The code mostly uses single quotes, 2-space indent and no print-width wrapping beyond 100.
+
+| Run | Files that would change (of 144 checked) |
+| --- | --- |
+| Defaults, no config | 95 (`docs` 36, Foundation 33, `libs` 7, uikit theme 6, root 4, `plugins` 7, `docker` 2) |
+| `singleQuote: true`, `sortPackageJson: false` | 93 |
+| Final config below | 83 (`docs` 36 Markdown, Foundation 31 incl. 22 SCSS, uikit theme 6 incl. its `composer.json`, `libs` 3 SCSS, root 2, `docker` 2, `plugins` 3); the new `.oxfmtrc.json` itself is a 84th file in the probe |
+
+By extension for the final run: md 41, scss 27, json 6, mjs 5, js 3, yaml 1, ts 1. Remaining changes are whitespace and line wrapping only (SCSS blank lines and one-line rules, `{a}` to `{ a }`, JSON short arrays collapsed, trailing commas, long calls wrapped); the uikit theme's `bin/*.mjs` and `vite.config.ts` use tabs, so they re-indent to spaces.
+
+Decisions, each from a measurement:
+- **Ignore `themes/hyperpress-foundation/gulpfile.mjs`.** `tests/unit/PackageConfigTest.php` asserts on its source text (`/gulp\.src\(PATHS.package\s*,.../`); Oxfmt rewrites it to a method chain (`gulp\n.src(PATHS.package, ...)`), which fails that regex. Foundation's other source-text tests (`_navigation.scss`, `_wp-admin.scss` selectors) survive the reformat.
+- **Ignore `plugins/hyperpress-countdown/assets/**`** (vendored TimeCircles JS/CSS, 1,850 + 34 changed lines), **`plugins/tests/fixtures/**`** (captured legacy data, 1,470 changed lines, consumed by the parity tests), **`themes/hyperpress-foundation/CHANGELOG.md`** (upstream FoundationPress history) and **`**/composer.lock`** (Composer-written).
+- **`singleQuote: false` for `themes/hyperpress-foundation/**/*.{yml,yaml}` and `**/compose.yaml`**: `tests/unit/BuildConfigTest.php` matches `config-default.yml` entries with `"..."` (double quotes); `singleQuote: true` would break it. `pnpm-workspace.yaml` (single-quoted, written by pnpm) is unchanged under `singleQuote: true`, and its comments and the `&nxVersion` anchor and `*nxVersion` aliases are preserved. `docker/compose.main.yaml` stays flagged only for `[ "local" ]` to `["local"]`.
+- **`sortPackageJson: false`.** With the default, every workspace `package.json` except `libs/uikit-tokens` changes (Foundation 18 diff lines: moves `title`, `repository`, `private`, `compact`; the root 8, `libs/ui` 2, the uikit theme 2) and it would also fight `pnpm add`. The only test reading it (`PackageConfigTest::test_package_json_has_no_version_field`) uses `json_decode` and `assertArrayNotHasKey`, so key order is not tested; the gulp files and `docker/uikit` never read it. The reorder buys nothing.
+- **`composer.json`**: the override `tabWidth: 4` works (both files reformat 2 to 4 spaces; `lint` arrays expand one entry per line, as Composer writes them) and a write followed by `--check` passes. Note both files are 2-space today, so this is a one-time reindent; `**/composer.lock` is ignored.
+- **Markdown**: all 97 `### Task N:` headings, 751 `- [x]` and 66 `- [ ]` boxes (and the 6 indented ones) survive unchanged. Changes are blank lines inserted after headings and before lists (about 490) and tables re-padded to aligned columns (`|---|` to `| --- |`, long notes cells widen the lines). Whitespace only, but it touches 36 files in `docs/`.
+- **Ignored paths**: decoy unformatted files in `dist/`, `vendor/`, `node_modules/`, `.nx/` and `.worktrees/` were all skipped (the `.gitignore` in the copy is honoured). Idempotence: `oxfmt` (write) then `oxfmt --check` exits 0.
+
+Exact `.oxfmtrc.json` for Task 2:
+
+```json
+{
+  "singleQuote": true,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "**/composer.lock",
+    "plugins/hyperpress-countdown/assets/**",
+    "plugins/tests/fixtures/**",
+    "themes/hyperpress-foundation/CHANGELOG.md",
+    "themes/hyperpress-foundation/gulpfile.mjs"
+  ],
+  "overrides": [
+    { "files": ["**/composer.json"], "options": { "tabWidth": 4 } },
+    {
+      "files": ["themes/hyperpress-foundation/**/*.{yml,yaml}", "**/compose.yaml", "**/compose.*.yaml"],
+      "options": { "singleQuote": false }
+    }
+  ]
+}
+```
+
+(`**/compose.*.yaml` did not match `docker/compose.main.yaml` in the probe; harmless, as that file takes `singleQuote: true` and only the `profiles` brackets change.) Task 2 must also run Foundation's unit tests after the reformat and may drop the Markdown padding by adding `docs/**` to `ignorePatterns` if the 36-file docs churn is judged not worth it.
+
+**Oxlint 1.88.0** over `libs themes plugins docker` at defaults: 19 files linted, 8 warnings, 0 errors. `libs/ui`, `libs/uikit-tokens`, `themes/hyperpress-uikit` and `docker/uikit` are clean. Foundation: 4 warnings (`no-unused-vars` x2 in `gulpfile.mjs` and `foundation.js`, `no-useless-escape`, `unicorn/no-empty-file` for `app.js`); `plugins/hyperpress-countdown`: 4 warnings, all in the vendored `TimeCircles.js`. Adding `suspicious` at error level adds one hit, `unicorn/consistent-function-scoping` in Foundation, none in new code. Type-aware (`oxlint --type-aware`, tsgolint with TypeScript 7.0.2) runs, but it needs installed dependencies (`Cannot find type definition file for 'vite/client'` in the probe) and already flags a real `no-floating-promises` at `themes/hyperpress-uikit/bin/serve.mjs:67`. Decision: leave type-aware out of the gate in Task 4 and report that finding in Task 4/11 (enable later as an opt-in `lint-js:types`-style target).
+
+Exact `.oxlintrc.json` for Task 4 (verified: `oxlint libs themes plugins docker` exits 0, and `--deny-warnings` on `libs themes/hyperpress-uikit docker` exits 0, so new code gets zero tolerance while Foundation legacy stays warnings):
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc"],
+  "categories": { "correctness": "error", "suspicious": "error" },
+  "env": { "browser": true, "node": true, "es2022": true },
+  "ignorePatterns": ["**/dist/**", "**/vendor/**", "plugins/hyperpress-countdown/assets/**"],
+  "overrides": [
+    {
+      "files": ["themes/hyperpress-foundation/**"],
+      "rules": {
+        "no-unused-vars": "warn",
+        "no-useless-escape": "warn",
+        "unicorn/no-empty-file": "off",
+        "unicorn/consistent-function-scoping": "off"
+      }
+    }
+  ]
+}
+```
+
+Reasons: the Foundation override keeps the unmodified FoundationPress-era code (unused imports, escapes, an intentionally empty `app.js`) from failing the gate; the countdown ignore is the vendored library.
+
+**`@nx/oxlint` attachment.** The plugin creates a target per project that has a governing Oxlint config (the root `.oxlintrc.json` governs everything) and lintable files, named `targetName` (use `lint-js`). Expected projects: `@hyper/ui`, `@hyper/uikit-tokens`, `@hyper/press-uikit`, `@hyper/press-foundation`, the root, and `plugins-tooling` (its project root is `plugins/`, so it would lint the countdown plugin's JS; its composer `lint` target is a different name, so there is no collision). Individual `plugins/hyperpress-*` folders are not Nx projects, and `docker/uikit` is not a project (the root project covers it). Task 4 must confirm with `nx show project <name> --json` before and after, as already planned.
 
 ## Review Focus
 
@@ -46,11 +135,11 @@ Reported at planning time, unverified: oxlint 1.88.0, oxfmt 0.73.0, `@nx/oxlint`
 **Interfaces:**
 - Produces: the exact versions, the `.oxfmtrc.json` option values and `ignorePatterns` list, and the Oxlint rule set that Tasks 2-5 use.
 
-- [ ] **Step 1: Re-check pins** with `pnpm view <pkg> version` and `pnpm view <pkg> time --json` (24 h release-age window): oxlint, oxfmt, `@nx/oxlint`, `oxlint-tsgolint`, stylelint, stylelint-config-standard-scss, postcss-scss, a zip library for Task 9 (`fflate`), and from `plugins/composer.json` the WPCS and PHPCompatibilityWP versions to mirror. Replace the Pins paragraph with a table.
-- [ ] **Step 2: Measure Oxfmt** in a throwaway install under `/tmp/opencode` (not in the repo): run `oxfmt --check` over a copy of the repo, record the number of files it would change per top-level directory, which of them are vendored, minified or generated, and which Foundation files differ from `themes/hyperpress-foundation/.prettierrc` settings. Check the effect of `sortPackageJson` on the Foundation `package.json` and whether `themes/hyperpress-foundation/tests` read `package.json` key order.
-- [ ] **Step 3: Measure Oxlint** the same way over `libs`, `themes`, `plugins`, `docker`: findings per project at default categories.
-- [ ] **Step 4: Decide and record** the `ignorePatterns` (vendored, minified, generated files only), `sortPackageJson` (expected `false`), formatting options mirroring `.prettierrc`, and the Oxlint rule/override set that keeps legacy code from failing the gate.
-- [ ] **Step 5: Commit** `docs(plans): verify stage 5-7 pins and lint scope` over this plan.
+- [x] **Step 1: Re-check pins** with `pnpm view <pkg> version` and `pnpm view <pkg> time --json` (24 h release-age window): oxlint, oxfmt, `@nx/oxlint`, `oxlint-tsgolint`, stylelint, stylelint-config-standard-scss, postcss-scss, a zip library for Task 9 (`fflate`), and from `plugins/composer.json` the WPCS and PHPCompatibilityWP versions to mirror. Replace the Pins paragraph with a table.
+- [x] **Step 2: Measure Oxfmt** in a throwaway install under `/tmp/opencode` (not in the repo): run `oxfmt --check` over a copy of the repo, record the number of files it would change per top-level directory, which of them are vendored, minified or generated, and which Foundation files differ from `themes/hyperpress-foundation/.prettierrc` settings. Check the effect of `sortPackageJson` on the Foundation `package.json` and whether `themes/hyperpress-foundation/tests` read `package.json` key order.
+- [x] **Step 3: Measure Oxlint** the same way over `libs`, `themes`, `plugins`, `docker`: findings per project at default categories.
+- [x] **Step 4: Decide and record** the `ignorePatterns` (vendored, minified, generated files only), `sortPackageJson` (expected `false`), formatting options mirroring `.prettierrc`, and the Oxlint rule/override set that keeps legacy code from failing the gate.
+- [x] **Step 5: Commit** `docs(plans): verify stage 5-7 pins and lint scope` over this plan.
 
 ### Task 2: Oxfmt and the one-time reformat
 
