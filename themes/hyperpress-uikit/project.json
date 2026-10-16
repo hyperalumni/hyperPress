@@ -4,7 +4,9 @@
   "targets": {
     "copy-theme": {
       "executor": "nx:run-script",
-      "options": { "script": "copy-theme" },
+      "options": {
+        "script": "copy-theme"
+      },
       "cache": true,
       "inputs": [
         "{projectRoot}/style.css",
@@ -92,6 +94,15 @@
         "command": "node docker/uikit/smoke.mjs"
       },
       "cache": false
+    },
+    "lint-css": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "pnpm exec stylelint \"themes/hyperpress-uikit/**/*.scss\""
+      },
+      "cache": true,
+      "inputs": ["{projectRoot}/**/*.scss", "{workspaceRoot}/stylelint.config.mjs"]
     }
   }
 }

@@ -209,10 +209,17 @@ Result (2026-10-16):
 
 - Produces: cached `lint-css` targets running `stylelint "<projectRoot>/**/*.scss"` on `@hyper/uikit-tokens` and `@hyper/press-uikit` only (Foundation's legacy Sass is out of scope).
 
-- [ ] **Step 1: Write the failing check:** a scratch `.scss` file with a known violation (`/tmp`, linted with `--config stylelint.config.mjs`) exits non-zero; `nx run @hyper/uikit-tokens:lint-css` fails (no target).
-- [ ] **Step 2: Add** the config extending `stylelint-config-standard-scss` with the minimum rule relaxations for UIkit conventions (`@import` of `uikit/src/scss/...`, variable naming); each relaxation gets a one-line reason in the config.
-- [ ] **Step 3: Run** `pnpm exec nx run-many -t lint-css`; fix findings in our Sass; verify the cache hit on a second run.
-- [ ] **Step 4: Commit** `build: lint Sass with Stylelint`.
+- [x] **Step 1: Write the failing check:** a scratch `.scss` file with a known violation (`/tmp`, linted with `--config stylelint.config.mjs`) exits non-zero; `nx run @hyper/uikit-tokens:lint-css` fails (no target).
+- [x] **Step 2: Add** the config extending `stylelint-config-standard-scss` with the minimum rule relaxations for UIkit conventions (`@import` of `uikit/src/scss/...`, variable naming); each relaxation gets a one-line reason in the config.
+- [x] **Step 3: Run** `pnpm exec nx run-many -t lint-css`; fix findings in our Sass; verify the cache hit on a second run.
+- [x] **Step 4: Commit** `build: lint Sass with Stylelint`.
+
+Result (2026-10-16):
+
+- `stylelint.config.mjs` is just `extends: ['stylelint-config-standard-scss']` with no relaxed rules. Stylelint 17 ships no stylistic rules, so Oxfmt (formatter of record) cannot conflict, and the UIkit `@import 'uikit/src/scss/...'` paths and override-before-import order pass the standard rules unchanged. The reasons are in comments in the config.
+- Four findings in our Sass were fixed instead of relaxing rules: removed a blank line between consecutive `@import`s (`at-rule-empty-line-before`), quoted `'Roboto'` in the font stack (`value-keyword-case`; same CSS), and dropped the `.scss` extension from the `@hyper/uikit-tokens/src/index` import in `main.scss` (`scss/load-partial-extension`; the uikit `vite-build` still succeeds).
+- `lint-css` (cached, `nx:run-commands` from the workspace root, inputs: the project's `*.scss` plus `stylelint.config.mjs`, no outputs) exists on `@hyper/uikit-tokens` (3 files) and `@hyper/press-uikit` (1 file) only; a before/after `nx show project` shows no other target or project changed.
+- RED check: a scratch file with `color:RED;;` and an empty block exits 2 (`value-keyword-case`, `block-no-empty`). Verified: second run 2/2 cache hits, touching one file re-ran only its own project, `fmt:check` and `install --frozen-lockfile` pass, `run-many -t lint-js build test typecheck` (14 tasks) passes.
 
 ### Task 5: PHPCS for the uikit theme
 

@@ -4,16 +4,29 @@
   "targets": {
     "build": {
       "executor": "nx:run-script",
-      "options": { "script": "build" },
+      "options": {
+        "script": "build"
+      },
       "cache": true,
       "inputs": ["default", "^default"],
       "outputs": ["{workspaceRoot}/dist/libs/uikit-tokens"]
     },
     "test": {
       "executor": "nx:run-script",
-      "options": { "script": "test" },
+      "options": {
+        "script": "test"
+      },
       "cache": true,
       "inputs": ["default", "^default"]
+    },
+    "lint-css": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "pnpm exec stylelint \"libs/uikit-tokens/**/*.scss\""
+      },
+      "cache": true,
+      "inputs": ["{projectRoot}/**/*.scss", "{workspaceRoot}/stylelint.config.mjs"]
     }
   }
 }
