@@ -1,0 +1,19 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "hyperpress-example",
+  "projectType": "library",
+  "tags": ["type:plugin"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "node plugins/hyperpress-example/bin/copy-css.mjs"
+      },
+      "dependsOn": ["^build"],
+      "cache": true,
+      "inputs": ["{projectRoot}/bin/copy-css.mjs", "{projectRoot}/package.json", "^default"],
+      "outputs": ["{projectRoot}/dist"]
+    }
+  }
+}

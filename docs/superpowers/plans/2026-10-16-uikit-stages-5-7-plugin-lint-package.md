@@ -256,11 +256,20 @@ Result:
 
 - Produces: namespace `HyperPress\Example`; `Shortcode::register(): void` (adds `[hp_uikit_card]`), `Shortcode::render(array|string $atts, ?string $content = null): string` returning `<div class="uk-card uk-card-default uk-card-body hp-uikit-card"><h3 class="uk-card-title">…</h3>…</div>` with `title` attribute (default empty → no heading) and enclosed content, every dynamic value escaped; `Plugin::boot(): void` hooking it up and registering the stylesheet handle `hp-example-uikit` (file `dist/uikit.css`) which is enqueued only when the shortcode renders. Nx project `hyperpress-example` (package name `@hyper/press-example`, dependency `"@hyper/uikit-tokens": "workspace:*"`) with cached target `build` (dependsOn `@hyper/uikit-tokens:build`; runs `bin/copy-css.mjs` copying `dist/libs/uikit-tokens/index.css` to `plugins/hyperpress-example/dist/uikit.css`; outputs `{projectRoot}/dist`).
 
-- [ ] **Step 1: Write failing tests:** shortcode registered under `hp_uikit_card`; `render` returns the `uk-card uk-card-default uk-card-body` markup with the title in `uk-card-title` and the content inside; a title of `<script>alert(1)</script>` is escaped; no title means no heading; the stylesheet handle is enqueued after `render` and not before. Run them through `docker compose run ... tooling`/the plugins tooling per `plugins/AGENTS.md`. Expected: FAIL.
-- [ ] **Step 2: Implement** the plugin files to satisfy the tests; header and text domain `hyperpress` as the other plugins.
-- [ ] **Step 3: Implement** the Nx project and `bin/copy-css.mjs`; verify `pnpm exec nx build hyperpress-example` writes `plugins/hyperpress-example/dist/uikit.css` containing `.uk-card`, and a second build is a cache hit.
-- [ ] **Step 4: Add the compose mount** and verify with `docker compose --profile local config` for `hyperalumni`, `hyperonline` and `uikit` that the rendered configs differ from before only by that mount (mount source exists, so no root-owned stray folder).
-- [ ] **Step 5: Run** `nx run plugins-tooling:lint` and `test:unit` (all green, plugin passes PHPCS) and commit `feat(example): add the stub plugin that consumes the Sass lib`.
+- [x] **Step 1: Write failing tests:** shortcode registered under `hp_uikit_card`; `render` returns the `uk-card uk-card-default uk-card-body` markup with the title in `uk-card-title` and the content inside; a title of `<script>alert(1)</script>` is escaped; no title means no heading; the stylesheet handle is enqueued after `render` and not before. Run them through `docker compose run ... tooling`/the plugins tooling per `plugins/AGENTS.md`. Expected: FAIL.
+- [x] **Step 2: Implement** the plugin files to satisfy the tests; header and text domain `hyperpress` as the other plugins.
+- [x] **Step 3: Implement** the Nx project and `bin/copy-css.mjs`; verify `pnpm exec nx build hyperpress-example` writes `plugins/hyperpress-example/dist/uikit.css` containing `.uk-card`, and a second build is a cache hit.
+- [x] **Step 4: Add the compose mount** and verify with `docker compose --profile local config` for `hyperalumni`, `hyperonline` and `uikit` that the rendered configs differ from before only by that mount (mount source exists, so no root-owned stray folder).
+- [x] **Step 5: Run** `nx run plugins-tooling:lint` and `test:unit` (all green, plugin passes PHPCS) and commit `feat(example): add the stub plugin that consumes the Sass lib`.
+
+Execution notes:
+
+- Naming: `project.json` name `hyperpress-example` and `package.json` name `@hyper/press-example` give ONE Nx project (`project.json` wins; `nx show projects` lists it once, 22 projects in total). The edge to `@hyper/uikit-tokens` is visible in `nx graph` (`dependencies["hyperpress-example"]`), so `dependsOn: ["^build"]` builds the tokens first. The pnpm lockfile gained only the `plugins/hyperpress-example` importer.
+- Tests live in `plugins/tests/integration/Example/ExampleShortcodeTest.php` (7 tests; they need WordPress functions). The plugin is not added to `Convention::PLUGINS`/`LOAD_ORDER`, so the test requires the main file itself and calls `Plugin::boot()`. The first run failed (RED: no main file) before the plugin existed.
+- `plugins/phpcs.xml.dist` lists plugins explicitly, so `hyperpress-example` was added there (lint 140 to 143 files). Counts after: lint green, unit 176 tests (unchanged), integration 1128 tests (6 skipped, as before).
+- Compose: the 17th bind mount was added to `docker/compose.main.yaml`; the rendered `config` for `hyperalumni`, `hyperonline` and `uikit` differs from before only by that mount. The running uikit stack was not recreated (Task 8).
+- `dist/` is git-ignored by the root rule, so the plugin has no `.gitignore`. `bin/package` packages every `hyperpress-*` dir, so the example plugin will need its `dist/` built first or be excluded; Task 9 or later should decide.
+- Nx build: first run writes `dist/uikit.css`, the second is a cache hit, and deleting `dist` restores it from the cache.
 
 ### Task 7: Prove the dependency tracking and the cache
 
