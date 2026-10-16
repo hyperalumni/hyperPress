@@ -1,0 +1,10 @@
+[core]
+    autocrlf = input
+    safecrlf = true
+[merge]
+    ff = only
+[pull]
+    rebase = true
+    ff = only
+[status]
+    submodulesummary = true

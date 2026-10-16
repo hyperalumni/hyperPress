@@ -1,0 +1,6 @@
+package-lock.json   -diff -merge
+package-lock.json    linguist-generated=true
+pnpm-lock.yaml      -diff -merge
+pnpm-lock.yaml      linguist-generated=true
+yarn.lock           -diff -merge
+yarn.lock           linguist-generated=true
