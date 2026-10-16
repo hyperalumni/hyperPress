@@ -82,8 +82,7 @@
       "dependsOn": ["build"],
       "cache": true,
       "inputs": [
-        "{workspaceRoot}/dist/themes/hyperpress-uikit/**/*",
-        "!{workspaceRoot}/dist/themes/hyperpress-uikit/.vite-dev",
+        { "dependentTasksOutputFiles": "**/*", "transitive": true },
         "{projectRoot}/bin/package.mjs"
       ],
       "outputs": ["{workspaceRoot}/dist/packages"]

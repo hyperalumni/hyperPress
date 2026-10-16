@@ -335,6 +335,7 @@ Result (2026-10-16):
 - Zip layout: single top-level `hyperpress-uikit/`, forward-slash entries. Excluded: top-level `.vite-dev`, `tests/`, `phpunit.xml.dist`, `phpcs.xml.dist`, `.git*`, and every `assets/` file the manifest (all entries, incl. chunks: `file`, `css`, `assets`) does not reference. A missing or unparseable `.vite/manifest.json` is an error. Symlinks are skipped. The script only reads the theme directory.
 - Deterministic: `fflate` `zipSync` (0.8.3, catalog) with a fixed local-time 1980-01-01 mtime; packaging twice gave identical bytes (sha256 `61cca477...`).
 - Version comes from the `Version:` header of `style.css` (`hyperpress-uikit-0.1.0.zip`). Real build: 408 files, 677,813 bytes (2,178,663 unpacked); second `nx package` is a cache hit; all 381 PHP files pass `php -l` in the tooling container after extraction; a stale `assets/old-stale.js` and a `.vite-dev` marker were not packaged; the `dist/themes/hyperpress-uikit` inode stayed the same and the site still returned 200.
+- Cache inputs: `dist/` is git-ignored, so Nx does not hash it (a view edit left `package` served from cache with a stale zip). The `package` inputs are `{ "dependentTasksOutputFiles": "**/*", "transitive": true }` plus the script, so the outputs of `copy-theme`, `vite-build` and `composer-install` (never the `.vite-dev` marker) are hashed; a probe edit now re-runs `package`, and reverting it reproduces the original zip bytes.
 
 ### Task 10: One-command setup
 
