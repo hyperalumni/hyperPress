@@ -103,6 +103,14 @@
       },
       "cache": true,
       "inputs": ["{projectRoot}/**/*.scss", "{workspaceRoot}/stylelint.config.mjs"]
+    },
+    "lint-php": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}/docker/uikit",
+        "command": "docker compose run --rm --user \"$(id -u):$(id -g)\" -e COMPOSER_HOME=/tmp/composer -w /themes/hyperpress-uikit tooling composer lint"
+      },
+      "cache": false
     }
   }
 }

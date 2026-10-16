@@ -8,7 +8,12 @@
     "timber/timber": "^2.5.1"
   },
   "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.2.0",
+    "phpcompatibility/php-compatibility": "^10.0@alpha",
+    "phpcompatibility/phpcompatibility-paragonie": "^2.0@alpha",
+    "phpcompatibility/phpcompatibility-wp": "^3.0@alpha",
     "phpunit/phpunit": "^9.6",
+    "wp-coding-standards/wpcs": "^3.1",
     "yoast/phpunit-polyfills": "^2.0"
   },
   "autoload": {
@@ -17,12 +22,21 @@
     }
   },
   "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
     "sort-packages": true,
     "platform": {
       "php": "8.3.0"
     }
   },
   "scripts": {
+    "lint:syntax": "find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -not -path './dist/*' -print0 | xargs -0 -n1 php -d display_errors=stderr -l > /dev/null",
+    "lint:cs": "phpcs",
+    "lint": [
+      "@lint:syntax",
+      "@lint:cs"
+    ],
     "test:unit": "phpunit --testsuite unit"
   }
 }

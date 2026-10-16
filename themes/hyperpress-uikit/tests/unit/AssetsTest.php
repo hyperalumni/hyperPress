@@ -45,10 +45,12 @@ final class AssetsTest extends TestCase {
 	}
 
 	private function markerJson(): string {
-		return json_encode( [
-			'browser'  => 'http://localhost:5173',
-			'internal' => 'http://host.docker.internal:5173',
-		] );
+		return json_encode(
+			array(
+				'browser'  => 'http://localhost:5173',
+				'internal' => 'http://host.docker.internal:5173',
+			)
+		);
 	}
 
 	private function assets( ?callable $probe = null ): Assets {
@@ -56,33 +58,35 @@ final class AssetsTest extends TestCase {
 	}
 
 	public function testEntryReturnsFileAndCssIncludingImportedChunks(): void {
-		$this->writeManifest( [
-			'src/main.ts'  => [
-				'file'    => 'assets/main-abc.js',
-				'isEntry' => true,
-				'css'     => [ 'assets/main-abc.css' ],
-				'imports' => [ '_vendor.js', '_shared.js' ],
-			],
-			'_vendor.js'   => [
-				'file'    => 'assets/vendor-111.js',
-				'css'     => [ 'assets/vendor-111.css', 'assets/shared-222.css' ],
-				'imports' => [ '_shared.js' ],
-			],
-			'_shared.js'   => [
-				'file' => 'assets/shared-222.js',
-				'css'  => [ 'assets/shared-222.css' ],
-			],
-		] );
+		$this->writeManifest(
+			array(
+				'src/main.ts' => array(
+					'file'    => 'assets/main-abc.js',
+					'isEntry' => true,
+					'css'     => array( 'assets/main-abc.css' ),
+					'imports' => array( '_vendor.js', '_shared.js' ),
+				),
+				'_vendor.js'  => array(
+					'file'    => 'assets/vendor-111.js',
+					'css'     => array( 'assets/vendor-111.css', 'assets/shared-222.css' ),
+					'imports' => array( '_shared.js' ),
+				),
+				'_shared.js'  => array(
+					'file' => 'assets/shared-222.js',
+					'css'  => array( 'assets/shared-222.css' ),
+				),
+			)
+		);
 
 		$this->assertSame(
-			[
+			array(
 				'file' => self::URI . '/assets/main-abc.js',
-				'css'  => [
+				'css'  => array(
 					self::URI . '/assets/shared-222.css',
 					self::URI . '/assets/vendor-111.css',
 					self::URI . '/assets/main-abc.css',
-				],
-			],
+				),
+			),
 			$this->assets()->entry( 'src/main.ts' )
 		);
 	}
@@ -96,7 +100,7 @@ final class AssetsTest extends TestCase {
 		file_put_contents( $this->dir . '/.vite/manifest.json', '{not json' );
 		$this->assertNull( $this->assets()->entry( 'src/main.ts' ) );
 
-		$this->writeManifestOverwrite( [ 'other.ts' => [ 'file' => 'assets/o.js' ] ] );
+		$this->writeManifestOverwrite( array( 'other.ts' => array( 'file' => 'assets/o.js' ) ) );
 		$this->assertNull( $this->assets()->entry( 'src/main.ts' ) );
 	}
 
@@ -116,7 +120,7 @@ final class AssetsTest extends TestCase {
 	}
 
 	public function testNoticeWhenVendorMissing(): void {
-		$this->writeManifest( [ 'src/main.ts' => [ 'file' => 'assets/main.js' ] ] );
+		$this->writeManifest( array( 'src/main.ts' => array( 'file' => 'assets/main.js' ) ) );
 
 		$notice = $this->assets()->notice();
 
@@ -126,7 +130,7 @@ final class AssetsTest extends TestCase {
 	}
 
 	public function testNoticeIsNullWhenEverythingPresent(): void {
-		$this->writeManifest( [ 'src/main.ts' => [ 'file' => 'assets/main.js' ] ] );
+		$this->writeManifest( array( 'src/main.ts' => array( 'file' => 'assets/main.js' ) ) );
 		mkdir( $this->dir . '/vendor', 0777, true );
 		file_put_contents( $this->dir . '/vendor/autoload.php', '<?php' );
 
@@ -141,14 +145,16 @@ final class AssetsTest extends TestCase {
 
 	public function testIsDevTrueWhenMarkerAndProbeSucceeds(): void {
 		$this->writeMarker( $this->markerJson() );
-		$probed = [];
-		$assets = $this->assets( static function ( string $url ) use ( &$probed ): bool {
-			$probed[] = $url;
-			return true;
-		} );
+		$probed = array();
+		$assets = $this->assets(
+			static function ( string $url ) use ( &$probed ): bool {
+				$probed[] = $url;
+				return true;
+			}
+		);
 
 		$this->assertTrue( $assets->isDev() );
-		$this->assertSame( [ 'http://host.docker.internal:5173' ], $probed );
+		$this->assertSame( array( 'http://host.docker.internal:5173' ), $probed );
 	}
 
 	public function testIsDevFalseWhenMarkerButProbeFails(): void {
@@ -170,53 +176,68 @@ final class AssetsTest extends TestCase {
 	}
 
 	public function testMarkerWithMissingKeyOrNonStringValuesIsIgnored(): void {
-		$this->writeMarker( json_encode( [ 'browser' => 'http://localhost:5173' ] ) );
+		$this->writeMarker( json_encode( array( 'browser' => 'http://localhost:5173' ) ) );
 		$assets = $this->assets( static fn( string $url ): bool => true );
 		$this->assertFalse( $assets->isDev() );
 		$this->assertNull( $assets->devServer() );
 
-		$this->writeMarker( json_encode( [ 'browser' => 5173, 'internal' => [ 'x' ] ] ) );
+		$this->writeMarker(
+			json_encode(
+				array(
+					'browser'  => 5173,
+					'internal' => array( 'x' ),
+				)
+			)
+		);
 		$this->assertFalse( $assets->isDev() );
 		$this->assertNull( $assets->devServer() );
 	}
 
 	public function testDevServerReturnsBothUrls(): void {
-		$this->writeMarker( json_encode( [
-			'browser'  => 'http://localhost:5199',
-			'internal' => 'http://host.docker.internal:5199',
-		] ) );
+		$this->writeMarker(
+			json_encode(
+				array(
+					'browser'  => 'http://localhost:5199',
+					'internal' => 'http://host.docker.internal:5199',
+				)
+			)
+		);
 
 		$this->assertSame(
-			[
+			array(
 				'browser'  => 'http://localhost:5199',
 				'internal' => 'http://host.docker.internal:5199',
-			],
+			),
 			$this->assets()->devServer()
 		);
 	}
 
 	/**
+	 * The VITE_DEV constant forces dev mode without probing.
+	 *
 	 * @runInSeparateProcess
 	 * @preserveGlobalState disabled
 	 */
 	public function testIsDevTrueWhenConstantDefined(): void {
-		define( 'VITE_DEV', true );
+		define( 'VITE_DEV', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- The theme reads this public, unprefixed constant from wp-config.php.
 
 		$this->assertTrue( $this->assets( static fn( string $url ): bool => false )->isDev() );
 	}
 
 	/**
+	 * Without a marker file the VITE_DEV constant yields the default dev server URLs.
+	 *
 	 * @runInSeparateProcess
 	 * @preserveGlobalState disabled
 	 */
 	public function testDevServerFallsBackToDefaultsWhenConstantDefined(): void {
-		define( 'VITE_DEV', true );
+		define( 'VITE_DEV', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- The theme reads this public, unprefixed constant from wp-config.php.
 
 		$this->assertSame(
-			[
+			array(
 				'browser'  => 'http://localhost:5173',
 				'internal' => 'http://host.docker.internal:5173',
-			],
+			),
 			$this->assets()->devServer()
 		);
 	}

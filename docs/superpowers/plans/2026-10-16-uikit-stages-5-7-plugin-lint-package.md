@@ -232,11 +232,18 @@ Result (2026-10-16):
 
 - Produces: `composer lint` for the theme (syntax + WordPress standard + PHPCompatibilityWP `testVersion 8.3-`, text domain `hyperpress-uikit`, prefix namespace `HyperPress\Uikit`, excluding `vendor`, `dist`, `node_modules`, `tests` as the plugins' ruleset does) and an uncached Nx target `lint-php` running it through the tooling container.
 
-- [ ] **Step 1: Write the failing check:** `composer lint` in the theme fails (no script); a scratch PHP file using an 8.4-only feature fails the compatibility sniff.
-- [ ] **Step 2: Add** the ruleset and scripts, regenerate the lock with the platform pin `php 8.3.0` kept; add the Nx target.
-- [ ] **Step 3: Run** `pnpm exec nx run @hyper/press-uikit:lint-php`; fix findings in `inc/`, `functions.php`, `index.php`, `views` PHP, `tests/`; do not weaken sniffs without a one-line reason.
-- [ ] **Step 4: Verify** `composer test:unit` still passes and `vendor/` is not copied into `dist` with dev packages (`composer install --no-dev` result unchanged).
-- [ ] **Step 5: Commit** `build(uikit-theme): lint PHP with PHPCS`.
+- [x] **Step 1: Write the failing check:** `composer lint` in the theme fails (no script); a scratch PHP file using an 8.4-only feature fails the compatibility sniff.
+- [x] **Step 2: Add** the ruleset and scripts, regenerate the lock with the platform pin `php 8.3.0` kept; add the Nx target.
+- [x] **Step 3: Run** `pnpm exec nx run @hyper/press-uikit:lint-php`; fix findings in `inc/`, `functions.php`, `index.php`, `views` PHP, `tests/`; do not weaken sniffs without a one-line reason.
+- [x] **Step 4: Verify** `composer test:unit` still passes and `vendor/` is not copied into `dist` with dev packages (`composer install --no-dev` result unchanged).
+- [x] **Step 5: Commit** `build(uikit-theme): lint PHP with PHPCS`.
+
+Result:
+
+- Ruleset `themes/hyperpress-uikit/phpcs.xml.dist` mirrors the plugins': WordPress + PHPCompatibilityWP `testVersion 8.3-` (a scratch `new Foo()->x` is flagged), the same docblock-presence exclusions, text domain `hyperpress-uikit`, prefixes `HyperPress\Uikit` and `hp_uikit` (`hp-uikit` dropped: the sniff reports a hyphen as an invalid PHP prefix and asset handles are not checked); excludes `vendor`, `node_modules`, `dist` (the theme has no `tests` fixtures, so `tests/` itself is linted).
+- PSR-4 handling as in the plugins: `WordPress.Files.FileName` with `strict_class_file_names=false` and the two class-file excludes, so `inc/Assets.php` is not renamed. Further reasoned relaxations: camelCase method/property names in the PSR-4 class, no `?ver=` on Vite assets (severity 0 for `MissingVersion`), and no WP_Filesystem or unused-parameter sniffs under `tests/`.
+- Findings fixed: long array syntax (phpcbf), docblock short descriptions and `@param`/`@var` tags in `inc/Assets.php` and `tests/`; three inline `phpcs:ignore` with reasons (`file_get_contents` on a local path, the `VITE_DEV` constant in tests, the Timber `$dirname` property). No behavior change: 18 unit tests pass, the `dist` copies are identical and `php -l` clean.
+- Lock: additive (8 new dev packages; `content-hash` and `stability-flags` updated); platform pin `php 8.3.0` kept and no locked package requires PHP above 8.3; `dist/.../vendor` (`--no-dev`) holds no PHPCS or PHPUnit packages. The installer plugin was blocked on the first `composer require`, so `composer install` ran once more to set `installed_paths`.
 
 ### Task 6: The stub plugin `hyperpress-example` (TDD)
 

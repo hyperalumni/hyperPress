@@ -20,14 +20,14 @@ if ( is_file( $hp_uikit_autoload ) ) {
 
 if ( class_exists( 'Timber\Timber' ) ) {
 	Timber\Timber::init();
-	Timber\Timber::$dirname = [ 'views' ];
+	Timber\Timber::$dirname = array( 'views' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Timber's public static property, not a global.
 }
 
 add_action(
 	'after_setup_theme',
 	static function (): void {
 		add_theme_support( 'title-tag' );
-		add_theme_support( 'html5', [ 'script', 'style' ] );
+		add_theme_support( 'html5', array( 'script', 'style' ) );
 	}
 );
 
