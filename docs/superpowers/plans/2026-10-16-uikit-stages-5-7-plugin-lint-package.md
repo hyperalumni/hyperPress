@@ -277,10 +277,25 @@ Execution notes:
 
 - Modify: this plan (measured results)
 
-- [ ] **Step 1: Graph.** `pnpm exec nx graph --file=/tmp/opencode/stage5/graph.json`: the `hyperpress-example` project has an edge to `@hyper/uikit-tokens`, as does `@hyper/press-uikit`.
-- [ ] **Step 2: Affected.** Edit a comment in `libs/uikit-tokens/src/_variables.scss` (uncommitted): `pnpm exec nx show projects --affected --base=HEAD` includes `@hyper/uikit-tokens`, `@hyper/press-uikit` and `hyperpress-example` and excludes `@hyper/ui`, `@hyper/press-foundation` and the other 15 plugins; then revert.
-- [ ] **Step 3: Cache.** `nx run-many -t build` twice: the second is a full cache hit; change one token value and run again: only the tokens, the theme and the plugin rebuild. Record cold, cached and partial timings in seconds for the write-up.
-- [ ] **Step 4: Commit** the recorded numbers in this plan: `docs(plans): record affected and cache results`.
+- [x] **Step 1: Graph.** `pnpm exec nx graph --file=/tmp/opencode/stage5/graph.json`: the `hyperpress-example` project has an edge to `@hyper/uikit-tokens`, as does `@hyper/press-uikit`.
+- [x] **Step 2: Affected.** Edit a comment in `libs/uikit-tokens/src/_variables.scss` (uncommitted): `pnpm exec nx show projects --affected --base=HEAD` includes `@hyper/uikit-tokens`, `@hyper/press-uikit` and `hyperpress-example` and excludes `@hyper/ui`, `@hyper/press-foundation` and the other 15 plugins; then revert.
+- [x] **Step 3: Cache.** `nx run-many -t build` twice: the second is a full cache hit; change one token value and run again: only the tokens, the theme and the plugin rebuild. Record cold, cached and partial timings in seconds for the write-up.
+- [x] **Step 4: Commit** the recorded numbers in this plan: `docs(plans): record affected and cache results`.
+
+**Measured results** (22 projects, Nx 23.3.0, daemon off; wall seconds):
+
+| Run                                                   | Seconds   | Cache   |
+| ----------------------------------------------------- | --------- | ------- |
+| `run-many -t build --skip-nx-cache` (cold, 7 tasks)   | 6.3       | skipped |
+| `run-many -t build` (cached, second run)              | 0.8       | 7/7 hit |
+| `run-many -t build` after one token value changed     | 2.7       | 3/7 hit |
+| `run-many -t lint-js` cold / cached (5 tasks)         | 1.3 / 0.8 | 5/5 hit |
+| `run-many -t lint-css` cold / cached (2 tasks)        | 1.5 / 0.8 | 2/2 hit |
+| `pnpm fmt:check` (Oxfmt, 144 files, not cached by Nx) | 0.4       | n/a     |
+
+- Graph: `hyperpress-example` and `@hyper/press-uikit` both depend on `@hyper/uikit-tokens`; `@hyper/ui` is a dependency of `@hyper/press-uikit` only.
+- Affected (`nx show projects --affected --base=HEAD`, uncommitted comment edit, reverted each time): tokens `_variables.scss` gives `@hyper/uikit-tokens`, `@hyper/press-uikit`, `hyperpress-example`; `libs/ui/src/index.ts` gives `@hyper/ui`, `@hyper/press-uikit`; `plugins/hyperpress-award/hyperpress-award.php` gives `hyperpress-award` only (`plugins-tooling` is not marked affected). There are 16 other plugins besides the example, not 15.
+- Partial rebuild (token `#0b5fff` to `#0b61ff`): rebuilt `@hyper/uikit-tokens:build`, `hyperpress-example:build`, `@hyper/press-uikit:vite-build` (and the `@hyper/press-uikit:build` aggregate); `@hyper/press-foundation:build`, `copy-theme` and `composer-install` were cache hits. The new colour was in the plugin's `dist/uikit.css` and the theme's `assets/main-*.css`; after the revert the next build was 7/7 hit and both files held the old colour again.
 
 ### Task 8: Shortcode on the running site
 
