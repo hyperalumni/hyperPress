@@ -12,6 +12,7 @@ catalog:
   # vitest family — coverage/ui plugins and the core must match
   '@vitest/coverage-v8': &vitestVersion 5.0.4
   '@vitest/ui': *vitestVersion
+  fflate: 0.8.3
   happy-dom: 21.0.1
   nx: *nxVersion
   oxfmt: 0.73.0

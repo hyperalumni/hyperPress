@@ -324,10 +324,17 @@ Execution notes:
 
 - Produces: `nx package @hyper/press-uikit` (dependsOn `build`, cached, outputs `{workspaceRoot}/dist/packages`) writing `dist/packages/hyperpress-uikit-<version>.zip` (version from `style.css`) with a single top-level folder `hyperpress-uikit/`, containing the assembled theme except `.vite-dev`, and only the hashed files in `assets/` that the manifest references.
 
-- [ ] **Step 1: Write the failing test** (Node test runner or Vitest in the theme): given a fixture dist with an extra stale `assets/old-123.js` and a `.vite-dev`, the package function's file list contains `style.css`, `functions.php`, `vendor/autoload.php`, `.vite/manifest.json` and the referenced assets, and does not contain the stale asset, `.vite-dev`, `tests/`, or `vendor/phpunit`.
-- [ ] **Step 2: Implement** `bin/package.mjs` and the target.
-- [ ] **Step 3: Verify** on the real build: `unzip -l` shows the expected layout; extracting into a scratch WordPress-style `themes/` folder and running `php -l` on all PHP passes in the tooling container; with `nx serve` running (marker present) the zip still has no `.vite-dev`.
-- [ ] **Step 4: Commit** `feat(uikit-theme): package the theme as a zip`.
+- [x] **Step 1: Write the failing test** (Node test runner or Vitest in the theme): given a fixture dist with an extra stale `assets/old-123.js` and a `.vite-dev`, the package function's file list contains `style.css`, `functions.php`, `vendor/autoload.php`, `.vite/manifest.json` and the referenced assets, and does not contain the stale asset, `.vite-dev`, `tests/`, or `vendor/phpunit`.
+- [x] **Step 2: Implement** `bin/package.mjs` and the target.
+- [x] **Step 3: Verify** on the real build: `unzip -l` shows the expected layout; extracting into a scratch WordPress-style `themes/` folder and running `php -l` on all PHP passes in the tooling container; with `nx serve` running (marker present) the zip still has no `.vite-dev`.
+- [x] **Step 4: Commit** `feat(uikit-theme): package the theme as a zip`.
+
+Result (2026-10-16):
+
+- Test is Vitest (`tests/package.test.ts`, run by the cached `test` target); `bin/package.mjs` exports `collectFiles`, `createZip` and `zipName` and is also the CLI (`[themeDir] [outDir]`, resolved from the repo root).
+- Zip layout: single top-level `hyperpress-uikit/`, forward-slash entries. Excluded: top-level `.vite-dev`, `tests/`, `phpunit.xml.dist`, `phpcs.xml.dist`, `.git*`, and every `assets/` file the manifest (all entries, incl. chunks: `file`, `css`, `assets`) does not reference. A missing or unparseable `.vite/manifest.json` is an error. Symlinks are skipped. The script only reads the theme directory.
+- Deterministic: `fflate` `zipSync` (0.8.3, catalog) with a fixed local-time 1980-01-01 mtime; packaging twice gave identical bytes (sha256 `61cca477...`).
+- Version comes from the `Version:` header of `style.css` (`hyperpress-uikit-0.1.0.zip`). Real build: 408 files, 677,813 bytes (2,178,663 unpacked); second `nx package` is a cache hit; all 381 PHP files pass `php -l` in the tooling container after extraction; a stale `assets/old-stale.js` and a `.vite-dev` marker were not packaged; the `dist/themes/hyperpress-uikit` inode stayed the same and the site still returned 200.
 
 ### Task 10: One-command setup
 

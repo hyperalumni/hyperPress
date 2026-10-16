@@ -60,6 +60,34 @@
       "outputs": [],
       "inputs": ["default", "^default"]
     },
+    "test": {
+      "executor": "nx:run-script",
+      "options": {
+        "script": "test"
+      },
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/bin/**/*",
+        "{projectRoot}/tests/**/*.ts",
+        "{projectRoot}/package.json"
+      ],
+      "outputs": []
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "node themes/hyperpress-uikit/bin/package.mjs"
+      },
+      "dependsOn": ["build"],
+      "cache": true,
+      "inputs": [
+        "{workspaceRoot}/dist/themes/hyperpress-uikit/**/*",
+        "!{workspaceRoot}/dist/themes/hyperpress-uikit/.vite-dev",
+        "{projectRoot}/bin/package.mjs"
+      ],
+      "outputs": ["{workspaceRoot}/dist/packages"]
+    },
     "serve": {
       "executor": "nx:run-commands",
       "continuous": true,
