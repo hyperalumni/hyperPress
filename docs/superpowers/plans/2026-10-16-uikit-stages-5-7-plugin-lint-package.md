@@ -185,11 +185,18 @@ Reasons: the Foundation override keeps the unmodified FoundationPress-era code (
 
 - Produces: an inferred, cached `lint-js` target on every project that has lintable JS/TS files (`@hyper/ui`, `@hyper/uikit-tokens`, `@hyper/press-uikit`, `@hyper/press-foundation`, the example plugin if it has JS). No project's existing targets change.
 
-- [ ] **Step 1: Write the failing check:** `pnpm exec nx run @hyper/ui:lint-js` fails (no such target); a deliberately bad fixture file under `/tmp` linted with the new config exits non-zero.
-- [ ] **Step 2: Add** the config (rule set from Task 1), the plugin entry and dependencies. Capture `nx show project <name> --json` for every project before and after: only `lint-js` targets may appear.
-- [ ] **Step 3: Run** `pnpm exec nx run-many -t lint-js`; fix real findings in new code (libs, uikit theme `src`, `bin`, `vite.config.ts`, `docker/uikit/*.mjs` if in a project), and use overrides in `.oxlintrc.json` (with a one-line reason) for legacy Foundation and plugin JS.
-- [ ] **Step 4: Verify** the second run is a cache hit, a changed source file invalidates only its project, and `nx run plugins-tooling:lint` (composer) still works unchanged.
-- [ ] **Step 5: Commit** `build: lint JavaScript and TypeScript with Oxlint`.
+- [x] **Step 1: Write the failing check:** `pnpm exec nx run @hyper/ui:lint-js` fails (no such target); a deliberately bad fixture file under `/tmp` linted with the new config exits non-zero.
+- [x] **Step 2: Add** the config (rule set from Task 1), the plugin entry and dependencies. Capture `nx show project <name> --json` for every project before and after: only `lint-js` targets may appear.
+- [x] **Step 3: Run** `pnpm exec nx run-many -t lint-js`; fix real findings in new code (libs, uikit theme `src`, `bin`, `vite.config.ts`, `docker/uikit/*.mjs` if in a project), and use overrides in `.oxlintrc.json` (with a one-line reason) for legacy Foundation and plugin JS.
+- [x] **Step 4: Verify** the second run is a cache hit, a changed source file invalidates only its project, and `nx run plugins-tooling:lint` (composer) still works unchanged.
+- [x] **Step 5: Commit** `build: lint JavaScript and TypeScript with Oxlint`.
+
+Result (2026-10-16):
+
+- `lint-js` was inferred on exactly four projects: `@hyper/ui`, `@hyper/uikit-tokens`, `@hyper/press-uikit`, `@hyper/press-foundation`. `plugins-tooling` and the individual plugins got none (their only JS is the ignored vendored countdown library), and the before/after `nx show project` diff over all 21 projects shows no changed existing target. `plugins-tooling:lint` (composer) is untouched and still passes.
+- Config is `.oxlintrc.json` (no comments), so the reasons live here: the Foundation override keeps unmodified FoundationPress-era code (unused imports, escapes, an intentionally empty `app.js`) at warnings; the countdown ignore is the vendored library. New code is at `correctness` and `suspicious` error level.
+- Type-aware (`oxlint --type-aware libs themes/hyperpress-uikit`) found one real issue, a floating promise in `themes/hyperpress-uikit/bin/serve.mjs`; fixed with a `.catch` at the call site plus `try/finally` so `running` is always reset. It is not enabled in the Nx target: the executor has no first-class option for it (unlisted options are forwarded as raw flags, so `--type-aware` works on the command line only) and Foundation has no tsconfig.
+- Verified: second `run-many -t lint-js` is 4/4 cache hits; touching `libs/ui/src/index.ts` re-ran only `@hyper/ui` (3/4 hit); `fmt:check` and `install --frozen-lockfile` pass.
 
 ### Task 4: Stylelint for the Sass
 

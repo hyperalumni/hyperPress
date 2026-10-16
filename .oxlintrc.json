@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc"],
+  "categories": { "correctness": "error", "suspicious": "error" },
+  "env": { "browser": true, "node": true, "es2022": true },
+  "ignorePatterns": ["**/dist/**", "**/vendor/**", "plugins/hyperpress-countdown/assets/**"],
+  "overrides": [
+    {
+      "files": ["themes/hyperpress-foundation/**"],
+      "rules": {
+        "no-unused-vars": "warn",
+        "no-useless-escape": "warn",
+        "unicorn/no-empty-file": "off",
+        "unicorn/consistent-function-scoping": "off"
+      }
+    }
+  ]
+}

@@ -22,8 +22,11 @@
     "node": "26.12.0"
   },
   "devDependencies": {
+    "@nx/oxlint": "catalog:",
     "@nx/vite": "catalog:",
     "nx": "catalog:",
-    "oxfmt": "catalog:"
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:"
   }
 }

@@ -23,6 +23,12 @@
         "buildDepsTargetName": "vite-build-deps",
         "watchDepsTargetName": "vite-watch-deps"
       }
+    },
+    {
+      "plugin": "@nx/oxlint",
+      "options": {
+        "targetName": "lint-js"
+      }
     }
   ],
   "targetDefaults": {

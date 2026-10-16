@@ -40,11 +40,14 @@ const syncTheme = async () => {
     return;
   }
   running = true;
-  do {
-    queued = false;
-    if (await copyTheme()) server.ws.send({ type: 'full-reload' });
-  } while (queued);
-  running = false;
+  try {
+    do {
+      queued = false;
+      if (await copyTheme()) server.ws.send({ type: 'full-reload' });
+    } while (queued);
+  } finally {
+    running = false;
+  }
 };
 
 let server;
@@ -70,7 +73,9 @@ try {
     ),
   );
   server.watcher.on('all', (_event, file) => {
-    if (watched.test(relative(themeDir, file))) syncTheme();
+    if (watched.test(relative(themeDir, file))) {
+      syncTheme().catch((error) => console.error('theme sync failed:', error));
+    }
   });
 } catch (error) {
   removeMarker();
