@@ -387,6 +387,12 @@ Execution notes:
 - **Verdict:** `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md` carries a recommendation per tool and an empty `Owner verdict:` line under each for the owner to fill in.
 - **Other plans:** the non-completed plans are `2026-10-07-singular-plugin-names.md` (mentions `plugins/tests` convention files, plugin folders and the `AGENTS.md`/`README.md` files; this branch also changed files under `plugins/`, so re-check it before resuming) and `plans/README.md` (a convention document; no file changed here is mentioned in it). No completed plan was edited except the Stage-1 correction note.
 
+- **Owner decisions (2026-10-16):**
+  - Adopt all nine tools with the caveats in the verdict (Stylelint plain adopt); every `Owner verdict:` line is filled in.
+  - Merge: the stacked branches (stage 1, stages 2-4, stages 5-7) are merged into `master` after the decisions commit.
+  - Production PHP stays 8.3 with the floor at `>=8.3`; revisit 8.4/8.5 as in the verdict (WordPress core's 8.5 support was not verified).
+  - The stub plugin `hyperpress-example` stays in the repo as an example.
+
 ### Known follow-ups (deferred minors)
 
 - Foundation `_links.scss` has a selector quirk, left alone (Foundation Sass is not linted by `lint-css`).
@@ -405,4 +411,4 @@ Execution notes:
 - The stub plugin `hyperpress-example` is mounted (inactive) on `hyperalumni` and `hyperonline` too and would 404 its stylesheet there if activated without a build.
 - The PHPCS `MissingVersion` and camelCase relaxations apply theme-wide; path-scope them.
 - `setup.mjs` has no per-attempt timeout on its wp-cli calls (only the overall 120 s wait for the database).
-- Merge strategy for the three stacked stage branches and the production PHP version are open (see the verdict).
+- Production PHP stays 8.3 for now (floor `>=8.3`); revisit 8.4/8.5 as in the verdict. The merge of the stacked branches is decided (see the owner decisions above).

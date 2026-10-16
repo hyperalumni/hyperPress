@@ -12,10 +12,10 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - `docker/`: shared Compose file (with the `tooling` PHP/Composer service) and per-site wrappers for the local WordPress sites `hyperalumni`, `hyperonline` and `uikit`.
 - `dist/` rule (both git-ignored): Foundation keeps its build output in-theme (`themes/hyperpress-foundation/dist`, served from its source folder); projects with a non-deployable source folder, such as the uikit theme, build an assembled artifact to the repo-level `dist/<type>/<name>` (e.g. `dist/themes/hyperpress-uikit`) that compose mounts.
 - `themes/hyperpress-uikit/`: the experimental Timber + UIkit theme (PHP `Assets` class, Twig views, Vite entry).
-- `plugins/hyperpress-example/`: stub plugin that builds the shared Sass (`libs/uikit-tokens`) into its own `dist/uikit.css` and renders `[hp_uikit_card]` with UIkit classes; it proves a plugin can consume the lib with Nx tracking the dependency.
+- `plugins/hyperpress-example/`: stub plugin that builds the shared Sass (`libs/uikit-tokens`) into its own `dist/uikit.css` and renders `[hp_uikit_card]` with UIkit classes; it proves a plugin can consume the lib with Nx tracking the dependency, and is kept as an example.
 - `hyperpress-example` is mounted (inactive) on all three sites; run `nx build hyperpress-example` before activating it anywhere other than the uikit site.
 - `libs/uikit-tokens/` (Sass: UIkit variable overrides and component imports) and `libs/ui/` (TypeScript: UIkit init, tested with Vitest and happy-dom).
-- Nx is set up (root `nx.json`; stages 0-7 of the spec are done, including the `@nx/vite/plugin` inferred `vite-*` targets, the lint and format gates, packaging and `setup`). The experiment write-up is `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md`. Open follow-ups: merging the stacked stage branches, the production PHP version, and the plans' deferred minors (for example the Sass `@import` to `@use` move before Dart Sass 3).
+- Nx is set up (root `nx.json`; stages 0-7 of the spec are done, including the `@nx/vite/plugin` inferred `vite-*` targets, the lint and format gates, packaging and `setup`). The experiment write-up is `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md`. Open follow-ups: production PHP stays 8.3 for now with the floor at `>=8.3` (revisit 8.4/8.5 as in the verdict), and the plans' deferred minors (for example the Sass `@import` to `@use` move before Dart Sass 3).
 
 ## Environment
 

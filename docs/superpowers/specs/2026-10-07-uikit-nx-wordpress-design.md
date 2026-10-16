@@ -170,7 +170,7 @@ Verification (stage 0 gate):
 `hyperpress-example` registers `[hp_uikit_card]`, rendering UIkit-class markup and importing compiled
 CSS from `libs/uikit-tokens`. It exists to prove a plugin can consume a shared lib and that Nx
 tracks the dependency, so a change to the lib rebuilds the theme and the plugin. Stage 5 kept it as
-a stub rather than using an existing plugin; whether it stays is an open question in the verdict.
+a stub rather than using an existing plugin; the owner decided on 2026-10-16 that it stays in the repo as an example.
 
 ## Docker stack
 

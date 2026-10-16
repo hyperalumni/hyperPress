@@ -43,7 +43,7 @@ Counts at the gate: Vitest 4 (`uikit-tokens`) + 2 (`ui`) + 5 (uikit theme), Foun
 | Changing `libs/uikit-tokens` rebuilds only the new theme and the plugin; a repeat build hits the cache | Met. Affected set and the 3/7-hit partial rebuild above; second build 7/7 hit (0.8 s against 6.3 s cold).                                                                                                                                                                                                                                                                                                    |
 | HMR works against the Dockerized WordPress                                                             | Partially met: Sass hot reload was confirmed in a browser by the owner on 2026-10-16 (plus an automated websocket proof); the Twig full reload and the marker removal on Ctrl+C were verified by script only, not by eye.                                                                                                                                                                                    |
 | A fresh clone goes from `pnpm install` to a rendered site in one command                               | Met with prerequisites: copy the committed local env example for `docker/uikit`, export `UIKIT_ADMIN_USER`, `UIKIT_ADMIN_PASSWORD` and `UIKIT_ADMIN_EMAIL`, then `pnpm exec nx setup @hyper/press-uikit`. Verified on a scratch project with fresh volumes (about 32 s), idempotent on the second run (about 15 s); the throwaway password was found in no log, file, shell history or sampled process list. |
-| A written verdict on Nx and Oxc for WordPress work                                                     | This document. The `Owner verdict:` lines are for the owner to fill in.                                                                                                                                                                                                                                                                                                                                      |
+| A written verdict on Nx and Oxc for WordPress work                                                     | This document. The `Owner verdict:` lines are filled in (owner, 2026-10-16).                                                                                                                                                                                                                                                                                                                                 |
 
 ## Friction log
 
@@ -74,7 +74,7 @@ Cold build 6.3 s against 0.8 s cached, and `affected` named exactly the three pr
 
 Recommendation: adopt with caveats
 
-Owner verdict:
+Owner verdict: Adopt with caveats (owner, 2026-10-16).
 
 ### `@nx/vite` plugin
 
@@ -82,7 +82,7 @@ The inferred plugin works where the deprecated executor failed, and `vite-build`
 
 Recommendation: adopt with caveats
 
-Owner verdict:
+Owner verdict: Adopt with caveats (owner, 2026-10-16).
 
 ### UIkit from Sass source
 
@@ -90,7 +90,7 @@ Overriding variables and importing only used components produced a theme stylesh
 
 Recommendation: adopt with caveats
 
-Owner verdict:
+Owner verdict: Adopt with caveats (owner, 2026-10-16).
 
 ### Vite
 
@@ -98,7 +98,7 @@ Hashed assets, a manifest and Sass hot reload against Dockerized WordPress all w
 
 Recommendation: adopt with caveats
 
-Owner verdict:
+Owner verdict: Adopt with caveats (owner, 2026-10-16).
 
 ### Timber
 
@@ -106,7 +106,7 @@ Timber 2.5.1 rendered the theme and the shortcode card through Twig, and 18 PHPU
 
 Recommendation: adopt with caveats
 
-Owner verdict:
+Owner verdict: Adopt with caveats (owner, 2026-10-16).
 
 ### Oxlint with `@nx/oxlint`
 
@@ -114,7 +114,7 @@ Five cached `lint-js` targets run in 1.3 s cold and 0.8 s cached, with errors on
 
 Recommendation: adopt with caveats
 
-Owner verdict:
+Owner verdict: Adopt with caveats (owner, 2026-10-16).
 
 ### Oxfmt
 
@@ -122,7 +122,7 @@ Owner verdict:
 
 Recommendation: adopt with caveats
 
-Owner verdict:
+Owner verdict: Adopt with caveats (owner, 2026-10-16).
 
 ### Stylelint
 
@@ -130,7 +130,7 @@ Stylelint 17 with `stylelint-config-standard-scss` needed no rule relaxations fo
 
 Recommendation: adopt
 
-Owner verdict:
+Owner verdict: Adopt (owner, 2026-10-16).
 
 ### PHPCS
 
@@ -138,10 +138,10 @@ WordPress standard plus PHPCompatibilityWP `testVersion 8.3-` found real docbloc
 
 Recommendation: adopt with caveats
 
-Owner verdict:
+Owner verdict: Adopt with caveats (owner, 2026-10-16).
 
 ## Open questions
 
-- What PHP version do the production hosts run? The code is exercised on PHP 8.5 in the tooling image and declares `>=8.3`; compatibility is only checked statically against 8.3.
-- Merge strategy: the three stage branches are stacked and unmerged, and a push would restructure the shared `master` of `hyperalumni/hyperPress`.
-- Keep `plugins/hyperpress-example`? It exists to prove a plugin can consume the shared Sass; the plugins' `bin/package` would zip it without a built `dist/uikit.css`.
+- Production PHP version. Recommendation (owner decision, 2026-10-16: the stack runs PHP 8.3 now, and the owner may move to 8.5 if recommended): keep production on 8.3 and the `composer.json` floor at `>=8.3` for now. Our own code already passes on PHP 8.5 (the plugins' unit and integration suites and the theme's unit tests run on the 8.5 tooling image; PHPCompatibilityWP checks `8.3-`). WordPress core's PHP 8.5 support level was not verified here. Before moving production, check the third-party plugins in the WordPress volume (for example Meta Box AIO and Envato Market) and the versions the host supports. PHP 8.4 is the lower-risk step if the host offers it. When production moves, raise the floor repo-wide in one change: plugins, Foundation, the uikit theme, the `composer.lock` platform pin and the PHPCS `testVersion`.
+- Merge strategy: decided by the owner on 2026-10-16. The stacked branches (stage 1, stages 2-4, stages 5-7) are merged into `master` right after this commit.
+- Keep `plugins/hyperpress-example`? Decided by the owner on 2026-10-16: it stays in the repo as an example of a plugin that consumes the shared Sass. The plugins' `bin/package` would still zip it without a built `dist/uikit.css`, so build it first or exclude it.
