@@ -52,6 +52,13 @@ async function referencedAssets(themeDir) {
 export async function collectFiles(themeDir) {
   const referenced = await referencedAssets(themeDir);
   const files = await walk(themeDir);
+  const present = new Set(files);
+  const missing = [...referenced].filter((path) => !present.has(path)).toSorted();
+  if (missing.length > 0) {
+    throw new Error(
+      `The Vite manifest references files missing from ${themeDir}: ${missing.join(', ')}`,
+    );
+  }
   return files.filter((path) => !path.startsWith('assets/') || referenced.has(path)).toSorted();
 }
 

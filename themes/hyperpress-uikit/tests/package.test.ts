@@ -80,6 +80,36 @@ describe('collectFiles', () => {
   });
 });
 
+describe('collectFiles with missing assets', () => {
+  it('throws naming every manifest-referenced file that is missing on disk', async () => {
+    const broken = join(root, 'missing-asset');
+    const { 'assets/main-AAA.css': _css, 'assets/chunk-BBB.js': _js, ...present } = fixtureFiles;
+    await writeFixture(broken, present);
+    const error = await collectFiles(broken).then(
+      () => null,
+      (caught: Error) => caught,
+    );
+    expect(error).toBeInstanceOf(Error);
+    expect(error?.message).toContain('assets/main-AAA.css');
+    expect(error?.message).toContain('assets/chunk-BBB.js');
+    expect(error?.message).not.toContain('assets/main-AAA.js');
+  });
+
+  it('also checks the assets list of a manifest entry', async () => {
+    const broken = join(root, 'missing-font');
+    const extended = {
+      ...manifest,
+      'src/font.ts': { file: 'assets/font-CCC.js', assets: ['assets/font-CCC.woff2'] },
+    };
+    await writeFixture(broken, {
+      ...fixtureFiles,
+      '.vite/manifest.json': JSON.stringify(extended),
+      'assets/font-CCC.js': 'x\n',
+    });
+    await expect(collectFiles(broken)).rejects.toThrow('assets/font-CCC.woff2');
+  });
+});
+
 describe('createZip', () => {
   it('writes one top-level folder with byte-identical files, deterministically', async () => {
     const first = join(root, 'out/one/theme.zip');
