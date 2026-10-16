@@ -69,7 +69,9 @@
       "inputs": [
         "{projectRoot}/bin/**/*",
         "{projectRoot}/tests/**/*.ts",
-        "{projectRoot}/package.json"
+        "{projectRoot}/package.json",
+        "{projectRoot}/vite.config.*",
+        "{projectRoot}/tsconfig*.json"
       ],
       "outputs": []
     },
@@ -137,7 +139,11 @@
         "command": "pnpm exec stylelint \"themes/hyperpress-uikit/**/*.scss\""
       },
       "cache": true,
-      "inputs": ["{projectRoot}/**/*.scss", "{workspaceRoot}/stylelint.config.mjs"]
+      "inputs": [
+        "{projectRoot}/**/*.scss",
+        "{workspaceRoot}/stylelint.config.mjs",
+        { "externalDependencies": ["stylelint", "stylelint-config-standard-scss"] }
+      ]
     },
     "lint-php": {
       "executor": "nx:run-commands",
