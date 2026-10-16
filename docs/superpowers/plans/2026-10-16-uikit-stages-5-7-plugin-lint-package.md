@@ -219,7 +219,7 @@ Result (2026-10-16):
 Result (2026-10-16):
 
 - `stylelint.config.mjs` is just `extends: ['stylelint-config-standard-scss']` with no relaxed rules. Stylelint 17 ships no stylistic rules, so Oxfmt (formatter of record) cannot conflict, and the UIkit `@import 'uikit/src/scss/...'` paths and override-before-import order pass the standard rules unchanged. The reasons are in comments in the config.
-- Four findings in our Sass were fixed instead of relaxing rules: removed a blank line between consecutive `@import`s (`at-rule-empty-line-before`), quoted `'Roboto'` in the font stack (`value-keyword-case`; same CSS), and dropped the `.scss` extension from the `@hyper/uikit-tokens/src/index` import in `main.scss` (`scss/load-partial-extension`; the uikit `vite-build` still succeeds).
+- Three findings in our Sass were fixed instead of relaxing rules: removed a blank line between consecutive `@import`s (`at-rule-empty-line-before`), quoted `'Roboto'` in the font stack (`value-keyword-case`; same CSS), and dropped the `.scss` extension from the `@hyper/uikit-tokens/src/index` import in `main.scss` (`scss/load-partial-extension`; the uikit `vite-build` still succeeds).
 - `lint-css` (cached, `nx:run-commands` from the workspace root, inputs: the project's `*.scss` plus `stylelint.config.mjs`, no outputs) exists on `@hyper/uikit-tokens` (3 files) and `@hyper/press-uikit` (1 file) only; a before/after `nx show project` shows no other target or project changed.
 - RED check: a scratch file with `color:RED;;` and an empty block exits 2 (`value-keyword-case`, `block-no-empty`). Verified: second run 2/2 cache hits, touching one file re-ran only its own project, `fmt:check` and `install --frozen-lockfile` pass, `run-many -t lint-js build test typecheck` (14 tasks) passes.
 
@@ -361,6 +361,7 @@ Execution notes:
 - Password handling: wp-cli's `--prompt=admin_password` fed from stdin works non-interactively with `run --rm -T`, but it echoes the answer and the equivalent full command to stdout (seen in a throwaway run), so it was rejected. The script instead forwards the password with `docker compose run -e UIKIT_ADMIN_PASSWORD` (name only; never in the host command line) and wp-cli receives it as `--admin_password="$UIKIT_ADMIN_PASSWORD"` inside `sh -c`. Exposure left: briefly in the `wp` process arguments inside the throwaway container (accepted for a local dev site, Ruling 5).
 - wpcli service: the image entrypoint execs its arguments as given, so the call is `wpcli wp <args>` (the `wp` prefix is required except for flags such as `--info`).
 - Scratch verification (project `hyperuikit-fresh`, ports 5180/5190, fresh volumes, random 24-char throwaway password, not recorded): `COMPOSE_PROJECT_NAME` overrides the file's `name:` (config showed `hyperuikit-fresh_db`/`_wp` and 5180/5190). First run exit 0 in about 32 s (install, theme and plugin activation, seed post, smoke with `hp-uikit-card`); second run exit 0 in about 15 s with no "WordPress installed" message and still one post id. Password counts: 0 in the logs, the repo, `/tmp/opencode`, shell history and sampled process lists. Scratch project removed with `down -v`; `hyperuikit_db`/`hyperuikit_wp` and the owner's containers (same start times, port 5080 returns 200) untouched.
+- Final-review fixes: the base URL now defaults to `http://localhost:<WORDPRESS_EXTERNAL_PORT>` when `UIKIT_BASE_URL` is unset, and setup aborts before any side effect when the two ports disagree. The seed post is looked up with an explicit status list (`--post_status=any` did not match a draft together with `--name` in testing) and published if it exists in another status (a trashed post gets a new slug from WordPress, so a fresh one is created); setup then fetches the seed post's own permalink and requires `hp-uikit-card` there, and the generic smoke check (no `SMOKE_EXPECT`) covers the homepage.
 - Persisted state `setup` reproduces on a fresh volume: installed WordPress, active theme and `hyperpress-example`, and the `hello-uikit-card` post from Task 8.
 
 ### Task 11: Gate, verdict and close-out
@@ -390,13 +391,18 @@ Execution notes:
 
 - Foundation `_links.scss` has a selector quirk, left alone (Foundation Sass is not linted by `lint-css`).
 - Path-scope the PHPCS camelCase relaxations in the uikit theme's ruleset instead of applying them to all files.
-- `docker/uikit/setup.mjs`: add the `docker inspect` note and `--post_status=any` to the seed-post lookup.
 - No test covers `[hp_uikit_card]` with empty attributes or with nested shortcodes.
 - The plugins' `bin/package` would zip `hyperpress-example` without `dist/uikit.css`; build it first or exclude it.
-- `package.mjs` silently ignores files that the manifest references but that are missing from `assets/`.
-- Older zips accumulate in `dist/packages` (one per version).
+- The zip is written non-atomically (a failed run can leave a partial file) and older zips accumulate in `dist/packages` (one per version).
+- `zipName` reads `Version:` with a regex that is not anchored to the theme header comment.
 - The `build` noop aggregate is counted as a rebuilt task in the Task 7 timing table.
 - Type-aware Oxlint (`--type-aware`) is not part of the Nx target; it found a real floating promise and could become an opt-in target.
 - Foundation `gulpfile.mjs` has an Oxlint `consistent-return` finding that was deferred (the file is also ignored by Oxfmt).
 - Carried over from the stages 2-4 plan: `Assets::defaultProbe` has no direct test, `vite-build` inputs are too broad, `script_loader_tag` uses string replacement, Twig autoescape of `post.title`, `post.link` and `site.url` is unverified, the Twig full reload and the marker removal on Ctrl+C are not confirmed by eye, and the Sass `@import` to `@use` move is needed before Dart Sass 3.
+- `PHPCompatibilityWP` and `PHPCSUtils` are pinned to `@alpha` in `themes/hyperpress-uikit/composer.json`; move to stable releases when they exist.
+- Unverified: whether `copy-theme` prunes stale files from `dist/themes/hyperpress-uikit`; stale files there would be zipped.
+- The stub shortcode runs `wp_kses_post` after `do_shortcode`, so markup from nested shortcodes (iframes, forms) is stripped; document it or reorder.
+- The stub plugin `hyperpress-example` is mounted (inactive) on `hyperalumni` and `hyperonline` too and would 404 its stylesheet there if activated without a build.
+- The PHPCS `MissingVersion` and camelCase relaxations apply theme-wide; path-scope them.
+- `setup.mjs` has no per-attempt timeout on its wp-cli calls (only the overall 120 s wait for the database).
 - Merge strategy for the three stacked stage branches and the production PHP version are open (see the verdict).
