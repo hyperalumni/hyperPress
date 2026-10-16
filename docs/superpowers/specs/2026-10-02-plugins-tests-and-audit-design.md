@@ -17,13 +17,13 @@ spec's test infrastructure first, so the refactor is guarded by tests.
 
 Files at the `plugins/` root:
 
-| File | Purpose |
-|---|---|
-| `composer.json` | Dev dependencies: `phpunit/phpunit`, `wp-phpunit/wp-phpunit`, `yoast/phpunit-polyfills`, `wp-coding-standards/wpcs`, `phpcompatibility/phpcompatibility-wp`, `dealerdirect/phpcodesniffer-composer-installer`. Also the shared PSR-4 map for tests. |
-| `phpcs.xml.dist` | WordPress ruleset plus PHPCompatibilityWP. Excludes the `class-*.php` file-naming sniff (Spec 1 uses PSR-4 names) and the vendored `TimeCircles.js` assets. |
-| `phpunit.xml.dist` | Two suites: `unit` (no WordPress) and `integration` (WordPress test library). |
-| `compose.yaml` | Services `php` (PHP CLI plus composer) and `db` (MariaDB for the integration suite). |
-| `tests/bootstrap-unit.php`, `tests/bootstrap-integration.php` | Suite bootstraps. The integration bootstrap loads `hyperpress-utils` first, then the plugin under test. |
+| File                                                          | Purpose                                                                                                                                                                                                                                             |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `composer.json`                                               | Dev dependencies: `phpunit/phpunit`, `wp-phpunit/wp-phpunit`, `yoast/phpunit-polyfills`, `wp-coding-standards/wpcs`, `phpcompatibility/phpcompatibility-wp`, `dealerdirect/phpcodesniffer-composer-installer`. Also the shared PSR-4 map for tests. |
+| `phpcs.xml.dist`                                              | WordPress ruleset plus PHPCompatibilityWP. Excludes the `class-*.php` file-naming sniff (Spec 1 uses PSR-4 names) and the vendored `TimeCircles.js` assets.                                                                                         |
+| `phpunit.xml.dist`                                            | Two suites: `unit` (no WordPress) and `integration` (WordPress test library).                                                                                                                                                                       |
+| `compose.yaml`                                                | Services `php` (PHP CLI plus composer) and `db` (MariaDB for the integration suite).                                                                                                                                                                |
+| `tests/bootstrap-unit.php`, `tests/bootstrap-integration.php` | Suite bootstraps. The integration bootstrap loads `hyperpress-utils` first, then the plugin under test.                                                                                                                                             |
 
 Entry points, all run through compose so nothing is needed on the host:
 
@@ -50,6 +50,7 @@ CI-ready when wanted.
 ### Unit suite (no WordPress)
 
 Covers the pure logic in `hyperpress-utils`:
+
 - Label generation from singular and plural names.
 - Capability-set generation for a CPT key.
 - Definition defaults and overrides in `PostTypeRegistrar` and `TaxonomyRegistrar`
@@ -63,18 +64,19 @@ Covers the pure logic in `hyperpress-utils`:
 Contract tests, one file per concern, run against every plugin so a new plugin
 is covered without new test code:
 
-| Contract | Assertion |
-|---|---|
-| Key prefix | Every CPT and taxonomy registered by a hyperPress plugin starts with `hyper_` and is 20 characters or fewer. |
-| Public URLs | Each public CPT's rewrite slug is singular and its archive slug plural, matching the table in Spec 1. |
-| Capabilities | Each CPT uses its own capability set with `map_meta_cap`. After activation, Administrator and Editor hold every capability, and Subscriber holds none. |
-| Season and program | `hyper_season` and `hyper_program` attach to the CPTs named in their theme mods. The default is `[]`: with no theme mod set they attach to nothing, so the built-in `post` type never uses them. |
-| Taxonomy attachment | `hyper_district` and `hyper_week` attach to `hyper_competition`. `hyper_tier` attaches to `hyper_sponsor`. |
-| Identifier convention | Every meta key, meta box ID, customizer setting and control ID, and shortcode name matches `^hyperpress_[a-z0-9_]+$`. Control IDs equal their setting IDs. |
-| Hard-coded keys | No meta box definition or query names an old CPT or taxonomy key (`sponsor`, `robot`, `tier`, and the rest of Spec 1 section 2). |
-| Dependencies | Each plugin's `Requires Plugins` header equals the table in Spec 1 section 1. |
+| Contract              | Assertion                                                                                                                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Key prefix            | Every CPT and taxonomy registered by a hyperPress plugin starts with `hyper_` and is 20 characters or fewer.                                                                                     |
+| Public URLs           | Each public CPT's rewrite slug is singular and its archive slug plural, matching the table in Spec 1.                                                                                            |
+| Capabilities          | Each CPT uses its own capability set with `map_meta_cap`. After activation, Administrator and Editor hold every capability, and Subscriber holds none.                                           |
+| Season and program    | `hyper_season` and `hyper_program` attach to the CPTs named in their theme mods. The default is `[]`: with no theme mod set they attach to nothing, so the built-in `post` type never uses them. |
+| Taxonomy attachment   | `hyper_district` and `hyper_week` attach to `hyper_competition`. `hyper_tier` attaches to `hyper_sponsor`.                                                                                       |
+| Identifier convention | Every meta key, meta box ID, customizer setting and control ID, and shortcode name matches `^hyperpress_[a-z0-9_]+$`. Control IDs equal their setting IDs.                                       |
+| Hard-coded keys       | No meta box definition or query names an old CPT or taxonomy key (`sponsor`, `robot`, `tier`, and the rest of Spec 1 section 2).                                                                 |
+| Dependencies          | Each plugin's `Requires Plugins` header equals the table in Spec 1 section 1.                                                                                                                    |
 
 Behavior tests for the shared classes, through real WordPress calls:
+
 - `PostTypeRegistrar` registers a CPT whose arguments match its definition.
 - `Capabilities::grant()` is idempotent, and the version-gated `init` check
   grants capabilities when the stored version is stale.
@@ -114,17 +116,17 @@ finding is reviewed.
 
 ### Checklist
 
-| Area | What to check |
-|---|---|
-| Output escaping | Every echo of shortcode attributes, post meta, option and theme-mod values, widget `$args` and `$instance` is escaped for its context. |
-| Shortcodes | Use of `extract()` (`hyperpress-countdown/lib/shortcodes/countdown.php:14`, and the show/hide shortcode), attribute sanitizing, nested content handling. |
-| Input sanitizing | Meta box fields without a `sanitize_callback`. Known: `sponsor_description` (`hyperpress-sponsor/lib/meta-boxes.php:46-52`) and all eight competition fields. Customizer settings without `sanitize_callback`. |
-| Capabilities and nonces | Any save handler, AJAX action or admin action without a capability check and nonce. Not yet examined. |
-| Queries | Direct `$wpdb` use without `prepare()`, unbounded `posts_per_page => -1`, meta queries on unindexed keys. |
-| Data exposure | CPTs with `public => true` that should not be, including Countdown. `show_in_rest` on content that should stay private. |
-| Correctness | The `competition` meta box's robot query, newsletter's mismatched customizer IDs (fixed by Spec 1), dead code, unreachable branches. |
-| Assets | Enqueue handles, versions, unused files, vendored library versions (TimeCircles 1.5.3). |
-| Dependencies | `Requires Plugins` versus real usage (covered by the header lint). |
+| Area                    | What to check                                                                                                                                                                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Output escaping         | Every echo of shortcode attributes, post meta, option and theme-mod values, widget `$args` and `$instance` is escaped for its context.                                                                         |
+| Shortcodes              | Use of `extract()` (`hyperpress-countdown/lib/shortcodes/countdown.php:14`, and the show/hide shortcode), attribute sanitizing, nested content handling.                                                       |
+| Input sanitizing        | Meta box fields without a `sanitize_callback`. Known: `sponsor_description` (`hyperpress-sponsor/lib/meta-boxes.php:46-52`) and all eight competition fields. Customizer settings without `sanitize_callback`. |
+| Capabilities and nonces | Any save handler, AJAX action or admin action without a capability check and nonce. Not yet examined.                                                                                                          |
+| Queries                 | Direct `$wpdb` use without `prepare()`, unbounded `posts_per_page => -1`, meta queries on unindexed keys.                                                                                                      |
+| Data exposure           | CPTs with `public => true` that should not be, including Countdown. `show_in_rest` on content that should stay private.                                                                                        |
+| Correctness             | The `competition` meta box's robot query, newsletter's mismatched customizer IDs (fixed by Spec 1), dead code, unreachable branches.                                                                           |
+| Assets                  | Enqueue handles, versions, unused files, vendored library versions (TimeCircles 1.5.3).                                                                                                                        |
+| Dependencies            | `Requires Plugins` versus real usage (covered by the header lint).                                                                                                                                             |
 
 Known candidates from exploration, all still to be verified in the audit:
 sponsor description sanitizing, countdown `extract()` and output escaping, the

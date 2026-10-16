@@ -40,10 +40,12 @@
 ### Task 1: Rename hyperpress-socials to hyperpress-social (plugins repo)
 
 **Files:**
+
 - Move: `hyperpress-socials/` to `hyperpress-social/`, `hyperpress-social/hyperpress-socials.php` to `hyperpress-social/hyperpress-social.php`; `src/Widgets/DisplaySocialsWidget.php` to `src/Widgets/DisplaySocialWidget.php`
 - Modify: everything inside the plugin (namespace `HyperPress\Social`, autoload prefix, boot class reference, header `Plugin Name`, identifiers per Decisions); `tests/src/Support/Convention.php` (`PLUGINS`, `LOAD_ORDER`, `REQUIRES_PLUGINS`); the plugin tests that reference the old namespace, widget class or identifiers (`tests/integration/Socials*Test.php`, `WidgetTitleEscapingTest.php`, `WidgetFormEscapingTest.php` and any others found by grep); `README.md` and `AGENTS.md` where the plugin is named.
 
 **Interfaces:**
+
 - Produces: `HyperPress\Social\Plugin::boot()`, `HyperPress\Social\Links`, `HyperPress\Social\Widgets\DisplaySocialWidget`, widget base id `hyperpress_social`, theme mods `hyperpress_social_<field>`. Task 2 (theme) consumes these exact names.
 
 - [x] **Step 1:** `git mv` the folder, main file and widget class file; run the full integration suite and confirm it fails because of the old names (RED evidence).
@@ -55,9 +57,11 @@
 ### Task 2: Point the theme at hyperpress-social (theme repo)
 
 **Files:**
+
 - Modify: `theme/library/helpers.php` (lines ~60-67: `class_exists` and instantiation), `theme/tests/integration/FooterSocialsTest.php`, `FooterEscapingTest.php`, `NoPluginsTest.php`, and any other theme file found by grep for `HyperPress\Socials`, `hyperpress_socials`, `hyperpress-socials`, `widget_hyperpress_socials`.
 
 **Interfaces:**
+
 - Consumes: Task 1's class names, widget base id and theme-mod keys.
 
 - [x] **Step 1:** Update the tests first to the new names and run `composer test:integration` in `theme/`; expected FAIL where the theme still uses old names (RED evidence).
@@ -68,10 +72,12 @@
 ### Task 3: Rename hyperpress-shortcodes to hyperpress-shortcode
 
 **Files:**
+
 - Move: `plugins/hyperpress-shortcodes/` to `plugins/hyperpress-shortcode/`, main file to `hyperpress-shortcode.php`.
 - Modify: everything inside the plugin (namespace `HyperPress\Shortcode`, inner `Shortcode\Shortcodes\*` classes, autoload prefix, header name, hooks per Decisions); `tests/src/Support/Convention.php`; `tests/integration/Shortcodes/*Test.php`; `README.md`, `AGENTS.md`; `theme/README.md` (two mentions) and any `theme/` code or docs naming the plugin (grep); the shortcode-tag stability expectations stay.
 
 **Interfaces:**
+
 - Produces: `HyperPress\Shortcode\Plugin::boot()`, `HyperPress\Shortcode\Shortcodes\{Banner,DateDistance,TimeRestrict,Raw,Emphasis}`, hooks `hyperpress_shortcode_now`, `hyperpress_shortcode_ordinals`. The five shortcode tags are unchanged.
 
 - [x] **Step 1:** `git mv`; run the integration suite; confirm RED.
@@ -85,6 +91,7 @@
 > **STATUS: ✅ COMPLETED** (2026-10-07). Plugins repo commits `96b55b2`, `6aaa7c0`, `e63536d` (plus the plan-tick commits); theme repo commits `34099a8`, `e897be0`. Final state: plugins integration 541 tests / 1715 assertions (4 skipped, as before), unit 126 tests / 305 assertions, lint exit 0; both compose stacks `config` exit 0.
 
 **Files:**
+
 - Modify (untracked): `hyperonline/compose.main.yaml` (lines ~27-28), `hyperalumni/compose.main.yaml` (line ~21): source paths and target paths for the two renamed plugins, keeping the lists alphabetical.
 - Modify: this plan (tick checkboxes, STATUS banner, Outcome notes incl. the dev-site consequence above).
 

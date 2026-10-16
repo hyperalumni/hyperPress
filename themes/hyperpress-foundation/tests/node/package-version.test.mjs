@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
-import {execFileSync} from 'node:child_process';
-import {mkdtempSync, rmSync, writeFileSync} from 'node:fs';
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
-import {test} from 'node:test';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { test } from 'node:test';
 
 import {
   normalizeTag,
@@ -12,10 +12,27 @@ import {
   stampStyleVersion,
 } from '../../gulp/package-version.mjs';
 
-const STYLE = '/**\n * Theme Name:         hyperPress\n * Version:            2026.0.0\n * Requires at least:  6.9\n*/\n';
+const STYLE =
+  '/**\n * Theme Name:         hyperPress\n * Version:            2026.0.0\n * Requires at least:  6.9\n*/\n';
 
 function git(cwd, ...args) {
-  return execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'commit.gpgSign=false', '-c', 'tag.gpgSign=false', '-c', 'tag.forceSignAnnotated=false', ...args], {cwd, encoding: 'utf8'});
+  return execFileSync(
+    'git',
+    [
+      '-c',
+      'user.name=t',
+      '-c',
+      'user.email=t@example.com',
+      '-c',
+      'commit.gpgSign=false',
+      '-c',
+      'tag.gpgSign=false',
+      '-c',
+      'tag.forceSignAnnotated=false',
+      ...args,
+    ],
+    { cwd, encoding: 'utf8' },
+  );
 }
 
 // A throwaway repository with one commit; tags are added by the individual tests.
@@ -30,8 +47,12 @@ function repo() {
 
 function resolve(dir) {
   const warnings = [];
-  const version = resolveVersion({cwd: dir, styleCss: STYLE, warn: (message) => warnings.push(message)});
-  return {version, warnings};
+  const version = resolveVersion({
+    cwd: dir,
+    styleCss: STYLE,
+    warn: (message) => warnings.push(message),
+  });
+  return { version, warnings };
 }
 
 test('normalizeTag strips one leading v', () => {
@@ -50,7 +71,11 @@ test('stampStyleVersion changes style.css only', async () => {
   const seen = [];
   stream.on('data', (file) => seen.push(file));
   // Minimal stand-in for a vinyl file (vinyl itself is only a transitive dependency).
-  const make = (relative, text) => ({relative, contents: Buffer.from(text), isBuffer: () => true});
+  const make = (relative, text) => ({
+    relative,
+    contents: Buffer.from(text),
+    isBuffer: () => true,
+  });
   stream.write(make('style.css', STYLE));
   stream.write(make('languages/style.css', STYLE));
   stream.end();
@@ -62,23 +87,23 @@ test('stampStyleVersion changes style.css only', async () => {
 test('no tag: falls back to style.css and warns', () => {
   const dir = repo();
   try {
-    const {version, warnings} = resolve(dir);
+    const { version, warnings } = resolve(dir);
     assert.equal(version, '2026.0.0');
     assert.equal(warnings.length, 1);
     assert.match(warnings[0], /warning: no version tag found; using 2026\.0\.0 from style\.css/);
   } finally {
-    rmSync(dir, {recursive: true, force: true});
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 
 test('not a git repository: falls back too', () => {
   const dir = mkdtempSync(join(tmpdir(), 'hp-nogit-'));
   try {
-    const {version, warnings} = resolve(dir);
+    const { version, warnings } = resolve(dir);
     assert.equal(version, '2026.0.0');
     assert.equal(warnings.length, 1);
   } finally {
-    rmSync(dir, {recursive: true, force: true});
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 
@@ -93,9 +118,9 @@ test('nearest ancestor tag wins, with no suffix after extra commits', () => {
     writeFileSync(join(dir, 'b.txt'), 'b');
     git(dir, 'add', '.');
     git(dir, 'commit', '-q', '-m', 'three');
-    assert.deepEqual(resolve(dir), {version: '2027.1.0', warnings: []});
+    assert.deepEqual(resolve(dir), { version: '2027.1.0', warnings: [] });
   } finally {
-    rmSync(dir, {recursive: true, force: true});
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 
@@ -104,9 +129,9 @@ test('a leading v is stripped and non-version tags are ignored', () => {
   try {
     git(dir, 'tag', 'v2027.1.0');
     git(dir, 'tag', 'backup-1');
-    assert.deepEqual(resolve(dir), {version: '2027.1.0', warnings: []});
+    assert.deepEqual(resolve(dir), { version: '2027.1.0', warnings: [] });
   } finally {
-    rmSync(dir, {recursive: true, force: true});
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 
@@ -114,10 +139,10 @@ test('only a non-version tag: falls back', () => {
   const dir = repo();
   try {
     git(dir, 'tag', 'backup-1');
-    const {version, warnings} = resolve(dir);
+    const { version, warnings } = resolve(dir);
     assert.equal(version, '2026.0.0');
     assert.equal(warnings.length, 1);
   } finally {
-    rmSync(dir, {recursive: true, force: true});
+    rmSync(dir, { recursive: true, force: true });
   }
 });

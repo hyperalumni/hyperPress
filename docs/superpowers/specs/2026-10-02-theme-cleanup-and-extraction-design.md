@@ -1,6 +1,6 @@
 # Theme Cleanup and Extraction: Design
 
-> *Amended 2026-10-07: the plugin `hyperpress-shortcodes` named below is now `hyperpress-shortcode` (shortcode tags unchanged); see `plugins/docs/superpowers/plans/2026-10-07-singular-plugin-names.md`. The text below is kept as written.*
+> _Amended 2026-10-07: the plugin `hyperpress-shortcodes` named below is now `hyperpress-shortcode` (shortcode tags unchanged); see `plugins/docs/superpowers/plans/2026-10-07-singular-plugin-names.md`. The text below is kept as written._
 
 Date: 2026-10-02
 Status: Draft for review
@@ -26,7 +26,7 @@ Non-goals: no compatibility shims for old plugin keys; no migration of stored co
 - Function prefixes: `hyperpress_` (45), `foundationpress_` (37), `hyper_` (9). 84 `function_exists` guards in `library/`.
 - Tooling present but unused: `phpunit.xml.dist` (bootstrap `tests/bootstrap.php`, which does not exist), `codesniffer.ruleset.xml`, composer dev dependencies for phpcs. No tests.
 - The theme does not register post types, taxonomies, widgets, or Customizer color controls on behalf of plugins. It registers nav menus, sidebars, image sizes, theme supports, six shortcodes (plus `gallery`), and Customizer sections (colors, homepage, copyright, nggallery).
-- Plugin-facing hooks the theme fires or consumes: `hyperpress_banner_content` (filter, `template-parts/banner.php:7`; implemented by 14 files under `library/banner/` plus the plugins), `hyperpress_breadcrumbs_content` (filter, `template-parts/breadcrumbs.php:7`; implemented by 12 files under `library/breadcrumbs/` plus the plugins), `content_template` (filter, used by `single.php:22`, `template-parts/posts.php:12`, `front-page.php:74`, and hooked by `plugins/hyperpress-sponsor/sponsor.php:52` and `plugins/hyperpress-newsletter/newsletter.php:43`), and `hyperpress_labels_content` (consumed by the theme's labels template part, hooked by the newsletter and sponsor plugins). *Amended 2026-10-06: labels were extracted to `hyperpress-label` (see `plugins/docs/superpowers/specs/2026-10-06-label-plugin-extraction-design.md`). Templates now call `do_action( 'hyperpress_labels' )` and the plugin applies `hyperpress_labels_content`.*
+- Plugin-facing hooks the theme fires or consumes: `hyperpress_banner_content` (filter, `template-parts/banner.php:7`; implemented by 14 files under `library/banner/` plus the plugins), `hyperpress_breadcrumbs_content` (filter, `template-parts/breadcrumbs.php:7`; implemented by 12 files under `library/breadcrumbs/` plus the plugins), `content_template` (filter, used by `single.php:22`, `template-parts/posts.php:12`, `front-page.php:74`, and hooked by `plugins/hyperpress-sponsor/sponsor.php:52` and `plugins/hyperpress-newsletter/newsletter.php:43`), and `hyperpress_labels_content` (consumed by the theme's labels template part, hooked by the newsletter and sponsor plugins). _Amended 2026-10-06: labels were extracted to `hyperpress-label` (see `plugins/docs/superpowers/specs/2026-10-06-label-plugin-extraction-design.md`). Templates now call `do_action( 'hyperpress_labels' )` and the plugin applies `hyperpress_labels_content`._
 - The theme has no `single-*.php`, `archive-*.php` or `taxonomy-*.php` for plugin types. Plugin types render through `template-parts/content-{post_type}` fallbacks and the `content_template` filter.
 - `library/plugins.php` registers 38 plugins with TGM. Seven are HYPER plugins with `'source' => '#'` (a placeholder), so TGM can never install them; the list omits competition, program, label and student.
 - Hard-coded references to plugin-owned keys in the theme: `library/breadcrumbs.php:21` (default taxonomy `'season'`), `library/metaboxes/homepage-customize.php:69` (`'post_type' => ['countdown']`), `library/shortcodes/season-count.php` (`'season'` attribute). Theme mods storing plugin data: `hyperpress_home_blog_post_types`, `hyperpress_homepage_customize_countdowns`.
@@ -36,14 +36,14 @@ Non-goals: no compatibility shims for old plugin keys; no migration of stored co
 
 ## 4. What moves to plugins
 
-| From the theme | To | Rules |
-|---|---|---|
-| `hyperpress_breadcrumbs_custom_post_type()` | `hyperpress-utils` `Breadcrumbs` (section 5) | Logic moves, not just the call. Debug output removed, archive bug fixed, default taxonomy `hyper_season`. |
-| Shortcodes `time-restrict`, `time-restrict-repeat`, `time-restrict-repeat-1/2/3` (`show-hide-content.php`), `hyper_date_distance`, `raw`, `hyper_emphasis`, `hyper_banner` | new plugin `hyperpress-shortcodes` | **Tags unchanged** (they are stored in post content). Behavior unchanged by the move; defects go to the audit. |
-| `hyper_season_count` | `hyperpress-season` | Tag unchanged. It calls `hyper_date_distance`, so season gains a soft dependency on `hyperpress-shortcodes` (section 6). |
-| `supports/svg.php`, `supports/avif.php`, `customize/nggallery.php`, `breadcrumbs/nggallery.php` | new plugin `hyperpress-media` | NextGen code only loads when NextGen is active. |
-| HYPER entries in `library/plugins.php` | deleted | Dependencies are declared by `Requires Plugins`. |
-| The committed Meta Box API key URL | deleted from the file; key rotated by the owner | See section 9. |
+| From the theme                                                                                                                                                             | To                                              | Rules                                                                                                                    |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `hyperpress_breadcrumbs_custom_post_type()`                                                                                                                                | `hyperpress-utils` `Breadcrumbs` (section 5)    | Logic moves, not just the call. Debug output removed, archive bug fixed, default taxonomy `hyper_season`.                |
+| Shortcodes `time-restrict`, `time-restrict-repeat`, `time-restrict-repeat-1/2/3` (`show-hide-content.php`), `hyper_date_distance`, `raw`, `hyper_emphasis`, `hyper_banner` | new plugin `hyperpress-shortcodes`              | **Tags unchanged** (they are stored in post content). Behavior unchanged by the move; defects go to the audit.           |
+| `hyper_season_count`                                                                                                                                                       | `hyperpress-season`                             | Tag unchanged. It calls `hyper_date_distance`, so season gains a soft dependency on `hyperpress-shortcodes` (section 6). |
+| `supports/svg.php`, `supports/avif.php`, `customize/nggallery.php`, `breadcrumbs/nggallery.php`                                                                            | new plugin `hyperpress-media`                   | NextGen code only loads when NextGen is active.                                                                          |
+| HYPER entries in `library/plugins.php`                                                                                                                                     | deleted                                         | Dependencies are declared by `Requires Plugins`.                                                                         |
+| The committed Meta Box API key URL                                                                                                                                         | deleted from the file; key rotated by the owner | See section 9.                                                                                                           |
 
 The `gallery` shortcode override in `library/foundation.php:225` is presentation (FoundationPress markup) and stays.
 
@@ -67,16 +67,19 @@ Banner router and its renderers, core page-type breadcrumb trails, `template-par
 Both follow Spec 1 exactly: folder `hyperpress-{name}/`, main file `hyperpress-{name}.php`, namespace `HyperPress\{Name}`, PSR-4 under `src/`, `Plugin` class booting on `plugins_loaded`, headers per the canonical set with `Requires Plugins`, no `function_exists` guards, identifiers `hyperpress_{plugin}_{field}`.
 
 ### `hyperpress-shortcodes`
+
 - Requires Plugins: none.
 - One class per shortcode under `src/Shortcodes/`, registered on `init` through a `Shortcodes::register()` loader. Classes: `TimeRestrict` (both `time-restrict` and the `time-restrict-repeat*` family), `DateDistance`, `Raw`, `Emphasis`, `Banner`.
 - The behavior of each shortcode is pinned by characterization tests written before the move (section 8).
 
 ### `hyperpress-media`
+
 - Requires Plugins: none. NextGen is optional (`class_exists` checks remain because this is a real optional dependency).
 - `src/Uploads/Svg.php`, `src/Uploads/Avif.php`, `src/NextGen/Customizer.php`, `src/NextGen/Breadcrumbs.php`.
 - The NextGen Customizer setting keeps its id `hyperpress_nggallery_photos_page`; the theme mod is already prefixed. The section id and control id follow the convention (`hyperpress_media_...`); the implementation plan lists the exact legacy ids. (Superseded 2026-10-13: the setting is no longer a theme mod; it is the field `hyperpress_media_photos_page` on hyperPress > Media. See `docs/superpowers/plans/2026-10-13-settings-pages-media.md`.)
 
 ### Dependency edges
+
 `hyper_season_count` (in season) calls `[hyper_date_distance]`. Season does not declare a hard dependency; the shortcode returns an empty string, and the audit notes it, when the `hyper_date_distance` shortcode is not registered. (Alternative considered and rejected: a hard `Requires Plugins` on `hyperpress-shortcodes` in season, because it would force a feature plugin onto every season user.)
 
 ## 7. Theme updates for the Spec 1 renames and the moves
@@ -96,7 +99,7 @@ Both follow Spec 1 exactly: folder `hyperpress-{name}/`, main file `hyperpress-{
 - **Standards:** the theme adopts the same `phpcs` approach as the plugins (WordPress + PHPCompatibilityWP, PHP floor 8.3), non-gating until the cleanup finishes, then gating.
 - **Tooling:** a Docker toolchain modelled on Spec 2's (PHP 8.5 image, MariaDB), with `composer lint`, `composer test:unit`, `composer test:integration`. The theme's `phpunit.xml.dist` and `tests/bootstrap.php` are created (the bootstrap is currently missing).
 - **Tests:**
-  - Unit: theme header lint; a static check that no file defines or calls a removed function; the plugin-facing hook list (`hyperpress_banner_content`, `hyperpress_breadcrumbs_content`, `content_template`, `hyperpress_labels_content`) still exists. *Amended 2026-10-06: `hyperpress_labels_content` is no longer theme-fired, so the contract test no longer lists it.*
+  - Unit: theme header lint; a static check that no file defines or calls a removed function; the plugin-facing hook list (`hyperpress_banner_content`, `hyperpress_breadcrumbs_content`, `content_template`, `hyperpress_labels_content`) still exists. _Amended 2026-10-06: `hyperpress_labels_content` is no longer theme-fired, so the contract test no longer lists it._
   - Integration (WordPress + the plugins loaded, theme active): the theme renders `/`, a single post, an archive, a 404 and the search page without PHP errors; a CPT single and archive render a banner and the expected breadcrumbs; the Customizer loads; and the same pages render with the extracted plugins deactivated (shortcodes then appear as literal text, which is the accepted degradation).
   - Characterization tests for each shortcode before it moves, run against both the theme version and the plugin version.
 - No browser or visual tests.

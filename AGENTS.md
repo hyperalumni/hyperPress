@@ -5,6 +5,7 @@ pnpm workspace holding the hyperPress WordPress theme(s) and plugins in one git 
 This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this repo), which still describes `theme/` and `plugins/` as separate repos and the `hyperalumni/` and `hyperonline/` Docker stacks that mount them.
 
 ## Layout
+
 - `themes/hyperpress-foundation/`: the classic Foundation theme (gulp/webpack). Read its `AGENTS.md` before working there.
 - `plugins/`: the `hyperpress-*` plugins plus shared PHP tooling (`composer.json`, phpcs, phpunit, `bin/`, `tests/`). Read its `AGENTS.md` before working there.
 - `docs/superpowers/{specs,plans,audit}/`: all specs, plans and audits for the workspace (`uikit-*`), theme (`theme-*`) and plugins (`plugins-*`).
@@ -15,6 +16,7 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - Nx is set up (root `nx.json`; stages 0-4 of the spec are done, including the `@nx/vite/plugin` inferred `vite-*` targets). Still unbuilt (see the spec): the stub plugin (stage 5), Oxlint/Stylelint/PHPCS targets and Oxfmt (stage 6), packaging (stage 7).
 
 ## Environment
+
 - Node comes from nvm and is not on the default PATH. Load it first in each shell: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"` (root `.nvmrc`, Node 26.12.0).
 - pnpm only (enforced by `preinstall`; no npm/yarn). The root `devEngines` pins pnpm 12.12.1. Run `pnpm install` once at the root.
 - Shared dependency versions (Nx and `@nx/*`) are pinned in the `catalog:` in `pnpm-workspace.yaml`; use `"catalog:"` in package.json, and bump them there.
@@ -26,6 +28,7 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - `.env*` files are git-ignored. Do not read or print them.
 
 ## Local WordPress stacks
+
 - Start a site: `cd docker/<hyperalumni|hyperonline> && docker compose --profile local up -d`; stop it with `docker compose --profile local stop`. Ports come from that site's `.env.local`: hyperalumni WordPress 3080 and phpMyAdmin 3090, hyperonline 4080 and 4090.
 - `docker/compose.main.yaml` is shared. Each site directory holds only its wrapper `compose.yaml` and its `.env.local`; the other env files (`.env`, `.env.db`, `.env.mariadb`, `.env.phpmyadmin`, `.env.wordpress`, `.env.versions`) are shared in `docker/`. Real env files are git-ignored; commit only the `*.example` templates, and copy them to real files (filling in the values) on a new checkout.
 - WP-CLI: `cd docker/<hyperalumni|hyperonline> && docker compose --profile local run --rm wpcli <command>`, e.g. `wpcli --info` or `wpcli search-replace ... --dry-run`. The `wpcli` service reuses the `wordpress` mounts and needs the stack's `db`/`wordpress` containers (the `local` profile); it runs as uid 33:33 and sits in the `tools` profile, so `up` does not start it.
@@ -34,6 +37,7 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - Docker Desktop creates a missing bind-mount source as an empty root-owned folder instead of failing, and Compose's `create_host_path: false` does not change that here. After changing a mount path or `THEME_SRC`, look for strays with `find . -maxdepth 4 -type d -empty -user root -not -path '*/node_modules/*'` and remove them with `rmdir`. The theme's integration tests also leave an empty root-owned `themes/hyperpress-foundation/.superpowers`; that one is harmless.
 
 ### uikit site
+
 - `cd docker/uikit && docker compose --profile local up -d` (or `nx up @hyper/press-uikit`). WordPress http://localhost:5080, phpMyAdmin 5090 (ports and project name `hyperuikit` come from the git-ignored local env file; copy the committed example on a new checkout). The owner installs WordPress and activates the theme once with wpcli: `docker compose --profile local run --rm wpcli <command>`.
 - PHP/Composer tooling (never on the host): from `docker/uikit`, `docker compose run --rm --user "$(id -u):$(id -g)" -e COMPOSER_HOME=/tmp/composer tooling <cmd>`; add `-w /themes/hyperpress-uikit` for the theme's composer scripts (e.g. `composer test:unit`). Always pass `--user` (the service runs as root) and not `--profile tools`.
 - Dev loop: use `nx serve @hyper/press-uikit`, not the inferred `vite-serve`/`vite-dev`/`vite-preview` targets (they do not write the `.vite-dev` marker, so WordPress keeps serving the production assets). Vite binds `0.0.0.0` (`host: true`) so the WordPress container can reach it via `host.docker.internal`; the dev server is therefore reachable from the LAN while it runs, so use it only on trusted networks.
@@ -41,11 +45,13 @@ This file supersedes `../AGENTS.md` (the `hyperPress/` folder file outside this 
 - Bind-mount gotcha: `dist/themes/hyperpress-uikit` is mounted into the container. Never `rm -rf` the directory itself; anything that recreates it leaves a stale mount, repaired with `docker compose --profile local up -d --force-recreate wordpress`.
 
 ## Git
+
 - One repo: commit from the root with explicit paths. Run `git add <paths>` then `git commit -m "..." -- <paths>`. Never a bare `git commit` and never `git add -A`.
 - Follow the commit style in `git log`. Commit and push only when asked.
 - The theme's history keeps its original hashes (the FoundationPress lineage). Do not rewrite it.
 
 ## Implementation plans
+
 Plans are in `docs/superpowers/plans/`, specs in `docs/superpowers/specs/` (see the plans README).
 Commit a plan on its own before coding, tick its checkboxes in the same commit as each task's code,
 and update any plan that mentions a file you change. Add a COMPLETED banner when a plan finishes.

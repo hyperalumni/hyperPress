@@ -14,7 +14,6 @@
   }
 }
 
-
 .site-navigation {
   @include xy-grid-container;
 
@@ -35,24 +34,31 @@
   $lighter-hue: scale-color($color, $lightness: 10%);
 
   & {
-    &.is-active a, a {
+    &.is-active a,
+    a {
       color: $color;
     }
 
-    &:hover, &:focus, &.current-menu-item, &.current-menu-ancestor {
+    &:hover,
+    &:focus,
+    &.current-menu-item,
+    &.current-menu-ancestor {
       a {
         color: $white;
       }
     }
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background-color: $base-hue;
     }
 
-    &.current-menu-item, &.current-menu-ancestor {
+    &.current-menu-item,
+    &.current-menu-ancestor {
       background-color: $darker-hue;
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         background-color: $base-hue;
       }
     }
@@ -66,28 +72,27 @@
           background-color: $darker-hue;
         }
 
-        &.is-active a, a {
+        &.is-active a,
+        a {
           color: $white;
         }
 
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
           background-color: $lighter-hue;
         }
 
         a:after {
           border: none;
-          content: "\00bb";
-          top: .75rem;
+          content: '\00bb';
+          top: 0.75rem;
           right: 1.5rem;
           left: auto;
         }
       }
     }
-
-
   }
 }
-
 
 .dropdown.menu {
   font-weight: 600;
@@ -139,8 +144,6 @@
   .purple {
     @include dropdown($hyper-purple);
   }
-
-
 }
 
 // Site title

@@ -42,11 +42,13 @@ From `plugins/`: `git add docs/superpowers/specs/2026-10-06-label-plugin-extract
 ### Task 1: Plugin scaffold and Registry
 
 **Files:**
+
 - Modify: `hyperpress-label/hyperpress-label.php`
 - Create: `hyperpress-label/src/Plugin.php`, `hyperpress-label/src/Registry.php`
 - Test: `tests/integration/LabelRegistryTest.php`
 
 **Interfaces:**
+
 - Produces: `HyperPress\Label\Plugin::boot(): void`. `HyperPress\Label\Registry` with `static instance(): self`, `static reset( bool $skip_collect = false ): void`, `add( string $id, array $args ): void`, `all(): array` (id => definition, sorted by `priority` ascending, insertion order for ties; first call fires `do_action( 'hyperpress_label_register', $this )` once), `default_post_types( string $id ): array` (applies filter `hyperpress_label_default_post_types( array $types, string $label_id )`), `ids(): array`. A definition is `array{group:string,title:string,callback:callable,default_post_types:string[],priority:int}`; `add()` fills defaults `group => ''`, `priority => 10`, `default_post_types => []`, and ignores entries whose `callback` is not callable.
 - `reset( true )` leaves an empty registry marked as collected (tests register their own labels); `reset()` leaves one that will collect again on next use.
 
@@ -59,10 +61,12 @@ From `plugins/`: `git add docs/superpowers/specs/2026-10-06-label-plugin-extract
 ### Task 2: Resolver
 
 **Files:**
+
 - Create: `hyperpress-label/src/Resolver.php`
 - Test: `tests/integration/LabelResolverTest.php`
 
 **Interfaces:**
+
 - Consumes: `Registry::instance()->all()`, `Registry::default_post_types()`.
 - Produces: `Resolver::enabled_key( string $post_type ): string`, `labels_key( string $post_type ): string`, `default_enabled( string $post_type ): bool` (true when any registered label lists the type in its default post types), `default_labels( string $post_type ): array` (IDs), `is_enabled( string $post_type, string $label_id ): bool`.
 
@@ -75,11 +79,13 @@ From `plugins/`: `git add docs/superpowers/specs/2026-10-06-label-plugin-extract
 ### Task 3: Renderer and template
 
 **Files:**
+
 - Create: `hyperpress-label/src/Renderer.php`, `hyperpress-label/templates/labels.php`
 - Modify: `hyperpress-label/src/Plugin.php` (call `Renderer::register()`)
 - Test: `tests/integration/LabelRendererTest.php`
 
 **Interfaces:**
+
 - Consumes: `Registry`, `Resolver::is_enabled`, `Resolver::default_enabled` not needed here.
 - Produces: `Renderer::register(): void` (adds `hyperpress_labels` action), `Renderer::labels(): array` (the guarded, filtered, normalized list), `Renderer::render(): void`.
 - Template: markup copied verbatim from `theme/template-parts/labels.php` (the `$labels` variable is in scope). `render()` loads `locate_template( 'hyperpress-label/labels.php' )` when found, else the plugin's own.
@@ -95,11 +101,13 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 ### Task 4: Post labels
 
 **Files:**
+
 - Create: `hyperpress-label/src/Labels/PostLabels.php`
 - Modify: `hyperpress-label/src/Plugin.php` (call `PostLabels::register()`)
 - Test: `tests/integration/PostLabelsTest.php`
 
 **Interfaces:**
+
 - Produces: `PostLabels::register(): void` (adds `hyperpress_label_register` → `register_labels( Registry $registry ): void`), and static callbacks `date(): array`, `author(): array`, `category(): array`, `comments(): array`, each returning a list of label arrays. Registered with group "Post", defaults `['post']`, IDs and priorities from Global Constraints.
 - Callback bodies are ports of `theme/library/labels/post.php` without the post-type condition: date `'%1$s @ %2$s'` with title `Posted At`, classes `dark`; author title `Posted By`, classes `primary byline author`, `rel => 'author'`, url `get_author_posts_url`; category = first category, title `Posted In`, class `info`, url `get_category_link`, and an empty list when the post has none; comments `N comment(s)`, class `neutral`, url `get_comments_link()`, empty title.
 
@@ -112,11 +120,13 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 ### Task 5: Customizer and control
 
 **Files:**
+
 - Create: `hyperpress-label/src/Customizer.php`, `hyperpress-label/src/Controls/LabelDropdownControl.php`
 - Modify: `hyperpress-label/src/Plugin.php` (call `Customizer::register()`)
 - Test: `tests/integration/LabelCustomizerTest.php` (style of `NewsletterCustomizerTest`)
 
 **Interfaces:**
+
 - Consumes: `Registry`, `Resolver` keys and defaults.
 - Produces: `Customizer::register(): void` (hooks `customize_register` → `customize( WP_Customize_Manager $manager ): void`), `Customizer::post_types(): array` (name => plural label; public types except `attachment`, plus any type in a label's default types), `Customizer::sanitize_labels( $value ): array`. `LabelDropdownControl extends WP_Customize_Control`, `$type = 'dropdown-labels'`, multi-select of registry labels with option text `"{group}: {title}"`, modelled on `HyperPress\Utils\Controls\PostTypeDropdownControl` but without depending on Utils.
 - Per post type: setting `hyperpress_label_{T}_enabled` (`theme_mod`, `transport refresh`, default `Resolver::default_enabled`, sanitize `rest_sanitize_boolean`) with a core `checkbox` control labelled `Show labels on {plural}`; setting `hyperpress_label_{T}_labels` (default `Resolver::default_labels`, sanitize `Customizer::sanitize_labels`) with the dropdown control. Section `hyperpress_label`, title `Labels`, priority 140.
@@ -130,11 +140,13 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 ### Task 6: Season label (`hyperpress-season`)
 
 **Files:**
+
 - Create: `hyperpress-season/src/Labels.php`
 - Modify: `hyperpress-season/src/Plugin.php` (`Labels::register();` in `boot()`)
 - Test: `tests/integration/SeasonLabelTest.php`
 
 **Interfaces:**
+
 - Consumes: `HyperPress\Label\Registry::add` (received through the action argument; no class_exists guard needed because the callback only runs when the label plugin fires it), `SortedSeasons::get()`.
 - Produces: `HyperPress\Season\Labels::register(): void`, `register_labels( \HyperPress\Label\Registry $registry ): void` adding `season.posted_during` (group "Season", title "Posted During", priority 30, defaults `['post']`), and `season_label(): array` returning zero or one label: name of the newest season, title `Posted During`, classes `warning`, url `get_term_link()` or `''` on `WP_Error`, `rel ''`.
 
@@ -147,10 +159,12 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 ### Task 7: Sponsor labels (`hyperpress-sponsor`)
 
 **Files:**
+
 - Modify: `hyperpress-sponsor/src/Labels.php`, `hyperpress-sponsor/templates/content.php:17`
 - Test: `tests/integration/SponsorLabelsTest.php`
 
 **Interfaces:**
+
 - Produces: `Labels::register(): void` now adds the `hyperpress_label_register` action instead of the raw filter; `register_labels( \HyperPress\Label\Registry $registry ): void` adds `sponsor.last_sponsored` (10), `sponsor.tier` (20), `sponsor.season_count` (30), group "Sponsor", defaults `['hyper_sponsor']`; callbacks `last_sponsored()`, `tier()`, `season_count()` each return zero or one label (bodies are ports of the current `labels_sponsor`, minus the post-type condition). The template line becomes `<?php do_action( 'hyperpress_labels' ); ?>`.
 
 - [x] **Step 1: Write failing tests** on a `hyper_sponsor` post via `Renderer::labels()`: `test_three_labels_in_order` (season name titled `Last Sponsored`, tier, `N Seasons`), `test_season_count_singular` (`1 Season`), `test_no_seasons_and_no_tier_means_no_labels`, `test_tier_title_includes_the_description`, `test_sponsor_labels_do_not_show_on_posts`.
@@ -162,10 +176,12 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 ### Task 8: Newsletter defaults (`hyperpress-newsletter`)
 
 **Files:**
+
 - Modify: `hyperpress-newsletter/src/Labels.php`, `hyperpress-newsletter/templates/content.php:34`, `tests/integration/NewsletterLabelsTest.php`
 - Review: `tests/integration/NewsletterSeasonErrorTest.php`, `NewsletterSeasonEscapingTest.php` (run `grep -n 'hyperpress_labels_content\|labels'` first; adjust only if they read labels)
 
 **Interfaces:**
+
 - Produces: `Labels::register(): void` adds filter `hyperpress_label_default_post_types` → `default_post_types( array $types, string $label_id ): array`, which appends `Plugin::POST_TYPE` when `$label_id` is one of `post.date`, `post.author`, `post.comments`, `season.posted_during`. The raw `labels_newsletter` filter and its body are deleted. Template line 34 becomes `<?php do_action( 'hyperpress_labels' ); ?>`.
 
 - [x] **Step 1: Update `NewsletterLabelsTest`** to read `\HyperPress\Label\Renderer::labels()` instead of `apply_filters`, and add `test_newsletter_gets_date_author_season_comments_in_order` (titles `Posted At`, `Posted By`, `Posted During`, `''`) and `test_newsletter_has_no_category_label`. Run `--filter NewsletterLabelsTest`; expected FAIL before the implementation.
@@ -176,6 +192,7 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 ### Task 9: Theme switch and removal (`theme/` repo)
 
 **Files:**
+
 - Modify: `theme/template-parts/content.php:24`, `theme/functions.php:41` (remove the require), `theme/tests/unit/PluginHooksContractTest.php` (remove the `'labels'` row), `theme/tests/integration/LabelsBreadcrumbsGuardTest.php` (delete the two label tests, keep the breadcrumb tests), `theme/tests/integration/StrictComparisonsTest.php` (delete the comment-count label test and its provider if unused elsewhere)
 - Delete: `theme/template-parts/labels.php`, `theme/library/labels.php`, `theme/library/labels/post.php`
 
@@ -187,6 +204,7 @@ Behavior of `labels()`: `$type = get_post_type()` (when false and `is_singular()
 ### Task 10: Docs, AGENTS and Docker mounts
 
 **Files:**
+
 - Modify: `theme/docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md` (labels are now extracted to `hyperpress-label`; `hyperpress_labels_content` is produced by the plugin), `theme/AGENTS.md:31` (drop `hyperpress_labels_content` from the hooks the theme fires; add that templates call `do_action( 'hyperpress_labels' )`), `plugins/AGENTS.md` (`hyperpress-label` is no longer a placeholder; only `hyperpress-student` is), `plugins/docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md` (label row no longer "placeholder")
 - Modify (untracked stacks): `hyperalumni/compose.main.yaml` (add `- ../plugins/hyperpress-label/:/var/www/html/wp-content/plugins/hyperpress-label` after the countdown line, keeping the list alphabetical). `hyperonline/compose.main.yaml:21` already mounts it.
 

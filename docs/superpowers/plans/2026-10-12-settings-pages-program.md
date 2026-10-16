@@ -41,11 +41,13 @@
 ### Task 1: Program settings page
 
 **Files:**
+
 - Create: `plugins/hyperpress-program/src/Settings.php`, `Sanitizers.php`, `SettingsPage.php`
 - Modify: `plugins/hyperpress-program/src/MetaBoxes.php` (add `boxes()`, keep `customize_metabox` until Task 2; `register()` adds both filters), `plugins/hyperpress-program/src/Plugin.php` (`boot()` registers the page and the `default_option_hyperpress_program` filter)
 - Test: create `plugins/tests/integration/Program/ProgramSettingsPageTest.php`, `ProgramSanitizersTest.php`, `ProgramSettingsTest.php`
 
 **Interfaces:**
+
 - Produces: `Settings::OPTION = 'hyperpress_program'`, `Settings::POST_TYPES = 'hyperpress_program_post_types'`; `Settings::defaults(): array` (`POST_TYPES => array( 'post' )`); `Settings::default_option( $fallback, $option, $passed_default )`; `Settings::post_types(): array` (non-empty strings; `array( 'post' )` when the key is missing or the option is not an array; a saved empty list stays empty).
 - Produces: `Sanitizers::post_types( mixed $value ): array` (registered post types whose object is `public`, strings only, unique, `array_values`; non-array gives `array()`; port the logic of `PostTypeDropdownControl::sanitize_post_types` and its program cases, do not call the control class).
 - Produces: `SettingsPage::ID = 'hyperpress_program'`, `register()`, `pages( array ): array` (menu and page title `Program`, `parent` `AdminMenu::SLUG`, `option_name` `Settings::OPTION`, `manage_options`, `style` `no-boxes`); `MetaBoxes::boxes( array ): array` hooked on `rwmb_meta_boxes`: one box `hyperpress_program_box` with `settings_pages` `SettingsPage::ID` and one field `Settings::POST_TYPES`: `select_advanced`, `multiple` true, options from `get_post_types( array( 'public' => true ), 'objects' )` as key => label, `std` `array( 'post' )`, `sanitize_callback` `Sanitizers::post_types`; label "Programs Post Types" and description "Select the Post Types that will use the Program Taxonomy" copied from `Customizer.php`.
@@ -59,6 +61,7 @@
 ### Task 2: Switch the reader and remove the Customizer section
 
 **Files:**
+
 - Modify: `plugins/hyperpress-program/src/Plugin.php` (line ~62 `'object_types' => 'hyperpress_program_post_types'` becomes `Settings::post_types()`; `boot()` drops `Customizer::register()`), `plugins/hyperpress-program/src/MetaBoxes.php` (delete `customize_metabox`, the empty box `hyperpress_program` with `'panel' => ''`, and its registration), `plugins/tests/src/Support/Convention.php` (`THEME_DRIVEN_TAXONOMIES`)
 - Delete: `plugins/hyperpress-program/src/Customizer.php`, `plugins/tests/integration/SeasonProgramCustomizerTest.php` (all its cases are program-only after the season work and were ported in Task 1)
 - Test: modify `plugins/tests/integration/TaxonomyAttachmentTest.php`, and any test found by grepping `plugins/tests` and `themes/*/tests` for `hyperpress_program_post_types` or a program Customizer expectation; create `plugins/tests/integration/Program/ProgramReadersTest.php`
@@ -74,6 +77,7 @@
 ### Task 3: Delete the dropdown control classes
 
 **Files:**
+
 - Delete: `plugins/hyperpress-utils/src/Controls/CategoryDropdownControl.php`, `plugins/hyperpress-utils/src/Controls/PostTypeDropdownControl.php` (and the directory), `plugins/tests/integration/Utils/ControlsTest.php`, `Utils/ControlDescriptionEscapingTest.php`, `Utils/ControlsRenderTest.php`
 - Modify: `themes/hyperpress-foundation/tests/integration/NoPluginsTest.php` (line ~51, the assertion on `PostTypeDropdownControl`), `themes/hyperpress-foundation/tests/unit/NoStaleReferencesTest.php` (line ~37: keep the stale-name pattern, but reword the message that says "Controls are HyperPress\Utils\Controls\*")
 - Test: the whole suites

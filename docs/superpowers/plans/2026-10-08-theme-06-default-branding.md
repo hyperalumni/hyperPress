@@ -45,12 +45,14 @@
 ## Task 1: Assets and seeder
 
 **Files:**
+
 - Create: `library/branding-assets/logo.svg`, `library/branding-assets/icon.svg`, `library/branding-assets/icon.png`
 - Create: `library/default-branding.php`
 - Modify: `functions.php` (add `require_once get_template_directory() . '/library/default-branding.php';` after the `theme-support.php` line)
 - Test: `tests/integration/DefaultBrandingSeedTest.php`
 
 **Interfaces:**
+
 - Produces:
   - `hyperpress_default_branding_files(): array`, keyed by `'logo'` and `'icon'`, each `array{file: string, mime: string}` (`logo.svg` as `image/svg+xml`, `icon.png` as `image/png`).
   - `hyperpress_default_branding_version(): string`, returns `'1'`. Bump it when a bundled file changes.
@@ -72,7 +74,7 @@
 - [x] **Step 4: Implement** the functions above in `library/default-branding.php`. Approach: copy the bundled file into `wp_upload_dir()` under `wp_unique_filename()`; bail with `0` if `wp_upload_dir()['error']` is truthy or `copy()` fails; call `wp_insert_attachment()` with `post_mime_type` from `hyperpress_default_branding_files()`; for the PNG only, `require_once ABSPATH . 'wp-admin/includes/image.php'` and `wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $file ) )`. Take the lock with `add_option( 'hyperpress_branding_lock', (string) time(), '', false )` and release with `delete_option` in a `finally`. If PHPCS flags `copy()`, add `// phpcs:ignore WordPress.WP.AlternativeFunctions -- copying a bundled theme file`.
 - [x] **Step 5: Add the hooks** at the bottom of the file: `add_action( 'admin_init', 'hyperpress_maybe_seed_default_branding' )` and `add_action( 'after_switch_theme', 'hyperpress_maybe_seed_default_branding' )`. Add the `require_once` to `functions.php`.
 - [x] **Step 6: Run to verify pass,** both modes:
-  `docker compose run --rm php composer test:integration -- --filter DefaultBrandingSeedTest` and the same with `-e HYPERPRESS_TEST_WITHOUT_EXTRACTED=1`. Expected: PASS.
+      `docker compose run --rm php composer test:integration -- --filter DefaultBrandingSeedTest` and the same with `-e HYPERPRESS_TEST_WITHOUT_EXTRACTED=1`. Expected: PASS.
 - [x] **Step 7: Lint:** `docker compose run --rm php composer lint`. Expected: exit 0.
 - [x] **Step 8: Commit**
 
@@ -86,11 +88,13 @@ git commit -m "feat: seed default logo and site icon attachments" -- library/bra
 ## Task 2: Customizer fallback filters and unseeded front-end fallback
 
 **Files:**
+
 - Modify: `library/default-branding.php`
 - Modify: `src/assets/scss/modules/_navigation.scss` (rule at line 147, `.site-desktop-title a`)
 - Test: `tests/integration/DefaultBrandingFallbackTest.php`, `tests/unit/BrandingStylesTest.php`
 
 **Interfaces:**
+
 - Consumes: `hyperpress_default_branding_id( string $key ): int`, `hyperpress_seed_default_branding(): bool`, `hyperpress_default_branding_files(): array`.
 - Produces:
   - `hyperpress_default_logo_fallback( $value )`: returns `$value` when truthy, else `hyperpress_default_branding_id( 'logo' )` when non-zero, else `$value`. Hooked to `theme_mod_custom_logo`.
@@ -123,10 +127,12 @@ git commit -m "feat: fall back to the default logo and site icon" -- library/def
 ## Task 3: SVG favicon link
 
 **Files:**
+
 - Modify: `library/default-branding.php`
 - Test: `tests/integration/DefaultBrandingFaviconTest.php`
 
 **Interfaces:**
+
 - Consumes: `hyperpress_default_branding_id( string $key ): int`.
 - Produces: `hyperpress_default_icon_svg_link(): void`, which echoes `<link rel="icon" type="image/svg+xml" href="…">` (URL from `get_theme_file_uri( 'library/branding-assets/icon.svg' )`, escaped with `esc_url`) only when `(int) get_option( 'site_icon' )` equals the non-zero default icon ID. Hooked to `wp_head` (priority 20) and `login_head` (priority 20).
 
@@ -149,11 +155,13 @@ git commit -m "feat: add an SVG favicon link for the default site icon" -- libra
 ## Task 4: Login page branding
 
 **Files:**
+
 - Create: `library/login-branding.php`
 - Modify: `functions.php` (require the new file directly after `default-branding.php`)
 - Test: `tests/integration/LoginBrandingTest.php`
 
 **Interfaces:**
+
 - Consumes: the `custom_logo` theme mod (already default-aware from Task 2).
 - Produces:
   - `hyperpress_login_logo_url(): string`: `wp_get_attachment_image_url( (int) get_theme_mod( 'custom_logo' ), 'full' )` when that returns a string, else `get_theme_file_uri( 'library/branding-assets/logo.svg' )`.

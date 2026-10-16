@@ -32,7 +32,10 @@
   "scripts": {
     "lint:syntax": "find hyperpress-* tests -name '*.php' -print0 | xargs -0 -n1 php -d display_errors=stderr -l > /dev/null",
     "lint:cs": "phpcs",
-    "lint": ["@lint:syntax", "@lint:cs"],
+    "lint": [
+      "@lint:syntax",
+      "@lint:cs"
+    ],
     "test:unit": "phpunit --testsuite unit",
     "test:integration": "phpunit --testsuite integration --bootstrap tests/bootstrap-integration.php"
   }

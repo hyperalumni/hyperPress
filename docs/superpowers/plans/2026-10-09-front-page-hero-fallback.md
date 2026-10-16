@@ -12,21 +12,26 @@ The SCSS picks the matching variable per breakpoint (`background-image: var(...)
 the small size is the base rule when nothing else applies. (Originally this used Foundation Interchange; see Outcome.)
 
 ## Task 1: Image sizes
+
 - [x] Add `front-hero-small` 640x300, `front-hero-medium` 1280x400, `front-hero-large` 1440x600, `front-hero-xlarge` 1920x900 (hard crop; originally 1920x600, raised to match the Slider Revolution slider height) to `library/responsive-images.php`
 
 ## Task 2: Integration test (write first, see it fail)
+
 - [x] Add `tests/integration/FrontPageHeroTest.php` covering: hero rendered with four size URLs in inline custom properties (originally `data-interchange`) when no `add_revslider` and the front page has a featured image
 - [x] Cover: no featured image => hero not rendered
 - [x] Cover: `add_revslider` defined => hero not rendered (separate-process test with a stub; skip and note if infeasible)
 
 ## Task 3: Template markup
+
 - [x] Render the hero in `front-page.php` when `add_revslider` is missing and `get_queried_object_id()` has a featured image
 - [x] Task 2 tests pass
 
 ## Task 4: SCSS
+
 - [x] Add `src/assets/scss/components/_front-hero.scss` (width 100%, cover, center, no-repeat; 300px small, 400px medium, 600px large, 900px xlarge (1200px and up); `background-image` from the custom properties) and import it in `app.scss` next to the featured-image import
 
 ## Task 5: Verification
+
 - [x] `docker compose run --rm php composer lint` reports 0 violations
 - [x] `docker compose run --rm php composer test:unit` passes
 - [x] `docker compose run --rm php composer test:integration` passes
@@ -34,6 +39,7 @@ the small size is the base rule when nothing else applies. (Originally this used
   - Note: the first attempt aborted with ERR_PNPM_BAD_RUNTIME_VERSION (pnpm 12.9.1 vs Node 26.10.0). After upgrading to Node v26.11.1 and pnpm 12.11.2, `pnpm build` exits 0 (sass and webpack compile). Earlier, `gulp build --production` directly emitted `.hyperpress-front-hero` at 18.75rem, 25rem and 37.5rem.
 
 ## Outcome: Interchange replaced by CSS custom properties
+
 The first version (d6d3c84) used Foundation Interchange (`data-interchange`). That breaks with AVIF/WebP featured
 images: Interchange only treats URLs ending in `gif|jpe?g|png|svg|tiff` as images (`foundation.interchange.js`);
 any other extension is fetched as an HTML template and the raw image bytes are injected into the div as text.
@@ -46,6 +52,7 @@ and that `.avif` URLs stay intact. Verified: lint 0 violations, unit 38 and inte
 `pnpm build` exits 0, and the rendered local front page shows the four variables with `.avif` URLs.
 
 ## Outcome: xlarge step is 900px tall
+
 The largest step was changed after review to match the Slider Revolution slider: `front-hero-xlarge` is now 1920x900
 (hard crop) and `.hyperpress-front-hero` is 900px tall (`rem-calc(900)`, 56.25rem) at the xlarge breakpoint (1200px and up).
 Small, medium and large stay 300, 400 and 600px. WordPress only generates a new size for uploads made after it is

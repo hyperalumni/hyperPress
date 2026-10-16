@@ -10,8 +10,7 @@ img {
   }
 }
 
-img[src$=".svg"] {
+img[src$='.svg'] {
   width: 100%;
   height: auto;
 }
-

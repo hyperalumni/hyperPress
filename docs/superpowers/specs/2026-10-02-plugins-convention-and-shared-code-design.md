@@ -1,7 +1,7 @@
 # hyperPress plugins: convention and shared code (Spec 1 of 2)
 
 Date: 2026-10-02
-Scope: the 12 original plugins in `plugins/`, plus the two plugins (`hyperpress-shortcodes`, `hyperpress-media`) created by the theme extraction. `theme/` changes are specified separately in `theme/docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md`. Those two new plugins follow this convention in full. *Amended 2026-10-07: `hyperpress-shortcodes` is renamed `hyperpress-shortcode` (namespace `HyperPress\Shortcode`, hooks `hyperpress_shortcode_now` and `hyperpress_shortcode_ordinals`); see `2026-10-07-singular-plugin-names.md`.*
+Scope: the 12 original plugins in `plugins/`, plus the two plugins (`hyperpress-shortcodes`, `hyperpress-media`) created by the theme extraction. `theme/` changes are specified separately in `theme/docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md`. Those two new plugins follow this convention in full. _Amended 2026-10-07: `hyperpress-shortcodes` is renamed `hyperpress-shortcode` (namespace `HyperPress\Shortcode`, hooks `hyperpress_shortcode_now` and `hyperpress_shortcode_ordinals`); see `2026-10-07-singular-plugin-names.md`._
 Companion: Spec 2 (tests and audit), written separately.
 
 ## Goal
@@ -15,17 +15,17 @@ are not preserved and no backwards-compatibility shims are added.
 
 ## Decisions (from the design discussion)
 
-| Topic | Decision |
-|---|---|
-| Shared code | Lives in `hyperpress-utils`. Plugins that use it declare `hyperpress-utils` in `Requires Plugins`. |
-| Registered keys | CPTs and taxonomies use the `hyper_` prefix (longest: `hyper_competition`, 17 chars; limit is 20). |
-| Public URLs | Unchanged: singular rewrite slug, plural archive slug (`/newsletter/`, `/newsletters/`). Taxonomies keep plural rewrites. |
-| Meta, setting, control and panel IDs | `hyperpress_{plugin}_{field}`. |
-| Namespaces | `HyperPress\{Plugin}`, PSR-4, classes under `src/`. |
-| Main file | Named after the folder (`hyperpress-award/hyperpress-award.php`). |
-| Capabilities | Per-CPT, granted to Administrator and Editor. |
-| Season | `hyperpress-season` is a hard requirement for the public CPT plugins. |
-| `label`, `student` | Kept as placeholders: fixed header and new structure, no behavior. *Amended 2026-10-06: `label` is implemented (see `2026-10-06-label-plugin-extraction-design.md`); only `student` is a placeholder.* |
+| Topic                                | Decision                                                                                                                                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Shared code                          | Lives in `hyperpress-utils`. Plugins that use it declare `hyperpress-utils` in `Requires Plugins`.                                                                                                     |
+| Registered keys                      | CPTs and taxonomies use the `hyper_` prefix (longest: `hyper_competition`, 17 chars; limit is 20).                                                                                                     |
+| Public URLs                          | Unchanged: singular rewrite slug, plural archive slug (`/newsletter/`, `/newsletters/`). Taxonomies keep plural rewrites.                                                                              |
+| Meta, setting, control and panel IDs | `hyperpress_{plugin}_{field}`.                                                                                                                                                                         |
+| Namespaces                           | `HyperPress\{Plugin}`, PSR-4, classes under `src/`.                                                                                                                                                    |
+| Main file                            | Named after the folder (`hyperpress-award/hyperpress-award.php`).                                                                                                                                      |
+| Capabilities                         | Per-CPT, granted to Administrator and Editor.                                                                                                                                                          |
+| Season                               | `hyperpress-season` is a hard requirement for the public CPT plugins.                                                                                                                                  |
+| `label`, `student`                   | Kept as placeholders: fixed header and new structure, no behavior. _Amended 2026-10-06: `label` is implemented (see `2026-10-06-label-plugin-extraction-design.md`); only `student` is a placeholder._ |
 
 The mixed prefixes are deliberate. `hyper_` is for registered WordPress object
 keys (short, under the length limit). `hyperpress_` is for everything stored or
@@ -38,35 +38,35 @@ Canonical header: the field set of `hyperpress-award/award.php` today, minus
 
 Fixes, all verified against the current files:
 
-| Plugin | Fix |
-|---|---|
-| robot | Description says "Newsletters". Change to "Custom Post Type for Robots for hyperPress". |
-| newsletter | Missing Plugin URI, License, License URI. Add them. |
-| all | `GitHub Plugin URI` is only read by GitHub Updater, which is not used. Remove it from all headers. |
-| student | Missing Author. Add it. |
-| label, student | Descriptions describe behavior that does not exist. Mark as placeholders. (Amended 2026-10-06: label now has behavior.) |
-| competition | Meta box queries the `robot` CPT (`lib/metaboxes/information.php:32`). Add `hyperpress-robot`. |
-| award, robot | Register no meta boxes. Drop `meta-box-aio`. (Amended 2026-10-14: award now has a Meta Box settings page for its banner subtitle and requires `meta-box-aio` again; see the table below. Robot likewise.) |
-| socials | Customizer plus widget only. Drop `meta-box-aio`. (Amended 2026-10-07: plugin renamed `hyperpress-social`; see `2026-10-07-singular-plugin-names.md`. Superseded 2026-10-13: social now uses a Meta Box settings page and requires `hyperpress-utils` and `meta-box-aio`; see the table below.) |
-| label, student | No behavior. `Requires Plugins` is empty until behavior lands. (Amended 2026-10-06: label now has behavior; its `Requires Plugins` stays empty by design, see `2026-10-06-label-plugin-extraction-design.md`. Superseded 2026-10-13: label now has a Meta Box settings page and requires `hyperpress-utils` and `meta-box-aio`; see the table below.) |
-| season, program | Both register Meta Box panels (`rwmb_meta_boxes`). Keep `meta-box-aio`. |
+| Plugin          | Fix                                                                                                                                                                                                                                                                                                                                                   |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| robot           | Description says "Newsletters". Change to "Custom Post Type for Robots for hyperPress".                                                                                                                                                                                                                                                               |
+| newsletter      | Missing Plugin URI, License, License URI. Add them.                                                                                                                                                                                                                                                                                                   |
+| all             | `GitHub Plugin URI` is only read by GitHub Updater, which is not used. Remove it from all headers.                                                                                                                                                                                                                                                    |
+| student         | Missing Author. Add it.                                                                                                                                                                                                                                                                                                                               |
+| label, student  | Descriptions describe behavior that does not exist. Mark as placeholders. (Amended 2026-10-06: label now has behavior.)                                                                                                                                                                                                                               |
+| competition     | Meta box queries the `robot` CPT (`lib/metaboxes/information.php:32`). Add `hyperpress-robot`.                                                                                                                                                                                                                                                        |
+| award, robot    | Register no meta boxes. Drop `meta-box-aio`. (Amended 2026-10-14: award now has a Meta Box settings page for its banner subtitle and requires `meta-box-aio` again; see the table below. Robot likewise.)                                                                                                                                             |
+| socials         | Customizer plus widget only. Drop `meta-box-aio`. (Amended 2026-10-07: plugin renamed `hyperpress-social`; see `2026-10-07-singular-plugin-names.md`. Superseded 2026-10-13: social now uses a Meta Box settings page and requires `hyperpress-utils` and `meta-box-aio`; see the table below.)                                                       |
+| label, student  | No behavior. `Requires Plugins` is empty until behavior lands. (Amended 2026-10-06: label now has behavior; its `Requires Plugins` stays empty by design, see `2026-10-06-label-plugin-extraction-design.md`. Superseded 2026-10-13: label now has a Meta Box settings page and requires `hyperpress-utils` and `meta-box-aio`; see the table below.) |
+| season, program | Both register Meta Box panels (`rwmb_meta_boxes`). Keep `meta-box-aio`.                                                                                                                                                                                                                                                                               |
 
 Resulting `Requires Plugins`:
 
-| Plugin | Requires |
-|---|---|
-| award | hyperpress-utils, hyperpress-season, meta-box-aio (Amended 2026-10-14: it was without `meta-box-aio`, until it gained a Meta Box settings page for its banner subtitle.) |
-| competition | hyperpress-utils, hyperpress-season, hyperpress-robot, meta-box-aio |
-| countdown | hyperpress-utils, meta-box-aio |
-| newsletter | hyperpress-utils, hyperpress-season, meta-box-aio |
-| robot | hyperpress-utils, hyperpress-season, meta-box-aio (Amended 2026-10-14: as award, for its banner subtitle settings page.) |
-| sponsor | hyperpress-utils, hyperpress-season, meta-box-aio |
-| season, program | hyperpress-utils, meta-box-aio |
-| label | hyperpress-utils, meta-box-aio (Amended 2026-10-13: it was none, until its Customizer settings moved to a Meta Box settings page; see `docs/superpowers/plans/2026-10-13-settings-pages-label.md`.) |
-| student | none |
-| social | hyperpress-utils, meta-box-aio (Amended 2026-10-13: it was `socials`, none, until its Customizer settings moved to a Meta Box settings page; see `docs/superpowers/plans/2026-10-13-settings-pages-social.md`.) |
+| Plugin              | Requires                                                                                                                                                                                                                                                                    |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| award               | hyperpress-utils, hyperpress-season, meta-box-aio (Amended 2026-10-14: it was without `meta-box-aio`, until it gained a Meta Box settings page for its banner subtitle.)                                                                                                    |
+| competition         | hyperpress-utils, hyperpress-season, hyperpress-robot, meta-box-aio                                                                                                                                                                                                         |
+| countdown           | hyperpress-utils, meta-box-aio                                                                                                                                                                                                                                              |
+| newsletter          | hyperpress-utils, hyperpress-season, meta-box-aio                                                                                                                                                                                                                           |
+| robot               | hyperpress-utils, hyperpress-season, meta-box-aio (Amended 2026-10-14: as award, for its banner subtitle settings page.)                                                                                                                                                    |
+| sponsor             | hyperpress-utils, hyperpress-season, meta-box-aio                                                                                                                                                                                                                           |
+| season, program     | hyperpress-utils, meta-box-aio                                                                                                                                                                                                                                              |
+| label               | hyperpress-utils, meta-box-aio (Amended 2026-10-13: it was none, until its Customizer settings moved to a Meta Box settings page; see `docs/superpowers/plans/2026-10-13-settings-pages-label.md`.)                                                                         |
+| student             | none                                                                                                                                                                                                                                                                        |
+| social              | hyperpress-utils, meta-box-aio (Amended 2026-10-13: it was `socials`, none, until its Customizer settings moved to a Meta Box settings page; see `docs/superpowers/plans/2026-10-13-settings-pages-social.md`.)                                                             |
 | media (added later) | hyperpress-utils, meta-box-aio, safe-svg (SVG uploads and their sanitizing come from Safe SVG) (Amended 2026-10-13: it was safe-svg only, until its Customizer setting moved to a Meta Box settings page; see `docs/superpowers/plans/2026-10-13-settings-pages-media.md`.) |
-| utils | none |
+| utils               | none                                                                                                                                                                                                                                                                        |
 
 Countdown does not require season: it is a non-public utility CPT with no
 taxonomy. Change this if you want season there too.
@@ -75,19 +75,19 @@ taxonomy. Change this if you want season there too.
 
 Registered keys:
 
-| Old | New | Attached to |
-|---|---|---|
-| `award` | `hyper_award` | |
-| `competition` | `hyper_competition` | |
-| `countdown` | `hyper_countdown` | |
-| `newsletter` | `hyper_newsletter` | |
-| `robot` | `hyper_robot` | |
-| `sponsor` | `hyper_sponsor` | |
-| `season` | `hyper_season` | object types from `hyperpress_season_post_types` |
-| `program` | `hyper_program` | object types from `hyperpress_program_post_types` |
-| `district` | `hyper_district` | `hyper_competition` |
-| `week` | `hyper_week` | `hyper_competition` |
-| `tier` | `hyper_tier` | `hyper_sponsor` |
+| Old           | New                 | Attached to                                       |
+| ------------- | ------------------- | ------------------------------------------------- |
+| `award`       | `hyper_award`       |                                                   |
+| `competition` | `hyper_competition` |                                                   |
+| `countdown`   | `hyper_countdown`   |                                                   |
+| `newsletter`  | `hyper_newsletter`  |                                                   |
+| `robot`       | `hyper_robot`       |                                                   |
+| `sponsor`     | `hyper_sponsor`     |                                                   |
+| `season`      | `hyper_season`      | object types from `hyperpress_season_post_types`  |
+| `program`     | `hyper_program`     | object types from `hyperpress_program_post_types` |
+| `district`    | `hyper_district`    | `hyper_competition`                               |
+| `week`        | `hyper_week`        | `hyper_competition`                               |
+| `tier`        | `hyper_tier`        | `hyper_sponsor`                                   |
 
 The season and program taxonomies read their object types from theme mods
 whose values are CPT keys chosen in the customizer. The code needs no change,
@@ -96,19 +96,19 @@ link.
 
 Meta keys and meta box IDs:
 
-| Old | New |
-|---|---|
-| `competition_robot` | `hyperpress_competition_robot` |
-| `competition_host_name`, `competition_venue_name`, `competition_venue_address`, `competition_venue_map` | same names with `hyperpress_` prefix |
-| `ne_first_event_url`, `first_event_url`, `stream_url` | `hyperpress_competition_ne_first_event_url`, `hyperpress_competition_first_event_url`, `hyperpress_competition_stream_url` |
-| box `competition-information` | `hyperpress_competition_information` |
-| `event_name`, `event_location`, `event_date_time` | `hyperpress_countdown_event_name`, `..._event_location`, `..._event_date_time` |
-| `countdown_past_zero`, `hide_before`, `hide_after` | `hyperpress_countdown_past_zero`, `..._hide_before`, `..._hide_after` |
-| boxes `countdown-event-information`, `countdown-visibility` | `hyperpress_countdown_event_information`, `hyperpress_countdown_visibility` |
-| `canva_newsletter_url` | `hyperpress_newsletter_canva_url` |
-| `sponsor_website`, `sponsor_description` | `hyperpress_sponsor_website`, `hyperpress_sponsor_description` |
-| boxes `information` (newsletter, sponsor) | `hyperpress_newsletter_information`, `hyperpress_sponsor_information` |
-| sponsor field `tier` (taxonomy-type field, `taxonomy => 'tier'`) | id `hyperpress_sponsor_tier`, `taxonomy => 'hyper_tier'` |
+| Old                                                                                                     | New                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `competition_robot`                                                                                     | `hyperpress_competition_robot`                                                                                             |
+| `competition_host_name`, `competition_venue_name`, `competition_venue_address`, `competition_venue_map` | same names with `hyperpress_` prefix                                                                                       |
+| `ne_first_event_url`, `first_event_url`, `stream_url`                                                   | `hyperpress_competition_ne_first_event_url`, `hyperpress_competition_first_event_url`, `hyperpress_competition_stream_url` |
+| box `competition-information`                                                                           | `hyperpress_competition_information`                                                                                       |
+| `event_name`, `event_location`, `event_date_time`                                                       | `hyperpress_countdown_event_name`, `..._event_location`, `..._event_date_time`                                             |
+| `countdown_past_zero`, `hide_before`, `hide_after`                                                      | `hyperpress_countdown_past_zero`, `..._hide_before`, `..._hide_after`                                                      |
+| boxes `countdown-event-information`, `countdown-visibility`                                             | `hyperpress_countdown_event_information`, `hyperpress_countdown_visibility`                                                |
+| `canva_newsletter_url`                                                                                  | `hyperpress_newsletter_canva_url`                                                                                          |
+| `sponsor_website`, `sponsor_description`                                                                | `hyperpress_sponsor_website`, `hyperpress_sponsor_description`                                                             |
+| boxes `information` (newsletter, sponsor)                                                               | `hyperpress_newsletter_information`, `hyperpress_sponsor_information`                                                      |
+| sponsor field `tier` (taxonomy-type field, `taxonomy => 'tier'`)                                        | id `hyperpress_sponsor_tier`, `taxonomy => 'hyper_tier'`                                                                   |
 
 Meta box definitions also hard-code CPT and taxonomy keys, and these change
 with section 2's first table: `post_types => ['sponsor']` (and the equivalents
@@ -120,15 +120,15 @@ follow the convention.
 Customizer control and section IDs. Setting IDs are already `hyperpress_*`;
 control IDs change to match their setting ID exactly:
 
-| Old control | New (= setting ID) |
-|---|---|
-| `newsletter_banner_subtitle` | `hyperpress_newsletter_banner_subtitle` |
-| `sponsor_banner_subtitle` | `hyperpress_sponsor_banner_subtitle` |
-| `season_banner_subtitle`, `season_post_types` | `hyperpress_season_banner_subtitle`, `hyperpress_season_post_types` |
-| `program_post_types` | `hyperpress_program_post_types` |
-| `countdown_{days,hours,minutes,seconds}_color` | `hyperpress_countdown_{...}_color` |
+| Old control                                                                                                                      | New (= setting ID)                                                             |
+| -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `newsletter_banner_subtitle`                                                                                                     | `hyperpress_newsletter_banner_subtitle`                                        |
+| `sponsor_banner_subtitle`                                                                                                        | `hyperpress_sponsor_banner_subtitle`                                           |
+| `season_banner_subtitle`, `season_post_types`                                                                                    | `hyperpress_season_banner_subtitle`, `hyperpress_season_post_types`            |
+| `program_post_types`                                                                                                             | `hyperpress_program_post_types`                                                |
+| `countdown_{days,hours,minutes,seconds}_color`                                                                                   | `hyperpress_countdown_{...}_color`                                             |
 | `socials_{firstinspires,thebluealliance,facebook,instagram,youtube,twitter,github,snapchat,tiktok,discord,contact,add_calendar}` | `hyperpress_socials_{...}` (Amended 2026-10-07: now `hyperpress_social_{...}`) |
-| section `socials` | `hyperpress_socials` (Amended 2026-10-07: now `hyperpress_social`) |
+| section `socials`                                                                                                                | `hyperpress_socials` (Amended 2026-10-07: now `hyperpress_social`)             |
 
 Script and style handle `timecircles` becomes `hyperpress-countdown-timecircles`.
 
@@ -167,14 +167,14 @@ hyperpress-award/
 
 ## 4. Shared code in `hyperpress-utils`
 
-| Class | Replaces | Interface |
-|---|---|---|
-| `PostTypeRegistrar` | `lib/custom-post-type.php` in 6 plugins (80-line copies that differ only in data) | `register(array $definition)`. Definition: key, singular, plural, rewrite slug, archive slug, icon, position, supports, taxonomies, overrides. Generates labels and the capability set, applies defaults (public, `map_meta_cap`; `show_in_rest` is false because nothing uses the REST API and the classic editor is required). |
-| `TaxonomyRegistrar` | `district`, `week`, `tier`, `season`, `program` registrations | `register(array $definition)` with the same approach. Object types may be a list or a theme-mod name. |
-| `Capabilities` | nothing (new) | `grant(array $post_type_keys)`: adds the CPT's capabilities to Administrator and Editor. Runs on activation and from a version-gated check on `init`, so plugin updates that skip the activation hook also get it. |
-| `Breadcrumbs` | `lib/breadcrumbs.php` in award, competition, newsletter, robot, season, sponsor | `register(array $post_types)` plus a pure `build()`. Owns the custom-post-type breadcrumb logic itself (moved from the theme function `hyperpress_breadcrumbs_custom_post_type()`, with its debug output and archive bug removed) and attaches it to the theme filter `hyperpress_breadcrumbs_content`. |
-| `Banner` | `lib/banner.php` in competition, newsletter, season, sponsor | `register($post_type, array $args)` with the subtitle theme-mod name and color theme-mod name. Applies a `hyperpress_banner_args` filter so plugin-specific behavior stays in that plugin. |
-| `Controls\PostTypeDropdownControl`, `Controls\CategoryDropdownControl` | `HYPERpress_Dropdown_*_Control` | Moved and renamed. Loaded on `customize_register` only. |
+| Class                                                                  | Replaces                                                                          | Interface                                                                                                                                                                                                                                                                                                                        |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PostTypeRegistrar`                                                    | `lib/custom-post-type.php` in 6 plugins (80-line copies that differ only in data) | `register(array $definition)`. Definition: key, singular, plural, rewrite slug, archive slug, icon, position, supports, taxonomies, overrides. Generates labels and the capability set, applies defaults (public, `map_meta_cap`; `show_in_rest` is false because nothing uses the REST API and the classic editor is required). |
+| `TaxonomyRegistrar`                                                    | `district`, `week`, `tier`, `season`, `program` registrations                     | `register(array $definition)` with the same approach. Object types may be a list or a theme-mod name.                                                                                                                                                                                                                            |
+| `Capabilities`                                                         | nothing (new)                                                                     | `grant(array $post_type_keys)`: adds the CPT's capabilities to Administrator and Editor. Runs on activation and from a version-gated check on `init`, so plugin updates that skip the activation hook also get it.                                                                                                               |
+| `Breadcrumbs`                                                          | `lib/breadcrumbs.php` in award, competition, newsletter, robot, season, sponsor   | `register(array $post_types)` plus a pure `build()`. Owns the custom-post-type breadcrumb logic itself (moved from the theme function `hyperpress_breadcrumbs_custom_post_type()`, with its debug output and archive bug removed) and attaches it to the theme filter `hyperpress_breadcrumbs_content`.                          |
+| `Banner`                                                               | `lib/banner.php` in competition, newsletter, season, sponsor                      | `register($post_type, array $args)` with the subtitle theme-mod name and color theme-mod name. Applies a `hyperpress_banner_args` filter so plugin-specific behavior stays in that plugin.                                                                                                                                       |
+| `Controls\PostTypeDropdownControl`, `Controls\CategoryDropdownControl` | `HYPERpress_Dropdown_*_Control`                                                   | Moved and renamed. Loaded on `customize_register` only.                                                                                                                                                                                                                                                                          |
 
 Banners are not pure copies. Newsletter's banner prepends season names to the
 title and reads a per-post background color meta key. That logic moves into a
@@ -212,6 +212,7 @@ list of affected theme files is still unknown. Items known to need a check:
 ## 6. Risks and non-goals
 
 Risks:
+
 - **Plugin basename changes.** Renaming main files changes `active_plugins`
   entries. Plugins must be reactivated after the change.
 - **Existing dev data is orphaned.** Posts keep their old `post_type`, and the
@@ -223,6 +224,7 @@ Risks:
   infrastructure first.
 
 Non-goals:
+
 - No data migration tool and no backwards-compatible aliases for old keys.
 - No removal of capabilities on uninstall.
 - No changes to `customize.php` or `meta-boxes.php` logic beyond renames.

@@ -11,9 +11,7 @@
   "plugins": [
     {
       "plugin": "@nx/vite/plugin",
-      "include": [
-        "themes/hyperpress-uikit/**/*"
-      ],
+      "include": ["themes/hyperpress-uikit/**/*"],
       "options": {
         "buildTargetName": "vite-build",
         "serveTargetName": "vite-serve",
@@ -30,17 +28,11 @@
   "targetDefaults": {
     "build": {
       "cache": true,
-      "inputs": [
-        "default",
-        "^default"
-      ]
+      "inputs": ["default", "^default"]
     },
     "test:node": {
       "cache": true,
-      "inputs": [
-        "default",
-        "^default"
-      ]
+      "inputs": ["default", "^default"]
     }
   },
   "analytics": false

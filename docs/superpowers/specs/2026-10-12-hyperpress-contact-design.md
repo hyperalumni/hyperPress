@@ -71,14 +71,16 @@ The fix is to store the addresses and the map location once, as site settings, a
     <div class="card-divider"><h5>Heading</h5></div>
     <div class="card-section">
       <address class="vcard">
-        <span class="fn">Name</span><br>
-        <span class="street-address">…</span><br>
-        <span class="locality">…</span>, <span class="state">…</span> <span class="zip">…</span><br>
+        <span class="fn">Name</span><br />
+        <span class="street-address">…</span><br />
+        <span class="locality">…</span>, <span class="state">…</span> <span class="zip">…</span
+        ><br />
         <span class="phone"><a href="tel:+1…">(617) 000-0000</a></span>
       </address>
     </div>
   </div>
   ```
+
 - The Google Maps JavaScript API must be enabled for the key and the key's referrer restrictions must include the public site domains. This is outside the code and has to be checked in Google Cloud by the site owner.
 
 ## Left to the builder

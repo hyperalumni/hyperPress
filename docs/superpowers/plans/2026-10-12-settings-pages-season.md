@@ -42,11 +42,13 @@
 ### Task 1: Season settings page
 
 **Files:**
+
 - Create: `plugins/hyperpress-season/src/Settings.php`, `Sanitizers.php`, `SettingsPage.php`
 - Modify: `plugins/hyperpress-season/src/MetaBoxes.php` (add `boxes()`; keep `customize_metabox` until Task 2), `plugins/hyperpress-season/src/Plugin.php` (`boot()` registers the page and the `default_option_hyperpress_season` filter)
 - Test: create `plugins/tests/integration/Season/SeasonSettingsPageTest.php`, `SeasonSanitizersTest.php`, `SeasonSettingsTest.php`
 
 **Interfaces:**
+
 - Produces: `Settings::OPTION = 'hyperpress_season'`; `Settings::CURRENT = 'hyperpress_season_current'`, `BANNER_SUBTITLE = 'hyperpress_season_banner_subtitle'`, `POST_TYPES = 'hyperpress_season_post_types'`; `Settings::defaults(): array` (`POST_TYPES => array( 'post' )`, others `''`); `Settings::default_option( $fallback, $option, $passed_default )`; `Settings::current(): string` (slug, `''` when unset or not a string); `Settings::banner_subtitle(): string`; `Settings::post_types(): array` (non-empty strings; `array( 'post' )` when the key is missing).
 - Produces: `Sanitizers::current( mixed $value ): string` (slug of an existing `hyper_season` term, else `''`, as the old `Customizer::sanitize_current`); `Sanitizers::banner_subtitle( mixed $value ): string` (`wp_kses_post( (string) $value )`); `Sanitizers::post_types( mixed $value ): array` (registered post types with `show_ui` true, unique, strings only; non-array gives `array()`; port the logic of `PostTypeDropdownControl::sanitize_show_ui_post_types` and its tests in `SeasonProgramCustomizerTest`, do not call the control class).
 - Produces: `SettingsPage::ID = 'hyperpress_season'`, `register()`, `pages( array ): array` (menu and page title `Season`, `parent` `AdminMenu::SLUG`, `option_name` `Settings::OPTION`, `manage_options`, `style` `no-boxes`); `MetaBoxes::boxes( array ): array` hooked on `rwmb_meta_boxes`: one box `hyperpress_season_box` with `settings_pages` `SettingsPage::ID` and three fields in this order: `current` (`select`, options `'' => 'None'` plus every `hyper_season` term as slug => name via `get_terms( array( 'taxonomy' => 'hyper_season', 'hide_empty' => false ) )`, `sanitize_callback` `Sanitizers::current`), `banner_subtitle` (`textarea`, `raw` true, `sanitize_callback` `Sanitizers::banner_subtitle`), `post_types` (`select_advanced`, multiple, options built from `get_post_types( array( 'show_ui' => true ), 'objects' )` as key => label, `std` `array( 'post' )`, `sanitize_callback` `Sanitizers::post_types`). Labels and descriptions are copied from `Customizer.php`.
@@ -60,11 +62,13 @@
 ### Task 2: Switch readers and remove the Customizer section
 
 **Files:**
+
 - Modify: `plugins/hyperpress-season/src/SeasonBanner.php:28`, `plugins/hyperpress-season/src/Plugin.php` (line 48 `object_types`, `boot()` drops `Customizer::register()`), `plugins/hyperpress-season/src/MetaBoxes.php` (delete `customize_metabox`), `plugins/hyperpress-sponsor/src/Widgets/DisplaySponsorsWidget.php:33`
 - Delete: `plugins/hyperpress-season/src/Customizer.php`
 - Test: modify `plugins/tests/integration/SponsorWidgetTest.php` (the `set_theme_mod`/`remove_theme_mod` calls on `hyperpress_season_current`, lines ~14-181), `SeasonNewestFirstTest.php` (~54, 60), `SeasonAdminFilterTest.php` (~18, 23, 85), `SeasonProgramCustomizerTest.php` (remove the season-only cases ported in Task 1 and keep the program ones), `IdentifierConventionTest.php` only if it names season
 
 **Interfaces:**
+
 - Consumes: `Settings::current()`, `banner_subtitle()`, `post_types()`.
 - `SeasonBanner` sets `$banner['subtitle'] = Settings::banner_subtitle()`; `Plugin::definition()['object_types']` becomes the array `Settings::post_types()` (the shared `TaxonomyRegistrar` already accepts a list, so `hyperpress-utils` does not change); the sponsor widget reads `\HyperPress\Season\Settings::current()` (the sponsor plugin already requires season; keep any existing season-not-active guard).
 

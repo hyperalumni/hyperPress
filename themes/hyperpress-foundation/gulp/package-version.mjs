@@ -3,8 +3,8 @@
 // Version of a packaged theme zip: the nearest version tag reachable from HEAD, without a commit suffix.
 // The `Version:` header in the source style.css is only the fallback (and the development value).
 
-import {execFileSync} from 'node:child_process';
-import {Transform} from 'node:stream';
+import { execFileSync } from 'node:child_process';
+import { Transform } from 'node:stream';
 
 // Only tags that start with a digit, optionally after a `v`, count (so `backup-1` is ignored).
 const TAG_MATCH = ['--match', '[0-9]*', '--match', 'v[0-9]*'];
@@ -61,7 +61,7 @@ function describeTag(cwd) {
  * @param {Function} [options.warn]   Receives the fallback warning (default: stderr).
  * @returns {string} The version to package.
  */
-export function resolveVersion({cwd, styleCss, warn = (message) => console.error(message)}) {
+export function resolveVersion({ cwd, styleCss, warn = (message) => console.error(message) }) {
   const version = normalizeTag(describeTag(cwd));
   if (VERSION_LIKE.test(version)) {
     return version;

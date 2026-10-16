@@ -54,6 +54,7 @@ If a sniff is impractical for the whole codebase (for example a naming rule that
 ## Task 2: Document the upgrade path and tooling
 
 **Files:**
+
 - Modify: `README.md`
 
 - [x] **Step 1: Read the current `README.md`**, then add (keeping its existing content and tone) three short sections:
@@ -130,5 +131,6 @@ git commit -m "docs: close out convention and test-toolchain plans" -- docs/supe
 > Note (2026-10-12): the shortcode tags used in the smoke test above (`[time-restrict]`, `[hyper_emphasis]`, `[hyper_season_count]`, `[raw]`) were renamed to `hyperpress_time_restrict`, `hyperpress_emphasis`, `hyperpress_season_count` and `hyperpress_raw` (all tags now carry the `hyperpress_` prefix, no aliases). See plugins-04 for the full mapping.
 
 > Note (2026-10-12): two statements in the smoke test above changed: `hyper_season` now attaches to `post` by default (season's post types default to `array( 'post' )` on the new hyperPress > Season page; only `hyper_program` still attaches to nothing), and the season dropdowns and the `hyperpress_season` Customizer section no longer exist (the "23 `hyperpress_*` Customizer controls" count and the "season/program dropdowns" check no longer include season). See `docs/superpowers/plans/2026-10-12-settings-pages-season.md`.
+
 - **Update (2026-10-13):** the `hyperpress_socials` Customizer section named in the smoke test no longer exists either: the social links moved to a Meta Box settings page and `hyperpress-social` now requires `hyperpress-utils` and `meta-box-aio`. See `docs/superpowers/plans/2026-10-13-settings-pages-social.md`.
 - **Update (2026-10-13):** the `hyperpress_media_nextgen` Customizer section named in the smoke test is gone too: the NextGen photos page moved to hyperPress > Media, and `hyperpress-media` now requires `hyperpress-utils`, `meta-box-aio` and `safe-svg`. See `docs/superpowers/plans/2026-10-13-settings-pages-media.md`.

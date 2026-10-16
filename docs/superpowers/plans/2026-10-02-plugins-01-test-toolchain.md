@@ -13,6 +13,7 @@
 **Specs:** `docs/superpowers/specs/2026-10-02-plugins-tests-and-audit-design.md` (this plan) and `docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md` (the convention being tested).
 
 **Conventions for every task**
+
 - Run everything from `plugins/`. Commands are `docker compose run --rm php <cmd>` unless stated.
 - The repo has unrelated staged deletions (`D hyperPress-award/...`). NEVER plain `git commit`. Always `git add <paths>` then `git commit -m "..." -- <paths>` so only the named paths are committed.
 - The host has PHP 8.5 and docker only. Do not run composer on the host.
@@ -22,35 +23,36 @@
 
 ## File Structure
 
-| Path | Responsibility |
-|---|---|
-| `Dockerfile` | PHP 8.5-cli image with mysqli, git, unzip, composer |
-| `compose.yaml` | `php` and `db` services, env for the DB |
-| `composer.json` | Dev dependencies, scripts (`lint`, `test:unit`, `test:integration`), PSR-4 for `tests/src` |
-| `phpcs.xml.dist` | WPCS + PHPCompatibilityWP ruleset (non-gating until the migration plans finish) |
-| `phpunit.xml.dist` | `unit` and `integration` suites |
-| `.gitignore` | Add `vendor/`, `.phpunit.cache/`, `.phpunit.result.cache` |
-| `tests/src/Support/Convention.php` | Single source of expected plugin list, keys, Requires table, old-to-new key map |
-| `tests/src/Support/PluginHeaders.php` | Parses the plugin header comment block from a file |
-| `tests/bootstrap-unit.php` | Composer autoload only |
-| `tests/bootstrap-integration.php` | Loads wp-phpunit, Meta Box stub, all plugins in load order |
-| `tests/wp-tests-config.php` | WordPress test-suite constants from env |
-| `tests/unit/SmokeTest.php` | Trivial test proving the toolchain runs |
-| `tests/unit/PluginHeadersTest.php` | Header lint across all 14 plugins |
-| `tests/unit/NoLegacyKeysTest.php` | Static scan for hard-coded old post type / taxonomy keys |
-| `tests/integration/SnapshotLegacyTest.php` | Writes `tests/fixtures/legacy-registrations.json` when `HYPERPRESS_WRITE_SNAPSHOT=1` |
-| `tests/fixtures/legacy-registrations.json` | Snapshot of current post type and taxonomy registrations |
-| `tests/integration/KeyConventionTest.php` | Key prefix, length, exact set |
-| `tests/integration/PublicUrlTest.php` | Rewrite slugs and archive slugs equal the snapshot |
-| `tests/integration/CapabilitiesTest.php` | Administrator and Editor hold all caps, Subscriber none |
-| `tests/integration/TaxonomyAttachmentTest.php` | Taxonomy to post type attachment |
-| `tests/integration/IdentifierConventionTest.php` | Meta box, customizer and widget identifiers |
+| Path                                             | Responsibility                                                                             |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `Dockerfile`                                     | PHP 8.5-cli image with mysqli, git, unzip, composer                                        |
+| `compose.yaml`                                   | `php` and `db` services, env for the DB                                                    |
+| `composer.json`                                  | Dev dependencies, scripts (`lint`, `test:unit`, `test:integration`), PSR-4 for `tests/src` |
+| `phpcs.xml.dist`                                 | WPCS + PHPCompatibilityWP ruleset (non-gating until the migration plans finish)            |
+| `phpunit.xml.dist`                               | `unit` and `integration` suites                                                            |
+| `.gitignore`                                     | Add `vendor/`, `.phpunit.cache/`, `.phpunit.result.cache`                                  |
+| `tests/src/Support/Convention.php`               | Single source of expected plugin list, keys, Requires table, old-to-new key map            |
+| `tests/src/Support/PluginHeaders.php`            | Parses the plugin header comment block from a file                                         |
+| `tests/bootstrap-unit.php`                       | Composer autoload only                                                                     |
+| `tests/bootstrap-integration.php`                | Loads wp-phpunit, Meta Box stub, all plugins in load order                                 |
+| `tests/wp-tests-config.php`                      | WordPress test-suite constants from env                                                    |
+| `tests/unit/SmokeTest.php`                       | Trivial test proving the toolchain runs                                                    |
+| `tests/unit/PluginHeadersTest.php`               | Header lint across all 14 plugins                                                          |
+| `tests/unit/NoLegacyKeysTest.php`                | Static scan for hard-coded old post type / taxonomy keys                                   |
+| `tests/integration/SnapshotLegacyTest.php`       | Writes `tests/fixtures/legacy-registrations.json` when `HYPERPRESS_WRITE_SNAPSHOT=1`       |
+| `tests/fixtures/legacy-registrations.json`       | Snapshot of current post type and taxonomy registrations                                   |
+| `tests/integration/KeyConventionTest.php`        | Key prefix, length, exact set                                                              |
+| `tests/integration/PublicUrlTest.php`            | Rewrite slugs and archive slugs equal the snapshot                                         |
+| `tests/integration/CapabilitiesTest.php`         | Administrator and Editor hold all caps, Subscriber none                                    |
+| `tests/integration/TaxonomyAttachmentTest.php`   | Taxonomy to post type attachment                                                           |
+| `tests/integration/IdentifierConventionTest.php` | Meta box, customizer and widget identifiers                                                |
 
 ---
 
 ## Task 1: Docker, Composer and a passing smoke test
 
 **Files:**
+
 - Create: `Dockerfile`, `compose.yaml`, `composer.json`, `phpunit.xml.dist`, `tests/bootstrap-unit.php`, `tests/unit/SmokeTest.php`
 - Modify: `.gitignore`
 
@@ -94,7 +96,7 @@ services:
       MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: wordpress_test
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       interval: 3s
       timeout: 3s
       retries: 20
@@ -221,6 +223,7 @@ git commit -m "test: add Docker PHP 8.5 toolchain and smoke test" -- Dockerfile 
 ## Task 2: Coding-standards config (non-gating)
 
 **Files:**
+
 - Create: `phpcs.xml.dist`
 
 - [x] **Step 1: Write `phpcs.xml.dist`**
@@ -299,6 +302,7 @@ git commit -m "test: add phpcs ruleset (non-gating baseline: N errors)" -- phpcs
 ## Task 3: Shared expectations and header lint (expected FAIL)
 
 **Files:**
+
 - Create: `tests/src/Support/Convention.php`, `tests/src/Support/PluginHeaders.php`, `tests/unit/PluginHeadersTest.php`
 
 - [x] **Step 1: Write `tests/src/Support/Convention.php`**
@@ -543,6 +547,7 @@ git commit -m "test: add header lint and shared Convention expectations (failing
 ## Task 4: Integration bootstrap (WordPress, Meta Box stub, all plugins)
 
 **Files:**
+
 - Create: `tests/wp-tests-config.php`, `tests/bootstrap-integration.php`, `tests/integration/BootTest.php`
 - Modify: `composer.json` (script), `phpunit.xml.dist` (per-suite note only, no change needed if script passes `--bootstrap`)
 
@@ -686,6 +691,7 @@ git commit -m "test: boot WordPress with all plugins in the integration suite" -
 Must run BEFORE any migration-plan change. The snapshot is the reference for URL parity and attachment checks.
 
 **Files:**
+
 - Create: `tests/integration/SnapshotLegacyTest.php`, `tests/fixtures/legacy-registrations.json`
 
 - [x] **Step 1: Write `tests/integration/SnapshotLegacyTest.php`**
@@ -792,6 +798,7 @@ git commit -m "test: snapshot legacy post type and taxonomy registrations" -- te
 ## Task 6: Key convention and public URL contracts (expected FAIL)
 
 **Files:**
+
 - Create: `tests/integration/KeyConventionTest.php`, `tests/integration/PublicUrlTest.php`
 
 - [x] **Step 1: Write `tests/integration/KeyConventionTest.php`**
@@ -905,6 +912,7 @@ git commit -m "test: add key convention and public URL contracts (failing until 
 ## Task 7: Capabilities and taxonomy attachment contracts (expected FAIL)
 
 **Files:**
+
 - Create: `tests/integration/CapabilitiesTest.php`, `tests/integration/TaxonomyAttachmentTest.php`
 
 - [x] **Step 1: Write `tests/integration/CapabilitiesTest.php`**
@@ -1024,6 +1032,7 @@ git commit -m "test: add capability and taxonomy attachment contracts (failing u
 ## Task 8: Identifier convention and legacy-key scan
 
 **Files:**
+
 - Create: `tests/integration/IdentifierConventionTest.php`, `tests/unit/NoLegacyKeysTest.php`
 
 - [x] **Step 1: Write `tests/integration/IdentifierConventionTest.php`**
@@ -1211,17 +1220,18 @@ git commit -m "docs(plans): record plugins-01-test-toolchain execution notes" --
 
 ## Self-review against the spec
 
-| Spec 2 requirement | Task |
-|---|---|
-| Docker php (8.5) + db, composer, phpunit, wpcs, phpcompat | 1, 2 |
-| `php -l` gates from the start, phpcs non-gating | 1, 2 |
-| Unit bootstrap / integration bootstrap, Meta Box stubbed | 1, 4 |
-| Deprecations from vendor code must not fail the run | 1 (`convertDeprecationsToExceptions=false`) |
-| Header lint (no GitHub URI, fields, Requires Plugins exact, main file name) | 3 |
-| Contracts: keys, URLs, capabilities, attachment, identifiers, no hard-coded old keys | 6, 7, 8 |
-| Contracts fail on current code | 3, 6, 7, 8 |
+| Spec 2 requirement                                                                   | Task                                        |
+| ------------------------------------------------------------------------------------ | ------------------------------------------- |
+| Docker php (8.5) + db, composer, phpunit, wpcs, phpcompat                            | 1, 2                                        |
+| `php -l` gates from the start, phpcs non-gating                                      | 1, 2                                        |
+| Unit bootstrap / integration bootstrap, Meta Box stubbed                             | 1, 4                                        |
+| Deprecations from vendor code must not fail the run                                  | 1 (`convertDeprecationsToExceptions=false`) |
+| Header lint (no GitHub URI, fields, Requires Plugins exact, main file name)          | 3                                           |
+| Contracts: keys, URLs, capabilities, attachment, identifiers, no hard-coded old keys | 6, 7, 8                                     |
+| Contracts fail on current code                                                       | 3, 6, 7, 8                                  |
 
 Not in this plan, by design:
+
 - Registrar, capability, breadcrumb and banner **unit/behavior tests** need the Utils classes, so they are written test-first inside plugins-02-shared-utils.
 - The "`Requires Plugins` equals the table" check is in the header lint (Task 3).
 - Audit tests belong to plugins-06-audit.

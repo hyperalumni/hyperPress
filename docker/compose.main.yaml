@@ -3,7 +3,7 @@ services:
     image: wordpress:${WORDPRESS_VERSION:-latest}
     restart: unless-stopped
     pull_policy: weekly
-    profiles: [ "local" ]
+    profiles: ["local"]
     env_file:
       - ../.env.db
       - ../.env.wordpress
@@ -37,7 +37,7 @@ services:
   wpcli:
     image: wordpress:cli
     pull_policy: weekly
-    profiles: [ "tools" ]
+    profiles: ["tools"]
     user: "33:33"
     volumes_from:
       - wordpress
@@ -51,7 +51,7 @@ services:
         condition: service_healthy
   tooling:
     build: ../tooling
-    profiles: [ "tools" ]
+    profiles: ["tools"]
     volumes:
       - ../../themes:/themes
       - ../../dist:/dist
@@ -59,12 +59,12 @@ services:
     image: mariadb:${MARIADB_VERSION:-latest}
     restart: unless-stopped
     pull_policy: weekly
-    profiles: [ "local" ]
+    profiles: ["local"]
     env_file:
       - ../.env.db
       - ../.env.mariadb
     healthcheck:
-      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 10s
       interval: 10s
       timeout: 5s
@@ -75,7 +75,7 @@ services:
     image: phpmyadmin:${PHPMYADMIN_VERSION:-latest}
     restart: unless-stopped
     pull_policy: weekly
-    profiles: [ "local" ]
+    profiles: ["local"]
     env_file:
       - ../.env.phpmyadmin
     ports:

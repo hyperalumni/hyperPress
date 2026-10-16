@@ -7,6 +7,7 @@ Text domain `hyperpress`. `README.md` keeps the upstream FoundationPress text be
 Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../../AGENTS.md` also applies.
 
 ## Commands
+
 - Node comes from nvm and is not on the default PATH. Load it first in each shell:
   `source ~/.nvm/nvm.sh && nvm use` (reads `.nvmrc`), then run `pnpm`/`node` commands.
 - `pnpm start`: gulp dev server with Browsersync (needs `BROWSERSYNC.url` in a local `config.yml`)
@@ -17,12 +18,14 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
 - PHP tooling runs in Docker from this dir (never composer on the host): `docker compose run --rm php composer lint|test:unit|test:integration`. Set `HYPERPRESS_TEST_WITHOUT_EXTRACTED=1` to run the integration suite without hyperpress-shortcode and hyperpress-media. `lint` is gating (0 violations); security findings carry `// phpcs:ignore ... -- theme audit` comments.
 
 ## Versioning
+
 - The release version is a git tag at the repo root (no `package.json` version; the field was removed). Tags look like `2026.0.0` (a leading `v` is accepted and stripped); other tags (`backup-1`) are ignored.
 - `pnpm package` takes the nearest version tag reachable from `HEAD` (`git describe --tags --abbrev=0`, no commit suffix), names the zip with it and writes it into the zipped `style.css` `Version:` header only. The source `style.css` is never modified.
 - The `Version:` header in the source `style.css` is only the development value and the fallback: with no version tag the package task prints `warning: no version tag found; using <version> from style.css` to stderr and uses it.
 - `hyperpress_theme_version()` (`library/enqueue-scripts.php`) returns the parent theme's `Version:` header and versions the theme's own CSS/JS (`main-stylesheet`, `main-script`, `wp-admin-svg-support`). Foundation, jQuery and Font Awesome keep their own library versions in the same file.
 
 ## Layout
+
 - `functions.php` requires modules from `library/`; register new modules there.
 - Source assets: `src/assets/{js,scss,images,css}`. Webpack entries come from `PATHS.entries` in
   `config-default.yml`/`config.yml`, not `webpack.config.js`.
@@ -32,9 +35,11 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
 - Templates are in the repo root plus `template-parts/` and `page-templates/`.
 
 ## Direction
+
 Per `../../docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md`, the theme is becoming
 presentation-only. Shortcodes, SVG/AVIF support, NextGen code and HYPER plugin recommendations move to
 plugins in `../../plugins`. Banner router, core breadcrumb trails, Customizer, nav, walkers and templates stay.
+
 - Shortcode tags are `hyperpress_`-prefixed (`hyperpress_emphasis`, `hyperpress_banner`, `hyperpress_time_restrict`, ...). Keep the plugin-facing hooks unchanged: `hyperpress_banner_content`,
   `hyperpress_breadcrumbs_content`, `content_template`. Labels moved to `hyperpress-label`: templates
   call `do_action( 'hyperpress_labels' )`, and `hyperpress-label` must be active for labels to show
@@ -44,12 +49,14 @@ plugins in `../../plugins`. Banner router, core breadcrumb trails, Customizer, n
 - Use the `hyperpress_` prefix for new code. Legacy `foundationpress_` and `hyper_` names are being renamed.
 
 ## Gotchas
+
 - The root `pnpm-workspace.yaml` (`../../pnpm-workspace.yaml`) `allowBuilds` whitelists native build scripts (only `mozjpeg` is enabled).
 - The working tree usually has unrelated uncommitted changes. Commit with explicit pathspecs, never `git add -A`.
 - Gulp 5 `gulp.src` needs `{ encoding: false }` for any binary files (PNG, .mo, fonts), otherwise they are corrupted; `PackageConfigTest` guards the package, copy and images tasks.
 - Never put secrets in the repo. `library/plugins.php` once held an API-key URL; do not reproduce it.
 
 ## Implementation plans
+
 Plans are in `../../docs/superpowers/plans/`, specs in `../../docs/superpowers/specs/` (see the plans README).
 Commit a plan on its own before coding, tick its checkboxes in the same commit as each task's code,
 and update any plan that mentions a file you change. Add a COMPLETED banner when a plan finishes.

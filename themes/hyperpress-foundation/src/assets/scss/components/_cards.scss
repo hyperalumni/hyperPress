@@ -1,5 +1,4 @@
 .cards-container {
-
   @include xy-grid;
 
   .card {
@@ -9,18 +8,17 @@
       .card-content {
         padding: 1rem;
       }
-
     }
 
     @include breakpoint(medium) {
       @include xy-cell($size: 1 of 3, $gutters: 0.7rem, $output: (base size gutters));
-
     }
-
   }
 }
 
 .vcard {
   font-style: normal;
-  .fn { font-weight: bold; }
+  .fn {
+    font-weight: bold;
+  }
 }

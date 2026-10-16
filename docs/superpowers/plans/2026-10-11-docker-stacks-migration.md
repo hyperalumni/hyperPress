@@ -35,10 +35,12 @@
 ### Task 1: Commit spec and plan, preflight, save old configs
 
 **Files:**
+
 - Commit: `docs/superpowers/specs/2026-10-07-uikit-nx-wordpress-design.md`, `docs/superpowers/plans/2026-10-11-docker-stacks-migration.md`
 - Create (scratch): `/tmp/opencode/stage0b/{vars.sh,old-sha256.txt,old-cfg-hyperalumni.json,old-cfg-hyperonline.json,progress.md}`
 
 **Interfaces:**
+
 - Produces: `old-cfg-<site>.json` (old config without env values); `old-sha256.txt`.
 
 - [x] **Step 1: Commit the spec, then the plan, each on its own**
@@ -61,10 +63,12 @@ Expected: exit 0; `grep -c -E 'PASSWORD|environment' <file>` prints `0` (no valu
 ### Task 2: Env files (owner-run copy) and templates
 
 **Files:**
+
 - Create (agent): `docker/php/uploads.ini`, directories `docker/hyperalumni/`, `docker/hyperonline/`
 - Create (owner): `docker/.env`, `docker/.env.db`, `docker/.env.mariadb`, `docker/.env.phpmyadmin`, `docker/.env.wordpress`, `docker/.env.versions`, `docker/hyperalumni/.env.local`, `docker/hyperonline/.env.local`, and a `.example` twin of each of the eight
 
 **Interfaces:**
+
 - Produces: the eight real env files (git-ignored after Task 3) and eight `.example` templates.
 
 - [x] **Step 1: Create directories and copy `uploads.ini`**
@@ -103,11 +107,13 @@ Expected: every name list matches exactly, and the three secret templates report
 ### Task 3: Shared compose file, site wrappers, comparison, commit
 
 **Files:**
+
 - Create: `docker/compose.main.yaml`, `docker/hyperalumni/compose.yaml`, `docker/hyperonline/compose.yaml`
 - Modify: `.gitignore` (replace `!.env.example` with `!.env*.example`)
 - Create (scratch): `/tmp/opencode/stage0b/compare.js`
 
 **Interfaces:**
+
 - Consumes: `old-cfg-<site>.json`, the Task 2 files.
 - Produces: `node compare.js <site>` exits `0` when the new config equals the old one after path normalisation, otherwise prints the differing JSON paths and exits `1`.
 
@@ -163,6 +169,7 @@ Expected: one commit; `git ls-files docker | wc -l` is `12`; `git ls-files docke
 **Files:** none changed in the repo; the site's containers are recreated from `docker/hyperalumni/`.
 
 **Interfaces:**
+
 - Consumes: the saved old configs and `old-sha256.txt` from Task 1; the Task 3 files.
 - Produces: `hyperalumni` verified running from the monorepo, then stopped; the published ports recorded in the ledger.
 
@@ -203,6 +210,7 @@ Expected: the user confirms; `docker ps -q --filter name=hyperalumni | wc -l` is
 **Files:** none changed in the repo.
 
 **Interfaces:**
+
 - Consumes: as Task 4 with `hyperonline` in place of `hyperalumni` (directory `docker/hyperonline`, volumes `hyperonline_db` / `hyperonline_wp`).
 - Produces: `hyperonline` verified, then stopped.
 
@@ -235,10 +243,12 @@ As Task 4 Step 6 for this site's URL. Expected: the user confirms; no `hyperonli
 ### Task 6: Docs, final gate, wrap-up
 
 **Files:**
+
 - Modify: `AGENTS.md` (root)
 - Modify: this plan (COMPLETED banner, outcome notes, checkboxes)
 
 **Interfaces:**
+
 - Consumes: `old-sha256.txt`.
 
 - [x] **Step 1: Write the failing check**

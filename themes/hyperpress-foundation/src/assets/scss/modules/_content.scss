@@ -1,4 +1,5 @@
-.grid-container, .main-container {
+.grid-container,
+.main-container {
   @include xy-grid-container;
 
   .main-grid {
@@ -34,8 +35,6 @@
       }
     }
   }
-
-
 
   &:not(.full-screen) {
     .main-grid {
@@ -94,13 +93,10 @@
             @include xy-cell(3);
             margin-top: 1rem;
           }
-
         }
       }
     }
   }
-
-
 }
 
 .section-divider {

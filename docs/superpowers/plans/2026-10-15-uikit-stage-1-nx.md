@@ -37,12 +37,14 @@
 ### Task 1: Bump the Node pin and correct the spec
 
 **Files:**
+
 - Modify: `.nvmrc`, `themes/hyperpress-foundation/.nvmrc` (`26.11.1` -> `26.12.0`)
 - Modify: `package.json`, `themes/hyperpress-foundation/package.json` (`devEngines.runtime.version`, `engines.node`)
 - Modify: `AGENTS.md` (Node version in Environment; add the pnpm PATH line)
 - Modify: `docs/superpowers/specs/2026-10-07-uikit-nx-wordpress-design.md`
 
 **Interfaces:**
+
 - Produces: Node 26.12.0 as the single pinned runtime. Later tasks assume it.
 
 - [x] **Step 1: Record the pre-change baseline.** Under the shell setup, with the old pin still in place and using Node 26.12.0 via `nvm use 26.12.0`, run `pnpm install` then `pnpm --filter @hyper/press build`. Save `find themes/hyperpress-foundation/dist -type f | sort` to `/tmp/opencode/stage1/dist-baseline.txt` (create the directory). Expected: both commands exit 0 and the file list is non-empty.
@@ -54,11 +56,13 @@
 ### Task 2: Install Nx and add `nx.json`
 
 **Files:**
+
 - Modify: `package.json` (devDependency `"nx": "23.3.0"`, exact), `pnpm-lock.yaml`, `.gitignore` (add `.nx/`)
 - Create: `nx.json`
 - Modify (only if install is blocked by release age): `pnpm-workspace.yaml` (add the `nx` packages the error names to `minimumReleaseAgeExclude`)
 
 **Interfaces:**
+
 - Produces: the `nx` binary at the root (`pnpm exec nx`) and `nx.json` with `targetDefaults` for `build` and `test:node` (`cache: true`, `inputs: ["default", "^default"]`) plus `namedInputs.default = ["{projectRoot}/**/*", "!{projectRoot}/dist/**/*", "!{projectRoot}/vendor/**/*", "!{projectRoot}/node_modules/**/*"]`.
 
 - [x] **Step 1: Install.** `pnpm add -D -w --save-exact nx@23.3.0`. If pnpm rejects it as younger than the release-age window, add the named packages to `minimumReleaseAgeExclude`, note the reason in a comment-free commit message, and retry. Expected: exit 0.
@@ -70,9 +74,11 @@
 ### Task 3: Register the Foundation theme
 
 **Files:**
+
 - Create: `themes/hyperpress-foundation/project.json` (target options; first added as a `package.json` `nx` block in f172690, then moved here and removed from `package.json`)
 
 **Interfaces:**
+
 - Consumes: `nx.json` target defaults from Task 2.
 - Produces: project `@hyper/press` (script targets inferred from `package.json`, target options in `project.json`) with cached targets `build` (outputs `{projectRoot}/dist`) and `test:node`. Other scripts (`dev`, `start`, `phpcs`, `phpcbf`, `package`, `audit`) stay uncached.
 
@@ -85,10 +91,12 @@
 ### Task 4: Register the plugins and their tooling
 
 **Files:**
+
 - Create: `plugins/hyperpress-<name>/project.json` for each of the 16 plugins (`ls -d plugins/hyperpress-*`)
 - Create: `plugins/project.json` (project `plugins-tooling`)
 
 **Interfaces:**
+
 - Produces: 16 projects named `hyperpress-<name>` (`projectType: "library"`, tags `["type:plugin"]`, no targets) and `plugins-tooling` with uncached targets `lint`, `test:unit`, `test:integration`, each an `nx:run-commands` with `cwd: "plugins"` running `docker compose run --rm php composer <script>`. Plan B and C add per-plugin targets and dependency edges to these projects.
 
 - [x] **Step 1: Read `plugins/composer.json` scripts and `plugins/AGENTS.md`** and confirm the script names `lint`, `test:unit`, `test:integration` exist; use the real names if they differ. Pin them in the target definitions.
@@ -101,6 +109,7 @@
 ### Task 5: Prove graph and cache, then close out
 
 **Files:**
+
 - Modify: `AGENTS.md` (Nx commands: `pnpm exec nx show projects`, `nx build @hyper/press`, `nx run plugins-tooling:lint`; that Nx caches the theme build only)
 - Modify: `docs/superpowers/specs/2026-10-07-uikit-nx-wordpress-design.md` (Staged rollout: stage 1 done, with the Node 26 result)
 - Modify: this plan (tick boxes, COMPLETED banner, execution notes)

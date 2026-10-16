@@ -14,19 +14,19 @@
 
 ## File Structure
 
-| Path | Responsibility |
-|---|---|
-| `hyperpress-utils/hyperpress-utils.php` | Renamed from `utils.php`. Header, ABSPATH guard, PSR-4 autoloader for `HyperPress\Utils` |
-| `hyperpress-utils/src/Labels.php` | Pure label arrays for post types and taxonomies |
-| `hyperpress-utils/src/PostTypeRegistrar.php` | `build()` (pure) and `register()` for post types |
-| `hyperpress-utils/src/TaxonomyRegistrar.php` | `build()` (pure) and `register()` for taxonomies |
-| `hyperpress-utils/src/Capabilities.php` | Per-post-type capability grant with a version gate |
-| `hyperpress-utils/src/Breadcrumbs.php` | Breadcrumb builder (`build()` is pure) and filter registration; moved from the theme |
-| `hyperpress-utils/src/Banner.php` | Banner assembly (`apply()` pure) and filter registration |
-| `hyperpress-utils/src/Controls/PostTypeDropdownControl.php`, `CategoryDropdownControl.php` | Moved and renamed Customizer controls |
-| `hyperpress-utils/lib/` | Deleted when empty |
-| `tests/unit/Utils/*Test.php` | Pure unit tests |
-| `tests/integration/Utils/*Test.php` | Hook and role behavior tests |
+| Path                                                                                       | Responsibility                                                                           |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `hyperpress-utils/hyperpress-utils.php`                                                    | Renamed from `utils.php`. Header, ABSPATH guard, PSR-4 autoloader for `HyperPress\Utils` |
+| `hyperpress-utils/src/Labels.php`                                                          | Pure label arrays for post types and taxonomies                                          |
+| `hyperpress-utils/src/PostTypeRegistrar.php`                                               | `build()` (pure) and `register()` for post types                                         |
+| `hyperpress-utils/src/TaxonomyRegistrar.php`                                               | `build()` (pure) and `register()` for taxonomies                                         |
+| `hyperpress-utils/src/Capabilities.php`                                                    | Per-post-type capability grant with a version gate                                       |
+| `hyperpress-utils/src/Breadcrumbs.php`                                                     | Breadcrumb builder (`build()` is pure) and filter registration; moved from the theme     |
+| `hyperpress-utils/src/Banner.php`                                                          | Banner assembly (`apply()` pure) and filter registration                                 |
+| `hyperpress-utils/src/Controls/PostTypeDropdownControl.php`, `CategoryDropdownControl.php` | Moved and renamed Customizer controls                                                    |
+| `hyperpress-utils/lib/`                                                                    | Deleted when empty                                                                       |
+| `tests/unit/Utils/*Test.php`                                                               | Pure unit tests                                                                          |
+| `tests/integration/Utils/*Test.php`                                                        | Hook and role behavior tests                                                             |
 
 ---
 
@@ -55,6 +55,7 @@ Expected: shows how `type` is consumed. Banner `type` values (`newsletter`, `spo
 ## Task 1: Convert `hyperpress-utils` to the new structure
 
 **Files:**
+
 - Rename: `hyperpress-utils/utils.php` to `hyperpress-utils/hyperpress-utils.php`
 - Modify: the renamed file (header and body)
 
@@ -108,6 +109,7 @@ git commit -m "refactor(utils): rename main file, add PSR-4 autoloader, fix head
 ## Task 2: `Labels` and `PostTypeRegistrar` (TDD)
 
 **Files:**
+
 - Create: `hyperpress-utils/src/Labels.php`, `hyperpress-utils/src/PostTypeRegistrar.php`, `tests/unit/Utils/PostTypeRegistrarTest.php`
 - Modify: `tests/bootstrap-unit.php`
 
@@ -497,6 +499,7 @@ git commit -m "feat(utils): add Labels and PostTypeRegistrar" -- hyperpress-util
 ## Task 3: `TaxonomyRegistrar` (TDD)
 
 **Files:**
+
 - Create: `hyperpress-utils/src/TaxonomyRegistrar.php`, `tests/unit/Utils/TaxonomyRegistrarTest.php`
 
 - [x] **Step 1: Write the failing test**
@@ -740,6 +743,7 @@ git commit -m "feat(utils): add TaxonomyRegistrar" -- hyperpress-utils/src/Taxon
 The capability set is read from the registered post type object (`cap`), so it always matches what WordPress checks. Granting is idempotent and gated by a per-plugin version option so a plugin update that changes capabilities regrants.
 
 **Files:**
+
 - Create: `hyperpress-utils/src/Capabilities.php`, `tests/unit/Utils/CapabilitiesTest.php`, `tests/integration/Utils/CapabilitiesGrantTest.php`
 
 - [x] **Step 1: Write the failing unit test `tests/unit/Utils/CapabilitiesTest.php`**
@@ -943,6 +947,7 @@ The theme's `hyperpress_breadcrumbs_custom_post_type()` moves here as real logic
 The crumb array shape (`title`, `url`, `classes.li`, `classes.bread`) and the CSS class names are preserved exactly, because the theme template and CSS may depend on them.
 
 **Files:**
+
 - Create: `hyperpress-utils/src/Breadcrumbs.php`, `tests/unit/Utils/BreadcrumbsTest.php`, `tests/integration/Utils/BreadcrumbsRequestTest.php`
 
 - [x] **Step 1: Write the failing unit test `tests/unit/Utils/BreadcrumbsTest.php`**
@@ -1256,6 +1261,7 @@ Theme follow-up (handled by the theme plans, not here): once this class is in us
 Replaces the three near-identical `banner.php` copies (competition, newsletter, sponsor). Legacy differences are preserved as arguments: newsletter always overwrites the archive title (`always_set_archive_title`) and joins the season with "from"; competition and sponsor only set an empty title and use "in". Newsletter's season-aware singular title and per-post color move into a `hyperpress_banner_args` filter in the newsletter plugin (plugins-04-remaining-plugins).
 
 **Files:**
+
 - Create: `hyperpress-utils/src/Banner.php`, `tests/unit/Utils/BannerTest.php`, `tests/integration/Utils/BannerRegisterTest.php`
 
 - [x] **Step 1: Write the failing unit test**
@@ -1509,6 +1515,7 @@ git commit -m "feat(utils): add Banner with hyperpress_banner_args filter" -- hy
 Loaded lazily by the autoloader on first reference, which only happens inside `customize_register` (when `WP_Customize_Control` exists), so the legacy `class_exists` guards and the `require_once` of core are no longer needed. The legacy `postTypes` dynamic property (deprecated since PHP 8.2) becomes a declared property.
 
 **Files:**
+
 - Create: `hyperpress-utils/src/Controls/PostTypeDropdownControl.php`, `hyperpress-utils/src/Controls/CategoryDropdownControl.php`, `tests/integration/Utils/ControlsTest.php`
 - Delete: `hyperpress-utils/lib/controls/customize-post-type-control.php`, `hyperpress-utils/lib/controls/customize-category-control.php` (and `lib/` if empty)
 
@@ -1702,6 +1709,7 @@ The legacy `TODO: build a multiselect drop down by extending Walker_Category_Che
 ```bash
 rmdir hyperpress-utils/lib/controls hyperpress-utils/lib 2>/dev/null; ls hyperpress-utils
 ```
+
 Expected: `hyperpress-utils.php`, `src`, plus any assets/languages, no `lib`.
 
 Run: `docker compose run --rm php composer test:integration -- --filter ControlsTest`
@@ -1748,6 +1756,7 @@ git commit -m "docs(plans): complete plugins-02-shared-utils" -- docs/superpower
 - Deferred minors (to triage at the end): `KEY_PATTERN` allows a trailing newline (use `\z`); `resolve_object_types` returns `['']`/`[false]` for a stored falsy theme mod; `Capabilities::ensure` records the version even if no type was registered yet (callers must run it at `init` priority 20 after registration at 10); `BreadcrumbsRequestTest` leaks the `hyper_season` taxonomy until season is migrated; season crumb URL has no trailing slash; Banner builds its context before the early return and callers must pass pre-translated `archive_title`; several untested edge cases listed in the per-task reports.
 
 ### Theme checklist (OUT OF SCOPE here, for the theme plans)
+
 - Plugin identifiers the theme must learn: post types `hyper_award`, `hyper_competition`, `hyper_countdown`, `hyper_newsletter`, `hyper_robot`, `hyper_sponsor`; taxonomies `hyper_season`, `hyper_program`, `hyper_district`, `hyper_week`, `hyper_tier`.
 - The theme's `hyperpress_breadcrumbs_custom_post_type()` is replaced by `HyperPress\Utils\Breadcrumbs` and becomes dead code; theme-02-renames-and-breadcrumbs removes it.
 - Undeclared plugin-to-theme dependency: banner color theme mods `hyperpress_hyper_green`, `hyperpress_hyper_orange`, `hyperpress_hyper_red`, `hyperpress_gear_blue`, and the theme meta field `hyperpress_banner_background_color`.

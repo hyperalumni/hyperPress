@@ -11,4 +11,3 @@ import Foundation from 'foundation-sites';
 Foundation.Sticky.defaults.marginTop = 0;
 
 $(document).foundation();
-

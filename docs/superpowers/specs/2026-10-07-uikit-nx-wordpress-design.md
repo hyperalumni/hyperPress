@@ -14,24 +14,24 @@ repo is added under `plugins/` (rebased on top, no merge commit), and root works
 
 ## Decisions
 
-| Area | Decision |
-|---|---|
-| Repo | `uikit/` is a working clone of the hyperPress history (branch `master`, original commit hashes kept, so the FoundationPress lineage and the fork relationship of `hyperalumni/hyperPress` are intact). Restructured by new commits. Nothing is pushed in this design. `../theme`, `../plugins` and the Docker stacks that mount them are untouched |
-| Workspace | pnpm workspace from stage 0; Nx 23.3.0 (exact pin; all `@nx/*` packages on the same 23.x version) from stage 1 |
-| Runtime | Node 26.12.0 and pnpm 12.12.1, as already pinned by the theme (`.nvmrc`, `devEngines`); `only-allow pnpm` preinstall |
-| Docs | One location: the repo-root `docs/superpowers/{specs,plans,audit}/`, holding workspace (`uikit-*`), theme (`theme-*`) and plugins (`plugins-*`) documents. Checked: no filename collisions between the three sets |
-| Foundation theme | Existing theme moves unchanged, by one rename commit, to `themes/hyperpress-foundation/` (gulp/webpack build kept as is). Its `docs/` is not moved; it stays at the root |
-| Plugins | The `../plugins` repo is imported with its history (rebased on top of the move commit, so no merge commit): everything under `plugins/` as-is (16 `hyperpress-*` plugins plus its shared `composer.json`, `phpcs.xml.dist`, `phpunit.xml.dist`, `tests/`, `bin/`, `AGENTS.md`, Docker files), except its `docs/`, which goes to the root `docs/`. Hoisting shared tooling to the root is a later, separate step |
-| New theme | Classic PHP theme `themes/hyperpress-uikit/`, Timber (Twig) templating, TypeScript, Sass |
-| UIkit | Consumed from Sass source (`uikit/src/scss`, shipped in the npm package); variables overridden, only used components imported |
-| Bundler | Vite via the inferred `@nx/vite/plugin` for the new theme (the `@nx/vite:build` executor is deprecated and broke on Nx 23.3); emits a manifest |
-| JS/TS lint | Oxlint via the first-party `@nx/oxlint` Nx plugin |
-| Format (JS/TS/SCSS/JSON/YAML/MD) | Oxfmt, run over the whole monorepo by root `package.json` scripts (`"fmt": "oxfmt"`, `"fmt:check": "oxfmt --check"`), not as per-project Nx targets |
-| SCSS lint | Stylelint (Oxlint does not cover CSS) |
-| PHP lint | PHPCS (WordPress standard), in Docker only |
-| Twig | No formatter or linter (none available) |
-| Dev environment | One shared Docker Compose file in `docker/` with thin per-site wrappers (`docker/hyperalumni/`, `docker/hyperonline/`, `docker/uikit/`); PHP/Composer run in a tooling container, never on the host |
-| Stub plugin | `plugins/hyperpress-example/` was planned when no real plugins were in scope; revisit in stage 5 (a real plugin may serve instead) |
+| Area                             | Decision                                                                                                                                                                                                                                                                                                                                                                                                        |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repo                             | `uikit/` is a working clone of the hyperPress history (branch `master`, original commit hashes kept, so the FoundationPress lineage and the fork relationship of `hyperalumni/hyperPress` are intact). Restructured by new commits. Nothing is pushed in this design. `../theme`, `../plugins` and the Docker stacks that mount them are untouched                                                              |
+| Workspace                        | pnpm workspace from stage 0; Nx 23.3.0 (exact pin; all `@nx/*` packages on the same 23.x version) from stage 1                                                                                                                                                                                                                                                                                                  |
+| Runtime                          | Node 26.12.0 and pnpm 12.12.1, as already pinned by the theme (`.nvmrc`, `devEngines`); `only-allow pnpm` preinstall                                                                                                                                                                                                                                                                                            |
+| Docs                             | One location: the repo-root `docs/superpowers/{specs,plans,audit}/`, holding workspace (`uikit-*`), theme (`theme-*`) and plugins (`plugins-*`) documents. Checked: no filename collisions between the three sets                                                                                                                                                                                               |
+| Foundation theme                 | Existing theme moves unchanged, by one rename commit, to `themes/hyperpress-foundation/` (gulp/webpack build kept as is). Its `docs/` is not moved; it stays at the root                                                                                                                                                                                                                                        |
+| Plugins                          | The `../plugins` repo is imported with its history (rebased on top of the move commit, so no merge commit): everything under `plugins/` as-is (16 `hyperpress-*` plugins plus its shared `composer.json`, `phpcs.xml.dist`, `phpunit.xml.dist`, `tests/`, `bin/`, `AGENTS.md`, Docker files), except its `docs/`, which goes to the root `docs/`. Hoisting shared tooling to the root is a later, separate step |
+| New theme                        | Classic PHP theme `themes/hyperpress-uikit/`, Timber (Twig) templating, TypeScript, Sass                                                                                                                                                                                                                                                                                                                        |
+| UIkit                            | Consumed from Sass source (`uikit/src/scss`, shipped in the npm package); variables overridden, only used components imported                                                                                                                                                                                                                                                                                   |
+| Bundler                          | Vite via the inferred `@nx/vite/plugin` for the new theme (the `@nx/vite:build` executor is deprecated and broke on Nx 23.3); emits a manifest                                                                                                                                                                                                                                                                  |
+| JS/TS lint                       | Oxlint via the first-party `@nx/oxlint` Nx plugin                                                                                                                                                                                                                                                                                                                                                               |
+| Format (JS/TS/SCSS/JSON/YAML/MD) | Oxfmt, run over the whole monorepo by root `package.json` scripts (`"fmt": "oxfmt"`, `"fmt:check": "oxfmt --check"`), not as per-project Nx targets                                                                                                                                                                                                                                                             |
+| SCSS lint                        | Stylelint (Oxlint does not cover CSS)                                                                                                                                                                                                                                                                                                                                                                           |
+| PHP lint                         | PHPCS (WordPress standard), in Docker only                                                                                                                                                                                                                                                                                                                                                                      |
+| Twig                             | No formatter or linter (none available)                                                                                                                                                                                                                                                                                                                                                                         |
+| Dev environment                  | One shared Docker Compose file in `docker/` with thin per-site wrappers (`docker/hyperalumni/`, `docker/hyperonline/`, `docker/uikit/`); PHP/Composer run in a tooling container, never on the host                                                                                                                                                                                                             |
+| Stub plugin                      | `plugins/hyperpress-example/` was planned when no real plugins were in scope; revisit in stage 5 (a real plugin may serve instead)                                                                                                                                                                                                                                                                              |
 
 ## Workspace layout
 
@@ -60,6 +60,7 @@ commits on top of the imported theme history, so the plan precedes the code), th
 fixes).
 
 Setup:
+
 - `uikit/` currently holds a fresh `git init` (no commits), an untracked `.idea/` and the untracked
   workspace spec under `docs/`. The theme's tracked `docs/` stays at the root and has no filename in
   common with the spec, so the spec can stay in place; git refuses the checkout if it would
@@ -70,6 +71,7 @@ Setup:
   `../theme`.
 
 Commits:
+
 1. **Move the theme.** `git mv` every tracked top-level entry except `docs/` into
    `themes/hyperpress-foundation/`, including its `AGENTS.md`, `.nvmrc`, `.gitignore` and `.github/`
    (the last becomes inert there; a root workflow directory is a later decision). One pure-rename
@@ -115,6 +117,7 @@ Not carried by git: the theme's git-ignored local files (`config.yml`, `.env`) a
 `vendor/`, `node_modules/`. They are rebuilt, or copied with `cp` on request without reading them.
 
 Fork and upstream:
+
 - Because the theme's commit hashes are kept, the FoundationPress lineage is real git ancestry. An
   `upstream` remote can be added later and merged with `git merge -Xsubtree=themes/hyperpress-foundation`.
 - `origin` is the same GitHub repo, so the "forked from" relationship is preserved if this history is
@@ -122,6 +125,7 @@ Fork and upstream:
   scope here.
 
 Verification (stage 0 gate):
+
 - `pnpm install` succeeds at the root.
 - `pnpm --filter @hyper/press-foundation build` succeeds and its output file list matches a build from the
   original `../theme`.
@@ -185,6 +189,7 @@ docker/
 ```
 
 Rules:
+
 - Project names (`name: hyperalumni`, `name: hyperonline`), the named volumes (`db`, `wp`), service names, container-side mount paths (`wp-content/themes/hyperPress`, `wp-content/plugins/hyperpress-*`), the `local` profile, `restart`, `pull_policy` and the healthcheck are unchanged. The existing databases and uploads are therefore reused when they still exist (recreating them is acceptable for local development). The theme slug `hyperPress` is stored in each site's database, so it is not renamed.
 - Each wrapper `include`s `../compose.main.yaml` with `project_directory: .` and `env_file: [../.env, .env.local, ../.env.versions]`. A spike with Docker Compose 5.5.1 showed that this resolves bind-mount sources and service `env_file` paths relative to the wrapper directory (so `compose.main.yaml` uses `../php/...`, `../.env.db`, `../../plugins/...`) and keeps the volume names `<project>_db` and `<project>_wp`. Without `project_directory` that layout did not produce a usable config.
 - Only host paths change: `../theme` becomes `../../themes/hyperpress-foundation`, and `../plugins/hyperpress-*` becomes `../../plugins/hyperpress-*`. The theme mount source and slug are parameters, `THEME_SRC` (default `../../themes/hyperpress-foundation`) and `THEME_SLUG` (default `hyperPress`), so the new theme is served by the same file from its own `.env.local` (spike-verified).
@@ -224,7 +229,7 @@ Verification: both sites start from the new location; the old directories are un
 ## Staged rollout
 
 0. Restructure the hyperPress repo into a monorepo: move the theme, rebase the plugins on top, add root files. (done)
-0b. Migrate the `hyperalumni` and `hyperonline` Docker stacks into `docker/` (see Docker stack). (done)
+   0b. Migrate the `hyperalumni` and `hyperonline` Docker stacks into `docker/` (see Docker stack). (done)
 1. Add Nx 23.x; confirm the toolchain runs on Node 26; register existing projects. (done) On Node 26.12.0 the Nx daemon works, the `nx` postinstall is blocked via `allowBuilds` (`nx: false`) and not needed, Nx is pinned in the pnpm catalog, the theme's Nx config lives in `project.json`, and the plugin tooling project is `plugins/project.json`.
 2. Docker stack and a bare `hyperpress-uikit` theme rendering through Timber. (done)
 3. Vite build, manifest-based asset loading, UIkit from `libs/uikit-tokens`. (done)

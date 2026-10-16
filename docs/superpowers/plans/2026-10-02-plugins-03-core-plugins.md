@@ -39,7 +39,8 @@ add_action( 'plugins_loaded', array( \HyperPress\<Name>\Plugin::class, 'boot' ) 
 register_activation_hook( __FILE__, array( \HyperPress\<Name>\Plugin::class, 'activate' ) );
 ```
 
-  (`activate` is omitted for plugins that register no post type.)
+(`activate` is omitted for plugins that register no post type.)
+
 - **R3 Concern files.** Each `lib/<concern>.php` becomes `src/<Concern>.php`: namespace `HyperPress\<Name>`, `final class <Concern>`, the top-level `add_action`/`add_filter`/`add_shortcode` calls move into `public static function register(): void` using `array( self::class, 'method' )`, and each legacy function becomes a `public static function` with the body unchanged except for identifier renames. Remove the `if ( ! function_exists(...) ) :` / `endif;` wrappers and the `die( '-1' )` guard; start each file with `defined( 'ABSPATH' ) || exit;`. Keep the legacy hook names and priorities exactly.
 - **R4 Plugin class.** `src/Plugin.php` with `boot()` (calls each concern's `register()` and hooks registrations), `activate()`, `definition()` where the plugin registers types, and a private `version()` reading the header via `get_file_data`.
 - **R5 Identifiers** follow the per-plugin rename table in each task. Afterwards no legacy identifier may remain (verified by the grep step).
@@ -58,6 +59,7 @@ register_activation_hook( __FILE__, array( \HyperPress\<Name>\Plugin::class, 'ac
 Compares every new registration with the snapshot from plugins-01-test-toolchain, mapped through `Convention::OLD_TO_NEW`. This is the net that catches a mistyped definition.
 
 **Files:**
+
 - Create: `tests/integration/RegistrationParityTest.php`
 
 - [x] **Step 1: Write the test**
@@ -280,6 +282,7 @@ final class SeasonRewriteTest extends WP_UnitTestCase {
 ```
 
 (The archive test uses `hyper_award`, which is migrated in Task 5 of this plan: implement Task 2 Step 5 after Task 5 passes, or run that one test only once award is migrated; the first test is meaningful immediately.) If `is_tax` is false on the archive request, read how WordPress resolves `hyper_season=2026&post_type=hyper_sponsor` (both query vars set) and adjust the assertions to what WordPress actually reports, keeping the `post_type` check: the requirement is that the URL resolves to sponsors of that season, not a 404.
+
 - [x] **Step 6: Delete the legacy `lib/` files, then run R7 verification**, with `<name>`=season and `<old>`=season (taxonomy case):
 
 Run: `docker compose run --rm php composer test:integration -- --filter 'RegistrationParityTest.*season|SeasonRewriteTest'`
@@ -600,19 +603,19 @@ final class Plugin {
 
 - [x] **Step 4: Convert the meta boxes into `src/MetaBoxes.php` (R3) with these renames**
 
-| Legacy | New |
-|---|---|
-| box id `competition-information` | `hyperpress_competition_information` |
-| field `competition_robot` | `hyperpress_competition_robot` |
-| field `competition_host_name` | `hyperpress_competition_host_name` |
-| field `competition_venue_name` | `hyperpress_competition_venue_name` |
-| field `competition_venue_address` | `hyperpress_competition_venue_address` |
-| field `competition_venue_map` | `hyperpress_competition_venue_map` |
-| field `ne_first_event_url` | `hyperpress_competition_ne_first_event_url` |
-| field `first_event_url` | `hyperpress_competition_first_event_url` |
-| field `stream_url` | `hyperpress_competition_stream_url` |
-| `post_types => ['competition']` | `post_types => ['hyper_competition']` |
-| robot field query `robot` (legacy `lib/metaboxes/information.php:32`) | `hyper_robot` |
+| Legacy                                                                | New                                         |
+| --------------------------------------------------------------------- | ------------------------------------------- |
+| box id `competition-information`                                      | `hyperpress_competition_information`        |
+| field `competition_robot`                                             | `hyperpress_competition_robot`              |
+| field `competition_host_name`                                         | `hyperpress_competition_host_name`          |
+| field `competition_venue_name`                                        | `hyperpress_competition_venue_name`         |
+| field `competition_venue_address`                                     | `hyperpress_competition_venue_address`      |
+| field `competition_venue_map`                                         | `hyperpress_competition_venue_map`          |
+| field `ne_first_event_url`                                            | `hyperpress_competition_ne_first_event_url` |
+| field `first_event_url`                                               | `hyperpress_competition_first_event_url`    |
+| field `stream_url`                                                    | `hyperpress_competition_stream_url`         |
+| `post_types => ['competition']`                                       | `post_types => ['hyper_competition']`       |
+| robot field query `robot` (legacy `lib/metaboxes/information.php:32`) | `hyper_robot`                               |
 
 Keep every field's other settings and the box's other settings exactly as legacy. Do not add `sanitize_callback` here (the missing sanitizers are audit findings for plugins-06-audit).
 
@@ -667,7 +670,6 @@ git commit -m "docs(plans): complete plugins-03-core-plugins" -- docs/superpower
 > Note (2026-10-11): `hyper_season` terms ("Season 1" ... "Season 32") now list newest first (natural numeric order, highest number first) instead of by name as text. `HyperPress\Season\SeasonOrder` reorders any `hyper_season` term query that asks for `orderby=name` (the default): the admin filter dropdown, the post edit term checklist and Quick Edit, and the newsletter banner title (via `SortedSeasons::get()`). Terms without a trailing number sort after the numbered ones. An explicit other `orderby` (e.g. `term_id` in the Customizer dropdown) is respected. The taxonomy is not in REST (`show_in_rest` false), so there is no block editor sidebar panel to order.
 >
 > Note (2026-10-15): the wp-admin post list Season column still showed seasons as text (Season 1, Season 10, Season 2). Core primes the term cache with one `orderby=name` query over all of the post type's taxonomies, which the `terms_clauses` filter skips (it only matches a single `hyper_season` query). `SeasonOrder::sort_terms()` now also sorts `get_the_terms()` results for `hyper_season` with the same rules as the SQL order (numbered names by trailing number descending, then names without a number; ties by name, then term id) (covered by `SeasonPostTermsOrderTest`).
-
 
 > Note (2026-10-11): the five seeded taxonomies (`hyper_season`, `hyper_program`, `hyper_district`, `hyper_week`, `hyper_competition_type`) are locked: `edit_terms` and `delete_terms` map to `do_not_allow` through the registrar's `locked` option, so their terms are managed only by code. `manage_terms` and `assign_terms` are unchanged, and seeding is unaffected (it does not check capabilities). `RegistrationParityTest` expects this deviation from the legacy capabilities.
 

@@ -23,29 +23,29 @@ Nothing here is live, so the old theme entry points are removed rather than shim
 
 ## Decisions
 
-| Topic | Decision |
-|---|---|
-| Plugin name | Keep `hyperpress-label` (singular), consistent with every other plugin. The Customizer section says "Labels". |
-| Granularity | Per label, per post type, plus an enable switch per post type. |
-| Settings UI | A "Labels" section in the Customizer, with `theme_mod` settings, like the other plugins. No separate admin page. |
-| Defaults | Each label declares the post types it applies to. With no saved settings the output matches today. |
-| Rendering hand-off | Templates call `do_action( 'hyperpress_labels' )`. No-op when the plugin is inactive. |
+| Topic                | Decision                                                                                                                                                                                                                             |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Plugin name          | Keep `hyperpress-label` (singular), consistent with every other plugin. The Customizer section says "Labels".                                                                                                                        |
+| Granularity          | Per label, per post type, plus an enable switch per post type.                                                                                                                                                                       |
+| Settings UI          | A "Labels" section in the Customizer, with `theme_mod` settings, like the other plugins. No separate admin page.                                                                                                                     |
+| Defaults             | Each label declares the post types it applies to. With no saved settings the output matches today.                                                                                                                                   |
+| Rendering hand-off   | Templates call `do_action( 'hyperpress_labels' )`. No-op when the plugin is inactive.                                                                                                                                                |
 | Who registers labels | The plugin that owns the data: `hyperpress-label` (post labels), `-season`, `-sponsor`; `-newsletter` registers none and only opts `hyper_newsletter` into the shared labels. Season is not a hard dependency of `hyperpress-label`. |
-| Stable hook | `hyperpress_labels_content` stays as the final filter on the resolved list. |
-| Markup | Unchanged (`.entry-meta > .grid-x > .cell.shrink.label`). The styling stays in the theme. |
+| Stable hook          | `hyperpress_labels_content` stays as the final filter on the resolved list.                                                                                                                                                          |
+| Markup               | Unchanged (`.entry-meta > .grid-x > .cell.shrink.label`). The styling stays in the theme.                                                                                                                                            |
 
 ## 1. Plugin units (`hyperpress-label`, namespace `HyperPress\Label`, PSR-4 under `src/`)
 
-| Unit | Responsibility |
-|---|---|
-| `Plugin` | `boot()` on `plugins_loaded`; wires the units below. |
-| `Registry` | Collects definitions. The first call to `all()` after `init` fires `do_action( 'hyperpress_label_register', $registry )` once; earlier calls return what has registered so far and are flagged as incorrect usage. `Registry::add( $id, $args )` takes `group` (display name), `title`, `callback`, `default_post_types` (array), `priority` (int, default 10). The callback returns a list of label arrays (zero or more). |
-| `Resolver` | `is_enabled( $post_type, $label_id ): bool`. Rules in section 3. |
-| `Renderer` | Hooks the `hyperpress_labels` action; see section 2. |
-| `Customizer` | The Customizer section, settings and sanitizers; see section 4. |
-| `Controls\LabelDropdownControl` | Multi-select of registered labels for one post type, modelled on `HyperPress\Utils\Controls\PostTypeDropdownControl`. |
-| `Labels\PostLabels` | Registers `post.date` (10), `post.author` (20), `post.category` (40), `post.comments` (50), group "Post", default post types `[ 'post' ]`. Callbacks are a direct port of `post.php`. |
-| `templates/labels.php` | The markup from `theme/template-parts/labels.php`, unchanged. |
+| Unit                            | Responsibility                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Plugin`                        | `boot()` on `plugins_loaded`; wires the units below.                                                                                                                                                                                                                                                                                                                                                                        |
+| `Registry`                      | Collects definitions. The first call to `all()` after `init` fires `do_action( 'hyperpress_label_register', $registry )` once; earlier calls return what has registered so far and are flagged as incorrect usage. `Registry::add( $id, $args )` takes `group` (display name), `title`, `callback`, `default_post_types` (array), `priority` (int, default 10). The callback returns a list of label arrays (zero or more). |
+| `Resolver`                      | `is_enabled( $post_type, $label_id ): bool`. Rules in section 3.                                                                                                                                                                                                                                                                                                                                                            |
+| `Renderer`                      | Hooks the `hyperpress_labels` action; see section 2.                                                                                                                                                                                                                                                                                                                                                                        |
+| `Customizer`                    | The Customizer section, settings and sanitizers; see section 4.                                                                                                                                                                                                                                                                                                                                                             |
+| `Controls\LabelDropdownControl` | Multi-select of registered labels for one post type, modelled on `HyperPress\Utils\Controls\PostTypeDropdownControl`.                                                                                                                                                                                                                                                                                                       |
+| `Labels\PostLabels`             | Registers `post.date` (10), `post.author` (20), `post.category` (40), `post.comments` (50), group "Post", default post types `[ 'post' ]`. Callbacks are a direct port of `post.php`.                                                                                                                                                                                                                                       |
+| `templates/labels.php`          | The markup from `theme/template-parts/labels.php`, unchanged.                                                                                                                                                                                                                                                                                                                                                               |
 
 Label array shape is unchanged: `label`, `title`, `classes`, `url`, `rel`.
 
@@ -95,6 +95,7 @@ None of these plugins require `hyperpress-label`; without it the registration ac
 ## 6. Changes outside the label plugin
 
 Theme (`theme/`):
+
 - Delete `template-parts/labels.php`, `library/labels.php`, `library/labels/post.php`, and the `functions.php:41` require.
 - `template-parts/content.php:24`: replace `get_template_part( 'template-parts/labels' )` with `do_action( 'hyperpress_labels' )`.
 - `hyperpress_sorted_seasons()` stays; `library/breadcrumbs/post.php` still uses it.
@@ -102,6 +103,7 @@ Theme (`theme/`):
 - Amend the 2026-10-02 theme spec: labels are extracted to `hyperpress-label`; `hyperpress_labels_content` is now produced by the plugin. Update `theme/AGENTS.md` where it lists the hook.
 
 Plugins:
+
 - `hyperpress-newsletter/templates/content.php:34` and `hyperpress-sponsor/templates/content.php:17`: switch to the action.
 - Replace the `hyperpress-label.php` placeholder description and header with the real plugin; update `plugins/AGENTS.md` (the `label` entry is no longer a placeholder).
 - Review `NewsletterLabelsTest`, `SponsorWidgetTest`, `NewsletterSeasonErrorTest`, `NewsletterSeasonEscapingTest` and `EmptyLabelTest` for label assumptions.

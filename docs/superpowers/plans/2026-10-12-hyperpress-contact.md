@@ -51,10 +51,12 @@
 ### Task 1: Plugin skeleton and registrations
 
 **Files:**
+
 - Create: `plugins/hyperpress-contact/hyperpress-contact.php`, `plugins/hyperpress-contact/src/Plugin.php`
 - Modify: `plugins/tests/src/Support/Convention.php` (add `'hyperpress-contact'` to `PLUGINS`, to `LOAD_ORDER` next to `hyperpress-countdown`, and `=> array( 'hyperpress-utils', 'meta-box-aio' )` to `REQUIRES_PLUGINS`), `plugins/tests/bootstrap-unit.php` (add a `HyperPress\Contact\` autoloader beside the existing ones), `docker/compose.main.yaml` (one bind-mount line next to `hyperpress-countdown`, same pattern), `plugins/AGENTS.md` and root `AGENTS.md` (14 plugins becomes 15)
 
 **Interfaces:**
+
 - Produces: `HyperPress\Contact\Plugin::boot(): void`, hooked on `plugins_loaded` (later tasks add one line each to it).
 
 - [x] **Step 1:** Add the three `Convention.php` entries first. Run `composer test:integration` and `composer test:unit` from `plugins/`. Expected: the Convention-driven tests FAIL because `hyperpress-contact.php` does not exist.
@@ -68,10 +70,12 @@
 ### Task 2: Settings reader and address sanitizer
 
 **Files:**
+
 - Create: `plugins/hyperpress-contact/src/Settings.php`, `plugins/hyperpress-contact/src/Addresses.php`
 - Test: `plugins/tests/unit/Contact/SettingsMapTest.php`, `plugins/tests/integration/Contact/ContactSettingsTest.php`
 
 **Interfaces:**
+
 - Produces:
   - `Settings::OPTION = 'hyperpress_contact'`, `Settings::ADDRESSES = 'hyperpress_contact_addresses'`, `Settings::MAP_ADDRESS = 'hyperpress_contact_map_address'`, `Settings::MAP = 'hyperpress_contact_map'`
   - `Settings::addresses(): array`: list of arrays with exactly the keys `slug, heading, name, extra, street, city, state, zip, phone` (all strings, `''` when missing); `[]` when the option is absent or not an array
@@ -101,11 +105,13 @@
 ### Task 3: Settings page and fields
 
 **Files:**
+
 - Create: `plugins/hyperpress-contact/src/SettingsPage.php`, `plugins/hyperpress-contact/src/MetaBoxes.php`
 - Modify: `plugins/hyperpress-contact/src/Plugin.php` (call both `register()`), `docs/superpowers/specs/2026-10-12-hyperpress-contact-design.md` (add to "Calls made": Meta Box's map field requires `address_field`, so the settings page has a "Map address" text field that feeds it; the Geocoding API must be enabled for the key)
 - Test: `plugins/tests/integration/Contact/ContactSettingsPageTest.php`
 
 **Interfaces:**
+
 - Consumes: `Settings` constants, `Addresses::sanitize`, `HyperPress\Utils\AdminMenu::SLUG`, `HyperPress\Utils\GoogleMapsKey::get(): string`.
 - Produces: `SettingsPage::ID = 'hyperpress_contact'`, `SettingsPage::register(): void`, `SettingsPage::pages( array $pages ): array`; `MetaBoxes::register(): void`, `MetaBoxes::boxes( array $boxes ): array`.
 
@@ -125,11 +131,13 @@
 ### Task 4: Address shortcode
 
 **Files:**
+
 - Create: `plugins/hyperpress-contact/src/AddressShortcode.php`
 - Modify: `Plugin.php` (call `AddressShortcode::register()`)
 - Test: `plugins/tests/integration/Contact/AddressShortcodeTest.php`
 
 **Interfaces:**
+
 - Consumes: `Settings::address( string ): ?array`.
 - Produces: `AddressShortcode::register(): void` (tag `hyperpress_address`), `render( $atts ): string`, `card( array $address ): string`, `tel_href( string $phone ): string`.
 
@@ -149,11 +157,13 @@
 ### Task 5: Map shortcode and script
 
 **Files:**
+
 - Create: `plugins/hyperpress-contact/src/MapShortcode.php`, `plugins/hyperpress-contact/assets/map.js`
 - Modify: `Plugin.php` (call `MapShortcode::register()`)
 - Test: `plugins/tests/integration/Contact/MapShortcodeTest.php`
 
 **Interfaces:**
+
 - Consumes: `Settings::map()`, `GoogleMapsKey::get()`, `HyperPress\Utils\Version::of( string $file )`.
 - Produces: `MapShortcode::register(): void` (tag `hyperpress_map`), `render( $atts ): string`; script handles `hyperpress-contact-map` (our `assets/map.js`, footer, defines `window.hyperpressContactInitMaps`) and `hyperpress-contact-google-maps` (depends on the first).
 
@@ -173,10 +183,12 @@
 ### Task 6: Contact page template (theme)
 
 **Files:**
+
 - Create: `themes/hyperpress-foundation/page-templates/page-contact.php`
 - Test: `themes/hyperpress-foundation/tests/integration/ContactTemplateTest.php`
 
 **Interfaces:**
+
 - Consumes: shortcode `hyperpress_map` if it exists.
 - Produces: page template `Template Name: Contact`.
 
@@ -194,6 +206,7 @@
 ### Task 7: Verify end to end and close out
 
 **Files:**
+
 - Modify: this plan (tick boxes; add the COMPLETED banner), the spec if reality differs from it
 
 - [x] **Step 1:** Run `composer lint`, `test:unit`, `test:integration` in `plugins/` and in the theme. Expected: all pass, 0 lint violations.
@@ -205,7 +218,7 @@
 ## Execution notes
 
 - **Task 3 correction (final review, C1).** Meta Box calls a cloneable group's `sanitize_callback` once per clone with that clone's single associative entry, not the list, so a list sanitizer would have emptied the address list on every real save. The group's callback is now `Addresses::sanitize_entry` (one entry; tolerates the extra args Meta Box passes). Slugs are made unique across the list by `Addresses::normalize_option`, hooked to `pre_update_option_hyperpress_contact` from `Addresses::register()` (called in `Plugin::boot()`); `Addresses::sanitize` remains the list sanitizer built on `sanitize_entry`.
-- I1: `[hyperpress_address id="..."]` runs `sanitize_title` on the id before the lookup, so `Meeting`, ` meeting ` and `Team Meeting` match; the admin comment keeps the typed text.
+- I1: `[hyperpress_address id="..."]` runs `sanitize_title` on the id before the lookup, so `Meeting`, `meeting` and `Team Meeting` match; the admin comment keeps the typed text.
 - I2: slugs derived from headings go through `remove_accents` first (`Café` becomes `cafe`); a slug that would still contain `%` (non-Latin text) becomes `address`.
 - I3: `hyperpress-contact-map` is a plain footer script with no `strategy`, so it runs in order before the async Google script that depends on it.
 

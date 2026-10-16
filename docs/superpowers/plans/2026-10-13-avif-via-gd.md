@@ -44,11 +44,13 @@
 ### Task 1: AVIF through GD
 
 **Files:**
+
 - Create: `plugins/hyperpress-media/src/ImageEditor/AvifViaGd.php`, `plugins/hyperpress-media/src/ImageEditor/ImagickWithoutAvif.php`
 - Modify: `plugins/hyperpress-media/src/Plugin.php`
 - Test: create `plugins/tests/integration/Media/AvifViaGdTest.php`
 
 **Interfaces:**
+
 - Produces: `HyperPress\Media\ImageEditor\AvifViaGd::register(): void` (adds `wp_image_editors` at priority 20); `AvifViaGd::editors( array $editors ): array` returns `$editors` with the entry `'WP_Image_Editor_Imagick'` replaced by `'HyperPress\Media\ImageEditor\ImagickWithoutAvif'` when `apply_filters( 'hyperpress_media_avif_via_gd', function_exists( 'imageavif' ) )` is true (and the list has an Imagick entry), else `$editors` unchanged; `HyperPress\Media\ImageEditor\ImagickWithoutAvif extends \WP_Image_Editor_Imagick` with `public static function supports_mime_type( $mime_type )` returning `false` for `'image/avif'` and `parent::supports_mime_type( $mime_type )` otherwise.
 
 - [x] **Step 1: Write failing tests** in `AvifViaGdTest`: `editors()` replaces only the Imagick entry, keeps order, adds no duplicate and returns the list untouched when the opt-out filter returns false (filter forced true/false, so no extension is needed); the subclass returns false for `image/avif` and the same as `WP_Image_Editor_Imagick::supports_mime_type()` for `image/jpeg`, `image/png`, `image/webp` (false for `image/avif` needs no Imagick; the comparison with the parent is skipped when the Imagick extension is not loaded, because the parent calls `Imagick::queryFormats`); with the filter active and both editors available, `_wp_image_editor_choose( array( 'mime_type' => 'image/avif' ) )` is `WP_Image_Editor_GD` when GD reports AVIF support, and for `image/jpeg` the chosen class is the subclass (skip when the needed extensions or AVIF support are missing, and say which tests skipped in this environment); `Plugin::boot()` registers the filter (`has_filter( 'wp_image_editors', array( AvifViaGd::class, 'editors' ) )`). Clear the `image_editor` object cache (`wp_cache_delete( 'wp_image_editor_choose', 'image_editor' )`) around tests that call `_wp_image_editor_choose`.

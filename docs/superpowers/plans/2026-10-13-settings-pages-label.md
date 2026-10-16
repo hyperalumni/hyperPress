@@ -46,11 +46,13 @@
 ### Task 1: Labels settings page
 
 **Files:**
+
 - Create: `plugins/hyperpress-label/src/Settings.php`, `SettingsPage.php`, `MetaBoxes.php`
 - Modify: `plugins/hyperpress-label/src/Plugin.php` (`boot()` also registers `SettingsPage`, `MetaBoxes` and the `pre_update_option_hyperpress_label` filter; keep `Customizer::register()` until Task 2), `plugins/hyperpress-label/hyperpress-label.php` (header `Requires Plugins`), `plugins/tests/src/Support/Convention.php` (REQUIRES_PLUGINS)
 - Test: create `plugins/tests/integration/Label/LabelSettingsPageTest.php`, `LabelSettingsTest.php`
 
 **Interfaces:**
+
 - Produces: `Settings::OPTION = 'hyperpress_label'`, `Settings::MARKER = 'hyperpress_label_saved'`; `Settings::post_types(): array<string,string>` (name => plural label); `Settings::sanitize_labels( $value ): array`; `Settings::normalize( $value )` (as in Global Constraints; returns non-arrays untouched); `Settings::saved(): array` returns the option when it is an array, else `array()`.
 - Produces: `SettingsPage::ID = 'hyperpress_label'`, `register()`, `pages( array ): array`; `MetaBoxes::register()`, `boxes( array ): array` with box `hyperpress_label_box` whose fields are: for each post type from `Settings::post_types()` the `_enabled` then the `_labels` field, then the hidden marker field.
 
@@ -63,6 +65,7 @@
 ### Task 2: Switch `Resolver`, remove the Customizer and its control
 
 **Files:**
+
 - Modify: `plugins/hyperpress-label/src/Resolver.php` (`is_enabled()` reads `Settings::saved()` per the read rules; update the class docblock), `src/Plugin.php` (drop `Customizer::register()`)
 - Delete: `plugins/hyperpress-label/src/Customizer.php`, `src/Controls/LabelDropdownControl.php` (and the directory), `plugins/tests/integration/LabelCustomizerTest.php` after porting
 - Test: migrate every test that sets or removes a `hyperpress_label_*` theme mod (grep `plugins/tests` and `themes/*/tests` for `hyperpress_label_`; about 13 files incl. `LabelResolverTest`, `LabelRendererTest`, `PostLabelsTest`, `SeasonLabelTest`, `SponsorLabelsTest`, `ProgramLabelTest`, `DistrictLabelTest`, `WeekLabelTest`, `NewsletterLabelsTest`, `EmptyLabelTest`, and theme tests such as `LabelsBreadcrumbsGuardTest`) to `update_option( 'hyperpress_label', array( ... ) )`/`delete_option`; create `plugins/tests/integration/Label/LabelReadersTest.php`

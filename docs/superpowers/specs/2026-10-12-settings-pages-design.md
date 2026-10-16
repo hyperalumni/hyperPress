@@ -33,18 +33,18 @@ The front-page banner fields and countdown picker (a Meta Box-registered Customi
 
 ## What moves
 
-| Page (plugin) | Settings (old theme_mod id) |
-|---|---|
-| General (`hyperpress-utils`) | Google Maps API key, replaces `hyperpress_competition_google_maps_api_key`; read through `GoogleMapsKey::get()` |
+| Page (plugin)                            | Settings (old theme_mod id)                                                                                                                                                                                                                                                                          |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| General (`hyperpress-utils`)             | Google Maps API key, replaces `hyperpress_competition_google_maps_api_key`; read through `GoogleMapsKey::get()`                                                                                                                                                                                      |
 | Front Page (`hyperpress-frontpage`, new) | `hyperpress_home_blog_categories`, `hyperpress_home_blog_post_types`, and the theme's front-page Meta Box Customizer section "Front Page": `hyperpress_homepage_customize_banner_title`, `_banner_subtitle`, `_banner_background_color`, `_banner_button_text`, `_banner_button_page`, `_countdowns` |
-| Season | `hyperpress_season_current`, `hyperpress_season_banner_subtitle`, `hyperpress_season_post_types` |
-| Program | `hyperpress_program_post_types` |
-| Newsletter | `hyperpress_newsletter_banner_subtitle` |
-| Sponsor | `hyperpress_sponsor_banner_subtitle` |
-| Competition | `hyperpress_competition_banner_subtitle`; its Google Maps key moves to General and competition calls `GoogleMapsKey::get()` |
-| Social | the 12 `hyperpress_social_*` settings (links plus the contact page) |
-| Label | the per-post-type `hyperpress_label_*` labels |
-| Media | `hyperpress_nggallery_photos_page` |
+| Season                                   | `hyperpress_season_current`, `hyperpress_season_banner_subtitle`, `hyperpress_season_post_types`                                                                                                                                                                                                     |
+| Program                                  | `hyperpress_program_post_types`                                                                                                                                                                                                                                                                      |
+| Newsletter                               | `hyperpress_newsletter_banner_subtitle`                                                                                                                                                                                                                                                              |
+| Sponsor                                  | `hyperpress_sponsor_banner_subtitle`                                                                                                                                                                                                                                                                 |
+| Competition                              | `hyperpress_competition_banner_subtitle`; its Google Maps key moves to General and competition calls `GoogleMapsKey::get()`                                                                                                                                                                          |
+| Social                                   | the 12 `hyperpress_social_*` settings (links plus the contact page)                                                                                                                                                                                                                                  |
+| Label                                    | the per-post-type `hyperpress_label_*` labels                                                                                                                                                                                                                                                        |
+| Media                                    | `hyperpress_nggallery_photos_page`                                                                                                                                                                                                                                                                   |
 
 Status note (2026-10-13): the Media page is built; its field is `hyperpress_media_photos_page` in option `hyperpress_media` (the id follows the `hyperpress_<plugin>_<field>` convention, so it differs from the old theme mod id above). See `docs/superpowers/plans/2026-10-13-settings-pages-media.md`.
 

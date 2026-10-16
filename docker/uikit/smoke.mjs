@@ -23,10 +23,16 @@ async function get(url) {
   const deadline = Date.now() + retrySeconds * 1000;
   for (;;) {
     try {
-      const response = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+      const response = await fetch(url, {
+        redirect: 'manual',
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      });
       return { status: response.status, body: await response.text() };
     } catch (error) {
-      const reason = error.name === 'TimeoutError' ? 'timeout' : `connection error: ${error.cause?.code ?? error.message}`;
+      const reason =
+        error.name === 'TimeoutError'
+          ? 'timeout'
+          : `connection error: ${error.cause?.code ?? error.message}`;
       if (Date.now() >= deadline) fail(url, reason);
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }

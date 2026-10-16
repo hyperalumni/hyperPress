@@ -58,15 +58,15 @@ Values verified against legacy `lib/custom-post-type.php:47-75` (menu position 1
 
 - [x] **Step 4: Convert the concern files (R3) with these renames**
 
-| Legacy | New |
-|---|---|
-| meta box ids (`lib/metaboxes/event-information.php`, `visibility.php`) | `hyperpress_countdown_event_information`, `hyperpress_countdown_visibility` |
-| fields `event_name`, `event_location`, `event_date_time` | `hyperpress_countdown_event_name`, `hyperpress_countdown_event_location`, `hyperpress_countdown_event_date_time` |
-| fields `countdown_past_zero`, `hide_before`, `hide_after` | `hyperpress_countdown_past_zero`, `hyperpress_countdown_hide_before`, `hyperpress_countdown_hide_after` |
-| `post_types => ['countdown']` | `['hyper_countdown']` |
-| Customizer control ids `countdown_days_color`, `_hours_`, `_minutes_`, `_seconds_` | `hyperpress_countdown_days_color`, `hyperpress_countdown_hours_color`, `hyperpress_countdown_minutes_color`, `hyperpress_countdown_seconds_color` (the setting ids are already these; the section is WordPress core's `colors`, unchanged) |
-| script and style handle `timecircles` (`enqueue-scripts.php`, and `lib/shortcodes/countdown.php:55-56`) | `hyperpress-countdown-timecircles` |
-| every read of the renamed meta keys in `lib/shortcodes/countdown.php` (`get_post_meta` / `rwmb_meta`) | the new field ids |
+| Legacy                                                                                                  | New                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| meta box ids (`lib/metaboxes/event-information.php`, `visibility.php`)                                  | `hyperpress_countdown_event_information`, `hyperpress_countdown_visibility`                                                                                                                                                                |
+| fields `event_name`, `event_location`, `event_date_time`                                                | `hyperpress_countdown_event_name`, `hyperpress_countdown_event_location`, `hyperpress_countdown_event_date_time`                                                                                                                           |
+| fields `countdown_past_zero`, `hide_before`, `hide_after`                                               | `hyperpress_countdown_past_zero`, `hyperpress_countdown_hide_before`, `hyperpress_countdown_hide_after`                                                                                                                                    |
+| `post_types => ['countdown']`                                                                           | `['hyper_countdown']`                                                                                                                                                                                                                      |
+| Customizer control ids `countdown_days_color`, `_hours_`, `_minutes_`, `_seconds_`                      | `hyperpress_countdown_days_color`, `hyperpress_countdown_hours_color`, `hyperpress_countdown_minutes_color`, `hyperpress_countdown_seconds_color` (the setting ids are already these; the section is WordPress core's `colors`, unchanged) |
+| script and style handle `timecircles` (`enqueue-scripts.php`, and `lib/shortcodes/countdown.php:55-56`) | `hyperpress-countdown-timecircles`                                                                                                                                                                                                         |
+| every read of the renamed meta keys in `lib/shortcodes/countdown.php` (`get_post_meta` / `rwmb_meta`)   | the new field ids                                                                                                                                                                                                                          |
 
 Keep the `hyperpress_countdown` shortcode tag. Keep `extract()` in the shortcode and all output code as is: they are plugins audit findings, not part of this plan. Legacy `lib/shortcodes.php` is a loader; it is replaced by `Shortcode::register()`.
 
@@ -256,14 +256,14 @@ final class BannerFilter {
 
 - [x] **Step 6: Convert the remaining concern files (R3) with these renames**
 
-| Legacy | New |
-|---|---|
-| meta box id `information` | `hyperpress_newsletter_information` |
-| field `canva_newsletter_url` | `hyperpress_newsletter_canva_url` (and every read of it, including in `content.php` / `shortcodes.php`) |
-| `post_types => ['newsletter']` | `['hyper_newsletter']` |
-| Customizer control id `newsletter_banner_subtitle` | `hyperpress_newsletter_banner_subtitle` (the setting id is already this) |
-| taxonomy `'season'` anywhere (queries, `is_tax`) | `'hyper_season'` |
-| post type `'newsletter'` anywhere | `'hyper_newsletter'` |
+| Legacy                                             | New                                                                                                     |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| meta box id `information`                          | `hyperpress_newsletter_information`                                                                     |
+| field `canva_newsletter_url`                       | `hyperpress_newsletter_canva_url` (and every read of it, including in `content.php` / `shortcodes.php`) |
+| `post_types => ['newsletter']`                     | `['hyper_newsletter']`                                                                                  |
+| Customizer control id `newsletter_banner_subtitle` | `hyperpress_newsletter_banner_subtitle` (the setting id is already this)                                |
+| taxonomy `'season'` anywhere (queries, `is_tax`)   | `'hyper_season'`                                                                                        |
+| post type `'newsletter'` anywhere                  | `'hyper_newsletter'`                                                                                    |
 
 The legacy `lib/breadcrumbs.php` and `lib/banner.php` are deleted (replaced by the shared classes).
 
@@ -344,17 +344,17 @@ Definitions:
 
 - [x] **Step 4: Convert the concern files (R3) with these renames**
 
-| Legacy | New |
-|---|---|
-| meta box id `information` | `hyperpress_sponsor_information` |
-| fields `sponsor_website`, `sponsor_description` | `hyperpress_sponsor_website`, `hyperpress_sponsor_description` (and every read, including shortcodes, widget, content) |
-| field `tier` (taxonomy field, `lib/meta-boxes.php`) | `hyperpress_sponsor_tier` with `taxonomy => 'hyper_tier'` |
-| `post_types => ['sponsor']` | `['hyper_sponsor']` |
-| taxonomy `'tier'`, `'season'` anywhere (queries, archive ordering, `is_tax`, widget) | `'hyper_tier'`, `'hyper_season'` |
-| post type `'sponsor'` anywhere | `'hyper_sponsor'` |
-| `\HYPER_Press_Season\get_sorted_seasons` (used by `lib/labels.php`) | `\HyperPress\Season\SortedSeasons::get` |
-| Customizer control id `sponsor_banner_subtitle` | `hyperpress_sponsor_banner_subtitle` |
-| widget class `HYPERpress_Display_Sponsors_Widget` | `HyperPress\Sponsor\Widgets\DisplaySponsorsWidget`; `id_base` stays `hyperpress_display_sponsors_widget` (already compliant) |
+| Legacy                                                                               | New                                                                                                                          |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| meta box id `information`                                                            | `hyperpress_sponsor_information`                                                                                             |
+| fields `sponsor_website`, `sponsor_description`                                      | `hyperpress_sponsor_website`, `hyperpress_sponsor_description` (and every read, including shortcodes, widget, content)       |
+| field `tier` (taxonomy field, `lib/meta-boxes.php`)                                  | `hyperpress_sponsor_tier` with `taxonomy => 'hyper_tier'`                                                                    |
+| `post_types => ['sponsor']`                                                          | `['hyper_sponsor']`                                                                                                          |
+| taxonomy `'tier'`, `'season'` anywhere (queries, archive ordering, `is_tax`, widget) | `'hyper_tier'`, `'hyper_season'`                                                                                             |
+| post type `'sponsor'` anywhere                                                       | `'hyper_sponsor'`                                                                                                            |
+| `\HYPER_Press_Season\get_sorted_seasons` (used by `lib/labels.php`)                  | `\HyperPress\Season\SortedSeasons::get`                                                                                      |
+| Customizer control id `sponsor_banner_subtitle`                                      | `hyperpress_sponsor_banner_subtitle`                                                                                         |
+| widget class `HYPERpress_Display_Sponsors_Widget`                                    | `HyperPress\Sponsor\Widgets\DisplaySponsorsWidget`; `id_base` stays `hyperpress_display_sponsors_widget` (already compliant) |
 
 Do not change the `sponsor_description` sanitizing (`lib/meta-boxes.php:46-52`): it is a plugins audit finding. The legacy `banner.php`, `breadcrumbs.php`, `custom-post-type.php`, `custom-taxonomy.php` are replaced by the shared classes and Plugin.
 
@@ -382,11 +382,11 @@ git commit -m "refactor(sponsor): migrate to hyper_sponsor and hyper_tier and th
 - [x] **Step 2: R1 and R2** for `hyperpress-socials.php` (no `activate`, no Utils use; `Plugin::boot()` only registers `Customizer::register()` and `Widgets::register()`). Header: no `Requires Plugins` line at all.
 - [x] **Step 3: Convert `Customizer` with these renames** (setting ids `hyperpress_socials_*` are already compliant and stay):
 
-| Legacy | New |
-|---|---|
-| section `socials` | `hyperpress_socials` |
+| Legacy                                                                                                                                                                                 | New                                                                                                                                                                                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| section `socials`                                                                                                                                                                      | `hyperpress_socials`                                                                                                                                                                                                                                  |
 | control ids `socials_firstinspires`, `_thebluealliance`, `_facebook`, `_instagram`, `_youtube`, `_twitter`, `_github`, `_snapchat`, `_tiktok`, `_discord`, `_contact`, `_add_calendar` | `hyperpress_socials_firstinspires`, `..._thebluealliance`, `..._facebook`, `..._instagram`, `..._youtube`, `..._twitter`, `..._github`, `..._snapchat`, `..._tiktok`, `..._discord`, `..._contact`, `..._add_calendar` (each equal to its setting id) |
-| each control's `section` value | `hyperpress_socials` |
+| each control's `section` value                                                                                                                                                         | `hyperpress_socials`                                                                                                                                                                                                                                  |
 
 - [x] **Step 4: Convert the widget**: class `HYPERpress_Display_Socials_Widget` becomes `HyperPress\Socials\Widgets\DisplaySocialsWidget`; `id_base` stays `hyperpress_socials`; `Widgets::register()` hooks `widgets_init` and calls `register_widget( DisplaySocialsWidget::class )`. Leave the widget's `$args['before_widget']` style echoes as they are (plugins audit item).
 - [x] **Step 5: Delete legacy `lib/` files, run R7** (`<name>`=socials; no parity case).
@@ -676,6 +676,7 @@ git commit -m "docs(plans): complete plugins-04-remaining-plugins" -- docs/super
 > Note (2026-10-12): `CaptureLegacyShortcodesTest` (Step 4) was deleted: it was a skipped snapshot generator that loaded `/theme/library/shortcodes/*.php`, which no longer exists. The fixture `legacy-shortcodes.json` and the tests that read it were kept; the fixture is now the only record of the legacy output, and its keys still use the old tags.
 
 > Note (2026-10-13): the newsletter and sponsor banner subtitles are no longer theme mods: the `subtitle_mod` entries and the Customizer control ids `hyperpress_newsletter_banner_subtitle` / `hyperpress_sponsor_banner_subtitle` above are gone, along with both plugins' `Customizer` classes and the "Newsletter" and "Sponsors" sections. The subtitles now live on hyperPress > Newsletter and hyperPress > Sponsor (options `hyperpress_newsletter` and `hyperpress_sponsor`, same keys, defaults "Updates on Team HYPER from our Marketing Team" and "Helping Make HYPER Happen") and are read through each plugin's `Settings::banner_subtitle()`. `NewsletterCustomizerTest` was replaced by `Newsletter/NewsletterSubtitleTest`. See `docs/superpowers/plans/2026-10-13-settings-pages-banner-subtitles.md`.
+
 - **Update (2026-10-13):** the Socials Customizer plan above no longer matches the code. The 12 `hyperpress_social_*` settings moved from theme mods to a Meta Box settings page under hyperPress > Social (option `hyperpress_social`, same keys), `Social\Customizer` and the "Socials" section are deleted, and `hyperpress-social` now has `Requires Plugins: hyperpress-utils, meta-box-aio` (it was none, with no Utils use). The Customizer-based `SocialsTest` cases were replaced by `Social/SocialSettingsPageTest` and `Social/SocialReadersTest`. See `docs/superpowers/plans/2026-10-13-settings-pages-social.md`.
 - **Update (2026-10-13):** the Media notes above no longer match the code. `NextGen\Customizer`, the Customizer section `hyperpress_media_nextgen` ("NextGen Gallery") and the theme mod `hyperpress_nggallery_photos_page` are gone: the setting is the field `hyperpress_media_photos_page` on hyperPress > Media (option `hyperpress_media`), read through `NextGen\Settings::photos_page()` by `NextGen\Breadcrumbs`. `hyperpress-media` now has `Requires Plugins: hyperpress-utils, meta-box-aio, safe-svg`, and `NextGenCustomizerTest` was replaced by `Media/MediaSettingsPageTest`, `MediaSettingsTest`, `MediaReadersTest` and `NextGenBreadcrumbsTest`. See `docs/superpowers/plans/2026-10-13-settings-pages-media.md`.
 

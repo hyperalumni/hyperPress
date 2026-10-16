@@ -48,10 +48,7 @@
       },
       "dependsOn": ["copy-theme"],
       "cache": true,
-      "inputs": [
-        "{projectRoot}/composer.json",
-        "{projectRoot}/composer.lock"
-      ],
+      "inputs": ["{projectRoot}/composer.json", "{projectRoot}/composer.lock"],
       "outputs": ["{workspaceRoot}/dist/themes/hyperpress-uikit/vendor"]
     },
     "build": {

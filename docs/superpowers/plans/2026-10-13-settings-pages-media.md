@@ -41,12 +41,14 @@
 ### Task 1: Media settings page and reader switch
 
 **Files:**
+
 - Create: `plugins/hyperpress-media/src/NextGen/Settings.php`, `SettingsPage.php`, `MetaBoxes.php`
 - Modify: `plugins/hyperpress-media/src/NextGen/Breadcrumbs.php` (line ~118 `get_theme_mod( 'hyperpress_nggallery_photos_page' )` becomes `Settings::photos_page()`), `plugins/hyperpress-media/src/Plugin.php` (`boot()` registers `SettingsPage` and `MetaBoxes` in place of `NextGen\Customizer::register()`), `plugins/hyperpress-media/hyperpress-media.php` (header and description), `plugins/tests/src/Support/Convention.php`
 - Delete: `plugins/hyperpress-media/src/NextGen/Customizer.php`, `plugins/tests/integration/Media/NextGenCustomizerTest.php` (after porting)
 - Test: create `plugins/tests/integration/Media/MediaSettingsPageTest.php`, `MediaSettingsTest.php`; modify `plugins/tests/integration/Media/MediaTest.php` (the two Customizer tests around lines 24-43 and any breadcrumb test that sets the theme mod: find them with a grep for `hyperpress_nggallery_photos_page` and `set_theme_mod` in `plugins/tests`), `themes/hyperpress-foundation/tests/integration/ExtractedMediaTest.php` (line ~25 asserts the `NextGen\Customizer` class exists: assert `NextGen\Settings` instead)
 
 **Interfaces:**
+
 - Produces: `Settings::OPTION = 'hyperpress_media'`, `Settings::PHOTOS_PAGE = 'hyperpress_media_photos_page'`, `Settings::photos_page(): int`; `SettingsPage::ID = 'hyperpress_media'`, `register()`, `pages( array ): array`; `MetaBoxes::register()`, `boxes( array ): array`.
 
 - [x] **Step 1: Write failing tests.** `MediaSettingsPageTest`: `pages()` values; `boxes()` has exactly one box `hyperpress_media_box` with the one field and its keys per Global Constraints (type `post`, `post_type` `page`, `select_advanced`, not multiple, query args, `absint`, label, description); `absint` callback gives 12 for `'12abc'`-style input as the old `NextGenCustomizerTest` expected (`'12abc'` gives 12, `-3` gives 3, `'junk'` gives 0). `MediaSettingsTest`: `photos_page()` is 0 with nothing saved, 12 for `12` and `'12'`, and 0 for `'12abc'`, `' 12'`, `'0'`, `-5`, `'-5'`, `1.5`, `true`, `array( 12 )`, `null`, `''`, a non-array option; `007` gives 7. Breadcrumb tests: the existing tests that set the theme mod now write `update_option( 'hyperpress_media', array( 'hyperpress_media_photos_page' => $id ) )` (keep every assertion). New `MediaReadersTest` (or in `MediaTest`): a `WP_Customize_Manager` after `do_action( 'customize_register', $manager )` has no section `hyperpress_media_nextgen` and no setting `hyperpress_nggallery_photos_page`; the file `src/NextGen/Customizer.php` does not exist. `PluginHeadersTest` must fail first because of the Convention change.

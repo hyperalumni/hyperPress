@@ -11,6 +11,7 @@
 **Spec:** `docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md`
 
 **Conventions**
+
 - Run from `theme/`. Commands: `docker compose run --rm php <cmd>`.
 - The theme repo has many unrelated uncommitted changes and staged deletions (`D .babelrc`, modified `404.php`, and so on). NEVER plain `git commit`. Always `git add <paths>` then `git commit -m "..." -- <paths>`.
 - The theme already has `composer.json` (FoundationPress fork: `require` composer/installers and ext-intl, `require-dev` phpcs tooling), a `phpunit.xml.dist` whose bootstrap `tests/bootstrap.php` does not exist, and `codesniffer.ruleset.xml`. Extend them; do not replace them.
@@ -18,17 +19,17 @@
 
 ## File Structure
 
-| Path | Responsibility |
-|---|---|
-| `Dockerfile` | PHP 8.5-cli + mysqli + composer (same as the plugins repo) |
-| `compose.yaml` | `php` and `db` services; mounts the theme at `/app` and `/themes/hyperpress`, and `../plugins` at `/plugins` |
-| `composer.json` | Add test dev-dependencies and scripts |
-| `phpunit.xml.dist` | Replace the empty single suite with `unit` and `integration` suites |
-| `tests/bootstrap-unit.php`, `tests/bootstrap-integration.php`, `tests/wp-tests-config.php` | Bootstraps |
-| `tests/unit/SmokeTest.php`, `tests/unit/ThemeHeaderTest.php`, `tests/unit/PluginHooksContractTest.php` | Unit tests |
-| `tests/integration/RenderTest.php` | Page render baseline |
-| `tests/integration/CustomizerTest.php` | Customizer loads |
-| `tests/fixtures/baseline-render.json` | Captured markers of current output |
+| Path                                                                                                   | Responsibility                                                                                               |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `Dockerfile`                                                                                           | PHP 8.5-cli + mysqli + composer (same as the plugins repo)                                                   |
+| `compose.yaml`                                                                                         | `php` and `db` services; mounts the theme at `/app` and `/themes/hyperpress`, and `../plugins` at `/plugins` |
+| `composer.json`                                                                                        | Add test dev-dependencies and scripts                                                                        |
+| `phpunit.xml.dist`                                                                                     | Replace the empty single suite with `unit` and `integration` suites                                          |
+| `tests/bootstrap-unit.php`, `tests/bootstrap-integration.php`, `tests/wp-tests-config.php`             | Bootstraps                                                                                                   |
+| `tests/unit/SmokeTest.php`, `tests/unit/ThemeHeaderTest.php`, `tests/unit/PluginHooksContractTest.php` | Unit tests                                                                                                   |
+| `tests/integration/RenderTest.php`                                                                     | Page render baseline                                                                                         |
+| `tests/integration/CustomizerTest.php`                                                                 | Customizer loads                                                                                             |
+| `tests/fixtures/baseline-render.json`                                                                  | Captured markers of current output                                                                           |
 
 ---
 
@@ -80,7 +81,7 @@ services:
       MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: wordpress_test
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       interval: 3s
       timeout: 3s
       retries: 20

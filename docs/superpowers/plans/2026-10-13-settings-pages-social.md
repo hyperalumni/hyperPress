@@ -43,11 +43,13 @@
 ### Task 1: Social settings page and plugin requirements
 
 **Files:**
+
 - Create: `plugins/hyperpress-social/src/Settings.php`, `SettingsPage.php`, `MetaBoxes.php`
 - Modify: `plugins/hyperpress-social/src/Plugin.php` (`boot()` also registers `SettingsPage` and `MetaBoxes`; keep `Customizer::register()` until Task 2), `plugins/hyperpress-social/hyperpress-social.php` (header `Requires Plugins`), `plugins/tests/src/Support/Convention.php` (REQUIRES_PLUGINS entry)
 - Test: create `plugins/tests/integration/Social/SocialSettingsPageTest.php`, `SocialSettingsTest.php`
 
 **Interfaces:**
+
 - Produces: `Settings::OPTION = 'hyperpress_social'`; `Settings::NETWORKS` (ordered `key => label` for the 11 URL fields) and `Settings::CONTACT = 'contact'`; `Settings::field_id( string $key ): string` returns `'hyperpress_social_' . $key`; `Settings::url( string $key ): string` (the saved string for the URL network `$key`, `''` otherwise); `Settings::contact_page(): int` (the saved contact page when it is a positive integer or an all-digit string, as an int; everything else (negative, float, padded or mixed text, arrays, missing) gives 0).
 - Produces: `SettingsPage::ID = 'hyperpress_social'`, `register()`, `pages( array ): array`; `MetaBoxes::register()`, `boxes( array ): array` with box `hyperpress_social_box`, `settings_pages` `SettingsPage::ID` and the 12 fields in the order from Global Constraints (URL fields `type => 'url'` with `sanitize_callback => 'esc_url_raw'`; the contact field after `discord`, then `add_calendar` last).
 
@@ -60,6 +62,7 @@
 ### Task 2: Switch `Links` and remove the Customizer section
 
 **Files:**
+
 - Modify: `plugins/hyperpress-social/src/Links.php` (line ~89 `get_theme_mod( 'hyperpress_social_' . $social['key'] )` becomes `Settings::url( $social['key'] )`; `contact_url()` reads `Settings::contact_page()`), `plugins/hyperpress-social/src/Plugin.php` (drop `Customizer::register()`)
 - Delete: `plugins/hyperpress-social/src/Customizer.php`
 - Test: migrate `plugins/tests/integration/SocialsTest.php`, `SocialsLinksTest.php`, `SocialIconsTest.php`, `SocialsLayoutTest.php` and the theme tests `themes/hyperpress-foundation/tests/integration/FooterSocialsTest.php`, `FooterEscapingTest.php`, `NoPluginsTest.php` (its social footer test) from `set_theme_mod`/`remove_theme_mod` of `hyperpress_social_*` to `update_option( 'hyperpress_social', array( ... ) )`/`delete_option`; create `plugins/tests/integration/Social/SocialReadersTest.php`

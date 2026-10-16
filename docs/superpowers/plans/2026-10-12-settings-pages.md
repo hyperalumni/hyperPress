@@ -45,6 +45,7 @@
 ### Task 1: `hyperpress-utils` requires `meta-box-aio`
 
 **Files:**
+
 - Modify: `plugins/tests/src/Support/Convention.php` (REQUIRES_PLUGINS entry for utils, line ~65), `plugins/hyperpress-utils/hyperpress-utils.php` (header)
 - Test: `plugins/tests/unit/PluginHeadersTest.php` (Convention-driven, no new test)
 
@@ -59,11 +60,13 @@
 ### Task 2: General page and the Google Maps key
 
 **Files:**
+
 - Create: `plugins/hyperpress-utils/src/GeneralPage.php`
 - Modify: `plugins/hyperpress-utils/hyperpress-utils.php` (boot), `plugins/hyperpress-utils/src/GoogleMapsKey.php`
 - Test: create `plugins/tests/integration/Utils/GeneralPageTest.php`; modify `Utils/GoogleMapsKeyTest.php`, `Contact/ContactSettingsPageTest.php:81`, `Contact/MapShortcodeTest.php:22,24`
 
 **Interfaces:**
+
 - Produces: `GeneralPage::ID = 'hyperpress_general'` (page id and slug), `GeneralPage::OPTION = 'hyperpress_general'`, `GeneralPage::FIELD_KEY = 'hyperpress_general_google_maps_api_key'`; `GeneralPage::register(): void` (adds the two filters), `pages( array $pages ): array`, `boxes( array $boxes ): array`.
 - Produces: `GoogleMapsKey::get(): string` now reads `get_option( GeneralPage::OPTION )['hyperpress_general_google_maps_api_key']`; the `OPTION` constant, the flat option and the theme-mod fallback are removed.
 
@@ -76,10 +79,12 @@
 ### Task 3: Menu without Overview, General first
 
 **Files:**
+
 - Modify: `plugins/hyperpress-utils/src/AdminMenu.php`
 - Test: rewrite `plugins/tests/integration/Utils/AdminMenuTest.php`
 
 **Interfaces:**
+
 - Consumes: `GeneralPage::ID`.
 - Produces: `AdminMenu::SLUG = 'hyperpress'` (unchanged); `boot(): void` hooks `register` at `admin_menu` priority 5 and `reorder` at priority 999; `register(): void` adds only the top-level menu (empty callback, `manage_options`, same title, icon and position 80); `reorder(): void` moves the submenu item whose slug is `GeneralPage::ID` to the front of `$submenu['hyperpress']`. `render()` and `children()` are removed (confirm nothing else calls them).
 
@@ -92,6 +97,7 @@
 ### Task 4: Competition reads the shared key
 
 **Files:**
+
 - Modify: `plugins/hyperpress-competition/src/MetaBoxes.php:61`, `plugins/hyperpress-competition/src/Customizer.php`
 - Test: rewrite `plugins/tests/integration/CompetitionMapApiKeyTest.php`
 
@@ -106,6 +112,7 @@
 ### Task 5: `hyperpress-frontpage` skeleton
 
 **Files:**
+
 - Create: `plugins/hyperpress-frontpage/hyperpress-frontpage.php`, `plugins/hyperpress-frontpage/src/Plugin.php`
 - Modify: `plugins/tests/src/Support/Convention.php` (PLUGINS and LOAD_ORDER next to `hyperpress-countdown`; REQUIRES_PLUGINS `array( 'hyperpress-utils', 'meta-box-aio' )`), `plugins/phpcs.xml.dist`, `plugins/tests/bootstrap-unit.php` (a `HyperPress\Frontpage\` autoloader beside the contact one), `docker/compose.main.yaml` (one bind-mount line beside contact), `AGENTS.md:26` and `plugins/AGENTS.md:10` (15 becomes 16)
 - Test: Convention-driven suites
@@ -120,11 +127,13 @@
 ### Task 6: Front Page settings page
 
 **Files:**
+
 - Create: `plugins/hyperpress-frontpage/src/Settings.php`, `Sanitizers.php`, `SettingsPage.php`, `MetaBoxes.php`
 - Modify: `plugins/hyperpress-frontpage/src/Plugin.php`
 - Test: create `plugins/tests/integration/Frontpage/FrontpageSettingsPageTest.php`, `FrontpageSanitizersTest.php`, `FrontpageSettingsTest.php`
 
 **Interfaces:**
+
 - `Settings::OPTION = 'hyperpress_frontpage'`; field id constants `CATEGORIES = 'hyperpress_frontpage_categories'`, `POST_TYPES = 'hyperpress_frontpage_post_types'`, `BANNER_TITLE = 'hyperpress_frontpage_banner_title'`, `BANNER_SUBTITLE = 'hyperpress_frontpage_banner_subtitle'`, `BANNER_BACKGROUND_COLOR = 'hyperpress_frontpage_banner_background_color'`, `BANNER_BUTTON_TEXT = 'hyperpress_frontpage_banner_button_text'`, `BANNER_BUTTON_PAGE = 'hyperpress_frontpage_banner_button_page'`, `COUNTDOWNS = 'hyperpress_frontpage_countdowns'`; `Settings::defaults(): array` (`hyperpress_frontpage_post_types` `array( 'post' )`, `hyperpress_frontpage_banner_subtitle` the text from the spec); `Settings::default_option( $default, $option, $passed_default )` hooked on `default_option_hyperpress_frontpage` returns `defaults()` when the caller passed no explicit default (my call, so an unsaved page still shows the default subtitle).
 - `Sanitizers::categories( mixed $value ): array` (existing category term ids as ints, from `hyperpress_sanitize_home_categories`, the single-id case dropped); `Sanitizers::post_types( mixed $value ): array` (registered, public post types, unique, from `hyperpress_sanitize_home_post_types`).
 - `SettingsPage::ID = 'hyperpress_frontpage'`, `register()`, `pages( array ): array` (menu and page title `Front Page`, `parent` `AdminMenu::SLUG`, `option_name` `Settings::OPTION`); `MetaBoxes::register()`, `boxes( array ): array` (one box, `settings_pages` `SettingsPage::ID`, fields below).
@@ -139,6 +148,7 @@
 ### Task 7: Theme reads the Front Page option
 
 **Files:**
+
 - Create: `themes/hyperpress-foundation/library/frontpage-settings.php` (require it from `functions.php` beside the other `library/` requires)
 - Modify: `themes/hyperpress-foundation/front-page.php` (lines 35, 61, 67), `library/banner/front.php`, `template-parts/banner.php` (the `get_theme_mod( 'hyperpress_homepage_customize_banner_subtitle' )` at line 24)
 - Test: update `themes/hyperpress-foundation/tests/integration/FrontPageQueryTest.php`, `BannerSubtitleTest.php`, `FrontPageContentTemplateTest.php`, `NoPluginsTest.php`; create `FrontpageSettingTest.php`
@@ -154,6 +164,7 @@
 ### Task 8: Remove the front-page Customizer sections
 
 **Files:**
+
 - Delete: `themes/hyperpress-foundation/library/customize/homepage.php` (and its require in `library/customize.php`), `library/metaboxes/homepage-customize.php` (its require is removed from `library/metaboxes.php`, which stays because it still requires `metaboxes/banner.php`)
 - Test: modify `HomepageSettingsTest.php` (delete the tests ported in Task 6 and the metabox test), `CustomizerTest.php` (the `hyperpress_home_blog_post_types` assertion), `NoPluginsTest.php:103-104`, `EmptyMetaBoxSectionsTest.php` (docblock and method name no longer mention the homepage exception)
 

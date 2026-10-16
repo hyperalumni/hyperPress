@@ -41,23 +41,23 @@
 
 ## File Structure
 
-| Path | Responsibility |
-|---|---|
-| `plugins/hyperpress-utils/src/RequestTerm.php` (create) | `RequestTerm::get()`: the archive request's term for a taxonomy, from its query var |
-| `plugins/hyperpress-utils/src/Breadcrumbs.php` (modify) | Uses `RequestTerm` for the season; optional extra taxonomies; `build()` emits term crumbs |
-| `plugins/hyperpress-utils/src/Banner.php` (modify, lines 29-30 and 38; Task 5 also `register()` and `apply()`) | Season term name from `RequestTerm`; optional `taxonomies` arg, taxonomy-page title, subtitle suffix |
-| `plugins/tests/unit/Utils/BannerTest.php` (modify) | `apply()` with `extra_terms` |
-| `plugins/tests/integration/Competition/BannerTest.php` (create) | Banner on the type, district and week archives and the combined archive |
-| `plugins/hyperpress-season/src/Breadcrumbs.php` (modify, line 13) | Season term from `RequestTerm` |
-| `plugins/hyperpress-season/src/SeasonBanner.php` (modify, line 21) | Season term from `RequestTerm` |
-| `plugins/hyperpress-competition/src/TypeBreadcrumbs.php` (create) | Trail for the type-only archive |
-| `plugins/hyperpress-competition/src/Plugin.php` (modify, `boot()` at line 23) | Pass `array( self::TYPE )` to `Breadcrumbs::register`; call `TypeBreadcrumbs::register()` |
-| `plugins/tests/unit/Utils/BreadcrumbsTest.php` (modify) | `build()` with `terms` |
-| `plugins/tests/integration/Utils/RequestTermTest.php` (create) | `RequestTerm::get()` behavior |
-| `plugins/tests/integration/Utils/BreadcrumbsRequestTest.php` (modify) | Request-level trails |
-| existing Banner and Season tests (modify, or create where none exists) | Banner and season-page behavior with both taxonomies queried. Find them with `grep -rl "Banner\|SeasonBanner\|Season.*Breadcrumbs" plugins/tests`. |
-| `plugins/tests/integration/Competition/TypeBreadcrumbsTest.php` (create) | Type-only archive trail. Check `ls plugins/tests/integration` and match the existing per-plugin folder naming if it differs. |
-| `plugins/tests/unit/NoQueriedObjectTest.php` (create) | Source scan: no `get_queried_object(` in plugin code outside `RequestTerm.php` |
+| Path                                                                                                           | Responsibility                                                                                                                                     |
+| -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugins/hyperpress-utils/src/RequestTerm.php` (create)                                                        | `RequestTerm::get()`: the archive request's term for a taxonomy, from its query var                                                                |
+| `plugins/hyperpress-utils/src/Breadcrumbs.php` (modify)                                                        | Uses `RequestTerm` for the season; optional extra taxonomies; `build()` emits term crumbs                                                          |
+| `plugins/hyperpress-utils/src/Banner.php` (modify, lines 29-30 and 38; Task 5 also `register()` and `apply()`) | Season term name from `RequestTerm`; optional `taxonomies` arg, taxonomy-page title, subtitle suffix                                               |
+| `plugins/tests/unit/Utils/BannerTest.php` (modify)                                                             | `apply()` with `extra_terms`                                                                                                                       |
+| `plugins/tests/integration/Competition/BannerTest.php` (create)                                                | Banner on the type, district and week archives and the combined archive                                                                            |
+| `plugins/hyperpress-season/src/Breadcrumbs.php` (modify, line 13)                                              | Season term from `RequestTerm`                                                                                                                     |
+| `plugins/hyperpress-season/src/SeasonBanner.php` (modify, line 21)                                             | Season term from `RequestTerm`                                                                                                                     |
+| `plugins/hyperpress-competition/src/TypeBreadcrumbs.php` (create)                                              | Trail for the type-only archive                                                                                                                    |
+| `plugins/hyperpress-competition/src/Plugin.php` (modify, `boot()` at line 23)                                  | Pass `array( self::TYPE )` to `Breadcrumbs::register`; call `TypeBreadcrumbs::register()`                                                          |
+| `plugins/tests/unit/Utils/BreadcrumbsTest.php` (modify)                                                        | `build()` with `terms`                                                                                                                             |
+| `plugins/tests/integration/Utils/RequestTermTest.php` (create)                                                 | `RequestTerm::get()` behavior                                                                                                                      |
+| `plugins/tests/integration/Utils/BreadcrumbsRequestTest.php` (modify)                                          | Request-level trails                                                                                                                               |
+| existing Banner and Season tests (modify, or create where none exists)                                         | Banner and season-page behavior with both taxonomies queried. Find them with `grep -rl "Banner\|SeasonBanner\|Season.*Breadcrumbs" plugins/tests`. |
+| `plugins/tests/integration/Competition/TypeBreadcrumbsTest.php` (create)                                       | Type-only archive trail. Check `ls plugins/tests/integration` and match the existing per-plugin folder naming if it differs.                       |
+| `plugins/tests/unit/NoQueriedObjectTest.php` (create)                                                          | Source scan: no `get_queried_object(` in plugin code outside `RequestTerm.php`                                                                     |
 
 ### Task 0: Commit this plan
 
@@ -66,10 +66,12 @@
 ### Task 1: `Breadcrumbs::build()` emits term crumbs
 
 **Files:**
+
 - Modify: `plugins/hyperpress-utils/src/Breadcrumbs.php` (`build()`, lines 27-72)
 - Test: `plugins/tests/unit/Utils/BreadcrumbsTest.php`
 
 **Interfaces:**
+
 - Produces: `build()` accepts an optional `$ctx['terms']`, a `list<array{name: string, slug: string, url: string}>`. Each entry becomes a crumb `array( 'title' => name, 'url' => url, 'classes' => array( 'li' => array( 'item-' . slug . '-' . $class ), 'bread' => array( 'bread-' . slug . '-' . $class ) ) )`. Terms come after the post-type crumb, in order, and before the season crumb. A missing or empty `terms` changes nothing.
 
 - [x] **Step 1: Write failing tests** in `BreadcrumbsTest.php`, using the existing `ctx()` and `season()` helpers and adding a `term( string $name, string $slug )` helper that returns `array( 'name', 'slug', 'url' => "/competition-types/$slug/" )`:
@@ -85,11 +87,13 @@
 ### Task 2: `RequestTerm`, and move the season consumers to it
 
 **Files:**
+
 - Create: `plugins/hyperpress-utils/src/RequestTerm.php`
 - Modify: `plugins/hyperpress-utils/src/Breadcrumbs.php` (`context()`, lines 106-109), `plugins/hyperpress-utils/src/Banner.php` (lines 29-30), `plugins/hyperpress-season/src/Breadcrumbs.php:13`, `plugins/hyperpress-season/src/SeasonBanner.php:21`
 - Test: `plugins/tests/integration/Utils/RequestTermTest.php` (create), `plugins/tests/integration/Utils/BreadcrumbsRequestTest.php`, the existing Banner and Season tests, `plugins/tests/unit/NoQueriedObjectTest.php` (create)
 
 **Interfaces:**
+
 - Produces: `final class HyperPress\Utils\RequestTerm` with `public static function get( string $taxonomy ): ?\WP_Term`.
   - Reads `get_query_var( $taxonomy )`. For a hierarchical taxonomy it takes the last path segment (`wp_basename`). Returns `get_term_by( 'slug', $slug, $taxonomy )` when that is a `WP_Term`, else `null` (empty var, unknown slug, unregistered taxonomy, `WP_Error`, `false`).
   - It does not check `is_tax()`. Callers keep their existing `is_tax()` guard.
@@ -112,10 +116,12 @@
 ### Task 3: Breadcrumbs for extra taxonomies
 
 **Files:**
+
 - Modify: `plugins/hyperpress-utils/src/Breadcrumbs.php` (`register()`, `context()`, lines 15-25 and 80-130)
 - Test: `plugins/tests/integration/Utils/BreadcrumbsRequestTest.php`
 
 **Interfaces:**
+
 - Consumes: `build()` with `ctx['terms']` from Task 1; `RequestTerm::get()` from Task 2.
 - Produces:
   - `public static function register( array $post_types, array $taxonomies = array() ): void`. `$taxonomies` is a list of taxonomy keys, and the default keeps current behavior.
@@ -136,11 +142,13 @@
 ### Task 4: Wire `hyperpress-competition`, add the type-only trail
 
 **Files:**
+
 - Create: `plugins/hyperpress-competition/src/TypeBreadcrumbs.php`
 - Modify: `plugins/hyperpress-competition/src/Plugin.php:27` (and add the `register()` call in `boot()`)
 - Test: `plugins/tests/integration/Competition/TypeBreadcrumbsTest.php`
 
 **Interfaces:**
+
 - Consumes: `Breadcrumbs::register( array $post_types, array $taxonomies )` from Task 3; `RequestTerm::get()` from Task 2.
 - Produces: `final class HyperPress\Competition\TypeBreadcrumbs` with `public static function register(): void` (adds the `hyperpress_breadcrumbs_content` filter) and `public static function filter( $breadcrumbs )`. The class is named `TypeBreadcrumbs` because `Plugin.php` already imports `HyperPress\Utils\Breadcrumbs`.
   - When `is_tax()` (no argument), `! is_post_type_archive()` and `RequestTerm::get( Plugin::TYPE )` is a term, append the post-type crumb (title `get_post_type_object( Plugin::POST_TYPE )->labels->name`, `url` `get_post_type_archive_link( Plugin::POST_TYPE )`, classes `item-archive-<class>` / `bread-archive-<class>` as in `Utils\Breadcrumbs::build()`), then a crumb with the term's name and no `url`. Otherwise return `$breadcrumbs` unchanged.
@@ -158,10 +166,12 @@
 ### Task 5: Banner text for the competition taxonomies
 
 **Files:**
+
 - Modify: `plugins/hyperpress-utils/src/Banner.php` (`register()` closure, `apply()`, docblocks), `plugins/hyperpress-competition/src/Plugin.php` (`register_banner()`, line 35)
 - Test: `plugins/tests/unit/Utils/BannerTest.php`, `plugins/tests/integration/Competition/BannerTest.php` (create)
 
 **Interfaces:**
+
 - Consumes: `RequestTerm::get()` from Task 2.
 - Produces:
   - `Banner::register()` accepts an optional `$args['taxonomies']`, a `list<string>` of taxonomy keys. On a taxonomy-only page that also carries a season (`RequestTerm::get( 'hyper_season' )` non-null) the closure reads no terms, so the Season plugin's banner stands (2026-10-14). Otherwise the closure sets `ctx['extra_terms']` to a `list<string>` of term names: for each listed taxonomy, in list order, when `RequestTerm::get( $taxonomy )` returns a term, that term's name (no `is_tax( $taxonomy )` check, see Global Constraints). It stays empty on singular requests. The closure's early return changes to: return `$banner` unless `is_singular`, `is_archive` or `extra_terms` is non-empty.

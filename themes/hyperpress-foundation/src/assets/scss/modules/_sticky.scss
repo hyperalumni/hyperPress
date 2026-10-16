@@ -13,11 +13,12 @@ body,
   flex-direction: column;
 }
 
-.main-container, .main-grid, .main-content {
+.main-container,
+.main-grid,
+.main-content {
   display: flex;
   width: 100%;
   flex-grow: 1;
   flex-shrink: 0;
   flex-direction: column;
 }
-

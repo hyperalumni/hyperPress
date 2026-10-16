@@ -41,10 +41,12 @@
 ### Task 1: Banner accepts a subtitle callable
 
 **Files:**
+
 - Modify: `plugins/hyperpress-utils/src/Banner.php`
 - Test: `plugins/tests/integration/Utils/BannerRegisterTest.php`, `plugins/tests/integration/Utils/BannerSanitizeTest.php` (new; `sanitize_subtitle` needs `wp_kses_post`, which the unit bootstrap does not provide)
 
 **Interfaces:**
+
 - Produces: `Banner::register( string $post_type, array $args )` where `$args` may carry `subtitle` (a callable returning string) instead of `subtitle_mod`; when `subtitle` is present it is called to fill `$ctx['subtitle']`, otherwise `get_theme_mod( $args['subtitle_mod'] )` as today. `Banner::sanitize_subtitle( mixed $value ): string` returns `wp_kses_post( (string) $value )` for scalars and `''` otherwise.
 
 - [x] **Step 1: Write failing tests.** `BannerRegisterTest`: registering with `'subtitle' => static fn() => 'From callable'` and no `subtitle_mod` makes the banner of a singular post of the registered type carry that subtitle; a registered type with `subtitle_mod` still works. `BannerSanitizeTest` (integration, in `plugins/tests/integration/Utils/BannerSanitizeTest.php`, because `wp_kses_post` is not available in the unit bootstrap): `sanitize_subtitle` keeps `<em>x</em>` and removes `<script>`, returns `''` for `array( 'x' )`, `null` and an object.
@@ -56,12 +58,14 @@
 ### Task 2: Newsletter settings page
 
 **Files:**
+
 - Create: `plugins/hyperpress-newsletter/src/Settings.php`, `SettingsPage.php`
 - Modify: `plugins/hyperpress-newsletter/src/MetaBoxes.php` (add `boxes()` and register it), `src/Plugin.php` (boot wiring, `Banner::register` gets `'subtitle' => array( Settings::class, 'banner_subtitle' )` instead of `subtitle_mod`, no `Customizer::register()`)
 - Delete: `plugins/hyperpress-newsletter/src/Customizer.php`
 - Test: create `plugins/tests/integration/Newsletter/NewsletterSettingsPageTest.php`, `NewsletterSettingsTest.php`; rewrite `plugins/tests/integration/NewsletterCustomizerTest.php` (rename to `Newsletter/NewsletterSubtitleTest.php`); check `NewsletterBannerTest.php` and `NewsletterBannerFilter` tests for the theme mod
 
 **Interfaces:**
+
 - Produces: `Settings::OPTION = 'hyperpress_newsletter'`, `Settings::BANNER_SUBTITLE = 'hyperpress_newsletter_banner_subtitle'`, `Settings::defaults(): array`, `Settings::default_option( $fallback, $option, $passed_default )`, `Settings::banner_subtitle(): string`; `SettingsPage::ID = 'hyperpress_newsletter'`, `register()`, `pages( array ): array` (title `Newsletter`); `MetaBoxes::boxes( array ): array` with box `hyperpress_newsletter_box` and one `textarea` field (`raw` true, `sanitize_callback` `array( Banner::class, 'sanitize_subtitle' )`, label "Newsletter Banner Subtitle" and the old control's description, taken from the deleted `Customizer.php`).
 
 - [x] **Step 1: Write failing tests.** `NewsletterSettingsPageTest`: `pages()` values; `boxes()` field id, type, `raw`, callback, `std` equal to the default text. `NewsletterSettingsTest`: nothing saved gives the default; saved value comes back; saved array without the key gives the default; non-array option and non-string value give the default; explicit default passed to `get_option` wins. `NewsletterSubtitleTest` (from the old Customizer test): the default shows on a newsletter archive/singular banner until a value is saved; a saved value replaces it; the Customizer has no setting `hyperpress_newsletter_banner_subtitle` and no section `hyperpress_newsletter`; hostile markup is removed by the sanitizer.
@@ -75,6 +79,7 @@
 Same as Task 2 for `hyperpress-sponsor`: option `hyperpress_sponsor`, field `hyperpress_sponsor_banner_subtitle`, box `hyperpress_sponsor_box`, page title `Sponsor`, default `Helping Make HYPER Happen`, label "Sponsor Banner Subtitle" and description from the deleted Customizer.
 
 **Files:**
+
 - Create: `plugins/hyperpress-sponsor/src/Settings.php`, `SettingsPage.php`
 - Modify: `plugins/hyperpress-sponsor/src/MetaBoxes.php` (add `boxes()`; delete any empty `'panel' => ''` Customizer section-holder box and keep the rest), `src/Plugin.php` (wiring; `Banner::register` gets the `subtitle` callable; no `Customizer::register()`)
 - Delete: `plugins/hyperpress-sponsor/src/Customizer.php`
@@ -93,6 +98,7 @@ Same as Task 2 for `hyperpress-sponsor`: option `hyperpress_sponsor`, field `hyp
 Same for `hyperpress-competition`: option `hyperpress_competition`, field `hyperpress_competition_banner_subtitle`, box `hyperpress_competition_box`, page title `Competition`, default `''`, label "Banner subtitle" and description "Shown under the title on the competitions pages." (from the deleted Customizer). After this task the plugin has no Customizer class at all.
 
 **Files:**
+
 - Create: `plugins/hyperpress-competition/src/Settings.php`, `SettingsPage.php`
 - Modify: `plugins/hyperpress-competition/src/MetaBoxes.php` (add `boxes()`), `src/Plugin.php` (wiring; `subtitle` callable; remove `Customizer::register()`)
 - Delete: `plugins/hyperpress-competition/src/Customizer.php`
@@ -109,6 +115,7 @@ Same for `hyperpress-competition`: option `hyperpress_competition`, field `hyper
 ### Task 5: Remove `subtitle_mod`
 
 **Files:**
+
 - Modify: `plugins/hyperpress-utils/src/Banner.php` (remove the `subtitle_mod` path; `subtitle` callable becomes required), `plugins/tests/unit/Utils/BannerTest.php`, `plugins/tests/integration/Utils/BannerRegisterTest.php`, `plugins/tests/integration/SeasonGuardsTest.php` (~lines 105, 131: the gizmo post type registrations)
 
 **Interfaces:** `Banner::register()` args: `type`, `subtitle` (callable), `color_mod`, `archive_title` (required); `term_joiner`, `always_set_archive_title` optional. Grep `plugins/` for any remaining `subtitle_mod` first.
