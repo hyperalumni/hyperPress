@@ -348,11 +348,18 @@ Result (2026-10-16):
 
 - Produces: `nx setup @hyper/press-uikit` (uncached): `up`, wait until the database accepts connections and WordPress answers, `wp core install` only if `wp core is-installed` fails, activate the theme and the example plugin, create the demo shortcode post if absent. Admin credentials come only from the shell environment variables `UIKIT_ADMIN_USER`, `UIKIT_ADMIN_PASSWORD`, `UIKIT_ADMIN_EMAIL`; missing variables abort with a message naming them; the password is never printed, logged or written to a file. Idempotent on a second run.
 
-- [ ] **Step 1: Write the failing check:** `nx setup` without the variables exits non-zero listing the missing names and starts nothing.
-- [ ] **Step 2: Implement** `setup.mjs` and the target.
-- [ ] **Step 3: Verify on a scratch project, not your site:** from `docker/uikit` with `-p hyperuikit-fresh` and `WORDPRESS_EXTERNAL_PORT=5180 PHPMYADMIN_EXTERNAL_PORT=5190` set in that command's environment, run the setup against fresh volumes using throwaway credentials; the homepage returns 200 with `SMOKE_EXPECT=hp-uikit-card`; a second run changes nothing; then remove only that scratch project (`docker compose -p hyperuikit-fresh --profile local down -v`). Do not touch the `hyperuikit` project or its volumes.
-- [ ] **Step 4: Check** `git grep` and the process list for the throwaway password: absent.
-- [ ] **Step 5: Commit** `feat(uikit-theme): add the one-command setup target`.
+- [x] **Step 1: Write the failing check:** `nx setup` without the variables exits non-zero listing the missing names and starts nothing.
+- [x] **Step 2: Implement** `setup.mjs` and the target.
+- [x] **Step 3: Verify on a scratch project, not your site:** from `docker/uikit` with `-p hyperuikit-fresh` and `WORDPRESS_EXTERNAL_PORT=5180 PHPMYADMIN_EXTERNAL_PORT=5190` set in that command's environment, run the setup against fresh volumes using throwaway credentials; the homepage returns 200 with `SMOKE_EXPECT=hp-uikit-card`; a second run changes nothing; then remove only that scratch project (`docker compose -p hyperuikit-fresh --profile local down -v`). Do not touch the `hyperuikit` project or its volumes.
+- [x] **Step 4: Check** `git grep` and the process list for the throwaway password: absent.
+- [x] **Step 5: Commit** `feat(uikit-theme): add the one-command setup target`.
+
+Execution notes:
+
+- Password handling: wp-cli's `--prompt=admin_password` fed from stdin works non-interactively with `run --rm -T`, but it echoes the answer and the equivalent full command to stdout (seen in a throwaway run), so it was rejected. The script instead forwards the password with `docker compose run -e UIKIT_ADMIN_PASSWORD` (name only; never in the host command line) and wp-cli receives it as `--admin_password="$UIKIT_ADMIN_PASSWORD"` inside `sh -c`. Exposure left: briefly in the `wp` process arguments inside the throwaway container (accepted for a local dev site, Ruling 5).
+- wpcli service: the image entrypoint execs its arguments as given, so the call is `wpcli wp <args>` (the `wp` prefix is required except for flags such as `--info`).
+- Scratch verification (project `hyperuikit-fresh`, ports 5180/5190, fresh volumes, random 24-char throwaway password, not recorded): `COMPOSE_PROJECT_NAME` overrides the file's `name:` (config showed `hyperuikit-fresh_db`/`_wp` and 5180/5190). First run exit 0 in about 32 s (install, theme and plugin activation, seed post, smoke with `hp-uikit-card`); second run exit 0 in about 15 s with no "WordPress installed" message and still one post id. Password counts: 0 in the logs, the repo, `/tmp/opencode`, shell history and sampled process lists. Scratch project removed with `down -v`; `hyperuikit_db`/`hyperuikit_wp` and the owner's containers (same start times, port 5080 returns 200) untouched.
+- Persisted state `setup` reproduces on a fresh volume: installed WordPress, active theme and `hyperpress-example`, and the `hello-uikit-card` post from Task 8.
 
 ### Task 11: Gate, verdict and close-out
 

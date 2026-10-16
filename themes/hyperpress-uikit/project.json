@@ -114,6 +114,14 @@
       },
       "cache": false
     },
+    "setup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "node docker/uikit/setup.mjs"
+      },
+      "cache": false
+    },
     "smoke": {
       "executor": "nx:run-commands",
       "options": {
