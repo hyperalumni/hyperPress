@@ -48,7 +48,8 @@ final class DateDistance {
 			++$diff;
 		}
 
-		if ( $suffix && is_numeric( $diff ) && self::supports_ordinals() ) {
+		// An explicit empty locale keeps the default-locale formatter; anything else must be well formed, because PHP 8.3 accepts junk that 8.4+ rejects.
+		if ( $suffix && is_numeric( $diff ) && self::supports_ordinals() && ( '' === $locale || self::is_valid_locale( $locale ) ) ) {
 			try {
 				$nf        = new \NumberFormatter( $locale, \NumberFormatter::ORDINAL );
 				$formatted = $nf->format( (int) $diff );
@@ -61,5 +62,14 @@ final class DateDistance {
 		}
 
 		return esc_html( (string) $diff );
+	}
+
+	/**
+	 * Whether an underscore-normalised locale has a BCP 47 shape such as "en", "en-US" or "zh-Hant-TW".
+	 *
+	 * @param string $locale Locale with underscores already replaced by hyphens.
+	 */
+	private static function is_valid_locale( string $locale ): bool {
+		return 1 === preg_match( '/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i', $locale );
 	}
 }
