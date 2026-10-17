@@ -38,7 +38,10 @@
       "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true
     },
-    "sort-packages": true
+    "sort-packages": true,
+    "platform": {
+      "php": "8.3.0"
+    }
   },
   "scripts": {
     "lint:syntax": "find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -not -path './dist/*' -not -path './packaged/*' -print0 | xargs -0 -n1 php -d display_errors=stderr -l > /dev/null",
