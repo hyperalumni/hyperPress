@@ -1,15 +1,14 @@
 # hyperPress theme
 
 Classic (non-block) WordPress theme forked from FoundationPress (Foundation 6; jQuery is a global, not bundled).
-Requires PHP 8.3, WP 6.9, Node >=24 (`.nvmrc`), pnpm (enforced by `preinstall`; do not use npm/yarn).
+Requires PHP 8.3, WP 6.9, Node per `.nvmrc` (26.12.0), pnpm (enforced by `preinstall`; do not use npm/yarn).
 Text domain `hyperpress`. `README.md` keeps the upstream FoundationPress text below a short hyperPress section (Node 6 instructions there are stale); `.travis.yml` is dead (PHP 5.x-7.3). Ignore both.
 
 Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../../AGENTS.md` also applies.
 
 ## Commands
 
-- Node comes from nvm and is not on the default PATH. Load it first in each shell:
-  `source ~/.nvm/nvm.sh && nvm use` (reads `.nvmrc`), then run `pnpm`/`node` commands.
+- Node and pnpm: load them as in the root `../../AGENTS.md` (Environment), then run `pnpm`/`node` commands from this directory (`nvm use` reads this directory's `.nvmrc`).
 - `pnpm start`: gulp dev server with Browsersync (needs `BROWSERSYNC.url` in a local `config.yml`)
 - `pnpm dev` / `pnpm build`: gulp build `--dev` (sourcemaps) / `--production` (minify, optional revisioning)
 - `pnpm phpcs` / `pnpm phpcbf`: PHPCS via `codesniffer.ruleset.xml` (WordPress standard, many exclusions)
@@ -36,9 +35,7 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
 
 ## Direction
 
-Per `../../docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md`, the theme is becoming
-presentation-only. Shortcodes, SVG/AVIF support, NextGen code and HYPER plugin recommendations move to
-plugins in `../../plugins`. Banner router, core breadcrumb trails, Customizer, nav, walkers and templates stay.
+Per `../../docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md` (plans theme-01 to theme-05, all completed), the theme is presentation-only. Shortcodes, SVG/AVIF support, NextGen code and HYPER plugin recommendations live in the plugins in `../../plugins`. Banner router, core breadcrumb trails, Customizer, nav, walkers and templates stay.
 
 - Shortcode tags are `hyperpress_`-prefixed (`hyperpress_emphasis`, `hyperpress_banner`, `hyperpress_time_restrict`, ...). Keep the plugin-facing hooks unchanged: `hyperpress_banner_content`,
   `hyperpress_breadcrumbs_content`, `content_template`. Labels moved to `hyperpress-label`: templates
@@ -50,13 +47,11 @@ plugins in `../../plugins`. Banner router, core breadcrumb trails, Customizer, n
 
 ## Gotchas
 
-- The root `pnpm-workspace.yaml` (`../../pnpm-workspace.yaml`) `allowBuilds` whitelists native build scripts (only `mozjpeg` is enabled).
+- The root `pnpm-workspace.yaml` (`../../pnpm-workspace.yaml`) `allowBuilds` decides which native build scripts run. Only `nx` is enabled; the image tools (`gifsicle`, `jpegtran-bin`, `mozjpeg`, `optipng-bin`) stay off, and the Foundation build still works without them.
 - The working tree usually has unrelated uncommitted changes. Commit with explicit pathspecs, never `git add -A`.
 - Gulp 5 `gulp.src` needs `{ encoding: false }` for any binary files (PNG, .mo, fonts), otherwise they are corrupted; `PackageConfigTest` guards the package, copy and images tasks.
 - Never put secrets in the repo. `library/plugins.php` once held an API-key URL; do not reproduce it.
 
 ## Implementation plans
 
-Plans are in `../../docs/superpowers/plans/`, specs in `../../docs/superpowers/specs/` (see the plans README).
-Commit a plan on its own before coding, tick its checkboxes in the same commit as each task's code,
-and update any plan that mentions a file you change. Add a COMPLETED banner when a plan finishes.
+Follow the root `../../AGENTS.md`; plans are in `../../docs/superpowers/plans/`.
