@@ -92,13 +92,15 @@ final class MetaBoxes {
 					'api_key'           => GoogleMapsKey::get(),
 					'sanitize_callback' => array( self::class, 'map_location' ),
 				),
+                array(
+                    'name'              => 'The Blue Alliance Event Key',
+                    'id'                => 'hyperpress_competition_tba_event_key',
+                    'type'              => 'text',
+                ),
 				array(
 					'name'              => 'NE FIRST Event Page',
 					'id'                => 'hyperpress_competition_ne_first_event_url',
 					'type'              => 'link',
-					'std'               => array(
-						'title' => 'NE FIRST Event Page',
-					),
 					'sanitize_callback' => array( self::class, 'event_url' ),
 				),
                 array(
