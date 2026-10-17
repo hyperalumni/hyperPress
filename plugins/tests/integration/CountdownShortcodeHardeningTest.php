@@ -59,8 +59,19 @@ final class CountdownShortcodeHardeningTest extends WP_UnitTestCase {
 		$this->assertNotSame( $a[1], $b[1], 'element ids must be unique per render' );
 
 		$js = $this->inline_js();
-		$this->assertStringContainsString( '$( "#' . $a[1] . '" ).TimeCircles', $js );
-		$this->assertStringContainsString( '$( "#' . $b[1] . '" ).TimeCircles', $js );
+		$this->assertStringContainsString( 'var $el = $( "#' . $a[1] . '" );', $js );
+		$this->assertStringContainsString( 'var $el = $( "#' . $b[1] . '" );', $js );
+	}
+
+	public function test_inline_script_redraws_the_circles_on_a_debounced_width_change(): void {
+		$this->render( $this->countdown() );
+		$js = $this->inline_js();
+
+		$this->assertStringContainsString( '$( window ).on( "resize"', $js );
+		$this->assertStringContainsString( 'clearTimeout( resizeTimer )', $js );
+		$this->assertStringContainsString( '}, 200 );', $js );
+		$this->assertStringContainsString( 'if ( width === lastWidth )', $js );
+		$this->assertStringContainsString( '$el.TimeCircles().rebuild();', $js );
 	}
 
 	public static function site_zones(): array {

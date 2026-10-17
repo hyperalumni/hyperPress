@@ -135,7 +135,7 @@ final class Shortcode {
 
 		$selector = wp_json_encode( '#' . $element_id, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
 		$js       = 'jQuery( function ( $ ) {
-	$( ' . $selector . ' ).TimeCircles( {
+	var options = {
 		"animation": "smooth",
 		"bg_width": 0.4,
 		"fg_width": 0.07,
@@ -163,6 +163,21 @@ final class Shortcode {
 				"show": true
 			}
 		}
+	};
+	var $el = $( ' . $selector . ' );
+	var lastWidth = $el.width();
+	var resizeTimer;
+	$el.TimeCircles( options );
+	$( window ).on( "resize", function () {
+		clearTimeout( resizeTimer );
+		resizeTimer = setTimeout( function () {
+			var width = $el.width();
+			if ( width === lastWidth ) {
+				return;
+			}
+			lastWidth = width;
+			$el.TimeCircles().rebuild();
+		}, 200 );
 	} );
 } );';
 		wp_add_inline_script( 'hyperpress-countdown-timecircles', $js );
