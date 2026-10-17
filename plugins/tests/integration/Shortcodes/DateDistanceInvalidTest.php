@@ -52,6 +52,15 @@ final class DateDistanceInvalidTest extends WP_UnitTestCase {
 		);
 	}
 
+	public function test_a_locale_with_a_trailing_newline_falls_back_to_the_plain_number(): void {
+		$year = (string) ( (int) gmdate( 'Y' ) - 10 );
+
+		$this->assertSame(
+			'10',
+			do_shortcode( '[hyperpress_date_distance date="' . $year . '-01-01" suffix="true" locale="en-US' . "\n" . '"]' )
+		);
+	}
+
 	/**
 	 * @return array<string, array{0: string}>
 	 */
@@ -78,6 +87,7 @@ final class DateDistanceInvalidTest extends WP_UnitTestCase {
 		$year     = (string) ( (int) gmdate( 'Y' ) - 10 );
 		$expected = ( new \NumberFormatter( 'de-DE', \NumberFormatter::ORDINAL ) )->format( 10 );
 
+		$this->assertNotSame( '10', (string) $expected, 'ICU must format an ordinal here, otherwise the test proves nothing.' );
 		$this->assertSame(
 			esc_html( (string) $expected ),
 			do_shortcode( '[hyperpress_date_distance date="' . $year . '-01-01" suffix="true" locale="de-DE"]' )
@@ -104,6 +114,7 @@ final class DateDistanceInvalidTest extends WP_UnitTestCase {
 		$year     = (string) ( (int) gmdate( 'Y' ) - 10 );
 		$expected = ( new \NumberFormatter( $locale, \NumberFormatter::ORDINAL ) )->format( 10 );
 
+		$this->assertNotSame( '10', (string) $expected, 'ICU must format an ordinal here, otherwise the test proves nothing.' );
 		$this->assertSame(
 			esc_html( (string) $expected ),
 			do_shortcode( '[hyperpress_date_distance date="' . $year . '-01-01" suffix="true" locale="' . $locale . '"]' )
@@ -136,6 +147,7 @@ final class DateDistanceInvalidTest extends WP_UnitTestCase {
 		$year     = (string) ( (int) gmdate( 'Y' ) - 10 );
 		$expected = ( new \NumberFormatter( '', \NumberFormatter::ORDINAL ) )->format( 10 );
 
+		$this->assertNotSame( '10', (string) $expected, 'ICU must format an ordinal here, otherwise the test proves nothing.' );
 		$this->assertSame(
 			esc_html( (string) $expected ),
 			do_shortcode( '[hyperpress_date_distance date="' . $year . '-01-01" suffix="true" locale=""]' )

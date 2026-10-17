@@ -69,12 +69,13 @@ final class DateDistance {
 	 *
 	 * Accepts BCP 47 tags ("en", "en-US", "zh-Hant-TW"), including one-character extension singletons
 	 * ("en-US-u-nu-latn", "th-TH-u-ca-buddhist"), and ICU "@key=value" suffixes ("de-DE@collation=phonebook").
+	 * The "D" modifier makes "$" match only at the very end, so a locale with a trailing newline is rejected.
 	 * Known limitation: a well-formed locale for an unknown language such as "xx-YY" is still decided by ICU,
 	 * so PHP 8.3 formats it with the default locale while 8.4+ returns the plain number.
 	 *
 	 * @param string $locale Locale with underscores already replaced by hyphens.
 	 */
 	private static function is_valid_locale( string $locale ): bool {
-		return 1 === preg_match( '/^[a-z]{2,3}(?:-[a-z0-9]{1,8})*(?:@[a-z0-9=;-]+)?$/i', $locale );
+		return 1 === preg_match( '/^[a-z]{2,3}(?:-[a-z0-9]{1,8})*(?:@[a-z0-9=;-]+)?$/iD', $locale );
 	}
 }
