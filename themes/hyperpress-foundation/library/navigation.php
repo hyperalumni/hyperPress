@@ -10,12 +10,20 @@
 // Don't load directly.
 defined( 'ABSPATH' ) || exit;
 
-register_nav_menus(
-	array(
-		'top-bar-r'  => esc_html__( 'Right Top Bar', 'hyperpress' ),
-		'mobile-nav' => esc_html__( 'Mobile', 'hyperpress' ),
-	)
-);
+add_action( 'after_setup_theme', 'hyperpress_register_nav_menus' );
+
+/**
+ * Register the menu locations. The labels are translated, so this runs on after_setup_theme and not while
+ * functions.php is included (WordPress 6.7+ flags a text domain that loads that early).
+ */
+function hyperpress_register_nav_menus(): void {
+	register_nav_menus(
+		array(
+			'top-bar-r'  => esc_html__( 'Right Top Bar', 'hyperpress' ),
+			'mobile-nav' => esc_html__( 'Mobile', 'hyperpress' ),
+		)
+	);
+}
 
 
 /**
