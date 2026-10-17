@@ -94,6 +94,19 @@
      * @param {string} hex color code
      */
     function hexToRgb(hex) {
+
+        // Verify already RGB (e.g. "rgb(0,0,0)") or RGBA (e.g. "rgba(0,0,0,0.5)")
+        var rgba = /^rgba?\(([\d]+),([\d]+),([\d]+)(,([\d\.]+))?\)$/;
+        if (rgba.test(hex)) {
+            var result = rgba.exec(hex);
+            return {
+                r: parseInt(result[1]),
+                g: parseInt(result[2]),
+                b: parseInt(result[3]),
+                a: parseInt(result[5] ? result[5] : 1)
+            };
+        }
+
         // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
         var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
         hex = hex.replace(shorthandRegex, function (m, r, g, b) {
@@ -239,7 +252,7 @@
             useWindow.TC_Instance_List = TC_Instance_List;
         }
         initializeAnimationFrameHandler(useWindow);
-    }
+    };
 
     function initializeAnimationFrameHandler(w) {
         var vendors = ['webkit', 'moz'];
@@ -264,7 +277,7 @@
                 clearTimeout(id);
             };
         }
-    }
+    };
 
 
     var TC_Instance = function (element, options) {
@@ -400,12 +413,10 @@
             var headerElement = $("<h4>");
             headerElement.text(this.config.time[key].text); // Options
             headerElement.css("font-size", Math.round(this.config.text_size * this.data.attributes.item_size));
-            headerElement.css("line-height", Math.round(this.config.text_size * this.data.attributes.item_size) + "px");
             headerElement.appendTo(textElement);
 
             var numberElement = $("<span>");
-            numberElement.css("font-size", Math.round(3 * this.config.text_size * this.data.attributes.item_size));
-            numberElement.css("line-height", Math.round(this.config.text_size * this.data.attributes.item_size) + "px");
+            numberElement.css("font-size", Math.round(this.config.number_size * this.data.attributes.item_size));
             numberElement.appendTo(textElement);
 
             this.data.text_elements[key] = numberElement;
@@ -792,6 +803,7 @@
         fg_width: 0.1,
         bg_width: 1.2,
         text_size: 0.07,
+        number_size: 0.28,
         total_duration: "Auto",
         direction: "Clockwise",
         use_top_frame: false,
