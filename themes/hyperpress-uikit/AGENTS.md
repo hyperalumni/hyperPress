@@ -30,7 +30,7 @@ Part of the hyperPress monorepo (`themes/hyperpress-uikit/`); the root `../../AG
 
 ## Tests and lint
 
-- PHPUnit and PHPCS run in the tooling container from `docker/uikit`: `docker compose run --rm --user "$(id -u):$(id -g)" -e COMPOSER_HOME=/tmp/composer -w /themes/hyperpress-uikit tooling composer test:unit|lint` (see the root `../../AGENTS.md` for why `--user`). `composer lint` is `php -l` plus PHPCS.
+- PHPUnit and PHPCS run in the tooling container from `docker/uikit`: use the tooling invocation in the root `../../AGENTS.md` (uikit site section) with `-w /themes/hyperpress-uikit` and `composer test:unit` or `composer lint`. `composer lint` is `php -l` plus PHPCS.
 - `test` is Vitest for `bin/package.mjs` (`tests/package.test.ts`); `pnpm --filter @hyper/press-uikit typecheck` runs `tsc`.
 - `lint-php` is PHPCS (`phpcs.xml.dist`): WordPress standard plus PHPCompatibilityWP `testVersion 8.3-`, text domain `hyperpress-uikit`, prefixes `HyperPress\Uikit` / `hp_uikit`.
 - PHPCS relaxations: no mandatory docblock presence; PSR-4 file names and camelCase methods/variables; `EnqueuedResourceParameters.MissingVersion` off (Vite hashes assets); `AlternativeFunctions` and `UnusedFunctionParameter` skipped under `tests/`.
@@ -52,4 +52,4 @@ Part of the hyperPress monorepo (`themes/hyperpress-uikit/`); the root `../../AG
 ## Libs
 
 - `libs/uikit-tokens`: Sass entry `src/index.scss` imports the variable overrides first, then `uikit/src/scss/variables` and `mixins`, then only the used components; `build` writes `dist/libs/uikit-tokens/index.css`.
-- `libs/ui`: `initUikit()` registers the UIkit Icons plugin once (a second call is a no-op); tests use Vitest with happy-dom. `src/main.ts` calls it.
+- `libs/ui`: `initUikit()` registers the UIkit Icons plugin once (a second call is a no-op); tests use Vitest with happy-dom. The theme's `src/main.ts` calls it.
