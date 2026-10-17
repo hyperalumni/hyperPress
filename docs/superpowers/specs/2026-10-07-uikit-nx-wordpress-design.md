@@ -1,6 +1,6 @@
 # UIkit + Nx + pnpm WordPress workspace: design
 
-Status: stages 0-7 done; verdict in `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md` (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root; 2026-10-15: pins bumped to Node 26.12.0 and pnpm 12.12.1, plugin count corrected to 16, stages 0 and 0b done, Nx pinned to 23.3.0; 2026-10-15: two `dist/` conventions recorded, Foundation keeps its in-theme `dist/`; 2026-10-15: stages 2-4 done, tooling image is PHP 8.5, Vite runs through the inferred `@nx/vite` plugin; 2026-10-16: stages 5-7 done, `allowBuilds` has `nx: true`)
+Status: stages 0-7 done; verdict in `docs/superpowers/audit/2026-10-16-uikit-nx-oxc-verdict.md` (created 2026-10-07, updated 2026-10-11: stage 0 uses the hyperPress repo as the base; all docs live at the repo root; 2026-10-15: pins bumped to Node 26.12.0 and pnpm 12.12.1, plugin count corrected to 16, stages 0 and 0b done, Nx pinned to 23.3.0; 2026-10-15: two `dist/` conventions recorded, Foundation keeps its in-theme `dist/`; 2026-10-15: stages 2-4 done, tooling image is PHP 8.5, Vite runs through the inferred `@nx/vite` plugin; 2026-10-16: stages 5-7 done, `allowBuilds` has `nx: true`; 2026-10-16: `master` pushed to `origin`, `hyperPressPlugins` retired)
 
 ## Purpose
 
@@ -251,15 +251,16 @@ Verification: both sites start from the new location; the old directories are un
 ## Out of scope
 
 Block editor / `theme.json`, content migration, CI, Vite+, Twig linting, hoisting the plugins repo's
-shared tooling to the repo root, pushing the restructured history, retiring `hyperPressPlugins`,
-and any change to `../theme` or `../plugins`. The old `hyperalumni/` and `hyperonline/` directories are not modified or deleted by stage 0b; retiring them is the owner's call.
+shared tooling to the repo root, and any change to `../theme` or `../plugins`. Pushing the restructured history and retiring `hyperPressPlugins` were out of scope while the stages ran; both were done on 2026-10-16 after the stages completed. The old `hyperalumni/` and `hyperonline/` directories are not modified or deleted by stage 0b; retiring them is the owner's call.
 
 ## Risks and open items
 
-- `uikit/` and `../theme` diverge as soon as either gets new commits. Until stage 0b repoints the Docker stacks they keep using `../theme` and `../plugins`; stage 0b makes this repo the working copy, after which `../theme` and `../plugins` should be archived (decided at cutover).
+- `uikit/` and `../theme` diverge as soon as either gets new commits. Until stage 0b repoints the Docker stacks they keep using `../theme` and `../plugins`; stage 0b makes this repo the working copy, after which `../theme` and `../plugins` should be archived (decided at cutover; archiving the old local clones is the owner's call outside this repo).
 - Pushing the restructured `master` to `hyperalumni/hyperPress` changes the shared repo layout for
   everyone using it; it needs its own decision (branch vs `master`, and what happens to
-  `hyperPressPlugins`).
+  `hyperPressPlugins`). Resolved 2026-10-16: `master` was pushed to `origin` as a plain
+  fast-forward and the `hyperPressPlugins` repository was deleted, since the plugins now live under
+  `plugins/`.
 - Vite runs on the host while WordPress runs in Docker; CORS and host-networking need an early test. Result of the stage 4 spike: Vite blocks requests with an unknown `Host` header, so `host.docker.internal` is in `server.allowedHosts`; CORS allows the WordPress origin (`UIKIT_WP_ORIGIN`, default `http://localhost:5080`); on Linux the container needs the `extra_hosts` entry above.
 - Node 26 is in the Current phase. The theme already pins 26.12.0; compatibility of Nx, Vite, Sass
   and the Oxc tools with it is verified in stage 1, not assumed.
