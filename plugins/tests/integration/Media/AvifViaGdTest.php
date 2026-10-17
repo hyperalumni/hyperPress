@@ -180,7 +180,6 @@ final class AvifViaGdTest extends WP_UnitTestCase {
 		$editor = $class->newInstanceWithoutConstructor();
 		$class->getConstructor()->invoke( $editor, $png );
 		$method = new ReflectionMethod( $editor, 'get_output_format' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $editor, $png . '.avif', 'image/avif' );
 
@@ -225,7 +224,6 @@ final class AvifViaGdTest extends WP_UnitTestCase {
 		};
 
 		$method = new ReflectionMethod( $editor, 'get_output_format' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $editor, '/tmp/image.avif', 'image/avif' );
 

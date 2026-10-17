@@ -190,7 +190,6 @@ final class SocialIconsTest extends WP_UnitTestCase {
 
 		// The name must fail validation itself, not merely miss a file: a name that passed would have been looked up and cached.
 		$cache = ( new ReflectionClass( Icons::class ) )->getProperty( 'cache' );
-		$cache->setAccessible( true );
 		$this->assertArrayNotHasKey( "zz-newline-check\n", $cache->getValue() );
 	}
 
