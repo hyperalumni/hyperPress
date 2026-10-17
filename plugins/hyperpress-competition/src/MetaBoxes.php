@@ -93,6 +93,13 @@ final class MetaBoxes {
 					'sanitize_callback' => array( self::class, 'map_location' ),
 				),
                 array(
+                    'name'              => 'Event Start Date/Time',
+                    'id'                => 'hyperpress_competition_event_start_date',
+                    'type'              => 'datetime',
+                    'inline'            => false,
+                    'timestamp'         => true,
+                ),
+                array(
                     'name'              => 'The Blue Alliance Event Key',
                     'id'                => 'hyperpress_competition_tba_event_key',
                     'type'              => 'text',
