@@ -48,7 +48,7 @@ final class DateDistance {
 			++$diff;
 		}
 
-		// An explicit empty locale keeps the default-locale formatter; anything else must be well formed, because PHP 8.3 accepts junk that 8.4+ rejects.
+		// An explicit empty locale keeps the default-locale formatter. Anything else must be well formed: PHP 8.3 accepts malformed locale strings that 8.4+ rejects with a ValueError, so malformed ones fall back to the plain number everywhere.
 		if ( $suffix && is_numeric( $diff ) && self::supports_ordinals() && ( '' === $locale || self::is_valid_locale( $locale ) ) ) {
 			try {
 				$nf        = new \NumberFormatter( $locale, \NumberFormatter::ORDINAL );
@@ -65,11 +65,16 @@ final class DateDistance {
 	}
 
 	/**
-	 * Whether an underscore-normalised locale has a BCP 47 shape such as "en", "en-US" or "zh-Hant-TW".
+	 * Whether an underscore-normalised locale has a well-formed shape.
+	 *
+	 * Accepts BCP 47 tags ("en", "en-US", "zh-Hant-TW"), including one-character extension singletons
+	 * ("en-US-u-nu-latn", "th-TH-u-ca-buddhist"), and ICU "@key=value" suffixes ("de-DE@collation=phonebook").
+	 * Known limitation: a well-formed locale for an unknown language such as "xx-YY" is still decided by ICU,
+	 * so PHP 8.3 formats it with the default locale while 8.4+ returns the plain number.
 	 *
 	 * @param string $locale Locale with underscores already replaced by hyphens.
 	 */
 	private static function is_valid_locale( string $locale ): bool {
-		return 1 === preg_match( '/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i', $locale );
+		return 1 === preg_match( '/^[a-z]{2,3}(?:-[a-z0-9]{1,8})*(?:@[a-z0-9=;-]+)?$/i', $locale );
 	}
 }

@@ -84,6 +84,54 @@ final class DateDistanceInvalidTest extends WP_UnitTestCase {
 		);
 	}
 
+	/**
+	 * Unicode extension subtags and ICU keyword suffixes are valid locales on every PHP version.
+	 *
+	 * @return array<string, array{0: string}>
+	 */
+	public static function extended_locales(): array {
+		return array(
+			'icu keyword'       => array( 'de-DE@collation=phonebook' ),
+			'unicode extension' => array( 'en-US-u-nu-latn' ),
+			'unicode calendar'  => array( 'th-TH-u-ca-buddhist' ),
+		);
+	}
+
+	/**
+	 * @dataProvider extended_locales
+	 */
+	public function test_an_extended_locale_uses_the_number_formatter( string $locale ): void {
+		$year     = (string) ( (int) gmdate( 'Y' ) - 10 );
+		$expected = ( new \NumberFormatter( $locale, \NumberFormatter::ORDINAL ) )->format( 10 );
+
+		$this->assertSame(
+			esc_html( (string) $expected ),
+			do_shortcode( '[hyperpress_date_distance date="' . $year . '-01-01" suffix="true" locale="' . $locale . '"]' )
+		);
+	}
+
+	/**
+	 * @return array<string, array{0: string}>
+	 */
+	public static function dangling_locales(): array {
+		return array(
+			'trailing hyphen' => array( 'en-' ),
+			'empty keyword'   => array( 'en@' ),
+		);
+	}
+
+	/**
+	 * @dataProvider dangling_locales
+	 */
+	public function test_a_dangling_locale_falls_back_to_the_plain_number( string $locale ): void {
+		$year = (string) ( (int) gmdate( 'Y' ) - 10 );
+
+		$this->assertSame(
+			'10',
+			do_shortcode( '[hyperpress_date_distance date="' . $year . '-01-01" suffix="true" locale="' . $locale . '"]' )
+		);
+	}
+
 	public function test_an_explicit_empty_locale_uses_the_default_locale_formatter(): void {
 		$year     = (string) ( (int) gmdate( 'Y' ) - 10 );
 		$expected = ( new \NumberFormatter( '', \NumberFormatter::ORDINAL ) )->format( 10 );
