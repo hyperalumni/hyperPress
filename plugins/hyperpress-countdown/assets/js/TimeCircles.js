@@ -427,8 +427,9 @@
             this.data.paused = true;
         }
 
-        // Set up interval fallback
+        // Set up interval fallback (clear any previous one so rebuild() doesn't stack timers)
         var _this = this;
+        useWindow.clearInterval(this.data.interval_fallback);
         this.data.interval_fallback = useWindow.setInterval(function () {
             _this.update.call(_this, true);
         }, 100);
