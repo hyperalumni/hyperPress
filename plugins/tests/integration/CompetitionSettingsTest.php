@@ -21,19 +21,112 @@ final class CompetitionSettingsTest extends WP_UnitTestCase {
 	public static function url_fields(): array {
 		return array(
 			'ne first' => array( 'hyperpress_competition_ne_first_event_url' ),
+			'ftc ma'   => array( 'hyperpress_competition_ftc_ma_event_url' ),
 			'first'    => array( 'hyperpress_competition_first_event_url' ),
 			'stream'   => array( 'hyperpress_competition_stream_url' ),
 		);
 	}
 
 	/** @dataProvider url_fields */
-	public function test_url_fields_drop_hostile_schemes_and_keep_valid_urls( string $field_id ): void {
+	public function test_link_fields_drop_hostile_schemes_and_keep_valid_links( string $field_id ): void {
 		$callback = $this->sanitizer_for( $field_id );
 
-		$this->assertSame( '', $callback( 'javascript:alert(1)' ) );
-		$this->assertSame( '', $callback( "data:text/html,<script>alert(1)</script>" ) );
-		$this->assertSame( 'https://example.com/event?id=1', $callback( 'https://example.com/event?id=1' ) );
-		$this->assertSame( '', $callback( '' ) );
+		$this->assertSame( array(), $callback( array( 'url' => 'javascript:alert(1)' ) ) );
+		$this->assertSame( array(), $callback( array( 'url' => 'data:text/html,<script>alert(1)</script>' ) ) );
+		$this->assertSame(
+			array(
+				'url'     => 'https://example.com/event?id=1',
+				'title'   => 'Event page',
+				'target'  => '_blank',
+				'post_id' => 7,
+			),
+			$callback(
+				array(
+					'url'     => 'https://example.com/event?id=1',
+					'title'   => 'Event page',
+					'target'  => '_blank',
+					'post_id' => '7',
+				)
+			)
+		);
+		$this->assertSame(
+			array(
+				'url'     => 'https://example.com/',
+				'title'   => '',
+				'target'  => '',
+				'post_id' => 0,
+			),
+			$callback( array( 'url' => 'https://example.com/' ) ),
+			'missing keys fall back to empty values'
+		);
+		$this->assertSame(
+			array(
+				'url'     => 'https://example.com/',
+				'title'   => 'Go <b>now</b>alert(1)',
+				'target'  => '',
+				'post_id' => 0,
+			),
+			$callback(
+				array(
+					'url'    => 'https://example.com/',
+					'title'  => 'Go <b>now</b><script>alert(1)</script>',
+					'target' => '_top',
+				)
+			),
+			'wp_kses_post drops the script tag (not its text) and a bad target is cleared'
+		);
+		$this->assertSame( array(), $callback( array( 'url' => '' ) ) );
+		$this->assertSame( array(), $callback( array( 'title' => 'No url' ) ) );
+		$this->assertSame( array(), $callback( array( 'url' => array( 'https://example.com/' ) ) ) );
+		$this->assertSame( array(), $callback( 'https://example.com/' ), 'a bare string is not a link array' );
+		$this->assertSame( array(), $callback( '' ) );
+		$this->assertSame( array(), $callback( null ) );
+	}
+
+	/**
+	 * Mirrors Meta Box's save for a field: the field's sanitize_callback runs first (RWMB_Field::process_value),
+	 * then RWMB_Field::save deletes the meta when the value is empty and stores it otherwise. The Meta Box plugin
+	 * is not loaded in this suite (see tests/bootstrap-integration.php), so the two steps are reproduced here.
+	 *
+	 * @param mixed $submitted Raw submitted value.
+	 */
+	private function save_field( int $post_id, string $field_id, $submitted ): void {
+		$new = ( $this->sanitizer_for( $field_id ) )( $submitted );
+
+		if ( array() === $new || '' === $new ) {
+			delete_post_meta( $post_id, $field_id );
+			return;
+		}
+		update_post_meta( $post_id, $field_id, $new );
+	}
+
+	public function test_link_fields_persist_the_submitted_link_and_clear_when_the_url_is_emptied(): void {
+		$post_id  = self::factory()->post->create( array( 'post_type' => 'hyper_competition' ) );
+		$field_id = 'hyperpress_competition_stream_url';
+
+		$this->save_field(
+			$post_id,
+			$field_id,
+			array(
+				'url'     => 'https://example.com/stream',
+				'title'   => 'Watch',
+				'target'  => '_blank',
+				'post_id' => '',
+			)
+		);
+		$this->assertSame(
+			array(
+				'url'     => 'https://example.com/stream',
+				'title'   => 'Watch',
+				'target'  => '_blank',
+				'post_id' => 0,
+			),
+			get_post_meta( $post_id, $field_id, true )
+		);
+
+		$this->save_field( $post_id, $field_id, array( 'url' => '', 'title' => '', 'target' => '', 'post_id' => '' ) );
+		$this->assertSame( '', get_post_meta( $post_id, $field_id, true ) );
+		$this->assertFalse( metadata_exists( 'post', $post_id, $field_id ), 'an emptied link deletes the meta' );
 	}
 
 	public function test_robot_field_only_accepts_the_id_of_a_robot(): void {

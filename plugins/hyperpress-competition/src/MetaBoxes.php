@@ -108,25 +108,25 @@ final class MetaBoxes {
 					'name'              => 'NE FIRST Event Page',
 					'id'                => 'hyperpress_competition_ne_first_event_url',
 					'type'              => 'link',
-					'sanitize_callback' => array( self::class, 'event_url' ),
+					'sanitize_callback' => array( self::class, 'event_link' ),
 				),
                 array(
                     'name'              => 'FTC MA Event Page',
                     'id'                => 'hyperpress_competition_ftc_ma_event_url',
                     'type'              => 'link',
-                    'sanitize_callback' => array( self::class, 'event_url' ),
+                    'sanitize_callback' => array( self::class, 'event_link' ),
                 ),
 				array(
 					'name'              => 'FIRST Event Page',
 					'id'                => 'hyperpress_competition_first_event_url',
 					'type'              => 'link',
-					'sanitize_callback' => array( self::class, 'event_url' ),
+					'sanitize_callback' => array( self::class, 'event_link' ),
 				),
 				array(
 					'name'              => 'Stream',
 					'id'                => 'hyperpress_competition_stream_url',
 					'type'              => 'link',
-					'sanitize_callback' => array( self::class, 'event_url' ),
+					'sanitize_callback' => array( self::class, 'event_link' ),
 				),
 			),
 		);
@@ -135,12 +135,29 @@ final class MetaBoxes {
 	}
 
 	/**
-	 * Sanitizer for the event and stream links: a safe URL, or '' for anything else.
+	 * Sanitizer for the event and stream links. A Meta Box `link` field submits an array
+	 * (url, title, target, post_id). Returns that array sanitized, or array() when there is
+	 * no safe URL, which makes Meta Box delete the meta.
 	 *
 	 * @param mixed $value Submitted value.
+	 * @return array{url?:string,title?:string,target?:string,post_id?:int}
 	 */
-	public static function event_url( $value ): string {
-		return is_string( $value ) ? esc_url_raw( $value ) : '';
+	public static function event_link( $value ): array {
+		if ( ! is_array( $value ) ) {
+			return array();
+		}
+
+		$url = isset( $value['url'] ) && is_string( $value['url'] ) ? esc_url_raw( $value['url'] ) : '';
+		if ( '' === $url ) {
+			return array();
+		}
+
+		return array(
+			'url'     => $url,
+			'title'   => isset( $value['title'] ) && is_string( $value['title'] ) ? wp_kses_post( $value['title'] ) : '',
+			'target'  => isset( $value['target'] ) && '_blank' === $value['target'] ? '_blank' : '',
+			'post_id' => isset( $value['post_id'] ) && is_scalar( $value['post_id'] ) ? absint( $value['post_id'] ) : 0,
+		);
 	}
 
 	/**
