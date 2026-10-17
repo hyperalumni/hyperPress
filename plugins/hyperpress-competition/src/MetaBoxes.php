@@ -92,30 +92,30 @@ final class MetaBoxes {
 					'api_key'           => GoogleMapsKey::get(),
 					'sanitize_callback' => array( self::class, 'map_location' ),
 				),
-                array(
-                    'name'              => 'Event Start Date/Time',
-                    'id'                => 'hyperpress_competition_event_start_date',
-                    'type'              => 'datetime',
-                    'inline'            => false,
-                    'timestamp'         => true,
-                ),
-                array(
-                    'name'              => 'The Blue Alliance Event Key',
-                    'id'                => 'hyperpress_competition_tba_event_key',
-                    'type'              => 'text',
-                ),
+				array(
+					'name'      => 'Event Start Date/Time',
+					'id'        => 'hyperpress_competition_event_start_date',
+					'type'      => 'datetime',
+					'inline'    => false,
+					'timestamp' => true,
+				),
+				array(
+					'name' => 'The Blue Alliance Event Key',
+					'id'   => 'hyperpress_competition_tba_event_key',
+					'type' => 'text',
+				),
 				array(
 					'name'              => 'NE FIRST Event Page',
 					'id'                => 'hyperpress_competition_ne_first_event_url',
 					'type'              => 'link',
 					'sanitize_callback' => array( self::class, 'event_link' ),
 				),
-                array(
-                    'name'              => 'FTC MA Event Page',
-                    'id'                => 'hyperpress_competition_ftc_ma_event_url',
-                    'type'              => 'link',
-                    'sanitize_callback' => array( self::class, 'event_link' ),
-                ),
+				array(
+					'name'              => 'FTC MA Event Page',
+					'id'                => 'hyperpress_competition_ftc_ma_event_url',
+					'type'              => 'link',
+					'sanitize_callback' => array( self::class, 'event_link' ),
+				),
 				array(
 					'name'              => 'FIRST Event Page',
 					'id'                => 'hyperpress_competition_first_event_url',
