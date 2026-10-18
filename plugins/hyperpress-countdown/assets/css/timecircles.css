@@ -1,4 +1,10 @@
 /**
+ *	Theming: set the --tc-font-family custom property (on :root or any ancestor
+ *	of the timer) to change the font, e.g. --tc-font-family: 'Inter', sans-serif;
+ *	Defaults to 'Century Gothic', Arial.
+ **/
+
+/**
  *	This element is created inside your target element
  *	It is used so that your own element will not need to be altered
  **/
@@ -25,7 +31,7 @@
     padding: 0;
     text-align: center;
     text-transform: uppercase;
-    font-family: 'Century Gothic', Arial;
+    font-family: var(--tc-font-family, 'Century Gothic', Arial);
     line-height: 1;
 }
 
@@ -38,7 +44,7 @@
     display: block;
     width: 100%;
     text-align: center;
-    font-family: 'Century Gothic', Arial;
+    font-family: var(--tc-font-family, 'Century Gothic', Arial);
     line-height: 1;
     font-weight: bold;
 }
