@@ -1,3 +1,7 @@
+:root {
+  --tc-font-family: #{$body-font-family};
+}
+
 .grid-container,
 .main-container {
   @include xy-grid-container;
