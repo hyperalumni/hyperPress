@@ -114,3 +114,5 @@ One spec and one plan cover steps 1-2 in detail with a short outline per later p
 ## Left to the builder
 
 Exact field ids and labels, the admin-menu reordering mechanism (any approach that makes General first regardless of load order), the form of the sanitizers, and the shape of each `wpcli` copy command.
+
+> Update (2026-10-18): the Google Maps key was dropped. Maps use Meta Box's Open Street Map field (`osm`), so no API key is needed; the General page now holds only helper text. The Google Maps key statements above are historical.

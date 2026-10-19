@@ -90,3 +90,5 @@ The fix is to store the addresses and the map location once, as site settings, a
 - Template file name, how the template is registered, and its markup within the theme's `main-container` / `full-screen` structure (see `page-templates/page-full-screen.php`).
 - Test structure, using the existing unit and integration patterns.
 - Any README or `AGENTS.md` notes.
+
+> Update (2026-10-18): the Google Maps key was dropped. Maps use Meta Box's Open Street Map field (`osm`), so no API key is needed; the General page now holds only helper text. The Google Maps key statements above are historical.
