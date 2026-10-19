@@ -26,23 +26,6 @@ final class Shortcode {
 		return 'private' === $countdown->post_status && current_user_can( 'read_post', $countdown->ID );
 	}
 
-	/**
-	 * JSON-encoded color for one TimeCircles unit: the Customizer value, or TimeCircles' own default when unset or invalid.
-	 *
-	 * @param string $unit days|hours|minutes|seconds.
-	 */
-	private static function color( string $unit ): string {
-		$defaults = array(
-			'days'    => '#FC6',
-			'hours'   => '#9CF',
-			'minutes' => '#BFB',
-			'seconds' => '#F99',
-		);
-		$color    = sanitize_hex_color( (string) get_theme_mod( 'hyperpress_countdown_' . $unit . '_color' ) );
-
-		return wp_json_encode( empty( $color ) ? $defaults[ $unit ] : $color, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
-	}
-
 	public static function add_countdown_shortcode( $atts ): string {
 		$atts = shortcode_atts(
 			array(
@@ -101,87 +84,22 @@ final class Shortcode {
 			return '';
 		}
 
-		// only enqueue the TimeCircles js & css if we're displaying the countdown.
-		wp_enqueue_script( 'hyperpress-countdown-timecircles' );
-		wp_enqueue_style( 'hyperpress-countdown-timecircles' );
-
-		// The event is fixed in the site's time zone (Settings > General). The stored value is a wall-clock time with no zone,
-		// so read it in that zone and send its offset: TimeCircles hands this ISO 8601 form to Date.parse(), which honors the
-		// offset, so every visitor counts down to the same instant whatever their own time zone is.
-		$data_date  = ( new \DateTimeImmutable( $event_date, wp_timezone() ) )->format( 'c' );
-		$element_id = $slug . '-' . wp_unique_id();
-
 		$event_name      = Meta::get( 'hyperpress_countdown_event_name', $countdown->ID );
 		$event_location  = Meta::get( 'hyperpress_countdown_event_location', $countdown->ID );
 		$count_past_zero = filter_var( Meta::get( 'hyperpress_countdown_past_zero', $countdown->ID ), FILTER_VALIDATE_BOOLEAN );
 
-		$output  = '<section class="grid-x countdown align-center">';
-		$output .= '<div class="cell xsmall-12 large-10">';
-		$output .= '<div id="' . esc_attr( $element_id ) . '" class="cell" data-date="' . esc_attr( $data_date ) . '" ></div>';
+		// The event is fixed in the site's time zone (Settings > General). The stored value is a wall-clock time with no zone,
+		// so read it in that zone; the renderer sends the resulting offset to TimeCircles.
+		$when = new \DateTimeImmutable( $event_date, wp_timezone() );
 
-		if ( ! empty( $event_name ) ) {
-			$output .= '<h2 class="cell align-center">' . esc_html( $event_name ) . '</h2>';
-		}
-
-		$output .= '<h4 class="cell align-center"><time>' . esc_html( date_format( date_create( $event_date ), 'l F d, Y @ h:iA' ) ) . '</time></h4>';
-
-		if ( ! empty( $event_location ) ) {
-			$output .= '<h4 class="cell align-center">' . esc_html( $event_location ) . '</h4>';
-		}
-
-		$output .= '</div>';
-		$output .= '</section>';
-		$output .= '<div class="section-divider"><hr/></div>';
-
-		$selector = wp_json_encode( '#' . $element_id, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
-		$js       = 'jQuery( function ( $ ) {
-	var options = {
-		"animation": "smooth",
-		"bg_width": 0.4,
-		"fg_width": 0.07,
-		"circle_bg_color": "#efefef",
-		"count_past_zero": ' . wp_json_encode( $count_past_zero ) . ',
-		"time": {
-			"Days": {
-				"text": "Days",
-				"color": ' . self::color( 'days' ) . ',
-				"show": true
-			},
-			"Hours": {
-				"text": "Hours",
-				"color": ' . self::color( 'hours' ) . ',
-				"show": true
-			},
-			"Minutes": {
-				"text": "Minutes",
-				"color": ' . self::color( 'minutes' ) . ',
-				"show": true
-			},
-			"Seconds": {
-				"text": "Seconds",
-				"color": ' . self::color( 'seconds' ) . ',
-				"show": true
-			}
-		}
-	};
-	var $el = $( ' . $selector . ' );
-	var lastWidth = $el.width();
-	var resizeTimer;
-	$el.TimeCircles( options );
-	$( window ).on( "resize", function () {
-		clearTimeout( resizeTimer );
-		resizeTimer = setTimeout( function () {
-			var width = $el.width();
-			if ( width === lastWidth ) {
-				return;
-			}
-			lastWidth = width;
-			$el.TimeCircles().rebuild();
-		}, 200 );
-	} );
-} );';
-		wp_add_inline_script( 'hyperpress-countdown-timecircles', $js );
-
-		return $output;
+		return Renderer::render(
+			$when,
+			array(
+				'name'      => $event_name,
+				'location'  => $event_location,
+				'past_zero' => $count_past_zero,
+				'slug'      => $slug,
+			)
+		);
 	}
 }

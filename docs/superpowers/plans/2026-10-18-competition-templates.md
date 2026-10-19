@@ -60,24 +60,24 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 **Interfaces:**
 - Produces: `HyperPress\Countdown\Renderer::render( \DateTimeImmutable $when, array $args = array() ): string`. `$args` keys, all optional: `name` (string, default `''`), `location` (string, `''`), `past_zero` (bool, `false`), `slug` (string, `'countdown'`, used for the element id `slug-<wp_unique_id()>`), `show_date` (bool, `true`; the `<h4><time>` date line). It enqueues `hyperpress-countdown-timecircles` script and style and adds the inline init script, exactly like today.
 
-- [ ] **Step 1: Write the failing test** in `RendererTest` (class `RendererTest`, `set_up` resets `$GLOBALS['wp_scripts'] = null` and calls `Assets::register_scripts()`):
+- [x] **Step 1: Write the failing test** in `RendererTest` (class `RendererTest`, `set_up` resets `$GLOBALS['wp_scripts'] = null` and calls `Assets::register_scripts()`):
   - `test_marks_up_the_instant_with_offset`: `Renderer::render( new \DateTimeImmutable( '2030-07-01 10:00', new \DateTimeZone( 'America/New_York' ) ), array( 'name' => 'Big Game', 'location' => 'Field 1' ) )` contains `data-date="2030-07-01T10:00:00-04:00"`, `<h2 class="cell align-center">Big Game</h2>`, `<h4 class="cell align-center">Field 1</h4>`, `<section class="grid-x countdown align-center">`.
   - `test_winter_instant_uses_est_offset`: the same with `2030-01-01 10:00` contains `data-date="2030-01-01T10:00:00-05:00"`.
   - `test_show_date_false_omits_the_time_line`: output does not contain `<time>`; with the default it contains `<time>Monday July 01, 2030 @ 10:00AM</time>`.
   - `test_past_zero_flag_reaches_the_init_script`: with `past_zero => true` the inline JS contains `"count_past_zero": true`, with the default `"count_past_zero": false`.
   - `test_enqueues_assets_and_slug_prefixes_the_element_id`: after rendering with `slug => 'competition-7'`, `wp_script_is( 'hyperpress-countdown-timecircles', 'enqueued' )` is true and the output matches `/id="competition-7-\d+"/`.
 
-- [ ] **Step 2: Run to verify it fails.** From `plugins/`: `docker compose run --rm php composer test:integration -- --filter RendererTest`. Expected: FAIL, class `Renderer` not found.
+- [x] **Step 2: Run to verify it fails.** From `plugins/`: `docker compose run --rm php composer test:integration -- --filter RendererTest`. Expected: FAIL, class `Renderer` not found.
 
-- [ ] **Step 3: Implement `Renderer::render`** in `plugins/hyperpress-countdown/src/Renderer.php` by moving the markup, the `color()` helper and the inline script from `Shortcode::add_countdown_shortcode` (lines 29-44 and 104-186) verbatim, taking `data-date` from `$when->format( 'c' )` and the date line from `$when->format( 'l F d, Y @ h:iA' )`; honour `show_date`. No behaviour change otherwise.
+- [x] **Step 3: Implement `Renderer::render`** in `plugins/hyperpress-countdown/src/Renderer.php` by moving the markup, the `color()` helper and the inline script from `Shortcode::add_countdown_shortcode` (lines 29-44 and 104-186) verbatim, taking `data-date` from `$when->format( 'c' )` and the date line from `$when->format( 'l F d, Y @ h:iA' )`; honour `show_date`. No behaviour change otherwise.
 
-- [ ] **Step 4: Run to verify it passes.** Same command. Expected: PASS.
+- [x] **Step 4: Run to verify it passes.** Same command. Expected: PASS.
 
-- [ ] **Step 5: Refactor `Shortcode::add_countdown_shortcode`** to keep everything up to and including the `strtotime( $event_date )` check (lines 46-102), then build `new \DateTimeImmutable( $event_date, wp_timezone() )` and `return Renderer::render( $when, array( 'name' => $event_name, 'location' => $event_location, 'past_zero' => $count_past_zero, 'slug' => $slug ) );`. Remove the now-unused `color()` from `Shortcode`.
+- [x] **Step 5: Refactor `Shortcode::add_countdown_shortcode`** to keep everything up to and including the `strtotime( $event_date )` check (lines 46-102), then build `new \DateTimeImmutable( $event_date, wp_timezone() )` and `return Renderer::render( $when, array( 'name' => $event_name, 'location' => $event_location, 'past_zero' => $count_past_zero, 'slug' => $slug ) );`. Remove the now-unused `color()` from `Shortcode`.
 
-- [ ] **Step 6: Verify the regression suite.** `docker compose run --rm php composer test:integration -- --filter "Countdown"`. Expected: `CountdownShortcodeHardeningTest` and `RendererTest` PASS with the hardening test unedited.
+- [x] **Step 6: Verify the regression suite.** `docker compose run --rm php composer test:integration -- --filter "Countdown"`. Expected: `CountdownShortcodeHardeningTest` and `RendererTest` PASS with the hardening test unedited.
 
-- [ ] **Step 7: Commit.** `git add plugins/hyperpress-countdown/src/Renderer.php plugins/hyperpress-countdown/src/Shortcode.php plugins/tests/integration/Countdown/RendererTest.php docs/superpowers/plans/2026-10-18-competition-templates.md` then `git commit -m "refactor(countdown): extract a public renderer from the shortcode" -- <same paths>`.
+- [x] **Step 7: Commit.** `git add plugins/hyperpress-countdown/src/Renderer.php plugins/hyperpress-countdown/src/Shortcode.php plugins/tests/integration/Countdown/RendererTest.php docs/superpowers/plans/2026-10-18-competition-templates.md` then `git commit -m "refactor(countdown): extract a public renderer from the shortcode" -- <same paths>`.
 
 ---
 
