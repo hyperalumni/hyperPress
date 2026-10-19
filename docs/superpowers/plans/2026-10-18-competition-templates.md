@@ -91,19 +91,19 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 **Interfaces:**
 - Produces: `HyperPress\Competition\StartDate::instant( int $post_id ): ?\DateTimeImmutable`: reads `hyperpress_competition_event_start_date` through `HyperPress\Utils\Meta::get`, returns the text read in `wp_timezone()`, or `null` for empty, non-string or unparseable values. Also `StartDate::FIELD` (`'hyperpress_competition_event_start_date'`).
 
-- [ ] **Step 1: Write the failing tests** in `StartDateTest` (`set_up` does `update_option( 'timezone_string', 'America/New_York' )`; `tear_down` unsets the meta globals):
+- [x] **Step 1: Write the failing tests** in `StartDateTest` (`set_up` does `update_option( 'timezone_string', 'America/New_York' )`; `tear_down` unsets the meta globals):
   - `test_summer_text_is_an_edt_instant`: meta `2030-07-01 10:00` gives `$instant->format( 'c' ) === '2030-07-01T10:00:00-04:00'` and `$instant->getTimestamp() === ( new \DateTimeImmutable( '2030-07-01T14:00:00+00:00' ) )->getTimestamp()`.
   - `test_winter_text_is_an_est_instant`: `2030-01-01 10:00` gives `2030-01-01T10:00:00-05:00`.
   - `test_empty_or_invalid_text_gives_null` (data provider: `''`, `'not a date'`, `array()`, `0`): returns `null`.
   - `test_start_field_stores_wall_clock_text_like_the_countdown`: find the field with `id` `StartDate::FIELD` in `apply_filters( 'rwmb_meta_boxes', array() )` (the box id `hyperpress_competition_information`) and assert `$field['timestamp'] === false` and `$field['format'] === 'yy-mm-dd'`.
 
-- [ ] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter StartDateTest`. Expected: FAIL (class missing).
+- [x] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter StartDateTest`. Expected: FAIL (class missing).
 
-- [ ] **Step 3: Implement** `StartDate::instant` with `new \DateTimeImmutable( $text, wp_timezone() )` in a try/catch for `\Exception`, rejecting non-strings and empty text. Change the field in `MetaBoxes.php` to `'timestamp' => false` and add `'format' => 'yy-mm-dd'`, matching `hyperpress_countdown_event_date_time` in `plugins/hyperpress-countdown/src/MetaBoxes.php:42-51`.
+- [x] **Step 3: Implement** `StartDate::instant` with `new \DateTimeImmutable( $text, wp_timezone() )` in a try/catch for `\Exception`, rejecting non-strings and empty text. Change the field in `MetaBoxes.php` to `'timestamp' => false` and add `'format' => 'yy-mm-dd'`, matching `hyperpress_countdown_event_date_time` in `plugins/hyperpress-countdown/src/MetaBoxes.php:42-51`.
 
-- [ ] **Step 4: Run to verify it passes.** Expected: PASS.
+- [x] **Step 4: Run to verify it passes.** Expected: PASS.
 
-- [ ] **Step 5: Commit** `StartDate.php`, `MetaBoxes.php`, the test and the plan: `feat(competition): store the start date as site-timezone text`.
+- [x] **Step 5: Commit** `StartDate.php`, `MetaBoxes.php`, the test and the plan: `feat(competition): store the start date as site-timezone text`.
 
 ---
 

@@ -95,7 +95,8 @@ final class MetaBoxes {
 					'id'        => 'hyperpress_competition_event_start_date',
 					'type'      => 'datetime',
 					'inline'    => false,
-					'timestamp' => true,
+					'timestamp' => false,
+					'format'    => 'yy-mm-dd',
 				),
 				array(
 					'name' => 'The Blue Alliance Event Key',
