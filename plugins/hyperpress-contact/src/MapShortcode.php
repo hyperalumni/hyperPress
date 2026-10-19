@@ -1,13 +1,12 @@
 <?php
 namespace HyperPress\Contact;
 
-use HyperPress\Utils\GoogleMapsKey;
-use RWMB_Map_Field;
+use RWMB_OSM_Field;
 
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 /**
- * The [hyperpress_map height="250"] shortcode: a static Google map of the saved location, drawn by Meta Box.
+ * The [hyperpress_map height="250"] shortcode: a static OpenStreetMap map of the saved location, drawn by Meta Box.
  */
 final class MapShortcode {
 
@@ -29,27 +28,24 @@ final class MapShortcode {
 		if ( null === $map ) {
 			return self::notice( __( 'no valid map location is set.', 'hyperpress' ) );
 		}
-		$key = GoogleMapsKey::get();
-		if ( '' === $key ) {
-			return self::notice( __( 'no Google Maps API key is set.', 'hyperpress' ) );
-		}
-		if ( ! class_exists( 'RWMB_Map_Field' ) ) {
+		if ( ! class_exists( 'RWMB_OSM_Field' ) ) {
 			return self::notice( __( 'Meta Box is not active.', 'hyperpress' ) );
 		}
 
-		// Always pass our key: without one Meta Box falls back to a demo key.
-		$inner = RWMB_Map_Field::render_map(
+		$inner = RWMB_OSM_Field::render_map(
 			self::location( $map ),
 			array(
-				'api_key'    => $key,
 				'width'      => '100%',
 				'height'     => $height . 'px',
 				'marker'     => true,
 				'js_options' => array(
-					'disableDefaultUI'  => true,
-					'gestureHandling'   => 'none',
-					'keyboardShortcuts' => false,
-					'clickableIcons'    => false,
+					'dragging'        => false,
+					'zoomControl'     => false,
+					'scrollWheelZoom' => false,
+					'doubleClickZoom' => false,
+					'touchZoom'       => false,
+					'boxZoom'         => false,
+					'keyboard'        => false,
 				),
 			)
 		);

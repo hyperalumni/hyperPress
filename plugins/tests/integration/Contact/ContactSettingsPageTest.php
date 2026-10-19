@@ -77,16 +77,14 @@ final class ContactSettingsPageTest extends WP_UnitTestCase {
 		);
 	}
 
-	public function test_the_map_field_uses_the_api_key_and_a_map_address_field(): void {
-		update_option( 'hyperpress_general', array( 'hyperpress_general_google_maps_api_key' => 'abc' ) );
-
+	public function test_the_map_field_is_an_osm_field_with_a_map_address_field(): void {
 		$map = $this->field( 'hyperpress_contact_map' );
 
 		$this->assertNotNull( $map );
-		$this->assertSame( 'map', $map['type'] );
+		$this->assertSame( 'osm', $map['type'] );
 		$this->assertSame( 'hyperpress_contact_map_address', $map['address_field'] );
 		$this->assertSame( '42.2518999,-71.0007911,17', $map['std'] );
-		$this->assertSame( 'abc', $map['api_key'] );
+		$this->assertArrayNotHasKey( 'api_key', $map );
 
 		$address = $this->field( 'hyperpress_contact_map_address' );
 		$this->assertNotNull( $address );

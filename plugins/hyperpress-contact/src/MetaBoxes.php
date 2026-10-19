@@ -1,8 +1,6 @@
 <?php
 namespace HyperPress\Contact;
 
-use HyperPress\Utils\GoogleMapsKey;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -99,14 +97,13 @@ final class MetaBoxes {
 					'id'   => Settings::MAP_ADDRESS,
 					'name' => __( 'Map address', 'hyperpress' ),
 					'type' => 'text',
-					'desc' => __( 'Type an address to move the pin. The Geocoding API must be enabled for the Google Maps key.', 'hyperpress' ),
+					'desc' => __( 'Type an address to move the pin. Address suggestions come from OpenStreetMap Nominatim.', 'hyperpress' ),
 				),
 				array(
 					'id'            => Settings::MAP,
 					'name'          => __( 'Map', 'hyperpress' ),
-					'type'          => 'map',
+					'type'          => 'osm',
 					'address_field' => Settings::MAP_ADDRESS,
-					'api_key'       => GoogleMapsKey::get(),
 					'std'           => self::DEFAULT_MAP,
 				),
 			),

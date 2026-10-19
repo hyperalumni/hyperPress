@@ -4,12 +4,10 @@ namespace HyperPress\Tests\Integration;
 use WP_Customize_Manager;
 use WP_UnitTestCase;
 
-final class CompetitionMapApiKeyTest extends WP_UnitTestCase {
+final class CompetitionMapFieldTest extends WP_UnitTestCase {
 
-	private const OPTION        = 'hyperpress_general';
-	private const KEY_FIELD     = 'hyperpress_general_google_maps_api_key';
-	private const OLD_SETTING   = 'hyperpress_competition_google_maps_api_key';
-	private const SUBTITLE_SET  = 'hyperpress_competition_banner_subtitle';
+	private const OLD_SETTING  = 'hyperpress_competition_google_maps_api_key';
+	private const SUBTITLE_SET = 'hyperpress_competition_banner_subtitle';
 
 	private function map_field(): array {
 		foreach ( apply_filters( 'rwmb_meta_boxes', array() ) as $box ) {
@@ -33,17 +31,11 @@ final class CompetitionMapApiKeyTest extends WP_UnitTestCase {
 		$this->assertNull( $manager->get_section( 'hyperpress_competition' ), 'section is gone' );
 	}
 
-	public function test_map_field_uses_the_key_saved_in_the_general_setting(): void {
-		delete_option( self::OPTION );
-		$this->assertSame( '', $this->map_field()['api_key'], 'blank when not configured' );
+	public function test_venue_map_field_is_an_osm_field_without_an_api_key(): void {
+		$field = $this->map_field();
 
-		update_option( self::OPTION, array( self::KEY_FIELD => 'test-key-123' ) );
-		$this->assertSame( 'test-key-123', $this->map_field()['api_key'] );
-	}
-
-	public function test_map_field_ignores_the_old_theme_mod(): void {
-		delete_option( self::OPTION );
-		set_theme_mod( self::OLD_SETTING, 'old-mod-key' );
-		$this->assertSame( '', $this->map_field()['api_key'] );
+		$this->assertSame( 'osm', $field['type'] );
+		$this->assertSame( 'hyperpress_competition_venue_address', $field['address_field'] );
+		$this->assertArrayNotHasKey( 'api_key', $field );
 	}
 }

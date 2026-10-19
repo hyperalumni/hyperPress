@@ -4,7 +4,6 @@ namespace HyperPress\Competition;
 defined( 'ABSPATH' ) || exit;
 
 use HyperPress\Utils\Banner;
-use HyperPress\Utils\GoogleMapsKey;
 
 final class MetaBoxes {
 
@@ -86,10 +85,9 @@ final class MetaBoxes {
 				array(
 					'id'                => 'hyperpress_competition_venue_map',
 					'name'              => 'Location',
-					'type'              => 'map',
+					'type'              => 'osm',
 					'std'               => '42.25228605221164, -71.00051344845554,15',
 					'address_field'     => 'hyperpress_competition_venue_address',
-					'api_key'           => GoogleMapsKey::get(),
 					'sanitize_callback' => array( self::class, 'map_location' ),
 				),
 				array(

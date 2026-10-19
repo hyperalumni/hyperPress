@@ -28,10 +28,10 @@ if ( ! function_exists( 'rwmb_meta' ) ) {
 }
 
 /**
- * Meta Box's map renderer is not installed in tests either. Record the calls and return a marker element.
+ * Meta Box's OpenStreetMap renderer is not installed in tests either. Record the calls and return a marker element.
  */
-if ( ! class_exists( 'RWMB_Map_Field' ) ) {
-	class RWMB_Map_Field { // phpcs:ignore
+if ( ! class_exists( 'RWMB_OSM_Field' ) ) {
+	class RWMB_OSM_Field { // phpcs:ignore
 		/**
 		 * @var array<int,array{0:mixed,1:mixed}>
 		 */

@@ -6,13 +6,12 @@ defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 /**
  * The General settings page under the hyperPress menu.
  *
- * Holds site-wide settings shared by several plugins, starting with the Google Maps key.
+ * Home for site-wide settings shared by several plugins. It has no settings yet and only explains the page.
  */
 final class GeneralPage {
 
-	public const ID        = 'hyperpress_general';
-	public const OPTION    = 'hyperpress_general';
-	public const FIELD_KEY = 'hyperpress_general_google_maps_api_key';
+	public const ID     = 'hyperpress_general';
+	public const OPTION = 'hyperpress_general';
 
 	public static function register(): void {
 		add_filter( 'mb_settings_pages', array( self::class, 'pages' ) );
@@ -51,14 +50,21 @@ final class GeneralPage {
 			'settings_pages' => self::ID,
 			'fields'         => array(
 				array(
-					'id'                => self::FIELD_KEY,
-					'name'              => __( 'Google Maps API key', 'hyperpress' ),
-					'type'              => 'text',
-					'desc'              => __( 'Restrict the key by HTTP referrer (domain) in Google Cloud, and enable the Maps JavaScript API and the Geocoding API for it.', 'hyperpress' ),
-					'sanitize_callback' => 'sanitize_text_field',
+					'id'   => 'hyperpress_general_about',
+					'type' => 'custom_html',
+					'std'  => self::about(),
 				),
 			),
 		);
 		return $boxes;
+	}
+
+	/**
+	 * The helper text shown on the page: what it is for and where related options live.
+	 */
+	private static function about(): string {
+		return '<p>' . esc_html__( 'This page is the home for site-wide hyperPress options that are shared across the hyperPress plugins. There are currently no site-wide settings.', 'hyperpress' ) . '</p>'
+			. '<p>' . esc_html__( 'Maps use OpenStreetMap, so no map API key is needed.', 'hyperpress' ) . '</p>'
+			. '<p>' . esc_html__( 'Related options live elsewhere: the map location for the [hyperpress_map] shortcode is set on the Contact page of this menu, and each competition venue map is set on that competition\'s edit screen.', 'hyperpress' ) . '</p>';
 	}
 }

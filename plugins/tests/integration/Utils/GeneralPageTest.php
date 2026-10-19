@@ -19,16 +19,18 @@ final class GeneralPageTest extends WP_UnitTestCase {
 		$this->assertSame( 'manage_options', $pages[0]['capability'] );
 	}
 
-	public function test_boxes_registers_one_text_field_for_the_key(): void {
+	public function test_boxes_registers_helper_text_and_no_settings(): void {
 		$boxes = GeneralPage::boxes( array() );
 
 		$this->assertCount( 1, $boxes );
 		$this->assertSame( 'hyperpress_general', $boxes[0]['settings_pages'] );
 		$this->assertCount( 1, $boxes[0]['fields'] );
 		$field = $boxes[0]['fields'][0];
-		$this->assertSame( 'hyperpress_general_google_maps_api_key', $field['id'] );
-		$this->assertSame( 'text', $field['type'] );
-		$this->assertSame( 'sanitize_text_field', $field['sanitize_callback'] );
+		$this->assertSame( 'custom_html', $field['type'] );
+		$this->assertStringContainsString( 'no site-wide settings', $field['std'] );
+		$this->assertStringContainsString( 'OpenStreetMap', $field['std'] );
+		$this->assertStringNotContainsString( 'Google', $field['std'] );
+		$this->assertArrayNotHasKey( 'sanitize_callback', $field );
 	}
 
 	public function test_register_adds_both_filters(): void {
