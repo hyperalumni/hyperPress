@@ -39,7 +39,7 @@ final class Plugin {
 		add_filter( 'hyperpress_breadcrumbs_term_url', array( self::class, 'term_crumb_url' ), 10, 4 );
 		NotFound::register( array( self::TYPE, self::DISTRICT, self::WEEK ) );
 		add_action( 'init', array( self::class, 'register_banner' ) );
-		SingularBanner::register( self::POST_TYPE, __( 'Competition', 'hyperpress' ) );
+		SingularBanner::register( self::POST_TYPE, __( 'Competition', 'hyperpress' ), false );
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 		SettingsPage::register();
 		MetaBoxes::register();

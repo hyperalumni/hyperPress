@@ -6,8 +6,9 @@ defined( 'ABSPATH' ) || exit;
 use HyperPress\Utils\Meta;
 
 /**
- * The banner of a single post of a season-based post type: "<latest season>: <post title>", plus the post's
- * banner colour when it has one (else the post type's own colour stands, never the Posts page's).
+ * The banner of a single post of a season-based post type: "<latest season>: <post title>" (just the post title
+ * when registered without the season prefix), plus the post's banner colour when it has one (else the post
+ * type's own colour stands, never the Posts page's).
  *
  * Hooked on `hyperpress_banner_args`, which HyperPress\Utils\Banner applies only to the post type it was
  * registered for. The theme's own singular banner filters (library/banner/post.php, page.php) only act on
@@ -23,13 +24,22 @@ final class SingularBanner {
 	private static array $fallbacks = array();
 
 	/**
+	 * Whether the title carries the latest season as a prefix, per post type.
+	 *
+	 * @var array<string,bool>
+	 */
+	private static array $season_prefixes = array();
+
+	/**
 	 * Give a post type's single pages the season-prefixed banner.
 	 *
 	 * @param string $post_type      Post type key.
-	 * @param string $fallback_title Title when the post has no season (translated by the caller).
+	 * @param string $fallback_title Title when the post has no season, or no title when the prefix is off (translated by the caller).
+	 * @param bool   $season_prefix  Prefix the title with the latest season; false shows the post's own title.
 	 */
-	public static function register( string $post_type, string $fallback_title ): void {
-		self::$fallbacks[ $post_type ] = $fallback_title;
+	public static function register( string $post_type, string $fallback_title, bool $season_prefix = true ): void {
+		self::$fallbacks[ $post_type ]       = $fallback_title;
+		self::$season_prefixes[ $post_type ] = $season_prefix;
 		add_filter( 'hyperpress_banner_args', array( self::class, 'adjust' ), 10, 3 );
 	}
 
@@ -39,7 +49,7 @@ final class SingularBanner {
 	 * @param string $post_type Post type key.
 	 */
 	public static function unregister( string $post_type ): void {
-		unset( self::$fallbacks[ $post_type ] );
+		unset( self::$fallbacks[ $post_type ], self::$season_prefixes[ $post_type ] );
 	}
 
 	/**
@@ -55,11 +65,12 @@ final class SingularBanner {
 		}
 
 		if ( empty( $banner['title'] ) ) {
-			$seasons = SortedSeasons::get();
-			if ( ! empty( $seasons ) ) {
-				$banner['title'] = $seasons[0]->name . ': ' . get_the_title();
+			if ( ! self::$season_prefixes[ $post_type ] ) {
+				$title           = get_the_title();
+				$banner['title'] = '' !== $title ? $title : self::$fallbacks[ $post_type ];
 			} else {
-				$banner['title'] = self::$fallbacks[ $post_type ];
+				$seasons         = SortedSeasons::get();
+				$banner['title'] = ! empty( $seasons ) ? $seasons[0]->name . ': ' . get_the_title() : self::$fallbacks[ $post_type ];
 			}
 		}
 

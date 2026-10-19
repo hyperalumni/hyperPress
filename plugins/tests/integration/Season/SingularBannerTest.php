@@ -98,6 +98,18 @@ final class SingularBannerTest extends WP_UnitTestCase {
 		$this->assertSame( 'Sub', $banner['subtitle'] );
 	}
 
+	public function test_without_the_season_prefix_the_title_is_the_plain_post_title(): void {
+		SingularBanner::register( self::TYPE, 'Fallback', false );
+		$post_id = $this->post();
+		wp_set_object_terms( $post_id, array( self::factory()->term->create( array( 'taxonomy' => 'hyper_season', 'name' => '2026' ) ) ), 'hyper_season' );
+
+		$this->assertSame( 'Kickoff', $this->banner_for( $post_id )['title'] );
+		$this->assertSame( 'Fallback', $this->banner_for( $this->post( '' ) )['title'] );
+
+		SingularBanner::register( self::TYPE, 'Fallback' );
+		$this->assertSame( '2026: Kickoff', $this->banner_for( $post_id )['title'] );
+	}
+
 	public function test_a_title_set_earlier_is_kept(): void {
 		$post_id = $this->post();
 		wp_set_object_terms( $post_id, array( self::factory()->term->create( array( 'taxonomy' => 'hyper_season', 'name' => '2026' ) ) ), 'hyper_season' );

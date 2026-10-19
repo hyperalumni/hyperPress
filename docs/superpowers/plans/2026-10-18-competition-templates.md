@@ -268,3 +268,4 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 - Deferred minors: no test for the Meta Box-missing case of `Map` (no seam), private-post path of the competition countdown shortcode, real archive URL test for `Map`, `(int)` zoom cast on huge floats, `js_options` duplicated from `MapShortcode`.
 - Follow-up: the countdown field still carries a no-op `'format' => 'yy-mm-dd'`; once the stored text is confirmed, give it an explicit `save_format` and drop the dead key.
 - 2026-10-19: Meta Box fills a link's title with its URL when none is typed, so `Details` treats a title equal to the URL as empty and shows the default label (commit after c8da8ff).
+- 2026-10-19: the single competition banner now shows the competition's own title; `SingularBanner::register()` gained an optional `$season_prefix` argument (default true; the competition passes false).

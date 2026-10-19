@@ -111,7 +111,7 @@ final class SingularBannerTest extends WP_UnitTestCase {
 		return apply_filters( 'hyperpress_banner_content', array() );
 	}
 
-	public function test_a_single_competition_banner_is_prefixed_with_its_season_after_the_theme_filters(): void {
+	public function test_a_single_competition_banner_shows_its_own_title_without_the_season(): void {
 		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE, 'post_title' => 'Granite State' ) );
 		wp_set_object_terms( $post_id, array( $this->season()->term_id ), 'hyper_season' );
 
@@ -119,12 +119,21 @@ final class SingularBannerTest extends WP_UnitTestCase {
 
 		$this->assertTrue( is_singular( Plugin::POST_TYPE ) );
 		$this->assertSame( 'competition', $banner['type'] );
-		$this->assertSame( 'Season 31: Granite State', $banner['title'] );
+		$this->assertSame( 'Granite State', $banner['title'] );
 		$this->assertSame( '#0f0', $banner['backgroundColor'] );
 	}
 
-	public function test_a_single_competition_without_a_season_falls_back_to_competition(): void {
+	public function test_a_single_competition_without_a_season_shows_its_own_title(): void {
 		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE, 'post_title' => 'Granite State' ) );
+
+		$banner = $this->singular_banner_for( $post_id );
+
+		$this->assertSame( 'competition', $banner['type'] );
+		$this->assertSame( 'Granite State', $banner['title'] );
+	}
+
+	public function test_a_single_competition_without_a_title_falls_back_to_competition(): void {
+		$post_id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE, 'post_title' => '' ) );
 
 		$banner = $this->singular_banner_for( $post_id );
 
