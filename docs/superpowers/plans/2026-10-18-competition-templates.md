@@ -200,22 +200,22 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 - Produces (theme): `do_action( 'hyperpress_after_banner' );` in `single.php` immediately after `get_template_part( 'template-parts/banner' )` and before `<div class="main-container">`. It takes no arguments.
 - Produces (plugin): `Map::register(): void` (adds `hyperpress_after_banner` action calling `Map::render`), `Map::render(): void` (echoes the map or nothing), `Map::parse( mixed $value ): ?array` returning `array{lat:float,lng:float,zoom:int}` for strings like `"lat,lng"` or `"lat,lng,zoom"` with latitude in [-90, 90], longitude in [-180, 180], zoom clamped to 0-19 and default 15, else `null`.
 
-- [ ] **Step 1: Write the failing theme test** `SingleTemplateHookTest` (unit, reads `single.php` like `PluginHooksContractTest::theme_source`): the file contains `do_action( 'hyperpress_after_banner' )`, positioned after `template-parts/banner` and before `main-container`. Add `'after banner' => array( 'hyperpress_after_banner' )` to `PluginHooksContractTest::fired_actions`.
+- [x] **Step 1: Write the failing theme test** `SingleTemplateHookTest` (unit, reads `single.php` like `PluginHooksContractTest::theme_source`): the file contains `do_action( 'hyperpress_after_banner' )`, positioned after `template-parts/banner` and before `main-container`. Add `'after banner' => array( 'hyperpress_after_banner' )` to `PluginHooksContractTest::fired_actions`.
 
-- [ ] **Step 2: Write the failing `MapTest`** (create a competition, `go_to( get_permalink( $id ) )`, `RWMB_OSM_Field::$calls = array()` in `set_up`, capture `Map::render()` with `ob_start`):
+- [x] **Step 2: Write the failing `MapTest`** (create a competition, `go_to( get_permalink( $id ) )`, `RWMB_OSM_Field::$calls = array()` in `set_up`, capture `Map::render()` with `ob_start`):
   - `test_renders_the_competitions_location_full_width`: address `1 Main St` and map `42.1,-71.2,15` produce one `RWMB_OSM_Field::$calls[0]` with location `42.1,-71.2,15` and args `height` `300px`, `width` `100%`, `marker` true; the output contains `class="hyperpress-map"`.
   - `test_nothing_without_an_address_or_a_valid_location` (provider: empty address; empty map; `'garbage'`; `'91,0'`; `'0,181'`): no output, no recorded call, no notice.
   - `test_nothing_on_lists_and_other_posts`: on the home URL, on a normal post, and on a competition when `get_queried_object_id()` differs: no output.
   - `test_parse_clamps_zoom_and_defaults_it`: `Map::parse( '1,2' )['zoom'] === 15`, `Map::parse( '1,2,99' )['zoom'] === 19`.
   - `test_hook_is_registered`: after `Map::register()`, `has_action( 'hyperpress_after_banner', array( Map::class, 'render' ) )` is not false.
 
-- [ ] **Step 3: Run to verify they fail.** Theme: from `themes/hyperpress-foundation/`, `docker compose run --rm php composer test:unit`. Plugins: `docker compose run --rm php composer test:integration -- --filter MapTest`. Expected: FAIL.
+- [x] **Step 3: Run to verify they fail.** Theme: from `themes/hyperpress-foundation/`, `docker compose run --rm php composer test:unit`. Plugins: `docker compose run --rm php composer test:integration -- --filter MapTest`. Expected: FAIL.
 
-- [ ] **Step 4: Implement.** Add the action to `single.php`; list `hyperpress_after_banner` among the plugin-facing hooks in the theme `AGENTS.md`. `Map::render` mirrors `plugins/hyperpress-contact/src/MapShortcode.php` (same `js_options` that disable interaction, `pointer-events:none` wrapper with `role="img"` and an `aria-label` using the venue name), shows only when `is_singular( Plugin::POST_TYPE )`, the venue address is non-empty, `Map::parse` of `hyperpress_competition_venue_map` is valid, and `class_exists( 'RWMB_OSM_Field' )`. Format the location string with up to seven decimals like `MapShortcode::decimal`.
+- [x] **Step 4: Implement.** Add the action to `single.php`; list `hyperpress_after_banner` among the plugin-facing hooks in the theme `AGENTS.md`. `Map::render` mirrors `plugins/hyperpress-contact/src/MapShortcode.php` (same `js_options` that disable interaction, `pointer-events:none` wrapper with `role="img"` and an `aria-label` using the venue name), shows only when `is_singular( Plugin::POST_TYPE )`, the venue address is non-empty, `Map::parse` of `hyperpress_competition_venue_map` is valid, and `class_exists( 'RWMB_OSM_Field' )`. Format the location string with up to seven decimals like `MapShortcode::decimal`.
 
-- [ ] **Step 5: Run to verify they pass.** Both commands above. Expected: PASS.
+- [x] **Step 5: Run to verify they pass.** Both commands above. Expected: PASS.
 
-- [ ] **Step 6: Commit** (theme and plugin paths together): `feat(competition): full-width map under the banner on the single page`.
+- [x] **Step 6: Commit** (theme and plugin paths together): `feat(competition): full-width map under the banner on the single page`.
 
 ---
 

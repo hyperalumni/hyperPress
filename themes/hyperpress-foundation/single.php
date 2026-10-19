@@ -10,6 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 get_header(); ?>
 <?php get_template_part( 'template-parts/banner' ); ?>
+<?php do_action( 'hyperpress_after_banner' ); ?>
 	<div class="main-container">
 		<div class="main-grid">
 			<main class="main-content">

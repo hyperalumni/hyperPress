@@ -31,7 +31,8 @@ final class PluginHooksContractTest extends TestCase {
 
 	public static function fired_actions(): array {
 		return array(
-			'labels' => array( 'hyperpress_labels' ),
+			'labels'       => array( 'hyperpress_labels' ),
+			'after banner' => array( 'hyperpress_after_banner' ),
 		);
 	}
 

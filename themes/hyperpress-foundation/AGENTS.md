@@ -38,7 +38,7 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
 Per `../../docs/superpowers/specs/2026-10-02-theme-cleanup-and-extraction-design.md` (plans theme-01 to theme-05, all completed), the theme is presentation-only. Shortcodes, SVG/AVIF support, NextGen code and HYPER plugin recommendations live in the plugins in `../../plugins`. Banner router, core breadcrumb trails, Customizer, nav, walkers and templates stay.
 
 - Shortcode tags are `hyperpress_`-prefixed (`hyperpress_emphasis`, `hyperpress_banner`, `hyperpress_time_restrict`, ...). Keep the plugin-facing hooks unchanged: `hyperpress_banner_content`,
-  `hyperpress_breadcrumbs_content`, `content_template`. Labels moved to `hyperpress-label`: templates
+  `hyperpress_breadcrumbs_content`, `content_template`. The action `hyperpress_after_banner` is fired by `single.php` right after the banner, with no arguments. Labels moved to `hyperpress-label`: templates
   call `do_action( 'hyperpress_labels' )`, and `hyperpress-label` must be active for labels to show
   (the plugin applies the `hyperpress_labels_content` filter, the theme no longer fires it).
 - Breadcrumb crumb shape (`hyperpress_breadcrumbs_content` items, rendered by `template-parts/breadcrumbs.php`): `title` (visible text), `classes` (`li` and `bread` class lists), optional `url` (a link when set, otherwise a span) and optional `title_attr` (the crumb's HTML `title` attribute, native hover text; a non-empty string, otherwise the `title` is used).
