@@ -48,5 +48,7 @@ final class PastZeroSettingTest extends WP_UnitTestCase {
 
 		$this->assertNotNull( $field );
 		$this->assertSame( 'checkbox', $field['type'] );
+		// The default comes from the default_option filter; a std would be redisplayed once Meta Box drops the unchecked key.
+		$this->assertArrayNotHasKey( 'std', $field );
 	}
 }

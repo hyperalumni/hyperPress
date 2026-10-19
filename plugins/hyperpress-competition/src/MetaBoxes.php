@@ -38,7 +38,6 @@ final class MetaBoxes {
 					'name' => __( 'Count past zero', 'hyperpress' ),
 					'desc' => __( 'Keep counting after the start time instead of stopping at zero.', 'hyperpress' ),
 					'type' => 'checkbox',
-					'std'  => 0,
 				),
 			),
 		);
