@@ -26,11 +26,16 @@ final class Details {
 			if ( ! is_array( $link ) ) {
 				continue;
 			}
-			$url = esc_url_raw( self::text( $link['url'] ?? '' ) );
+			$raw = self::text( $link['url'] ?? '' );
+			$url = esc_url_raw( $raw );
 			if ( '' === $url ) {
 				continue;
 			}
-			$title   = self::text( $link['title'] ?? '' );
+			$title = self::text( $link['title'] ?? '' );
+			// Meta Box fills the title with the URL when none is typed.
+			if ( 0 === strcasecmp( $title, $raw ) || 0 === strcasecmp( $title, $url ) ) {
+				$title = '';
+			}
 			$links[] = array(
 				'label'  => '' !== $title ? $title : $default_label,
 				'url'    => $url,

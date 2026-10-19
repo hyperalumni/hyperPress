@@ -59,6 +59,48 @@ final class DetailsTest extends WP_UnitTestCase {
 		);
 	}
 
+	public function test_link_title_equal_to_its_url_uses_the_default_label(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_stream_url' => array( 'url' => 'https://example.org/s', 'title' => 'https://example.org/s' ),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array( array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ) ),
+			$details['links']
+		);
+	}
+
+	public function test_link_title_equal_to_its_url_apart_from_case_and_whitespace_uses_the_default_label(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_stream_url' => array( 'url' => 'https://example.org/s', 'title' => '  HTTPS://Example.org/S ' ),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array( array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ) ),
+			$details['links']
+		);
+	}
+
+	public function test_link_title_different_from_its_url_still_overrides_the_default_label(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_stream_url' => array( 'url' => 'https://example.org/s', 'title' => 'Watch live' ),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array( array( 'label' => 'Watch live', 'url' => 'https://example.org/s', 'target' => '_blank' ) ),
+			$details['links']
+		);
+	}
+
 	public function test_links_with_rejected_or_empty_urls_are_dropped(): void {
 		$id      = $this->competition(
 			array(
