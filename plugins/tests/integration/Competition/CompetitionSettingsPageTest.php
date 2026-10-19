@@ -48,7 +48,7 @@ final class CompetitionSettingsPageTest extends WP_UnitTestCase {
 	public function test_the_box_has_the_subtitle_field(): void {
 		$fields = $this->boxes()[0]['fields'];
 
-		$this->assertCount( 1, $fields );
+		$this->assertCount( 2, $fields );
 		$this->assertSame( 'hyperpress_competition_banner_subtitle', $fields[0]['id'] );
 		$this->assertSame( 'Banner subtitle', $fields[0]['name'] );
 		$this->assertSame( 'textarea', $fields[0]['type'] );

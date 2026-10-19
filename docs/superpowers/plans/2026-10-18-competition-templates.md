@@ -117,18 +117,18 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 - Produces: `Settings::PAST_ZERO = 'hyperpress_competition_countdown_past_zero'`; `Settings::past_zero(): bool`; `Settings::defaults()` gains `PAST_ZERO => false`.
 - Consumes: the `Settings::OPTION` array option and `Settings::default_option` filter already in place.
 
-- [ ] **Step 1: Write the failing tests** (follow `CompetitionSubtitleSettingTest.php` for how the option and the settings box are read):
+- [x] **Step 1: Write the failing tests** (follow `CompetitionSubtitleSettingTest.php` for how the option and the settings box are read):
   - `test_default_is_off`: with no option row, `Settings::past_zero() === false`.
   - `test_checked_value_is_on`: `update_option( Settings::OPTION, array( Settings::PAST_ZERO => '1' ) )` gives `true`; `array()` (key dropped by Meta Box when unchecked) gives `false`; a non-array option gives `false`.
   - `test_settings_box_has_a_checkbox_for_it`: the box `hyperpress_competition_box` from `apply_filters( 'rwmb_meta_boxes', array() )` has a field with `id` `Settings::PAST_ZERO` and `type` `checkbox`.
 
-- [ ] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter PastZeroSettingTest`. Expected: FAIL.
+- [x] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter PastZeroSettingTest`. Expected: FAIL.
 
-- [ ] **Step 3: Implement** the constant, `defaults()` entry and `past_zero()` (`is_array( $option ) && ! empty( $option[ self::PAST_ZERO ] )`), and add a `checkbox` field named "Count past zero" with a short description ("Keep counting after the start time instead of stopping at zero") to the settings box in `MetaBoxes::boxes`.
+- [x] **Step 3: Implement** the constant, `defaults()` entry and `past_zero()` (`is_array( $option ) && ! empty( $option[ self::PAST_ZERO ] )`), and add a `checkbox` field named "Count past zero" with a short description ("Keep counting after the start time instead of stopping at zero") to the settings box in `MetaBoxes::boxes`.
 
-- [ ] **Step 4: Run to verify it passes.** Expected: PASS, and the existing `CompetitionSettingsTest` and `CompetitionSubtitleSettingTest` still pass.
+- [x] **Step 4: Run to verify it passes.** Expected: PASS, and the existing `CompetitionSettingsTest` and `CompetitionSubtitleSettingTest` still pass.
 
-- [ ] **Step 5: Commit** `feat(competition): add a count-past-zero setting`.
+- [x] **Step 5: Commit** `feat(competition): add a count-past-zero setting`.
 
 ---
 

@@ -33,6 +33,13 @@ final class MetaBoxes {
 					'std'               => Settings::BANNER_SUBTITLE_DEFAULT,
 					'sanitize_callback' => array( Banner::class, 'sanitize_subtitle' ),
 				),
+				array(
+					'id'   => Settings::PAST_ZERO,
+					'name' => __( 'Count past zero', 'hyperpress' ),
+					'desc' => __( 'Keep counting after the start time instead of stopping at zero.', 'hyperpress' ),
+					'type' => 'checkbox',
+					'std'  => 0,
+				),
 			),
 		);
 

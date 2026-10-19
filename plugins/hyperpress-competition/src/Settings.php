@@ -11,6 +11,7 @@ final class Settings {
 	public const OPTION                  = 'hyperpress_competition';
 	public const BANNER_SUBTITLE         = 'hyperpress_competition_banner_subtitle';
 	public const BANNER_SUBTITLE_DEFAULT = '';
+	public const PAST_ZERO               = 'hyperpress_competition_countdown_past_zero';
 
 	/**
 	 * Default values, keyed by field id.
@@ -20,6 +21,7 @@ final class Settings {
 	public static function defaults(): array {
 		return array(
 			self::BANNER_SUBTITLE => self::BANNER_SUBTITLE_DEFAULT,
+			self::PAST_ZERO       => false,
 		);
 	}
 
@@ -53,5 +55,15 @@ final class Settings {
 			return '';
 		}
 		return is_string( $option[ self::BANNER_SUBTITLE ] ) ? $option[ self::BANNER_SUBTITLE ] : self::BANNER_SUBTITLE_DEFAULT;
+	}
+
+	/**
+	 * Whether the countdown keeps counting after the start time instead of stopping at zero.
+	 *
+	 * Meta Box drops the key of an unchecked checkbox, so a missing key (or a non-array option) is false.
+	 */
+	public static function past_zero(): bool {
+		$option = get_option( self::OPTION );
+		return is_array( $option ) && ! empty( $option[ self::PAST_ZERO ] );
 	}
 }
