@@ -43,10 +43,16 @@ final class ContentTest extends WP_UnitTestCase {
 		);
 	}
 
+	/**
+	 * Result of Content::is_full_view() while the last rendered competition was set up.
+	 */
+	private bool $rendered_full_view = false;
+
 	private function render( int $id ): string {
 		global $post;
 		$post = get_post( $id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		setup_postdata( $post );
+		$this->rendered_full_view = Content::is_full_view();
 		ob_start();
 		include Content::add_content_template( '' );
 		$html = (string) ob_get_clean();
@@ -112,10 +118,52 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->go_to( get_permalink( $page ) );
 		$html = $this->render( $id );
 
-		$this->assertFalse( Content::is_full_view() );
+		$this->assertFalse( $this->rendered_full_view );
 		$this->assertStringNotContainsString( 'countdown', $html );
 		$this->assertStringNotContainsString( 'data-date', $html );
 		$this->assertStringContainsString( 'rel="bookmark"', $html );
+	}
+
+	public function test_summary_for_a_competition_listed_on_another_competitions_page(): void {
+		$page_owner = $this->competition( $this->full_meta(), 'Page Owner' );
+		$listed     = $this->competition( $this->full_meta(), 'Listed' );
+		$this->go_to( get_permalink( $page_owner ) );
+		$this->assertTrue( is_singular( 'hyper_competition' ) );
+		$html = $this->render( $listed );
+
+		$this->assertFalse( $this->rendered_full_view );
+		$this->assertStringContainsString( '<a href="' . get_permalink( $listed ) . '" rel="bookmark">Listed</a>', $html );
+		$this->assertStringNotContainsString( 'countdown', $html );
+		$this->assertStringNotContainsString( 'data-date', $html );
+		$this->assertStringNotContainsString( 'target="_blank"', $html );
+		$this->assertStringNotContainsString( 'Host &amp; Co', $html );
+	}
+
+	public function test_summary_does_not_show_the_host(): void {
+		$id = $this->competition( $this->full_meta() );
+		$this->go_to( home_url( '/' ) );
+
+		$this->assertStringNotContainsString( 'Host &amp; Co', $this->render( $id ) );
+	}
+
+	public function test_thumbnail_appears_in_both_views(): void {
+		$marker = static fn(): string => '<img class="thumbnail" src="https://example.org/t.jpg" alt="">';
+		add_filter( 'post_thumbnail_html', $marker );
+
+		$id = $this->competition( $this->full_meta() );
+		$this->go_to( home_url( '/' ) );
+		$summary = $this->render( $id );
+
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$full = (string) ob_get_clean();
+
+		remove_filter( 'post_thumbnail_html', $marker );
+
+		$this->assertStringContainsString( 'class="thumbnail"', $summary );
+		$this->assertStringContainsString( 'class="thumbnail"', $full );
 	}
 
 	public function test_empty_fields_are_skipped(): void {
