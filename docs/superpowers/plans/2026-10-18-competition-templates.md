@@ -142,20 +142,20 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 - Consumes: `StartDate::instant`, `Settings::past_zero`, `HyperPress\Countdown\Renderer::render` (Task 1).
 - Produces: `Countdown::render( int $post_id ): string`: empty string unless the post is a published (or readable private) `hyper_competition` with a usable start date and `Renderer` exists; otherwise `Renderer::render( $when, array( 'location' => <venue name>, 'past_zero' => Settings::past_zero(), 'slug' => 'competition-' . $post_id, 'show_date' => false ) )`. `Countdown::register(): void` adds shortcode `hyperpress_competition_countdown` with attribute `id`, which calls `render( absint( $atts['id'] ) )`.
 
-- [ ] **Step 1: Write the failing tests** (create a published `hyper_competition` and set `$GLOBALS['hyperpress_test_rwmb']` for the start date and `hyperpress_competition_venue_name`):
+- [x] **Step 1: Write the failing tests** (create a published `hyper_competition` and set `$GLOBALS['hyperpress_test_rwmb']` for the start date and `hyperpress_competition_venue_name`):
   - `test_renders_the_countdown_from_the_start_date`: start `2030-07-01 10:00` and `timezone_string` `America/New_York`; `Countdown::render( $id )` contains `data-date="2030-07-01T10:00:00-04:00"` and the venue name, and does not contain `<time>`.
   - `test_past_start_still_renders_and_the_setting_reaches_the_script`: start `2001-01-01 10:00` renders; with `Settings::PAST_ZERO` on, the inline JS contains `"count_past_zero": true`.
   - `test_nothing_without_a_usable_date` (provider: no meta, `'junk'`): returns `''`.
   - `test_nothing_for_other_posts_or_drafts`: a `post`, and a `draft` competition, both give `''`.
   - `test_shortcode_renders_the_same_markup_for_an_id`: `do_shortcode( '[hyperpress_competition_countdown id="<id>"]' )` equals the function's output apart from the numeric element-id suffix; `[hyperpress_competition_countdown]` with no id gives `''`.
 
-- [ ] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter "Competition.*CountdownTest"`. Expected: FAIL.
+- [x] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter "Competition.*CountdownTest"`. Expected: FAIL.
 
-- [ ] **Step 3: Implement** `Countdown` as specified. Guard with `class_exists( '\HyperPress\Countdown\Renderer' )`. Reading the venue name: `HyperPress\Utils\Meta::get( 'hyperpress_competition_venue_name', $post_id )`, cast to string.
+- [x] **Step 3: Implement** `Countdown` as specified. Guard with `class_exists( '\HyperPress\Countdown\Renderer' )`. Reading the venue name: `HyperPress\Utils\Meta::get( 'hyperpress_competition_venue_name', $post_id )`, cast to string.
 
-- [ ] **Step 4: Run to verify it passes.** Expected: PASS.
+- [x] **Step 4: Run to verify it passes.** Expected: PASS.
 
-- [ ] **Step 5: Commit** `feat(competition): render a countdown from the start date`.
+- [x] **Step 5: Commit** `feat(competition): render a countdown from the start date`.
 
 ---
 
