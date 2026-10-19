@@ -60,7 +60,7 @@ final class StartDateTest extends WP_UnitTestCase {
 		);
 	}
 
-	public function test_start_field_stores_wall_clock_text_like_the_countdown(): void {
+	public function test_start_field_stores_wall_clock_text_in_an_explicit_format(): void {
 		$field = null;
 		foreach ( apply_filters( 'rwmb_meta_boxes', array() ) as $box ) {
 			if ( 'hyperpress_competition_information' !== ( $box['id'] ?? '' ) ) {
@@ -75,6 +75,7 @@ final class StartDateTest extends WP_UnitTestCase {
 
 		$this->assertIsArray( $field );
 		$this->assertFalse( $field['timestamp'] );
-		$this->assertSame( 'yy-mm-dd', $field['format'] );
+		$this->assertSame( 'Y-m-d H:i', $field['save_format'] );
+		$this->assertArrayNotHasKey( 'format', $field );
 	}
 }

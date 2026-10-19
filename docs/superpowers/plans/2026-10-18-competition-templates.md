@@ -95,11 +95,11 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
   - `test_summer_text_is_an_edt_instant`: meta `2030-07-01 10:00` gives `$instant->format( 'c' ) === '2030-07-01T10:00:00-04:00'` and `$instant->getTimestamp() === ( new \DateTimeImmutable( '2030-07-01T14:00:00+00:00' ) )->getTimestamp()`.
   - `test_winter_text_is_an_est_instant`: `2030-01-01 10:00` gives `2030-01-01T10:00:00-05:00`.
   - `test_empty_or_invalid_text_gives_null` (data provider: `''`, `'not a date'`, `array()`, `0`): returns `null`.
-  - `test_start_field_stores_wall_clock_text_like_the_countdown`: find the field with `id` `StartDate::FIELD` in `apply_filters( 'rwmb_meta_boxes', array() )` (the box id `hyperpress_competition_information`) and assert `$field['timestamp'] === false` and `$field['format'] === 'yy-mm-dd'`.
+  - `test_start_field_stores_wall_clock_text_in_an_explicit_format`: find the field with `id` `StartDate::FIELD` in `apply_filters( 'rwmb_meta_boxes', array() )` (the box id `hyperpress_competition_information`) and assert `$field['timestamp'] === false`, `$field['save_format'] === 'Y-m-d H:i'` and that no `format` key exists.
 
 - [x] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter StartDateTest`. Expected: FAIL (class missing).
 
-- [x] **Step 3: Implement** `StartDate::instant` with `new \DateTimeImmutable( $text, wp_timezone() )` in a try/catch for `\Exception`, rejecting non-strings and empty text. Change the field in `MetaBoxes.php` to `'timestamp' => false` and add `'format' => 'yy-mm-dd'`, matching `hyperpress_countdown_event_date_time` in `plugins/hyperpress-countdown/src/MetaBoxes.php:42-51`.
+- [x] **Step 3: Implement** `StartDate::instant` with `new \DateTimeImmutable( $text, wp_timezone() )` in a try/catch for `\Exception`, rejecting non-strings and empty text. Change the field in `MetaBoxes.php` to `'timestamp' => false` and add `'save_format' => 'Y-m-d H:i'` (the stored text format is explicit; the countdown field at `plugins/hyperpress-countdown/src/MetaBoxes.php:42-51` is the model for wall-clock text).
 
 - [x] **Step 4: Run to verify it passes.** Expected: PASS.
 
@@ -243,3 +243,7 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 - `Map::parse` duplicates `HyperPress\Contact\Settings::parse_map`; move both to `hyperpress-utils` if a third caller appears.
 - A raw-date countdown shortcode for editors can sit on top of `Renderer` later.
 - Filtering or sorting "upcoming competitions" by the start date text is possible with a date-typed meta query and is not built here.
+
+## Execution notes
+
+- 2026-10-18: Task 2 first used `'format' => 'yy-mm-dd'` (copied from the countdown field), which Meta Box does not document; replaced with `'save_format' => 'Y-m-d H:i'`. Task 7's manual check must confirm the stored text is `YYYY-MM-DD HH:MM`.
