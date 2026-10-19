@@ -16,7 +16,7 @@
  * Text Domain:         hyperpress
  * Domain Path:         /languages
  * Update URI:          false
- * Requires Plugins:    hyperpress-utils, hyperpress-season, hyperpress-robot, meta-box-aio
+ * Requires Plugins:    hyperpress-utils, hyperpress-season, hyperpress-robot, hyperpress-countdown, meta-box-aio
  */
 
 // Don't load directly.

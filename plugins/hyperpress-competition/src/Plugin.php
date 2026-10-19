@@ -44,6 +44,9 @@ final class Plugin {
 		SettingsPage::register();
 		MetaBoxes::register();
 		Labels::register();
+		Countdown::register();
+		Content::register();
+		Map::register();
 	}
 
 	/**

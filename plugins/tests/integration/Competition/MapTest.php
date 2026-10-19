@@ -38,6 +38,10 @@ final class MapTest extends WP_UnitTestCase {
 	private function competition( array $meta ): int {
 		$id = self::factory()->post->create( array( 'post_type' => Plugin::POST_TYPE, 'post_status' => 'publish' ) );
 		$GLOBALS['hyperpress_test_rwmb_posts'][ $id ] = $meta;
+		// Map reads the stored osm text directly: Meta Box would return rendered HTML for it.
+		if ( isset( $meta['hyperpress_competition_venue_map'] ) ) {
+			update_post_meta( $id, 'hyperpress_competition_venue_map', $meta['hyperpress_competition_venue_map'] );
+		}
 		return $id;
 	}
 
@@ -109,6 +113,7 @@ final class MapTest extends WP_UnitTestCase {
 
 		$post = self::factory()->post->create( array( 'post_status' => 'publish' ) );
 		$GLOBALS['hyperpress_test_rwmb_posts'][ $post ] = $meta;
+		update_post_meta( $post, 'hyperpress_competition_venue_map', $meta['hyperpress_competition_venue_map'] );
 		$this->go_to( get_permalink( $post ) );
 		$this->assertSame( '', $this->output() );
 

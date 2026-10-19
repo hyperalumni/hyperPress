@@ -35,7 +35,8 @@ final class Map {
 			return;
 		}
 
-		$map = self::parse( \HyperPress\Utils\Meta::get( 'hyperpress_competition_venue_map', $post_id ) );
+		// The stored text, not rwmb_meta(): for an osm field Meta Box returns the rendered map HTML.
+		$map = self::parse( get_post_meta( $post_id, 'hyperpress_competition_venue_map', true ) );
 		if ( null === $map ) {
 			return;
 		}
