@@ -103,4 +103,4 @@ The competition plugin gains a dependency on `hyperpress-countdown` (update the 
 
 ## Open items
 
-- Confirm in the admin that Meta Box's datetime field with `timestamp => false` stores the text format the helper expects (a one-line check when the field is changed).
+- Pending (owner): confirm in the admin that the start date saves as `YYYY-MM-DD HH:MM` (`save_format` is set; a wpcli write cannot show it). The implementation reads the stored text directly with `get_post_meta()` and parses it strictly, so a different stored format would make the countdown disappear rather than show a wrong time.

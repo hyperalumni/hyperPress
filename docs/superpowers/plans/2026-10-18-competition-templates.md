@@ -1,5 +1,7 @@
 # Competition templates Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-10-19). Tasks 1-7 done and reviewed (commits 73811fb..c8da8ff), plus a final-review fix wave. Lint, unit and integration suites pass in `plugins/` and the theme. One item is pending for the owner: save a start date through the admin UI and confirm the stored text is `YYYY-MM-DD HH:MM` (see Execution notes).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** A single `hyper_competition` page shows a full-width map under the banner, a live countdown and the competition details; archive and list entries show a short summary with no map.
@@ -53,11 +55,13 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 ### Task 1: Countdown `Renderer`
 
 **Files:**
+
 - Create: `plugins/hyperpress-countdown/src/Renderer.php`
 - Modify: `plugins/hyperpress-countdown/src/Shortcode.php` (lines 29-44 `color`, 99-186 render body)
 - Test: `plugins/tests/integration/Countdown/RendererTest.php`
 
 **Interfaces:**
+
 - Produces: `HyperPress\Countdown\Renderer::render( \DateTimeImmutable $when, array $args = array() ): string`. `$args` keys, all optional: `name` (string, default `''`), `location` (string, `''`), `past_zero` (bool, `false`), `slug` (string, `'countdown'`, used for the element id `slug-<wp_unique_id()>`), `show_date` (bool, `true`; the `<h4><time>` date line). It enqueues `hyperpress-countdown-timecircles` script and style and adds the inline init script, exactly like today.
 
 - [x] **Step 1: Write the failing test** in `RendererTest` (class `RendererTest`, `set_up` resets `$GLOBALS['wp_scripts'] = null` and calls `Assets::register_scripts()`):
@@ -84,11 +88,13 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 ### Task 2: Start date stored as wall-clock text, and `StartDate`
 
 **Files:**
+
 - Modify: `plugins/hyperpress-competition/src/MetaBoxes.php:93-99`
 - Create: `plugins/hyperpress-competition/src/StartDate.php`
 - Test: `plugins/tests/integration/Competition/StartDateTest.php`
 
 **Interfaces:**
+
 - Produces: `HyperPress\Competition\StartDate::instant( int $post_id ): ?\DateTimeImmutable`: reads `hyperpress_competition_event_start_date` through `HyperPress\Utils\Meta::get`, returns the text read in `wp_timezone()`, or `null` for empty, non-string or unparseable values. Also `StartDate::FIELD` (`'hyperpress_competition_event_start_date'`).
 
 - [x] **Step 1: Write the failing tests** in `StartDateTest` (`set_up` does `update_option( 'timezone_string', 'America/New_York' )`; `tear_down` unsets the meta globals):
@@ -110,10 +116,12 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 ### Task 3: Count-past-zero setting
 
 **Files:**
+
 - Modify: `plugins/hyperpress-competition/src/Settings.php`, `plugins/hyperpress-competition/src/MetaBoxes.php:25-43` (settings box)
 - Test: `plugins/tests/integration/Competition/PastZeroSettingTest.php`
 
 **Interfaces:**
+
 - Produces: `Settings::PAST_ZERO = 'hyperpress_competition_countdown_past_zero'`; `Settings::past_zero(): bool`; `Settings::defaults()` gains `PAST_ZERO => false`.
 - Consumes: the `Settings::OPTION` array option and `Settings::default_option` filter already in place.
 
@@ -135,10 +143,12 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 ### Task 4: `Countdown` and its shortcode
 
 **Files:**
+
 - Create: `plugins/hyperpress-competition/src/Countdown.php`
 - Test: `plugins/tests/integration/Competition/CountdownTest.php`
 
 **Interfaces:**
+
 - Consumes: `StartDate::instant`, `Settings::past_zero`, `HyperPress\Countdown\Renderer::render` (Task 1).
 - Produces: `Countdown::render( int $post_id ): string`: empty string unless the post is a published (or readable private) `hyper_competition` with a usable start date and `Renderer` exists; otherwise `Renderer::render( $when, array( 'location' => <venue name>, 'past_zero' => Settings::past_zero(), 'slug' => 'competition-' . $post_id, 'show_date' => false ) )`. `Countdown::register(): void` adds shortcode `hyperpress_competition_countdown` with attribute `id`, which calls `render( absint( $atts['id'] ) )`.
 
@@ -162,10 +172,12 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 ### Task 5: `Details`, `Content` and the template
 
 **Files:**
+
 - Create: `plugins/hyperpress-competition/src/Details.php`, `plugins/hyperpress-competition/src/Content.php`, `plugins/hyperpress-competition/templates/content.php`
 - Test: `plugins/tests/integration/Competition/DetailsTest.php`, `plugins/tests/integration/Competition/ContentTest.php`
 
 **Interfaces:**
+
 - Consumes: `StartDate::instant`, `Countdown::render`, `Plugin::POST_TYPE`.
 - Produces: `Details::for_post( int $post_id ): array` returning `array{host:string,venue:string,address:string,when:?\DateTimeImmutable,links:list<array{label:string,url:string,target:string}>}`. `links` come from, in order, `hyperpress_competition_ne_first_event_url` ("NE FIRST event"), `..._ftc_ma_event_url` ("FTC MA event"), `..._first_event_url` ("FIRST event"), `..._stream_url` ("Stream"); each is a Meta Box link array (`url`, `title`, `target`); `label` is the link's `title` when non-empty, else the default label; entries without a URL are dropped; `target` is `'_blank'` always for these (competition links open in a new tab).
 - Produces: `Content::register(): void` (hooks `content_template`), `Content::add_content_template( mixed $content_template ): mixed` (returns `dirname( __DIR__ ) . '/templates/content.php'` for the competition post type, else the argument unchanged, same shape as `HyperPress\Newsletter\Content`), `Content::is_full_view(): bool` (`is_singular( Plugin::POST_TYPE ) && get_the_ID() === get_queried_object_id()`).
@@ -192,11 +204,13 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 ### Task 6: Map under the banner
 
 **Files:**
+
 - Modify: `themes/hyperpress-foundation/single.php:12`, `themes/hyperpress-foundation/AGENTS.md` (plugin-facing hooks sentence), `themes/hyperpress-foundation/tests/unit/PluginHooksContractTest.php` (`fired_actions`)
 - Create: `plugins/hyperpress-competition/src/Map.php`
 - Test: `themes/hyperpress-foundation/tests/unit/SingleTemplateHookTest.php`, `plugins/tests/integration/Competition/MapTest.php`
 
 **Interfaces:**
+
 - Produces (theme): `do_action( 'hyperpress_after_banner' );` in `single.php` immediately after `get_template_part( 'template-parts/banner' )` and before `<div class="main-container">`. It takes no arguments.
 - Produces (plugin): `Map::register(): void` (adds `hyperpress_after_banner` action calling `Map::render`), `Map::render(): void` (echoes the map or nothing), `Map::parse( mixed $value ): ?array` returning `array{lat:float,lng:float,zoom:int}` for strings like `"lat,lng"` or `"lat,lng,zoom"` with latitude in [-90, 90], longitude in [-180, 180], zoom clamped to 0-19 and default 15, else `null`.
 
@@ -222,6 +236,7 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 ### Task 7: Wiring, dependency, and verification
 
 **Files:**
+
 - Modify: `plugins/hyperpress-competition/src/Plugin.php:32-47` (boot), `plugins/hyperpress-competition/hyperpress-competition.php` (`Requires Plugins`), `docs/superpowers/specs/2026-10-02-plugins-convention-and-shared-code-design.md` (competition row, lines ~54-72)
 
 - [x] **Step 1: Write the failing test** `plugins/tests/integration/Competition/BootTest.php`: after plugins load, `shortcode_exists( 'hyperpress_competition_countdown' )`, `has_filter( 'content_template', array( Content::class, 'add_content_template' ) )` and `has_action( 'hyperpress_after_banner', array( Map::class, 'render' ) )` are all truthy; and the main file's header (read with `get_file_data`) lists `hyperpress-countdown` under `Requires Plugins`.
@@ -234,7 +249,7 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 
 - [x] **Step 5: Manual check in the local stack** (`cd docker/hyperonline && docker compose --profile local up -d`, WordPress on http://localhost:4080, phpMyAdmin 4090; hyperalumni does not use the competition plugin; activate the countdown and competition plugins there if needed; run wpcli from `docker/hyperonline`). Re-enter the start date and an address on one competition, then: `docker compose --profile local run --rm wpcli wp post meta get <id> hyperpress_competition_event_start_date` should print wall-clock text like `2030-07-01 10:00`; the single page shows the map under the banner and the countdown matching Eastern time; `/competitions/` and the blog list show the summary and no map. Fix and re-test anything that differs; if the stored text format differs from `yyyy-mm-dd hh:mm`, adjust `StartDate` and its test.
 
-- [ ] **Step 6: Close out.** Add `> **STATUS: ✅ COMPLETED** (YYYY-MM-DD). <what passed / commit range>` at the top of this plan, resolve the spec's "Open items" entry with the result of the manual check, and tick any remaining boxes. Commit: `chore(competition): wire the competition templates and note the dependency`.
+- [x] **Step 6: Close out.** Add `> **STATUS: ✅ COMPLETED** (YYYY-MM-DD). <what passed / commit range>` at the top of this plan, resolve the spec's "Open items" entry with the result of the manual check, and tick any remaining boxes. Commit: `chore(competition): wire the competition templates and note the dependency`.
 
 ---
 
@@ -247,3 +262,8 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 ## Execution notes
 
 - 2026-10-18: Task 2 first used `'format' => 'yy-mm-dd'` (copied from the countdown field), which Meta Box does not document; replaced with `'save_format' => 'Y-m-d H:i'`. Task 7's manual check must confirm the stored text is `YYYY-MM-DD HH:MM`.
+- 2026-10-19: Task 7's live check on the hyperonline stack (temporary competition via wpcli, deleted afterwards) found that `rwmb_meta()` returns rendered HTML for the `osm` map field, so `Map` now reads the map with `get_post_meta()`.
+- 2026-10-19: final-review fixes (commit c8da8ff): `StartDate` reads the stored text with `get_post_meta()` and parses it strictly (`Y-m-d H:i`, then `Y-m-d H:i:s`); links whose URL `esc_url_raw()` rejects are dropped; `Countdown::render( $post_id, $show_location = true )` and the full view passes `false`, so the venue is printed once.
+- PENDING (owner): save a competition's start date in the admin UI, then run `wp post meta get <id> hyperpress_competition_event_start_date` from `docker/hyperonline`; expect `YYYY-MM-DD HH:MM`. Also confirm a link saved through the UI renders (the final reviewer flagged that the link fields are read through `rwmb_meta()`), and check whether the labels block shows twice on the single page.
+- Deferred minors: no test for the Meta Box-missing case of `Map` (no seam), private-post path of the competition countdown shortcode, real archive URL test for `Map`, `(int)` zoom cast on huge floats, `js_options` duplicated from `MapShortcode`.
+- Follow-up: the countdown field still carries a no-op `'format' => 'yy-mm-dd'`; once the stored text is confirmed, give it an explicit `save_format` and drop the dead key.
