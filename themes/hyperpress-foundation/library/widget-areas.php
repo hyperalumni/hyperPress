@@ -30,8 +30,8 @@ function hyperpress_sidebar_widgets() {
 			'description'   => __( 'Drag widgets to this footer container', 'hyperpress' ),
 			'before_widget' => '<section id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</section>',
-			'before_title'  => '<h6>',
-			'after_title'   => '</h6>',
+			'before_title'  => '<h5>',
+			'after_title'   => '</h5>',
 		)
 	);
 
