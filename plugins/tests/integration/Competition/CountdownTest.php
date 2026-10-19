@@ -32,6 +32,10 @@ final class CountdownTest extends WP_UnitTestCase {
 		$id = self::factory()->post->create(
 			array_merge( array( 'post_type' => 'hyper_competition', 'post_status' => 'publish' ), $post )
 		);
+		if ( isset( $meta['hyperpress_competition_event_start_date'] ) ) {
+			update_post_meta( $id, 'hyperpress_competition_event_start_date', $meta['hyperpress_competition_event_start_date'] );
+			unset( $meta['hyperpress_competition_event_start_date'] );
+		}
 		$GLOBALS['hyperpress_test_rwmb_posts'][ $id ] = $meta;
 		return $id;
 	}
@@ -48,6 +52,16 @@ final class CountdownTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'data-date="2030-07-01T10:00:00-04:00"', $output );
 		$this->assertStringContainsString( 'Memorial Field', $output );
 		$this->assertStringNotContainsString( '<time>', $output );
+	}
+
+	public function test_location_can_be_hidden_and_never_prints_an_array(): void {
+		$id = $this->competition( array( self::START => '2030-07-01 10:00', self::VENUE => 'Memorial Field' ) );
+
+		$this->assertStringContainsString( 'Memorial Field', Countdown::render( $id ) );
+		$this->assertStringNotContainsString( 'Memorial Field', Countdown::render( $id, false ) );
+
+		$array_id = $this->competition( array( self::START => '2030-07-01 10:00', self::VENUE => array( 'x' ) ) );
+		$this->assertStringNotContainsString( 'Array', Countdown::render( $array_id ) );
 	}
 
 	public function test_past_start_still_renders_and_the_setting_reaches_the_script(): void {
@@ -81,7 +95,7 @@ final class CountdownTest extends WP_UnitTestCase {
 		$meta = array( self::START => '2030-07-01 10:00' );
 
 		$post = self::factory()->post->create( array( 'post_type' => 'post', 'post_status' => 'publish' ) );
-		$GLOBALS['hyperpress_test_rwmb_posts'][ $post ] = $meta;
+		update_post_meta( $post, self::START, $meta[ self::START ] );
 		$this->assertSame( '', Countdown::render( $post ) );
 
 		$draft = $this->competition( $meta, array( 'post_status' => 'draft' ) );

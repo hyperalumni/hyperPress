@@ -11,15 +11,22 @@ final class StartDateTest extends WP_UnitTestCase {
 		update_option( 'timezone_string', 'America/New_York' );
 	}
 
-	public function tear_down(): void {
-		unset( $GLOBALS['hyperpress_test_rwmb'], $GLOBALS['hyperpress_test_rwmb_posts'] );
-		parent::tear_down();
+	/** @param mixed $value Stored value. */
+	private function post_with_start( $value ): int {
+		$id = self::factory()->post->create();
+		update_post_meta( $id, StartDate::FIELD, $value );
+		return $id;
+	}
+
+	public function test_text_with_seconds_is_accepted(): void {
+		$instant = StartDate::instant( $this->post_with_start( '2030-07-01 10:00:00' ) );
+
+		$this->assertInstanceOf( \DateTimeImmutable::class, $instant );
+		$this->assertSame( '2030-07-01T10:00:00-04:00', $instant->format( 'c' ) );
 	}
 
 	public function test_summer_text_is_an_edt_instant(): void {
-		$GLOBALS['hyperpress_test_rwmb'][ StartDate::FIELD ] = '2030-07-01 10:00';
-
-		$instant = StartDate::instant( self::factory()->post->create() );
+		$instant = StartDate::instant( $this->post_with_start( '2030-07-01 10:00' ) );
 
 		$this->assertInstanceOf( \DateTimeImmutable::class, $instant );
 		$this->assertSame( '2030-07-01T10:00:00-04:00', $instant->format( 'c' ) );
@@ -30,9 +37,7 @@ final class StartDateTest extends WP_UnitTestCase {
 	}
 
 	public function test_winter_text_is_an_est_instant(): void {
-		$GLOBALS['hyperpress_test_rwmb'][ StartDate::FIELD ] = '2030-01-01 10:00';
-
-		$instant = StartDate::instant( self::factory()->post->create() );
+		$instant = StartDate::instant( $this->post_with_start( '2030-01-01 10:00' ) );
 
 		$this->assertInstanceOf( \DateTimeImmutable::class, $instant );
 		$this->assertSame( '2030-01-01T10:00:00-05:00', $instant->format( 'c' ) );
@@ -43,9 +48,7 @@ final class StartDateTest extends WP_UnitTestCase {
 	 * @param mixed $value Stored value.
 	 */
 	public function test_empty_or_invalid_text_gives_null( $value ): void {
-		$GLOBALS['hyperpress_test_rwmb'][ StartDate::FIELD ] = $value;
-
-		$this->assertNull( StartDate::instant( self::factory()->post->create() ) );
+		$this->assertNull( StartDate::instant( $this->post_with_start( $value ) ) );
 	}
 
 	/**
@@ -57,6 +60,8 @@ final class StartDateTest extends WP_UnitTestCase {
 			'not a date'  => array( 'not a date' ),
 			'empty array' => array( array() ),
 			'zero'        => array( 0 ),
+			'tomorrow'    => array( 'tomorrow' ),
+			'impossible'  => array( '2030-02-31 10:00' ),
 		);
 	}
 

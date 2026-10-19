@@ -26,7 +26,7 @@ $hyperpress_when_s  = $hyperpress_when instanceof \DateTimeImmutable
 	<?php the_post_thumbnail( 'full', array( 'class' => 'thumbnail' ) ); ?>
 
 	<?php if ( $hyperpress_full ) : ?>
-		<?php echo \HyperPress\Competition\Countdown::render( (int) get_the_ID() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Countdown::render() returns pre-escaped markup. ?>
+		<?php echo \HyperPress\Competition\Countdown::render( (int) get_the_ID(), false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Countdown::render() returns pre-escaped markup. ?>
 	<?php endif; ?>
 
 	<?php if ( '' !== $hyperpress_when_s ) : ?>

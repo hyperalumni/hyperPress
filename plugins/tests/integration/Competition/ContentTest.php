@@ -27,6 +27,10 @@ final class ContentTest extends WP_UnitTestCase {
 		$id = self::factory()->post->create(
 			array( 'post_type' => 'hyper_competition', 'post_status' => 'publish', 'post_title' => $title )
 		);
+		if ( isset( $meta['hyperpress_competition_event_start_date'] ) ) {
+			update_post_meta( $id, 'hyperpress_competition_event_start_date', $meta['hyperpress_competition_event_start_date'] );
+			unset( $meta['hyperpress_competition_event_start_date'] );
+		}
 		$GLOBALS['hyperpress_test_rwmb_posts'][ $id ] = $meta;
 		return $id;
 	}
@@ -90,7 +94,7 @@ final class ContentTest extends WP_UnitTestCase {
 		$html = (string) ob_get_clean();
 
 		$this->assertStringContainsString( 'data-date="2030-07-01T10:00:00-04:00"', $html );
-		$this->assertStringContainsString( 'Arena &lt;b&gt;One&lt;/b&gt;', $html );
+		$this->assertSame( 1, substr_count( $html, 'Arena &lt;b&gt;One&lt;/b&gt;' ) );
 		$this->assertStringContainsString( 'Host &amp; Co', $html );
 		$this->assertStringContainsString( '1 Main St', $html );
 		$this->assertStringContainsString( $this->date_text(), $html );

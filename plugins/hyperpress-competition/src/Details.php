@@ -26,7 +26,7 @@ final class Details {
 			if ( ! is_array( $link ) ) {
 				continue;
 			}
-			$url = self::text( $link['url'] ?? '' );
+			$url = esc_url_raw( self::text( $link['url'] ?? '' ) );
 			if ( '' === $url ) {
 				continue;
 			}

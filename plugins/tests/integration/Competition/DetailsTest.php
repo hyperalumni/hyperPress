@@ -15,6 +15,10 @@ final class DetailsTest extends WP_UnitTestCase {
 	/** @param array<string,mixed> $meta */
 	private function competition( array $meta ): int {
 		$id = self::factory()->post->create( array( 'post_type' => 'hyper_competition', 'post_status' => 'publish' ) );
+		if ( isset( $meta['hyperpress_competition_event_start_date'] ) ) {
+			update_post_meta( $id, 'hyperpress_competition_event_start_date', $meta['hyperpress_competition_event_start_date'] );
+			unset( $meta['hyperpress_competition_event_start_date'] );
+		}
 		$GLOBALS['hyperpress_test_rwmb_posts'][ $id ] = $meta;
 		return $id;
 	}
@@ -51,6 +55,22 @@ final class DetailsTest extends WP_UnitTestCase {
 				array( 'label' => 'FIRST event', 'url' => 'https://example.org/f', 'target' => '_blank' ),
 				array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ),
 			),
+			$details['links']
+		);
+	}
+
+	public function test_links_with_rejected_or_empty_urls_are_dropped(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_ne_first_event_url' => array( 'url' => 'javascript:alert(1)', 'title' => 'Bad' ),
+				'hyperpress_competition_ftc_ma_event_url'   => array( 'url' => '', 'title' => 'Empty' ),
+				'hyperpress_competition_stream_url'         => array( 'url' => 'https://example.org/s', 'title' => '' ),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array( array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ) ),
 			$details['links']
 		);
 	}
