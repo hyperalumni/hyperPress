@@ -1,5 +1,7 @@
 # Sponsor archive grouping Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-10-19). Tasks 1-4 done and reviewed (commits 10be31a..482afcd), plus an off-plan fix for paged season-scoped archives (3e540ca) and a final-review fix wave (4bb0be5). Lint, unit and integration suites pass in `plugins/`; checked live on the hyperonline stack with temporary sponsors (deleted afterwards).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** The paginated sponsor archive shows a season heading (all-time archive) and a tier heading per group, repeating " (continued)" headings when a page starts mid-group.
@@ -126,7 +128,7 @@ Test conventions: integration tests extend `WP_UnitTestCase`; look at the existi
 
 - [x] **Step 1: Full verification.** From `plugins/`: `docker compose run --rm php composer lint` (0 violations), `composer test:unit`, `composer test:integration`. Expected: all green.
 - [x] **Step 2: Live check (non-destructive) on the hyperonline stack** (`cd docker/hyperonline && docker compose --profile local up -d`; WordPress on http://localhost:4080; wpcli: `docker compose --profile local run --rm wpcli wp ...`). Create 30 temporary published sponsors `zz-group-NN` spread over seasons 30-32 (create a missing season term only if absent and remove it afterwards), tiers Level 1-4 and some without; `curl -s http://localhost:4080/sponsors/` and `/sponsors/page/2/`, and `/seasons/season-31/sponsors/`; report the heading sequence (`grep -o '<h[234][^>]*>[^<]*'`), that page 2 repeats headings with "(continued)" when it starts mid-group, that the scoped archive has no season `h2`, that the page has pagination, and that titles are `h4`. Then delete every temporary post (and any temporary term) and confirm none remain. Do not change existing content.
-- [ ] **Step 3: Close out.** Append to the plugins-04 plan's Task 3 sponsor bullet area one dated bullet ("2026-10-19: the sponsor archive is grouped by season and tier with continued headings across pages (`HyperPress\Sponsor\ArchiveLoop`, `Grouping`)"); add `> **STATUS: ✅ COMPLETED** (YYYY-MM-DD). <what passed / commit range>` at the top of this plan; `pnpm exec oxfmt --check` the edited docs (load Node first: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"`). Commit: `chore(sponsor): note the grouped sponsor archive`.
+- [x] **Step 3: Close out.** Append to the plugins-04 plan's Task 3 sponsor bullet area one dated bullet ("2026-10-19: the sponsor archive is grouped by season and tier with continued headings across pages (`HyperPress\Sponsor\ArchiveLoop`, `Grouping`)"); add `> **STATUS: ✅ COMPLETED** (YYYY-MM-DD). <what passed / commit range>` at the top of this plan; `pnpm exec oxfmt --check` the edited docs (load Node first: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"`). Commit: `chore(sponsor): note the grouped sponsor archive`.
 
 ---
 
@@ -136,3 +138,4 @@ Test conventions: integration tests extend `WP_UnitTestCase`; look at the existi
 - Multi-season sponsors appear only under their newest season; listing a sponsor under every season it supported would need a different query.
 - Competition-filtered season archives (`/seasons/<s>/competitions/districts/<d>/page/2/`) still do not paginate: the competition's own rewrite captures `page/2` as a term path.
 - Optional extra tests: opt-in skipped in admin and feeds, a non-main `posts_template`, admin `set_page_size`, an out-of-range page, a previous sponsor past the end, and a feed assertion against `posts_per_rss`.
+- Optional hardening: add `BINARY` to the tier slug in the tier SQL key so it compares bytewise like `strcmp()` in `tier_rank()` (only matters for tied tier numbers whose slugs differ in punctuation).
