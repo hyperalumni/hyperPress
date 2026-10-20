@@ -43,7 +43,9 @@ final class ArchiveLoop {
 			return;
 		}
 
-		$query->set( 'posts_per_page', max( 1, (int) apply_filters( 'hyperpress_sponsor_archive_per_page', self::DEFAULT_PER_PAGE ) ) );
+		// A filtered -1 means "show all" (no pagination); anything else is at least 1.
+		$per_page = (int) apply_filters( 'hyperpress_sponsor_archive_per_page', self::DEFAULT_PER_PAGE );
+		$query->set( 'posts_per_page', -1 === $per_page ? -1 : max( 1, $per_page ) );
 	}
 
 	/**
@@ -54,11 +56,14 @@ final class ArchiveLoop {
 	 */
 	public static function previous_sponsor_id( WP_Query $main ): int {
 		$paged    = max( 1, (int) $main->get( 'paged' ) );
-		$per_page = max( 1, (int) $main->get( 'posts_per_page' ) );
-		if ( $paged < 2 ) {
+		$per_page = (int) $main->get( 'posts_per_page' );
+		if ( $paged < 2 || -1 === $per_page ) {
 			return 0;
 		}
+		$per_page = max( 1, $per_page );
 
+		// The lookup copies the main query's vars; it does not reproduce changes other plugins make only to
+		// the main query in pre_get_posts.
 		$args = is_array( $main->query ) ? $main->query : array();
 		unset( $args['paged'], $args['page'] );
 		$args['post_type']           = Plugin::POST_TYPE;

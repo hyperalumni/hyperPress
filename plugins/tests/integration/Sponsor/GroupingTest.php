@@ -307,4 +307,123 @@ final class GroupingTest extends WP_UnitTestCase {
 			$previous = $keys;
 		}
 	}
+
+	/**
+	 * Eight-plus sponsors whose seasons tie under a number-only key (two unnumbered seasons, two seasons with
+	 * the same number) and whose tiers interleave them.
+	 *
+	 * @return int[] Post IDs of the fixtures, in creation order.
+	 */
+	private function make_tie_fixtures(): array {
+		return array(
+			$this->make_sponsor( 'a', array( 'Alumni' ), array( 4 ) ),
+			$this->make_sponsor( 'b', array( 'Founders' ), array( 4 ) ),
+			$this->make_sponsor( 'c', array( 'Alumni' ), array( 3 ) ),
+			$this->make_sponsor( 'd', array( 'Founders' ), array( 3 ) ),
+			$this->make_sponsor( 'e', array( '31' ), array( 4 ) ),
+			$this->make_sponsor( 'f', array( 'Spring 31' ), array( 4 ) ),
+			$this->make_sponsor( 'g', array( '31' ), array( 3 ) ),
+			$this->make_sponsor( 'h', array( 'Spring 31' ), array( 3 ) ),
+			$this->make_sponsor( 'i', array( 'zeta' ), array( 4 ) ),
+			$this->make_sponsor( 'j', array( '32' ), array( 3 ) ),
+			$this->make_sponsor( 'k', array(), array( 4 ) ),
+		);
+	}
+
+	/** @return int[] IDs of the archive's first page in SQL order. */
+	private function archive_ids(): array {
+		update_option( 'posts_per_page', 50 );
+		try {
+			$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+		} finally {
+			delete_option( 'posts_per_page' );
+		}
+
+		return array_map( 'intval', wp_list_pluck( $GLOBALS['wp_query']->posts, 'ID' ) );
+	}
+
+	public function test_equal_or_unnumbered_seasons_form_one_contiguous_run(): void {
+		$fixtures = $this->make_tie_fixtures();
+		$ids      = $this->archive_ids();
+		$this->assertCount( count( $fixtures ), $ids );
+
+		$previous = null;
+		$runs     = array();
+		$last     = 'start';
+		foreach ( $ids as $id ) {
+			$keys   = Grouping::keys( $id );
+			$title  = get_the_title( $id );
+			$season = $keys['season'] ? (int) $keys['season']->term_id : 0;
+			if ( null !== $previous ) {
+				$order = $this->compare_nullable( $previous['season'], $keys['season'], array( Ordering::class, 'season_compare' ) );
+				$this->assertLessThanOrEqual( 0, $order, "Season key increases before '{$title}'." );
+				if ( 0 === $order ) {
+					$tier = $this->compare_nullable( $previous['tier'], $keys['tier'], array( Ordering::class, 'tier_compare' ) );
+					$this->assertLessThanOrEqual( 0, $tier, "Tier key increases before '{$title}'." );
+				}
+			}
+			if ( $season !== $last ) {
+				$this->assertArrayNotHasKey( $season, $runs, "Season term {$season} starts a second run at '{$title}'." );
+				$runs[ $season ] = true;
+				$last            = $season;
+			}
+			$previous = $keys;
+		}
+	}
+
+	public function test_comparers_agree_with_the_sql_order_for_tied_seasons(): void {
+		$fixtures = $this->make_tie_fixtures();
+		$sql      = $this->archive_ids();
+
+		$expected = $fixtures;
+		usort(
+			$expected,
+			static function ( int $x, int $y ): int {
+				$kx = Grouping::keys( $x );
+				$ky = Grouping::keys( $y );
+				foreach ( array( 'season' => 'season_compare', 'tier' => 'tier_compare' ) as $key => $comparer ) {
+					if ( null === $kx[ $key ] || null === $ky[ $key ] ) {
+						$result = ( null === $kx[ $key ] ) <=> ( null === $ky[ $key ] );
+					} else {
+						$result = Ordering::$comparer( $kx[ $key ], $ky[ $key ] );
+					}
+					if ( 0 !== $result ) {
+						return $result;
+					}
+				}
+
+				return strcmp( get_the_title( $x ), get_the_title( $y ) );
+			}
+		);
+
+		$this->assertSame( $expected, $sql );
+	}
+
+	public function test_rank_comparison_is_bytewise_for_numeric_looking_names(): void {
+		// PHP's <=> would treat "4" and "04" as equal numeric strings; strcmp() orders them like the SQL does.
+		$this->assertNotSame( 0, Ordering::tier_compare( '4', '04' ) );
+		$this->assertSame( 0, Ordering::tier_compare( 'level-4', 'level-4' ) );
+		$this->assertLessThan( 0, Ordering::season_compare( 'Spring 31', 'Season 31' ) );
+		$this->assertLessThan( 0, Ordering::season_compare( 'Season 32', 'Zeta' ) );
+	}
+
+	public function test_keys_for_a_loaded_page_run_no_extra_term_queries(): void {
+		// The season plugin attaches its taxonomy to the post types chosen in its settings; core only primes
+		// the term cache for taxonomies attached to the queried post type, so attach it here.
+		register_taxonomy_for_object_type( 'hyper_season', 'hyper_sponsor' );
+		$this->make_tie_fixtures();
+		$this->archive_ids();
+
+		global $wpdb;
+		$before = $wpdb->num_queries;
+		try {
+			foreach ( $GLOBALS['wp_query']->posts as $post ) {
+				Grouping::keys( $post->ID );
+			}
+			$extra = $wpdb->num_queries - $before;
+		} finally {
+			unregister_taxonomy_for_object_type( 'hyper_season', 'hyper_sponsor' );
+		}
+		$this->assertSame( 0, $extra, 'Grouping::keys() must read the primed term cache.' );
+	}
 }

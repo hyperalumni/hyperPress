@@ -65,8 +65,9 @@ final class Grouping {
 	 * @param callable $comparer Comparer that sorts the best term first.
 	 */
 	private static function best( int $post_id, string $taxonomy, callable $comparer ): ?\WP_Term {
-		$terms = wp_get_post_terms( $post_id, $taxonomy );
-		if ( is_wp_error( $terms ) || ! $terms ) {
+		// get_the_terms() reads the object term cache primed by the main query (wp_get_post_terms() does not).
+		$terms = get_the_terms( $post_id, $taxonomy );
+		if ( ! is_array( $terms ) || ! $terms ) {
 			return null;
 		}
 		usort( $terms, $comparer );

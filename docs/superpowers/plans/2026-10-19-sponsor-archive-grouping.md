@@ -134,3 +134,5 @@ Test conventions: integration tests extend `WP_UnitTestCase`; look at the existi
 
 - A stored tier rank (term meta) would replace the slug-number rule shared by `Ordering` (SQL) and `tier_compare()` (PHP).
 - Multi-season sponsors appear only under their newest season; listing a sponsor under every season it supported would need a different query.
+- Competition-filtered season archives (`/seasons/<s>/competitions/districts/<d>/page/2/`) still do not paginate: the competition's own rewrite captures `page/2` as a term path.
+- Optional extra tests: opt-in skipped in admin and feeds, a non-main `posts_template`, admin `set_page_size`, an out-of-range page, a previous sponsor past the end, and a feed assertion against `posts_per_rss`.

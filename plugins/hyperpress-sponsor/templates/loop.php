@@ -7,7 +7,6 @@
 defined( 'ABSPATH' ) || exit;
 
 use HyperPress\Sponsor\ArchiveLoop;
-use HyperPress\Sponsor\Content;
 use HyperPress\Sponsor\Grouping;
 use HyperPress\Sponsor\Ordering;
 
@@ -33,7 +32,7 @@ global $wp_query;
 			);
 		}
 		$hyperpress_title_tag = 'h4';
-		$content_template     = Content::add_content_template( '' );
+		$content_template     = apply_filters( 'content_template', '' );
 		if ( is_string( $content_template ) && '' !== $content_template && is_readable( $content_template ) ) {
 			include $content_template;
 		} else {

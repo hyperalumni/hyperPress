@@ -8,8 +8,8 @@ use WP_Query;
 /**
  * Orders the sponsor archive (and its season-scoped variant) by the sponsor's newest season, then its
  * highest tier, then menu order, title and ID. Inside a season-scoped archive every sponsor belongs to
- * that season, so the season key is dropped and the tier leads. Only the main query of a sponsor archive without an
- * explicit orderby is touched.
+ * that season, so the season key is dropped and the tier leads. Only the main query of a sponsor archive, and a
+ * sponsor query that sets ORDER_VAR, without an explicit orderby are touched.
  */
 final class Ordering {
 
@@ -23,7 +23,7 @@ final class Ordering {
 	}
 
 	/**
-	 * Replace the ORDER BY of the sponsor archive's main query.
+	 * Replace the ORDER BY of the sponsor archive's main query, or of a sponsor query that sets ORDER_VAR.
 	 *
 	 * @param array    $clauses SQL clauses of the query.
 	 * @param WP_Query $query   The query.
@@ -47,11 +47,13 @@ final class Ordering {
 
 		global $wpdb;
 
-		// Newest season: the highest trailing number of the sponsor's seasons (same rule as the season
-		// plugin's SeasonOrder). A season without a number counts as -1, so numbered seasons come first
-		// and a sponsor without any season (NULL) comes last under DESC.
+		// Newest season, by the rule of season_compare() (SQL and PHP must rank identically): the trailing
+		// number of the name (zero-padded), then the name bytewise, so the key is a total order over seasons.
+		// Names without a trailing number rank after all numbered ones. The key is '1' + padded number + name
+		// for numbered seasons and '0' + name for the others; MAX() picks the best and a sponsor without any
+		// season (NULL) comes last under DESC.
 		$season = $wpdb->prepare(
-			"( SELECT MAX( CASE WHEN st.name REGEXP '^(.* )?[0-9]+$' THEN CAST( SUBSTRING_INDEX( st.name, ' ', -1 ) AS SIGNED ) ELSE -1 END )
+			"( SELECT MAX( CASE WHEN st.name REGEXP '^(.* )?[0-9]+$' THEN CONCAT( '1', LPAD( SUBSTRING_INDEX( st.name, ' ', -1 ), 20, '0' ), BINARY st.name ) ELSE CONCAT( '0', BINARY st.name ) END )
 				FROM {$wpdb->term_relationships} str
 				INNER JOIN {$wpdb->term_taxonomy} stt ON stt.term_taxonomy_id = str.term_taxonomy_id AND stt.taxonomy = %s
 				INNER JOIN {$wpdb->terms} st ON st.term_id = stt.term_id
@@ -90,7 +92,27 @@ final class Ordering {
 	 * @param \WP_Term|string $b Tier term or slug.
 	 */
 	public static function tier_compare( $a, $b ): int {
-		return self::tier_rank( $b ) <=> self::tier_rank( $a );
+		return self::compare_ranks( self::tier_rank( $b ), self::tier_rank( $a ) );
+	}
+
+	/**
+	 * Compare two rank arrays (flag, number, name): flag and number numerically, the name with strcmp() so
+	 * PHP's numeric-string comparison and MySQL's collation cannot disagree.
+	 *
+	 * @param array{0:int,1:int,2:string} $a Rank.
+	 * @param array{0:int,1:int,2:string} $b Rank.
+	 */
+	private static function compare_ranks( array $a, array $b ): int {
+		$by_flag = $a[0] <=> $b[0];
+		if ( 0 !== $by_flag ) {
+			return $by_flag;
+		}
+		$by_number = $a[1] <=> $b[1];
+		if ( 0 !== $by_number ) {
+			return $by_number;
+		}
+
+		return strcmp( $a[2], $b[2] ) <=> 0;
 	}
 
 	/**
@@ -106,27 +128,27 @@ final class Ordering {
 	}
 
 	/**
-	 * Sort comparator for season terms (or names), newest first: the trailing number of a name matching
-	 * `^(.* )?[0-9]+$` (higher first), seasons without a number after all numbered ones, then name descending.
-	 * The SQL in order_clauses() ranks seasons by the same number.
+	 * Sort comparator for season terms (or names), newest first: names matching `^(.* )?[0-9]+$` before the
+	 * others, higher trailing number first, then name descending (bytewise). A total order: the SQL in
+	 * order_clauses() ranks seasons identically, so equal numbers or unnumbered names never tie.
 	 *
 	 * @param \WP_Term|string $a Season term or name.
 	 * @param \WP_Term|string $b Season term or name.
 	 */
 	public static function season_compare( $a, $b ): int {
-		return self::season_rank( $b ) <=> self::season_rank( $a );
+		return self::compare_ranks( self::season_rank( $b ), self::season_rank( $a ) );
 	}
 
 	/**
 	 * Sort key of a season, compared element by element.
 	 *
 	 * @param \WP_Term|string $season Season term or name.
-	 * @return array{0:int,1:string} Trailing number (-1 when absent), name.
+	 * @return array{0:int,1:int,2:string} Numbered flag, trailing number, name.
 	 */
 	private static function season_rank( $season ): array {
 		$name = $season instanceof \WP_Term ? $season->name : (string) $season;
 
-		return preg_match( '/^(?:.* )?([0-9]+)$/', $name, $m ) ? array( (int) $m[1], $name ) : array( -1, $name );
+		return preg_match( '/^(?:.* )?([0-9]+)$/', $name, $m ) ? array( 1, (int) $m[1], $name ) : array( 0, 0, $name );
 	}
 
 	/**

@@ -115,4 +115,30 @@ final class ArchiveLoopTest extends WP_UnitTestCase {
 		$this->assertSame( 2, (int) $GLOBALS['wp_query']->get( 'paged' ) );
 		$this->assertSame( $l3, ArchiveLoop::previous_sponsor_id( $GLOBALS['wp_query'] ) );
 	}
+
+	public function test_filtered_minus_one_shows_all_and_other_values_are_clamped(): void {
+		$this->make_sponsor( 'a', '31', 3 );
+
+		add_filter( 'hyperpress_sponsor_archive_per_page', static fn() => -1 );
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+		$this->assertSame( -1, (int) $GLOBALS['wp_query']->get( 'posts_per_page' ) );
+		remove_all_filters( 'hyperpress_sponsor_archive_per_page' );
+
+		foreach ( array( 0, -5 ) as $value ) {
+			add_filter( 'hyperpress_sponsor_archive_per_page', static fn() => $value, 10, 0 );
+			$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+			$this->assertSame( 1, (int) $GLOBALS['wp_query']->get( 'posts_per_page' ), "Filtered {$value}." );
+			remove_all_filters( 'hyperpress_sponsor_archive_per_page' );
+		}
+	}
+
+	public function test_previous_sponsor_id_is_zero_when_showing_all(): void {
+		$this->make_sponsor( 'a', '31', 3 );
+		$this->make_sponsor( 'b', '31', 2 );
+		add_filter( 'hyperpress_sponsor_archive_per_page', static fn() => -1 );
+
+		$this->go_to( home_url( '/?post_type=hyper_sponsor&paged=2' ) );
+		$this->assertSame( -1, (int) $GLOBALS['wp_query']->get( 'posts_per_page' ) );
+		$this->assertSame( 0, ArchiveLoop::previous_sponsor_id( $GLOBALS['wp_query'] ) );
+	}
 }
