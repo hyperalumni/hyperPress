@@ -49,6 +49,7 @@ final class Plugin {
 		Labels::register();
 		MetaBoxes::register();
 		Widgets::register();
+		Ordering::register();
 	}
 
 	public static function register_banner(): void {
