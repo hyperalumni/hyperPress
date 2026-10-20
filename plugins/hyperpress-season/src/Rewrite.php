@@ -7,6 +7,9 @@ final class Rewrite {
 
 	private const HASH_OPTION = 'hyperpress_season_rewrite_hash';
 
+	/** Bump when the shape of the added rules changes. 2: paged archives. */
+	private const RULES_VERSION = 2;
+
 	public static function register(): void {
 		// After the post types register at priority 10.
 		add_action( 'init', array( self::class, 'add_rules' ), 20 );
@@ -47,6 +50,12 @@ final class Rewrite {
 				'index.php?' . Plugin::TAXONOMY . '=$matches[1]&post_type=' . $key,
 				'top'
 			);
+			// Pagination as its own rule: an empty `paged=` would be sent on page 1.
+			add_rewrite_rule(
+				'^' . preg_quote( $season_slug, '#' ) . '/([^/]+)/' . preg_quote( $archive, '#' ) . '/page/([0-9]+)/?$',
+				'index.php?' . Plugin::TAXONOMY . '=$matches[1]&post_type=' . $key . '&paged=$matches[2]',
+				'top'
+			);
 		}
 	}
 
@@ -55,7 +64,8 @@ final class Rewrite {
 	 * example after another plugin registering a post type was activated.
 	 */
 	public static function maybe_flush(): void {
-		$hash = md5( (string) wp_json_encode( self::archives() ) );
+		// The rules version is part of the hash, so changing the rule shapes re-flushes existing sites.
+		$hash = md5( (string) wp_json_encode( array( self::RULES_VERSION, self::archives() ) ) );
 
 		if ( get_option( self::HASH_OPTION ) === $hash ) {
 			return;
