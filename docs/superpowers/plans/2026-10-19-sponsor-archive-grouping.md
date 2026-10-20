@@ -78,16 +78,16 @@ Test conventions: integration tests extend `WP_UnitTestCase`; look at the existi
   - `Grouping::keys( int $post_id ): array{season:?\WP_Term,tier:?\WP_Term}` (newest season by `season_compare`, highest tier by `tier_compare`; `null` when the sponsor has none).
   - `Grouping::headings( array $current, ?array $previous, bool $season_scoped, bool $page_start ): array` returning a list of `array{tag:string,text:string}` in print order (`h2` season first, then `h3` tier). `$current`/`$previous` are `keys()` results (`$previous` is `null` for the very first sponsor). Rules: a level is printed when it differs from `$previous` (a season change also prints the tier heading); when `$page_start` is true and a level equals `$previous`'s, it is printed with " (continued)" appended (season heading omitted entirely when `$season_scoped`); `null` season/tier use the "Other sponsors" text; texts pass through the filters `hyperpress_sponsor_archive_season_label` and `hyperpress_sponsor_archive_tier_label` (arguments: text, term or null).
 
-- [ ] **Step 1: Write the failing tests** in `GroupingTest`:
+- [x] **Step 1: Write the failing tests** in `GroupingTest`:
   - `test_keys_pick_newest_season_and_highest_tier` (sponsor in seasons 30 and 32, tiers level-2 and level-10 → season 32, level-10; sponsor without terms → both `null`).
   - `test_headings_on_group_changes` (table-driven: first sponsor prints season + tier; same group prints none; new tier prints tier only; new season prints season + tier; scoped archive never prints a season heading).
   - `test_page_start_repeats_unchanged_headings_with_continued` (same group → `Season 31 (continued)` and `Level 3 (continued)`; same season but new tier → season `(continued)` and the tier normally; new season → both normal; page 1 start with `$previous === null` → none continued; scoped → tier only).
   - `test_missing_season_and_tier_use_other_sponsors` (no season → season heading `Other sponsors`; season but no tier → tier heading `Other sponsors`) and `test_labels_are_filterable`.
   - `test_group_keys_follow_the_sql_order`: create a fixture set (several seasons incl. a multi-season sponsor, tiers incl. `level-10`, `level-4`, an unnumbered tier, a sponsor without season, one without tier), load the all-time archive with `go_to( '/?post_type=hyper_sponsor' )`, and assert that walking `$GLOBALS['wp_query']->posts` the (season, tier) keys never increase under `season_compare` / `tier_compare` (no sponsor is preceded by one that ranks lower) and a multi-season sponsor appears once.
-- [ ] **Step 2: Run to verify they fail.** `docker compose run --rm php composer test:integration -- --filter GroupingTest`. Expected: FAIL (class missing).
-- [ ] **Step 3: Implement** `Grouping`; escape nothing here (texts are returned raw; the template escapes). Make the translatable " (continued)" suffix and the "Other sponsors" text use `__( ..., 'hyperpress' )`.
-- [ ] **Step 4: Run to verify they pass** (`GroupingTest`, then `--filter Sponsor`). Expected: PASS.
-- [ ] **Step 5: Commit** `feat(sponsor): derive archive groups and headings`.
+- [x] **Step 2: Run to verify they fail.** `docker compose run --rm php composer test:integration -- --filter GroupingTest`. Expected: FAIL (class missing).
+- [x] **Step 3: Implement** `Grouping`; escape nothing here (texts are returned raw; the template escapes). Make the translatable " (continued)" suffix and the "Other sponsors" text use `__( ..., 'hyperpress' )`.
+- [x] **Step 4: Run to verify they pass** (`GroupingTest`, then `--filter Sponsor`). Expected: PASS.
+- [x] **Step 5: Commit** `feat(sponsor): derive archive groups and headings`.
 
 ---
 
