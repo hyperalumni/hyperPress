@@ -322,6 +322,22 @@ final class OrderingTest extends WP_UnitTestCase {
 		$this->assertSame( array(), ( new WP_Query( array( 'post_type' => 'post', Ordering::ORDER_VAR => true, 'fields' => 'ids' ) ) )->posts );
 	}
 
+	public function test_tied_tier_numbers_compare_slugs_bytewise_like_tier_compare(): void {
+		// Same number, slugs that differ in punctuation: a case-insensitive collation orders "_" before "-",
+		// strcmp() orders "-" (0x2D) before "_" (0x5F).
+		$slugs = array( 'gold-b-4', 'level-4', 'gold_b-4' );
+		foreach ( $slugs as $slug ) {
+			$this->make_sponsor( $slug, array( '31' ), array( $slug ) );
+		}
+
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+
+		$expected = $slugs;
+		usort( $expected, array( Ordering::class, 'tier_compare' ) );
+		$this->assertSame( array( 'level-4', 'gold_b-4', 'gold-b-4' ), $expected );
+		$this->assertSame( $expected, $this->main_titles() );
+	}
+
 	public function test_opt_in_respects_an_explicit_orderby(): void {
 		$this->make_sponsor( 'b', array( '32' ), array( 4 ) );
 		$this->make_sponsor( 'a', array( '30' ), array( 2 ) );

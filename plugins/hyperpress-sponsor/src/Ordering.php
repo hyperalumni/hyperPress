@@ -63,9 +63,10 @@ final class Ordering {
 
 		// Highest-ranking tier, by the rule of tier_compare(): the number after the last hyphen of the slug
 		// (level-10 > level-4), then slugs without a number by slug. The key is '1' + zero-padded number +
-		// slug for numbered tiers and '0' + slug for the others, so MAX() picks the best; NULL sorts last.
+		// slug for numbered tiers and '0' + slug for the others, so MAX() picks the best; NULL sorts last. The slug
+		// is BINARY so equal numbers compare bytewise like strcmp() in tier_rank(), whatever the collation.
 		$tier = $wpdb->prepare(
-			"( SELECT MAX( CASE WHEN tt2.slug REGEXP '^(.*-)?[0-9]+$' THEN CONCAT( '1', LPAD( SUBSTRING_INDEX( tt2.slug, '-', -1 ), 20, '0' ), tt2.slug ) ELSE CONCAT( '0', tt2.slug ) END )
+			"( SELECT MAX( CASE WHEN tt2.slug REGEXP '^(.*-)?[0-9]+$' THEN CONCAT( '1', LPAD( SUBSTRING_INDEX( tt2.slug, '-', -1 ), 20, '0' ), BINARY tt2.slug ) ELSE CONCAT( '0', BINARY tt2.slug ) END )
 				FROM {$wpdb->term_relationships} ttr
 				INNER JOIN {$wpdb->term_taxonomy} ttt ON ttt.term_taxonomy_id = ttr.term_taxonomy_id AND ttt.taxonomy = %s
 				INNER JOIN {$wpdb->terms} tt2 ON tt2.term_id = ttt.term_id
