@@ -3,7 +3,6 @@ namespace HyperPress\Sponsor;
 
 defined( 'ABSPATH' ) || exit;
 
-use HyperPress\Utils\RequestTerm;
 use WP_Query;
 
 /**
@@ -29,6 +28,7 @@ final class Ordering {
 	public static function order_clauses( $clauses, $query ): array {
 		if ( ! $query instanceof WP_Query
 			|| is_admin()
+			|| $query->is_feed()
 			|| ! $query->is_main_query()
 			|| ! $query->is_post_type_archive( Plugin::POST_TYPE )
 			|| '' !== (string) $query->get( 'orderby' )
@@ -50,9 +50,11 @@ final class Ordering {
 			self::SEASON_TAXONOMY
 		);
 
-		// Highest tier: the greatest tier slug (level-4 > level-1), like the sponsor widget; NULL sorts last.
+		// Highest-ranking tier, by the rule of tier_compare(): the number after the last hyphen of the slug
+		// (level-10 > level-4), then slugs without a number by slug. The key is '1' + zero-padded number +
+		// slug for numbered tiers and '0' + slug for the others, so MAX() picks the best; NULL sorts last.
 		$tier = $wpdb->prepare(
-			"( SELECT MAX( tt2.slug )
+			"( SELECT MAX( CASE WHEN tt2.slug REGEXP '^(.*-)?[0-9]+$' THEN CONCAT( '1', LPAD( SUBSTRING_INDEX( tt2.slug, '-', -1 ), 20, '0' ), tt2.slug ) ELSE CONCAT( '0', tt2.slug ) END )
 				FROM {$wpdb->term_relationships} ttr
 				INNER JOIN {$wpdb->term_taxonomy} ttt ON ttt.term_taxonomy_id = ttr.term_taxonomy_id AND ttt.taxonomy = %s
 				INNER JOIN {$wpdb->terms} tt2 ON tt2.term_id = ttt.term_id
@@ -62,11 +64,63 @@ final class Ordering {
 
 		// In a season-scoped archive (/seasons/<slug>/sponsors/) all sponsors share the season: skip the
 		// season key so a sponsor with a newer extra season does not jump above the others.
-		$season_key = null === RequestTerm::get( self::SEASON_TAXONOMY ) ? "{$season} DESC, " : '';
+		$season_key = ! self::is_season_scoped( $query ) ? "{$season} DESC, " : '';
 
 		$clauses            = (array) $clauses;
 		$clauses['orderby'] = "{$season_key}{$tier} DESC, {$wpdb->posts}.menu_order ASC, {$wpdb->posts}.post_title ASC, {$wpdb->posts}.ID ASC";
 
 		return $clauses;
+	}
+
+	/**
+	 * Sort comparator for tier terms (or slugs), highest first: tiers with a trailing number (after the last
+	 * hyphen, or the whole slug) before the others, higher number first, then slug descending. The SQL in
+	 * order_clauses() ranks tiers the same way.
+	 *
+	 * @param \WP_Term|string $a Tier term or slug.
+	 * @param \WP_Term|string $b Tier term or slug.
+	 */
+	public static function tier_compare( $a, $b ): int {
+		return self::tier_rank( $b ) <=> self::tier_rank( $a );
+	}
+
+	/**
+	 * Sort key of a tier, compared element by element.
+	 *
+	 * @param \WP_Term|string $tier Tier term or slug.
+	 * @return array{0:int,1:int,2:string} Numbered flag, number, slug.
+	 */
+	private static function tier_rank( $tier ): array {
+		$slug = $tier instanceof \WP_Term ? $tier->slug : (string) $tier;
+
+		return preg_match( '/^(?:.*-)?([0-9]+)$/', $slug, $m ) ? array( 1, (int) $m[1], $slug ) : array( 0, 0, $slug );
+	}
+
+	/**
+	 * Whether the query is limited to one season (/seasons/<slug>/sponsors/), judged from the query's own
+	 * season query var: a comma/plus separated list in which at least one slug is an existing season.
+	 *
+	 * @param WP_Query $query The query.
+	 */
+	private static function is_season_scoped( WP_Query $query ): bool {
+		$taxonomy = get_taxonomy( self::SEASON_TAXONOMY );
+		if ( ! $taxonomy || ! is_string( $taxonomy->query_var ) || '' === $taxonomy->query_var ) {
+			return false;
+		}
+		$value = $query->get( $taxonomy->query_var );
+		if ( ! is_string( $value ) || '' === $value ) {
+			return false;
+		}
+		foreach ( preg_split( '/[,+]+/', $value ) as $piece ) {
+			$slug = trim( $piece );
+			if ( is_taxonomy_hierarchical( self::SEASON_TAXONOMY ) ) {
+				$slug = trim( wp_basename( $slug ) );
+			}
+			if ( '' !== $slug && get_term_by( 'slug', $slug, self::SEASON_TAXONOMY ) instanceof \WP_Term ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

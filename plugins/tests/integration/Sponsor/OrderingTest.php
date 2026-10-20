@@ -27,7 +27,7 @@ final class OrderingTest extends WP_UnitTestCase {
 
 	/**
 	 * @param string[] $seasons Season numbers, e.g. array( '30', '32' ) or a free name such as 'Alumni'.
-	 * @param int[]    $tiers   Tier levels 1..4.
+	 * @param array    $tiers   Tier levels (ints become "Level N") or free tier names.
 	 */
 	private function make_sponsor( string $title, array $seasons = array(), array $tiers = array(), int $menu_order = 0 ): int {
 		++$this->clock;
@@ -46,7 +46,8 @@ final class OrderingTest extends WP_UnitTestCase {
 		}
 		$tier_ids = array();
 		foreach ( $tiers as $tier ) {
-			$tier_ids[] = $this->term_id( 'hyper_tier', 'Level ' . $tier, 'level-' . $tier );
+			$name       = is_int( $tier ) ? 'Level ' . $tier : (string) $tier;
+			$tier_ids[] = $this->term_id( 'hyper_tier', $name, sanitize_title( $name ) );
 		}
 		wp_set_object_terms( $id, $season_ids, 'hyper_season' );
 		wp_set_object_terms( $id, $tier_ids, 'hyper_tier' );
@@ -142,6 +143,92 @@ final class OrderingTest extends WP_UnitTestCase {
 		// The unscoped archive still ranks the multi-season sponsor by its newest season.
 		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
 		$this->assertSame( array( 'both-seasons-l1', 'only-31-l4', 'only-31-no-tier' ), $this->main_titles() );
+	}
+
+	public function test_equal_sponsors_fall_back_to_id(): void {
+		$first  = $this->make_sponsor( 'same', array( '31' ), array( 2 ), 0 );
+		$second = $this->make_sponsor( 'same', array( '31' ), array( 2 ), 0 );
+		$third  = $this->make_sponsor( 'same', array( '31' ), array( 2 ), 0 );
+
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+
+		$this->assertSame( array( $first, $second, $third ), wp_list_pluck( $GLOBALS['wp_query']->posts, 'ID' ) );
+	}
+
+	public function test_pagination_slices_the_full_order(): void {
+		$this->make_sponsor( 's30-L1', array( '30' ), array( 1 ) );
+		$this->make_sponsor( 's32-L1', array( '32' ), array( 1 ) );
+		$this->make_sponsor( 's31-L4', array( '31' ), array( 4 ) );
+		$this->make_sponsor( 's32-L4', array( '32' ), array( 4 ) );
+		$this->make_sponsor( 's31-L1', array( '31' ), array( 1 ) );
+		$expected = array( 's32-L4', 's32-L1', 's31-L4', 's31-L1', 's30-L1' );
+
+		update_option( 'posts_per_page', 2 );
+		try {
+			$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+			$this->assertSame( array_slice( $expected, 0, 2 ), $this->main_titles() );
+			$this->assertSame( 5, $GLOBALS['wp_query']->found_posts );
+
+			$this->go_to( home_url( '/?post_type=hyper_sponsor&paged=2' ) );
+			$this->assertSame( array_slice( $expected, 2, 2 ), $this->main_titles() );
+			$this->assertSame( 5, $GLOBALS['wp_query']->found_posts );
+
+			$this->go_to( home_url( '/?post_type=hyper_sponsor&paged=3' ) );
+			$this->assertSame( array_slice( $expected, 4, 2 ), $this->main_titles() );
+		} finally {
+			delete_option( 'posts_per_page' );
+		}
+	}
+
+	public function test_admin_main_query_is_not_reordered(): void {
+		$this->make_sponsor( 's32-L4', array( '32' ), array( 4 ) );
+		$this->make_sponsor( 's30-L1', array( '30' ), array( 1 ) );
+
+		// go_to() resets the screen, so enter the admin after it and re-run the main query.
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+		set_current_screen( 'edit-post' );
+		try {
+			$this->assertTrue( is_admin() );
+			$GLOBALS['wp_the_query']->query( array( 'post_type' => 'hyper_sponsor' ) );
+			$this->assertTrue( $GLOBALS['wp_the_query']->is_main_query() );
+			$this->assertTrue( $GLOBALS['wp_the_query']->is_post_type_archive( 'hyper_sponsor' ) );
+			$titles = $this->main_titles();
+		} finally {
+			set_current_screen( 'front' );
+		}
+
+		// Default order is newest post first (the season/tier order would be s32-L4, s30-L1).
+		$this->assertSame( array( 's30-L1', 's32-L4' ), $titles );
+		$this->assertFalse( is_admin() );
+	}
+
+	public function test_feed_keeps_the_default_chronological_order(): void {
+		$this->make_sponsor( 's32-L4', array( '32' ), array( 4 ) );
+		$this->make_sponsor( 's30-L1', array( '30' ), array( 1 ) );
+		$this->make_sponsor( 's31-L2', array( '31' ), array( 2 ) );
+		flush_rewrite_rules();
+
+		$this->go_to( home_url( '/sponsors/feed/' ) );
+
+		$this->assertTrue( is_feed() );
+		$this->assertTrue( is_post_type_archive( 'hyper_sponsor' ) );
+		// Newest post first, not season/tier order.
+		$this->assertSame( array( 's31-L2', 's30-L1', 's32-L4' ), $this->main_titles() );
+	}
+
+	public function test_tiers_rank_by_trailing_number_then_unnumbered_by_slug(): void {
+		$this->make_sponsor( 'none', array( '31' ), array() );
+		$this->make_sponsor( 'alpha', array( '31' ), array( 'alpha' ) );
+		$this->make_sponsor( 'l2', array( '31' ), array( 'Level 2' ) );
+		$this->make_sponsor( 'zeta', array( '31' ), array( 'zeta' ) );
+		$this->make_sponsor( 'l4', array( '31' ), array( 4 ) );
+		$this->make_sponsor( 'l10', array( '31' ), array( 'Level 10' ) );
+		$this->make_sponsor( 'multi', array( '31' ), array( 'alpha', 'Level 4', 'zeta' ) );
+
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+
+		// "multi" has level-4 as its highest-ranking tier: it sorts with l4 (title ASC: l4, multi).
+		$this->assertSame( array( 'l10', 'l4', 'multi', 'l2', 'zeta', 'alpha', 'none' ), $this->main_titles() );
 	}
 
 	public function test_explicit_orderby_is_respected(): void {

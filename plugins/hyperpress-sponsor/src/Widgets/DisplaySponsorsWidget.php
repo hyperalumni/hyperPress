@@ -3,6 +3,7 @@ namespace HyperPress\Sponsor\Widgets;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Sponsor\Ordering;
 use HyperPress\Sponsor\Plugin;
 use WP_Query;
 use WP_Widget;
@@ -41,7 +42,11 @@ class DisplaySponsorsWidget extends WP_Widget {
 					'hide_empty' => true,
 				)
 			);
-			$tiers      = is_wp_error( $tier_terms ) ? array() : wp_list_pluck( $tier_terms, 'slug' );
+			if ( ! is_wp_error( $tier_terms ) ) {
+				// Highest tier first, by the same rule as the sponsor archive (level-10 before level-4).
+				usort( $tier_terms, array( Ordering::class, 'tier_compare' ) );
+			}
+			$tiers = is_wp_error( $tier_terms ) ? array() : wp_list_pluck( $tier_terms, 'slug' );
 			// If there are tiers, query them.
 			if ( ! empty( $tiers ) ) {
 				// Create a query that is empty to merge the results into.

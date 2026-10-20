@@ -135,6 +135,20 @@ final class SponsorWidgetTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'sponsors"', $output );
 	}
 
+	public function test_tiers_rank_by_trailing_number_then_unnumbered_by_slug(): void {
+		$this->make_term( 'hyper_season', 'season-a' );
+		foreach ( array( 'alpha', 'level-2', 'level-10', 'zeta', 'level-4' ) as $slug ) {
+			$this->make_term( 'hyper_tier', $slug );
+			$this->make_sponsor( "S-$slug", $slug, 'season-a' );
+		}
+		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
+
+		$output = $this->render( array( 'maxCount' => 10 ) );
+
+		preg_match_all( '/title="(S-[^"]+)"/', $output, $m );
+		$this->assertSame( array( 'S-level-10', 'S-level-4', 'S-level-2', 'S-zeta', 'S-alpha' ), $m[1] );
+	}
+
 	public function test_number_of_sponsors_never_exceeds_max_count_across_tiers(): void {
 		$this->fixture_with_season( 'season-a', 3, 2 );
 		update_option( 'hyperpress_season', array( 'hyperpress_season_current' => 'season-a' ) );
