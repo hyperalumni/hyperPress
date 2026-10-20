@@ -11,24 +11,27 @@ final class SponsorArchiveTest extends WP_UnitTestCase {
 		return (string) apply_filters( 'archive_template', self::DEFAULT );
 	}
 
-	private function plugin_template(): string {
-		return dirname( __DIR__, 2 ) . '/hyperpress-sponsor/templates/archive.php';
+	public function test_sponsor_archive_is_not_overridden_by_the_plugin(): void {
+		flush_rewrite_rules();
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+		$this->assertTrue( is_post_type_archive( 'hyper_sponsor' ) );
+		$this->assertSame( 'x.php', apply_filters( 'archive_template', 'x.php' ) );
 	}
 
-	public function test_sponsor_archive_gets_the_plugin_template(): void {
+	public function test_sponsor_archive_pretty_url_is_not_overridden_by_the_plugin(): void {
 		flush_rewrite_rules();
 		$this->go_to( home_url( '/sponsors/' ) );
 		$this->assertTrue( is_post_type_archive( 'hyper_sponsor' ) );
-		$this->assertSame( $this->plugin_template(), $this->template() );
+		$this->assertSame( self::DEFAULT, $this->template() );
 	}
 
-	public function test_season_sponsor_archive_gets_the_plugin_template(): void {
+	public function test_season_sponsor_archive_is_not_overridden_by_the_plugin(): void {
 		self::factory()->term->create( array( 'taxonomy' => 'hyper_season', 'name' => '2026', 'slug' => '2026' ) );
 		flush_rewrite_rules();
 		$this->go_to( home_url( '/seasons/2026/sponsors/' ) );
 		$this->assertTrue( is_tax( 'hyper_season' ) );
 		$this->assertTrue( is_post_type_archive( 'hyper_sponsor' ) );
-		$this->assertSame( $this->plugin_template(), $this->template() );
+		$this->assertSame( self::DEFAULT, $this->template() );
 	}
 
 	public function test_single_sponsor_page_keeps_the_default_template(): void {

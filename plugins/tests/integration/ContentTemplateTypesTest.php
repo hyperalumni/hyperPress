@@ -50,25 +50,4 @@ final class ContentTemplateTypesTest extends WP_UnitTestCase {
 		$this->assertIsString( $result );
 		$this->assertFileIsReadable( $result );
 	}
-
-	public function test_sponsor_archive_template_passes_a_non_string_default_through_for_other_post_types(): void {
-		$post_id = self::factory()->post->create( array( 'post_type' => 'post' ) );
-		$this->go_to( get_permalink( $post_id ) );
-		$default = get_post( $post_id );
-
-		$result = apply_filters( 'archive_template', $default );
-
-		$this->assertSame( $default, $result );
-	}
-
-	public function test_sponsor_archive_template_still_supplies_the_plugin_path_for_sponsors(): void {
-		self::factory()->post->create( array( 'post_type' => 'hyper_sponsor' ) );
-		flush_rewrite_rules();
-		$this->go_to( home_url( '/sponsors/' ) );
-
-		$result = apply_filters( 'archive_template', '' );
-
-		$this->assertIsString( $result );
-		$this->assertFileIsReadable( $result );
-	}
 }
