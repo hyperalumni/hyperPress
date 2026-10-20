@@ -103,7 +103,8 @@ final class GroupingTest extends WP_UnitTestCase {
 			'scoped first'       => array( $this->keys_of( $s32, $l3 ), null, true, array( array( 'h3', 'Level 3' ) ) ),
 			'scoped new tier'    => array( $this->keys_of( $s32, $l2 ), $this->keys_of( $s32, $l3 ), true, array( array( 'h3', 'Level 2' ) ) ),
 			'scoped same group'  => array( $this->keys_of( $s32, $l3 ), $this->keys_of( $s32, $l3 ), true, array() ),
-			'scoped season move' => array( $this->keys_of( $s31, $l3 ), $this->keys_of( $s32, $l3 ), true, array( array( 'h3', 'Level 3' ) ) ),
+			'scoped season move' => array( $this->keys_of( $s31, $l3 ), $this->keys_of( $s32, $l3 ), true, array() ),
+			'scoped season move, new tier' => array( $this->keys_of( $s31, $l2 ), $this->keys_of( $s32, $l3 ), true, array( array( 'h3', 'Level 2' ) ) ),
 		);
 
 		foreach ( $cases as $label => $case ) {
@@ -146,6 +147,63 @@ final class GroupingTest extends WP_UnitTestCase {
 		$this->assertSame(
 			array( array( 'h3', 'Level 3 (continued)' ) ),
 			$pairs( Grouping::headings( $this->keys_of( $s31, $l3 ), $this->keys_of( $s31, $l3 ), true, true ) )
+		);
+	}
+
+	public function test_scoped_season_move_is_ignored_for_continued_decisions(): void {
+		$s31 = $this->season( '31' );
+		$s32 = $this->season( '32' );
+		$l3  = $this->tier( 3 );
+		$l2  = $this->tier( 2 );
+
+		$pairs = static fn( array $headings ): array => array_map( static fn( array $h ): array => array( $h['tag'], $h['text'] ), $headings );
+
+		$this->assertSame(
+			array( array( 'h3', 'Level 3 (continued)' ) ),
+			$pairs( Grouping::headings( $this->keys_of( $s31, $l3 ), $this->keys_of( $s32, $l3 ), true, true ) )
+		);
+		$this->assertSame(
+			array( array( 'h3', 'Level 2' ) ),
+			$pairs( Grouping::headings( $this->keys_of( $s31, $l2 ), $this->keys_of( $s32, $l3 ), true, true ) )
+		);
+		// A sponsor without tier in a scoped archive, first on its page.
+		$this->assertSame(
+			array( array( 'h3', 'Other sponsors (continued)' ) ),
+			$pairs( Grouping::headings( $this->keys_of( $s31, null ), $this->keys_of( $s31, null ), true, true ) )
+		);
+	}
+
+	public function test_headings_when_seasons_are_missing(): void {
+		$s31 = $this->season( '31' );
+		$l3  = $this->tier( 3 );
+		$l2  = $this->tier( 2 );
+
+		$pairs = static fn( array $headings ): array => array_map( static fn( array $h ): array => array( $h['tag'], $h['text'] ), $headings );
+
+		// Both without a season and in the same tier: nothing, or two "continued" headings at a page start.
+		$this->assertSame( array(), $pairs( Grouping::headings( $this->keys_of( null, $l3 ), $this->keys_of( null, $l3 ), false, false ) ) );
+		$this->assertSame(
+			array( array( 'h2', 'Other sponsors (continued)' ), array( 'h3', 'Level 3 (continued)' ) ),
+			$pairs( Grouping::headings( $this->keys_of( null, $l3 ), $this->keys_of( null, $l3 ), false, true ) )
+		);
+		// Both without season, new tier: tier only (the season heading stays unchanged).
+		$this->assertSame(
+			array( array( 'h3', 'Level 2' ) ),
+			$pairs( Grouping::headings( $this->keys_of( null, $l2 ), $this->keys_of( null, $l3 ), false, false ) )
+		);
+		// Both bare at a page start.
+		$this->assertSame(
+			array( array( 'h2', 'Other sponsors (continued)' ), array( 'h3', 'Other sponsors (continued)' ) ),
+			$pairs( Grouping::headings( $this->keys_of( null, null ), $this->keys_of( null, null ), false, true ) )
+		);
+		// Previous without a season, current with one, and the reverse: the season level changes both ways.
+		$this->assertSame(
+			array( array( 'h2', 'Season 31' ), array( 'h3', 'Level 3' ) ),
+			$pairs( Grouping::headings( $this->keys_of( $s31, $l3 ), $this->keys_of( null, $l3 ), false, false ) )
+		);
+		$this->assertSame(
+			array( array( 'h2', 'Other sponsors' ), array( 'h3', 'Level 3' ) ),
+			$pairs( Grouping::headings( $this->keys_of( null, $l3 ), $this->keys_of( $s31, $l3 ), false, false ) )
 		);
 	}
 

@@ -35,7 +35,10 @@ final class Grouping {
 	 */
 	public static function headings( array $current, ?array $previous, bool $season_scoped, bool $page_start ): array {
 		$season_changed = null === $previous || self::term_id( $current['season'] ) !== self::term_id( $previous['season'] );
-		$tier_changed   = $season_changed || self::term_id( $current['tier'] ) !== self::term_id( $previous['tier'] );
+		// In a scoped archive the SQL order drops the season key, so the season plays no role at all there.
+		$tier_changed = null === $previous
+			|| ( ! $season_scoped && $season_changed )
+			|| self::term_id( $current['tier'] ) !== self::term_id( $previous['tier'] );
 
 		$headings = array();
 		if ( ! $season_scoped && ( $season_changed || $page_start ) ) {
