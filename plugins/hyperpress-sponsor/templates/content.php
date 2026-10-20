@@ -5,14 +5,17 @@
 
 // Don't load directly.
 defined( 'ABSPATH' ) || exit;
+
+// The grouped archive loop sets $hyperpress_title_tag to nest the entry title under its group headings.
+$hyperpress_entry_tag = ( isset( $hyperpress_title_tag ) && in_array( $hyperpress_title_tag, array( 'h2', 'h3', 'h4', 'h5', 'h6' ), true ) ) ? $hyperpress_title_tag : 'h2';
 ?>
 <header>
 	<?php if ( ! is_singular( 'hyper_sponsor' ) ) : ?>
-		<h2 class="entry-title">
+		<<?php echo esc_attr( $hyperpress_entry_tag ); ?> class="entry-title">
 			<a href="<?php echo esc_url( get_permalink() ); ?>" rel="bookmark">
 				<?php the_title(); ?>
 			</a>
-		</h2>
+		</<?php echo esc_attr( $hyperpress_entry_tag ); ?>>
 	<?php endif; ?>
 	<?php do_action( 'hyperpress_labels' ); ?>
 </header>

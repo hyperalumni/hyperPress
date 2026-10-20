@@ -164,6 +164,8 @@ final class OrderingTest extends WP_UnitTestCase {
 		$this->make_sponsor( 's31-L1', array( '31' ), array( 1 ) );
 		$expected = array( 's32-L4', 's32-L1', 's31-L4', 's31-L1', 's30-L1' );
 
+		// The sponsor archive has its own page size (ArchiveLoop), no longer the posts_per_page option.
+		add_filter( 'hyperpress_sponsor_archive_per_page', static fn() => 2 );
 		update_option( 'posts_per_page', 2 );
 		try {
 			$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );

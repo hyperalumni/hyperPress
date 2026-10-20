@@ -50,6 +50,7 @@ final class Plugin {
 		MetaBoxes::register();
 		Widgets::register();
 		Ordering::register();
+		ArchiveLoop::register();
 	}
 
 	public static function register_banner(): void {
