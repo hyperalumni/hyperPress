@@ -136,6 +136,6 @@ Test conventions: integration tests extend `WP_UnitTestCase`; look at the existi
 
 - A stored tier rank (term meta) would replace the slug-number rule shared by `Ordering` (SQL) and `tier_compare()` (PHP).
 - Multi-season sponsors appear only under their newest season; listing a sponsor under every season it supported would need a different query.
-- Competition-filtered season archives (`/seasons/<s>/competitions/districts/<d>/page/2/`) still do not paginate: the competition's own rewrite captures `page/2` as a term path.
-- Optional extra tests: opt-in skipped in admin and feeds, a non-main `posts_template`, admin `set_page_size`, an out-of-range page, a previous sponsor past the end, and a feed assertion against `posts_per_rss`.
-- Optional hardening: add `BINARY` to the tier slug in the tier SQL key so it compares bytewise like `strcmp()` in `tier_rank()` (only matters for tied tier numbers whose slugs differ in punctuation).
+- ~~Competition-filtered season archives (`/seasons/<s>/competitions/districts/<d>/page/2/`) do not paginate.~~ Done in `fix(competition): route paged filtered season archives`.
+- ~~Optional extra tests: opt-in skipped in admin and feeds, a non-main `posts_template`, admin `set_page_size`, an out-of-range page, a previous sponsor past the end, and a feed assertion against `posts_per_rss`.~~ Done in `test(sponsor): cover the deferred archive cases and harden the tier key`.
+- ~~Optional hardening: add `BINARY` to the tier slug in the tier SQL key.~~ Done in `test(sponsor): cover the deferred archive cases and harden the tier key`.
