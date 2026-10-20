@@ -303,3 +303,4 @@ The season crumb link built by `Utils\Breadcrumbs::context()` now ends with a sl
 ## Execution notes
 
 - 2026-10-19: the single competition banner now shows the competition's own title; `SingularBanner::register()` gained an optional `$season_prefix` argument (default true; the competition passes false).
+- 2026-10-19: filtered season archives now also route `/page/N/` (paged rules before the unpaged ones; `RULES_VERSION` in the flush hash).

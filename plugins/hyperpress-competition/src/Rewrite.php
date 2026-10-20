@@ -17,10 +17,17 @@ defined( 'ABSPATH' ) || exit;
  * first (core appends to extra_rules_top), so the prefixed rules are added
  * before the type rule, otherwise the type rule would swallow
  * "districts/<district>" as a type path.
+ *
+ * Each rule also has a paged variant (".../page/<n>/") registered right before
+ * its unpaged counterpart, otherwise the unpaged "(.+?)" would read
+ * "<term>/page/<n>" as a term path.
  */
 final class Rewrite {
 
 	private const HASH_OPTION = 'hyperpress_competition_rewrite_hash';
+
+	/** Bump when the shape of the added rules changes. 2: paged archives. */
+	private const RULES_VERSION = 2;
 
 	public static function register(): void {
 		// After the post type and taxonomies register (priority 10) and after Season\Rewrite (20).
@@ -151,28 +158,34 @@ final class Rewrite {
 		$base = '^' . preg_quote( $slugs['season'], '#' ) . '/([^/]+)/' . preg_quote( $slugs['archive'], '#' ) . '/';
 
 		foreach ( $slugs['prefixes'] as $taxonomy => $prefix ) {
-			add_rewrite_rule(
-				$base . preg_quote( $prefix, '#' ) . '/(.+?)/?$',
-				'index.php?hyper_season=$matches[1]&post_type=' . Plugin::POST_TYPE . '&' . $taxonomy . '=$matches[2]',
-				'top'
-			);
+			self::add_pair( $base . preg_quote( $prefix, '#' ) . '/', $taxonomy );
 		}
 
 		// Last, so it is matched last.
-		add_rewrite_rule(
-			$base . '(.+?)/?$',
-			'index.php?hyper_season=$matches[1]&post_type=' . Plugin::POST_TYPE . '&' . Plugin::TYPE . '=$matches[2]',
-			'top'
-		);
+		self::add_pair( $base, Plugin::TYPE );
+	}
+
+	/**
+	 * Adds the paged rule, then the unpaged one, for one filter taxonomy ('top': the first added is matched first).
+	 *
+	 * @param string $prefix   Regex up to and excluding the term path.
+	 * @param string $taxonomy Query var of the filter taxonomy.
+	 */
+	private static function add_pair( string $prefix, string $taxonomy ): void {
+		$query = 'index.php?hyper_season=$matches[1]&post_type=' . Plugin::POST_TYPE . '&' . $taxonomy . '=$matches[2]';
+
+		add_rewrite_rule( $prefix . '(.+?)/page/([0-9]+)/?$', $query . '&paged=$matches[3]', 'top' );
+		add_rewrite_rule( $prefix . '(.+?)/?$', $query, 'top' );
 	}
 
 	/**
 	 * Flushes the rewrite rules once when the rule text would change, for
 	 * example after the season slug, the archive slug or a district or week
-	 * prefix slug was changed.
+	 * prefix slug was changed. The rules version is part of the hash, so changing
+	 * the rule shapes re-flushes existing sites.
 	 */
 	public static function maybe_flush(): void {
-		$hash = md5( (string) wp_json_encode( self::slugs() ) );
+		$hash = md5( (string) wp_json_encode( array( self::RULES_VERSION, self::slugs() ) ) );
 
 		if ( get_option( self::HASH_OPTION ) === $hash ) {
 			return;
