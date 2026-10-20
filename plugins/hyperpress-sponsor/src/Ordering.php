@@ -15,6 +15,9 @@ final class Ordering {
 
 	private const SEASON_TAXONOMY = 'hyper_season';
 
+	/** Query var that opts a secondary sponsor query into this ordering. */
+	public const ORDER_VAR = 'hyperpress_sponsor_order';
+
 	public static function register(): void {
 		add_filter( 'posts_clauses', array( self::class, 'order_clauses' ), 10, 2 );
 	}
@@ -29,10 +32,16 @@ final class Ordering {
 		if ( ! $query instanceof WP_Query
 			|| is_admin()
 			|| $query->is_feed()
-			|| ! $query->is_main_query()
-			|| ! $query->is_post_type_archive( Plugin::POST_TYPE )
-			|| '' !== (string) $query->get( 'orderby' )
 		) {
+			return (array) $clauses;
+		}
+
+		// The main query of the sponsor archive, or a secondary sponsor query that opted in through ORDER_VAR.
+		$applies = $query->is_main_query()
+			? $query->is_post_type_archive( Plugin::POST_TYPE )
+			: ( (bool) $query->get( self::ORDER_VAR ) && Plugin::POST_TYPE === $query->get( 'post_type' ) );
+		$orderby = $query->get( 'orderby' );
+		if ( ! $applies || is_array( $orderby ) || '' !== (string) $orderby ) {
 			return (array) $clauses;
 		}
 
@@ -97,12 +106,36 @@ final class Ordering {
 	}
 
 	/**
+	 * Sort comparator for season terms (or names), newest first: the trailing number of a name matching
+	 * `^(.* )?[0-9]+$` (higher first), seasons without a number after all numbered ones, then name descending.
+	 * The SQL in order_clauses() ranks seasons by the same number.
+	 *
+	 * @param \WP_Term|string $a Season term or name.
+	 * @param \WP_Term|string $b Season term or name.
+	 */
+	public static function season_compare( $a, $b ): int {
+		return self::season_rank( $b ) <=> self::season_rank( $a );
+	}
+
+	/**
+	 * Sort key of a season, compared element by element.
+	 *
+	 * @param \WP_Term|string $season Season term or name.
+	 * @return array{0:int,1:string} Trailing number (-1 when absent), name.
+	 */
+	private static function season_rank( $season ): array {
+		$name = $season instanceof \WP_Term ? $season->name : (string) $season;
+
+		return preg_match( '/^(?:.* )?([0-9]+)$/', $name, $m ) ? array( (int) $m[1], $name ) : array( -1, $name );
+	}
+
+	/**
 	 * Whether the query is limited to one season (/seasons/<slug>/sponsors/), judged from the query's own
 	 * season query var: a comma/plus separated list in which at least one slug is an existing season.
 	 *
 	 * @param WP_Query $query The query.
 	 */
-	private static function is_season_scoped( WP_Query $query ): bool {
+	public static function is_season_scoped( WP_Query $query ): bool {
 		$taxonomy = get_taxonomy( self::SEASON_TAXONOMY );
 		if ( ! $taxonomy || ! is_string( $taxonomy->query_var ) || '' === $taxonomy->query_var ) {
 			return false;

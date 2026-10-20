@@ -1,6 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration\Sponsor;
 
+use HyperPress\Sponsor\Ordering;
 use WP_Query;
 use WP_UnitTestCase;
 
@@ -264,6 +265,75 @@ final class OrderingTest extends WP_UnitTestCase {
 
 		// Default order is newest post first.
 		$this->assertSame( array( 's31-L2', 's32-L4', 's30-L1' ), array_map( 'get_the_title', wp_list_pluck( $query->posts, 'ID' ) ) );
+	}
+
+	public function test_season_compare_ranks_by_trailing_number(): void {
+		$this->assertLessThan( 0, Ordering::season_compare( 'Season 31', 'Season 4' ) );
+		$this->assertGreaterThan( 0, Ordering::season_compare( 'Season 4', 'Season 31' ) );
+		$this->assertLessThan( 0, Ordering::season_compare( 'Season 1', 'Alpha' ) );
+		$this->assertGreaterThan( 0, Ordering::season_compare( 'Alpha', 'Season 1' ) );
+		$this->assertLessThan( 0, Ordering::season_compare( '2024', 'Season 5' ) );
+		$this->assertSame( 0, Ordering::season_compare( 'Season 5', 'Season 5' ) );
+
+		// Equal numbers: by name, descending (like tier_compare() by slug).
+		$this->assertLessThan( 0, Ordering::season_compare( 'Beta 3', 'Alpha 3' ) );
+		$this->assertGreaterThan( 0, Ordering::season_compare( 'Alpha 3', 'Beta 3' ) );
+		// Unnumbered seasons also fall back to the name, after all numbered ones.
+		$this->assertLessThan( 0, Ordering::season_compare( 'Zeta', 'Alpha' ) );
+
+		// Accepts terms and plain names, mixed.
+		$term_31 = get_term( $this->term_id( 'hyper_season', 'Season 31', 'season-31' ), 'hyper_season' );
+		$term_4  = get_term( $this->term_id( 'hyper_season', 'Season 4', 'season-4' ), 'hyper_season' );
+		$this->assertLessThan( 0, Ordering::season_compare( $term_31, $term_4 ) );
+		$this->assertGreaterThan( 0, Ordering::season_compare( 'Season 4', $term_31 ) );
+
+		$names = array( 'Alpha', 'Season 4', 'Season 31', 'Season 5' );
+		usort( $names, array( Ordering::class, 'season_compare' ) );
+		$this->assertSame( array( 'Season 31', 'Season 5', 'Season 4', 'Alpha' ), $names );
+	}
+
+	public function test_opt_in_secondary_query_is_ordered(): void {
+		$this->make_sponsor( 's30-L1', array( '30' ), array( 1 ) );
+		$this->make_sponsor( 's32-L1', array( '32' ), array( 1 ) );
+		$this->make_sponsor( 's31-L4', array( '31' ), array( 4 ) );
+		$this->make_sponsor( 'multi', array( '30', '32' ), array( 4 ) );
+		$this->make_sponsor( 'bare', array(), array() );
+
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+		$main_ids = wp_list_pluck( $GLOBALS['wp_query']->posts, 'ID' );
+
+		$query = new WP_Query(
+			array(
+				'post_type'         => 'hyper_sponsor',
+				Ordering::ORDER_VAR => true,
+				'fields'            => 'ids',
+				'posts_per_page'    => -1,
+			)
+		);
+
+		$this->assertSame( array( 'multi', 's32-L1', 's31-L4', 's30-L1', 'bare' ), array_map( 'get_the_title', $main_ids ) );
+		$this->assertSame( $main_ids, $query->posts );
+
+		// Without the opt-in, or for another post type, the default order stays.
+		$plain = new WP_Query( array( 'post_type' => 'hyper_sponsor', 'fields' => 'ids', 'posts_per_page' => -1 ) );
+		$this->assertNotSame( $main_ids, $plain->posts );
+		$this->assertSame( array(), ( new WP_Query( array( 'post_type' => 'post', Ordering::ORDER_VAR => true, 'fields' => 'ids' ) ) )->posts );
+	}
+
+	public function test_opt_in_respects_an_explicit_orderby(): void {
+		$this->make_sponsor( 'b', array( '32' ), array( 4 ) );
+		$this->make_sponsor( 'a', array( '30' ), array( 2 ) );
+
+		$query = new WP_Query(
+			array(
+				'post_type'         => 'hyper_sponsor',
+				Ordering::ORDER_VAR => true,
+				'orderby'           => 'title',
+				'order'             => 'ASC',
+			)
+		);
+
+		$this->assertSame( array( 'a', 'b' ), array_map( 'get_the_title', wp_list_pluck( $query->posts, 'ID' ) ) );
 	}
 
 	public function test_other_post_type_archive_is_untouched(): void {

@@ -56,11 +56,11 @@ Test conventions: integration tests extend `WP_UnitTestCase`; look at the existi
 - Produces: `Ordering::season_compare( \WP_Term|string $a, \WP_Term|string $b ): int` (highest first, same rule as the SQL season key: trailing number from names matching `^(.* )?[0-9]+$`, unnumbered after numbered, ties by name); `Ordering::ORDER_VAR` (`'hyperpress_sponsor_order'`); `Ordering::is_season_scoped( WP_Query $query ): bool` becomes `public`.
 - Behaviour: `order_clauses()` also applies to a non-main query that has `ORDER_VAR` truthy and post type `hyper_sponsor`, still skipping admin, feeds and an explicit `orderby`; main-query behaviour is unchanged.
 
-- [ ] **Step 1: Write the failing tests** in `OrderingTest`: `test_season_compare_ranks_by_trailing_number` (`Season 31` before `Season 4`, numbered before `Alpha`, equal numbers by name, accepts terms and plain names); `test_opt_in_secondary_query_is_ordered` (a `new WP_Query( array( 'post_type' => 'hyper_sponsor', Ordering::ORDER_VAR => true, 'fields' => 'ids', 'posts_per_page' => -1 ) )` returns the same ID order as the main archive for the fixtures); the existing `test_a_secondary_query_keeps_the_default_order` still passes unchanged.
-- [ ] **Step 2: Run to verify they fail.** `docker compose run --rm php composer test:integration -- --filter OrderingTest`. Expected: FAIL (method and constant missing).
-- [ ] **Step 3: Implement** `season_compare` (mirror the SQL: rank = trailing number or -1, descending, then name) and the opt-in guard change; make `is_season_scoped` public.
-- [ ] **Step 4: Run to verify they pass** (`OrderingTest`, then `--filter Sponsor`). Expected: PASS.
-- [ ] **Step 5: Commit** `feat(sponsor): add a season comparer and an opt-in to the sponsor ordering`.
+- [x] **Step 1: Write the failing tests** in `OrderingTest`: `test_season_compare_ranks_by_trailing_number` (`Season 31` before `Season 4`, numbered before `Alpha`, equal numbers by name, accepts terms and plain names); `test_opt_in_secondary_query_is_ordered` (a `new WP_Query( array( 'post_type' => 'hyper_sponsor', Ordering::ORDER_VAR => true, 'fields' => 'ids', 'posts_per_page' => -1 ) )` returns the same ID order as the main archive for the fixtures); the existing `test_a_secondary_query_keeps_the_default_order` still passes unchanged.
+- [x] **Step 2: Run to verify they fail.** `docker compose run --rm php composer test:integration -- --filter OrderingTest`. Expected: FAIL (method and constant missing).
+- [x] **Step 3: Implement** `season_compare` (mirror the SQL: rank = trailing number or -1, descending, then name) and the opt-in guard change; make `is_season_scoped` public.
+- [x] **Step 4: Run to verify they pass** (`OrderingTest`, then `--filter Sponsor`). Expected: PASS.
+- [x] **Step 5: Commit** `feat(sponsor): add a season comparer and an opt-in to the sponsor ordering`.
 
 ---
 
