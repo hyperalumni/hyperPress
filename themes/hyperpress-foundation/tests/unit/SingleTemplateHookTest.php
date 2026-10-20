@@ -11,6 +11,11 @@ final class SingleTemplateHookTest extends TestCase {
 		return (string) file_get_contents( dirname( __DIR__, 2 ) . '/' . $relative );
 	}
 
+	/** How many times the source fires the given action. */
+	private static function fired( string $source, string $action ): int {
+		return (int) preg_match_all( '/do_action\(\s*[\'"]' . preg_quote( $action, '/' ) . '[\'"]/', $source );
+	}
+
 	public function test_the_banner_partial_fires_the_after_banner_action_after_the_closing_header(): void {
 		$source = self::source( 'template-parts/banner.php' );
 
@@ -61,6 +66,10 @@ final class SingleTemplateHookTest extends TestCase {
 		$this->assertLessThan( $open, $before, 'before_content must precede the main container' );
 		$this->assertGreaterThan( $close, $after, 'after_content must follow the main container' );
 		$this->assertLessThan( strpos( $source, 'get_footer()' ), $after );
+		$this->assertSame( 1, self::fired( $source, 'hyperpress_before_content' ), 'hyperpress_before_content must fire exactly once' );
+		$this->assertSame( 1, self::fired( $source, 'hyperpress_after_content' ), 'hyperpress_after_content must fire exactly once' );
+		$this->assertSame( $has_main ? 1 : 0, self::fired( $source, 'hyperpress_before_main' ), 'hyperpress_before_main count' );
+		$this->assertSame( $has_main ? 1 : 0, self::fired( $source, 'hyperpress_after_main' ), 'hyperpress_after_main count' );
 
 		if ( ! $has_main ) {
 			return;
