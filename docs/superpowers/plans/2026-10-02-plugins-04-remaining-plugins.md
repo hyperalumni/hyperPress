@@ -370,7 +370,7 @@ git add hyperpress-sponsor
 git commit -m "refactor(sponsor): migrate to hyper_sponsor and hyper_tier and the shared structure" -- hyperpress-sponsor
 ```
 
-- 2026-10-19: the sponsor archive is ordered by newest season, then tier (highest first), then menu order and title, in `HyperPress\Sponsor\Ordering`.
+- 2026-10-19: the sponsor archive is ordered by newest season, then tier (highest first), then menu order and title (inside a season-scoped archive the season key is dropped, so tier leads), in `HyperPress\Sponsor\Ordering`.
 
 ---
 

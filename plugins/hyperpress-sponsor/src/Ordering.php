@@ -3,11 +3,13 @@ namespace HyperPress\Sponsor;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Utils\RequestTerm;
 use WP_Query;
 
 /**
  * Orders the sponsor archive (and its season-scoped variant) by the sponsor's newest season, then its
- * highest tier, then menu order, title and ID. Only the main query of a sponsor archive without an
+ * highest tier, then menu order, title and ID. Inside a season-scoped archive every sponsor belongs to
+ * that season, so the season key is dropped and the tier leads. Only the main query of a sponsor archive without an
  * explicit orderby is touched.
  */
 final class Ordering {
@@ -58,8 +60,12 @@ final class Ordering {
 			Plugin::TIER
 		);
 
+		// In a season-scoped archive (/seasons/<slug>/sponsors/) all sponsors share the season: skip the
+		// season key so a sponsor with a newer extra season does not jump above the others.
+		$season_key = null === RequestTerm::get( self::SEASON_TAXONOMY ) ? "{$season} DESC, " : '';
+
 		$clauses            = (array) $clauses;
-		$clauses['orderby'] = "{$season} DESC, {$tier} DESC, {$wpdb->posts}.menu_order ASC, {$wpdb->posts}.post_title ASC, {$wpdb->posts}.ID ASC";
+		$clauses['orderby'] = "{$season_key}{$tier} DESC, {$wpdb->posts}.menu_order ASC, {$wpdb->posts}.post_title ASC, {$wpdb->posts}.ID ASC";
 
 		return $clauses;
 	}

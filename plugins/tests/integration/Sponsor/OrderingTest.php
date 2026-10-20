@@ -130,6 +130,20 @@ final class OrderingTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'l4', 'l3', 'l1' ), $this->main_titles() );
 	}
 
+	public function test_season_scoped_archive_ignores_the_season_of_other_seasons(): void {
+		$this->make_sponsor( 'both-seasons-l1', array( '31', '32' ), array( 1 ) );
+		$this->make_sponsor( 'only-31-l4', array( '31' ), array( 4 ) );
+		$this->make_sponsor( 'only-31-no-tier', array( '31' ), array() );
+		flush_rewrite_rules();
+
+		$this->go_to( home_url( '/seasons/season-31/sponsors/' ) );
+		$this->assertSame( array( 'only-31-l4', 'both-seasons-l1', 'only-31-no-tier' ), $this->main_titles() );
+
+		// The unscoped archive still ranks the multi-season sponsor by its newest season.
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+		$this->assertSame( array( 'both-seasons-l1', 'only-31-l4', 'only-31-no-tier' ), $this->main_titles() );
+	}
+
 	public function test_explicit_orderby_is_respected(): void {
 		$this->make_sponsor( 'b', array( '32' ), array( 4 ) );
 		$this->make_sponsor( 'c', array( '31' ), array( 1 ) );
