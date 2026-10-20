@@ -67,3 +67,4 @@ style="background-color: <?php echo esc_attr( $banner['backgroundColor'] ); ?>;"
 		</div>
 	</div>
 </header>
+<?php do_action( 'hyperpress_after_banner' ); ?>

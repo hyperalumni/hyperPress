@@ -29,7 +29,7 @@ if ( function_exists( 'add_revslider' ) ) {
 ?>
 
 <?php get_template_part( 'template-parts/banner' ); ?>
-<?php do_action( 'foundationpress_before_content' ); ?>
+<?php do_action( 'hyperpress_before_content' ); ?>
 	<div class="main-container">
 		<div class="main-grid">
 			<?php $countdowns = hyperpress_frontpage_setting( 'hyperpress_frontpage_countdowns', array() ); ?>
@@ -39,23 +39,24 @@ if ( function_exists( 'add_revslider' ) ) {
 the_post();
 ?>
 					<div <?php post_class(); ?> id="post-<?php the_ID(); ?>">
-						<?php do_action( 'foundationpress_page_before_entry_content' ); ?>
+						<?php do_action( 'hyperpress_page_before_entry_content' ); ?>
 						<div class="entry-content">
 							<?php
 		foreach ( (array) $countdowns as $countdown_id ) :
 				$countdown_id = absint( $countdown_id );
-				if ( 0 === $countdown_id ) {
+				if ( 0 === $countdown_id || ! shortcode_exists( 'hyperpress_countdown' ) ) {
 					continue;
 				}
 				echo do_shortcode( '[hyperpress_countdown id="' . $countdown_id . '" /]' );
 			endforeach;
 							?>
 						</div>
-						<?php do_action( 'foundationpress_page_after_entry_content' ); ?>
+						<?php do_action( 'hyperpress_page_after_entry_content' ); ?>
 					</div>
 				<?php endwhile; ?>
 			<?php endif; ?>
 			<main class="main-content">
+				<?php do_action( 'hyperpress_before_main' ); ?>
 				<?php
 				// query posts by the categories selected on the Front Page settings page
 				$blog_categories = array_values( array_filter( array_map( 'absint', (array) hyperpress_frontpage_setting( 'hyperpress_frontpage_categories', array() ) ) ) );
@@ -140,6 +141,7 @@ get_template_part( 'template-parts/content', get_post_type() );
 					</div>
 				</div>
 
+				<?php do_action( 'hyperpress_after_main' ); ?>
 			</main>
 		<?php get_sidebar(); ?>
 
@@ -149,6 +151,6 @@ get_template_part( 'template-parts/content', get_post_type() );
 		<?php endif; ?>
 		</div>
 	</div>
-<?php do_action( 'foundationpress_after_content' ); ?>
+<?php do_action( 'hyperpress_after_content' ); ?>
 <?php
 get_footer();

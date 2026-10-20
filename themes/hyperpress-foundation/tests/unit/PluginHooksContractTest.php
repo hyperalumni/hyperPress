@@ -33,6 +33,12 @@ final class PluginHooksContractTest extends TestCase {
 		return array(
 			'labels'       => array( 'hyperpress_labels' ),
 			'after banner' => array( 'hyperpress_after_banner' ),
+			'before content' => array( 'hyperpress_before_content' ),
+			'after content' => array( 'hyperpress_after_content' ),
+			'before main' => array( 'hyperpress_before_main' ),
+			'after main' => array( 'hyperpress_after_main' ),
+			'front page before entry' => array( 'hyperpress_page_before_entry_content' ),
+			'front page after entry' => array( 'hyperpress_page_after_entry_content' ),
 		);
 	}
 
@@ -41,6 +47,7 @@ final class PluginHooksContractTest extends TestCase {
 			'banner'           => array( 'hyperpress_banner_content' ),
 			'breadcrumbs'      => array( 'hyperpress_breadcrumbs_content' ),
 			'content template' => array( 'content_template' ),
+			'posts template'   => array( 'hyperpress_posts_template' ),
 		);
 	}
 }

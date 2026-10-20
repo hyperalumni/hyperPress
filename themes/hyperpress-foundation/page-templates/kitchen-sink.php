@@ -12,6 +12,7 @@ get_header(); ?>
 while ( have_posts() ) :
 the_post(); /* Start loop */
 ?>
+    <?php do_action( 'hyperpress_before_content' ); ?>
     <div class="main-container">
         <div class="main-grid">
             <header class="kitchen-sink-header">
@@ -983,6 +984,7 @@ the_post(); /* Start loop */
             </div>
         </div><!-- Close main-grid -->
     </div><!-- Close main-container -->
+    <?php do_action( 'hyperpress_after_content' ); ?>
 <?php endwhile; ?>
 <?php
 get_footer();

@@ -269,3 +269,4 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 - Follow-up: the countdown field still carries a no-op `'format' => 'yy-mm-dd'`; once the stored text is confirmed, give it an explicit `save_format` and drop the dead key.
 - 2026-10-19: Meta Box fills a link's title with its URL when none is typed, so `Details` treats a title equal to the URL as empty and shows the default label (commit after c8da8ff).
 - 2026-10-19: the single competition banner now shows the competition's own title; `SingularBanner::register()` gained an optional `$season_prefix` argument (default true; the competition passes false).
+- 2026-10-19: `hyperpress_after_banner` now fires from `template-parts/banner.php` (every template), not `single.php`.

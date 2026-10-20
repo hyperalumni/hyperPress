@@ -83,4 +83,33 @@ final class FrontPageContentTemplateTest extends WP_UnitTestCase {
 			$seen
 		);
 	}
+
+	public function test_front_page_prints_no_literal_shortcode_when_the_countdown_plugin_is_inactive(): void {
+		self::factory()->post->create( array( 'post_status' => 'publish' ) );
+		update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_countdowns' => array( '12' ) ) );
+		remove_shortcode( 'hyperpress_countdown' );
+		$this->stubbed_countdown = false;
+
+		try {
+			$html = $this->render_front_page();
+		} finally {
+			add_shortcode( 'hyperpress_countdown', '__return_empty_string' );
+			$this->stubbed_countdown = true;
+		}
+
+		$this->assertStringNotContainsString( '[hyperpress_countdown', $html );
+	}
+
+	public function test_front_page_renders_the_countdown_when_the_shortcode_is_registered(): void {
+		self::factory()->post->create( array( 'post_status' => 'publish' ) );
+		update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_countdowns' => array( '12' ) ) );
+		add_filter(
+			'pre_do_shortcode_tag',
+			static fn( $output, $tag ) => 'hyperpress_countdown' === $tag ? '<div class="countdown-rendered"></div>' : $output,
+			10,
+			2
+		);
+
+		$this->assertStringContainsString( 'countdown-rendered', $this->render_front_page() );
+	}
 }
