@@ -652,6 +652,7 @@ git commit -m "docs(plans): complete plugins-03-core-plugins" -- docs/superpower
 
 - Checkpoint: unit 121 tests (32 errors, 9 failures: header lint for the 8 unmigrated plugins and `NoLegacyKeysTest`); integration 71 tests, 21 failures, 3 skipped. Failures are all for countdown, newsletter, sponsor, `hyper_tier` and the identifier tests that cover those plugins. `lint:syntax` exit 0.
 - Season: the legacy rewrite rule derived `post_type` from the archive slug by stripping a trailing `s`, which cannot work with `hyper_*` keys. `Rewrite` now adds one rule per public `hyper_*` archive at `init` priority 20, reading the season slug from the taxonomy. `SeasonRewriteTest` skips until a `hyper_*` archive exists and passed for real once award was migrated.
+- 2026-10-19: the season plugin's `Rewrite` now also routes paged season-scoped archives (`/seasons/<slug>/<archive>/page/N/`) and a `RULES_VERSION` is part of the flush hash (commit 3e540ca).
 - Season Customizer: the `class_exists` guard on the dropdown control was removed after review (utils is a required plugin).
 - Competition: the legacy post type is NOT hierarchical (snapshot); only its rewrite is hierarchical. The definition uses `hierarchical => false` with `rewrite_hierarchical => true`.
 - Robot's legacy header lacked `Domain Path` and `Update URI`; both were added to match the others.
