@@ -3,6 +3,7 @@ namespace HyperPress\Tests\Integration\Sponsor;
 
 use HyperPress\Sponsor\ArchiveLoop;
 use HyperPress\Sponsor\Content;
+use HyperPress\Sponsor\Ordering;
 use WP_UnitTestCase;
 
 final class GroupedLoopTest extends WP_UnitTestCase {
@@ -195,6 +196,46 @@ final class GroupedLoopTest extends WP_UnitTestCase {
 
 		$this->assertSame( array( 'none' ), $parts );
 		$this->assertSame( array(), $this->headings( $html ) );
+	}
+
+	public function test_page_past_the_end_prints_nothing_found_and_looks_up_no_previous_sponsor(): void {
+		add_filter( 'hyperpress_sponsor_archive_per_page', static fn() => 2 );
+		$this->make_sponsor( 'a', '31', 3 );
+		$this->make_sponsor( 'b', '31', 2 );
+		$this->make_sponsor( 'c', '31', 1 );
+
+		$parts   = array();
+		$lookups = 0;
+		add_action(
+			'get_template_part_template-parts/content',
+			static function ( $slug, $name ) use ( &$parts ): void {
+				$parts[] = (string) $name;
+			},
+			10,
+			2
+		);
+		// previous_sponsor_id() runs a sponsor query that opts in through ORDER_VAR.
+		add_action(
+			'pre_get_posts',
+			static function ( \WP_Query $query ) use ( &$lookups ): void {
+				if ( $query->get( Ordering::ORDER_VAR ) ) {
+					++$lookups;
+				}
+			}
+		);
+
+		// A real request for a page past the end is a 404 and never selects this template (the 404 clears
+		// is_post_type_archive()), so include the loop directly with the main query on that page.
+		$this->go_to( home_url( '/?post_type=hyper_sponsor&paged=9' ) );
+		ob_start();
+		include dirname( __DIR__, 3 ) . '/hyperpress-sponsor/templates/loop.php';
+		$html = (string) ob_get_clean();
+
+		$this->assertSame( 9, (int) $GLOBALS['wp_query']->get( 'paged' ) );
+		$this->assertSame( array(), $GLOBALS['wp_query']->posts );
+		$this->assertSame( array( 'none' ), $parts );
+		$this->assertSame( array(), $this->headings( $html ) );
+		$this->assertSame( 0, $lookups, 'No previous-sponsor lookup on an empty page.' );
 	}
 
 	public function test_content_template_prints_h2_titles_outside_the_loop(): void {

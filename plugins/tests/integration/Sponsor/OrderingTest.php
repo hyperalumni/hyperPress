@@ -338,6 +338,34 @@ final class OrderingTest extends WP_UnitTestCase {
 		$this->assertSame( $expected, $this->main_titles() );
 	}
 
+	public function test_opt_in_secondary_query_is_not_ordered_in_admin_or_for_a_feed(): void {
+		$this->make_sponsor( 's32-L4', array( '32' ), array( 4 ) );
+		$this->make_sponsor( 's30-L1', array( '30' ), array( 1 ) );
+		$this->make_sponsor( 's31-L2', array( '31' ), array( 2 ) );
+
+		$args = array(
+			'post_type'         => 'hyper_sponsor',
+			Ordering::ORDER_VAR => true,
+			'posts_per_page'    => -1,
+		);
+		// Control: the opt-in orders by season and tier.
+		$this->assertSame( array( 's32-L4', 's31-L2', 's30-L1' ), array_map( 'get_the_title', ( new WP_Query( $args ) )->posts ) );
+
+		$default = array( 's31-L2', 's30-L1', 's32-L4' ); // Newest post first.
+
+		set_current_screen( 'edit-post' );
+		try {
+			$this->assertTrue( is_admin() );
+			$this->assertSame( $default, array_map( 'get_the_title', ( new WP_Query( $args ) )->posts ) );
+		} finally {
+			set_current_screen( 'front' );
+		}
+
+		$feed = new WP_Query( array_merge( $args, array( 'feed' => 'rss2' ) ) );
+		$this->assertTrue( $feed->is_feed() );
+		$this->assertSame( $default, array_map( 'get_the_title', $feed->posts ) );
+	}
+
 	public function test_opt_in_respects_an_explicit_orderby(): void {
 		$this->make_sponsor( 'b', array( '32' ), array( 4 ) );
 		$this->make_sponsor( 'a', array( '30' ), array( 2 ) );

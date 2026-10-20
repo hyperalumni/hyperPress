@@ -82,7 +82,55 @@ final class ArchiveLoopTest extends WP_UnitTestCase {
 		$this->assertSame( (int) get_option( 'posts_per_page' ), (int) $secondary->get( 'posts_per_page' ) );
 
 		$this->go_to( home_url( '/?post_type=hyper_sponsor&feed=rss2' ) );
+		$this->assertSame( (int) get_option( 'posts_per_rss' ), (int) $GLOBALS['wp_query']->get( 'posts_per_page' ) );
 		$this->assertNotSame( 2, (int) $GLOBALS['wp_query']->get( 'posts_per_page' ) );
+		$this->assertNotSame( 24, (int) $GLOBALS['wp_query']->get( 'posts_per_page' ) );
+	}
+
+	public function test_filter_leaves_the_template_alone_for_a_non_main_query(): void {
+		$this->make_sponsor( 'a', '31', 3 );
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+		$main = $GLOBALS['wp_query'];
+
+		// A second query installed as the global is a sponsor archive too, but it is not the main query.
+		$GLOBALS['wp_query'] = new WP_Query( array( 'post_type' => 'hyper_sponsor' ) );
+		try {
+			$this->assertTrue( is_post_type_archive( 'hyper_sponsor' ) );
+			$this->assertFalse( is_main_query() );
+			$this->assertSame( 'kept', ArchiveLoop::posts_template( 'kept' ) );
+		} finally {
+			$GLOBALS['wp_query'] = $main;
+		}
+
+		$this->assertTrue( is_main_query() );
+		$this->assertStringEndsWith( 'templates/loop.php', (string) ArchiveLoop::posts_template( 'kept' ) );
+	}
+
+	public function test_page_size_is_not_set_in_admin(): void {
+		$this->make_sponsor( 'a', '31', 3 );
+		$this->go_to( home_url( '/?post_type=hyper_sponsor' ) );
+		$main = $GLOBALS['wp_query'];
+		$main->set( 'posts_per_page', 7 );
+
+		set_current_screen( 'dashboard' );
+		ArchiveLoop::set_page_size( $main );
+		$this->assertSame( 7, (int) $main->get( 'posts_per_page' ), 'Admin keeps the query page size.' );
+
+		set_current_screen( 'front' );
+		ArchiveLoop::set_page_size( $main );
+		$this->assertSame( 24, (int) $main->get( 'posts_per_page' ) );
+	}
+
+	public function test_previous_sponsor_id_is_zero_past_the_end(): void {
+		add_filter( 'hyperpress_sponsor_archive_per_page', static fn() => 2 );
+		foreach ( array( 3, 2, 1 ) as $tier ) {
+			$this->make_sponsor( 'l' . $tier, '31', $tier );
+		}
+
+		// Page 2 is the last page (offset 1); page 9 starts at offset 15, past the three sponsors.
+		$this->go_to( home_url( '/?post_type=hyper_sponsor&paged=9' ) );
+		$this->assertSame( 9, (int) $GLOBALS['wp_query']->get( 'paged' ) );
+		$this->assertSame( 0, ArchiveLoop::previous_sponsor_id( $GLOBALS['wp_query'] ) );
 	}
 
 	public function test_previous_sponsor_id(): void {
