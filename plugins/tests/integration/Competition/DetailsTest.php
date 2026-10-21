@@ -117,6 +117,159 @@ final class DetailsTest extends WP_UnitTestCase {
 		);
 	}
 
+	public function test_links_follow_the_documented_order_with_derived_tba_link(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_stream_url'         => array( 'url' => 'https://example.org/s', 'title' => '' ),
+				'hyperpress_competition_agenda_url'         => array( 'url' => 'https://example.org/a', 'title' => '' ),
+				'hyperpress_competition_tba_event_key'      => '2026mabos',
+				'hyperpress_competition_frc_events_url'     => array( 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'title' => '' ),
+				'hyperpress_competition_first_event_url'    => array( 'url' => 'https://example.org/f', 'title' => '' ),
+				'hyperpress_competition_ftc_ma_event_url'   => array( 'url' => 'https://example.org/ftc', 'title' => '' ),
+				'hyperpress_competition_ne_first_event_url' => array( 'url' => 'https://example.org/ne', 'title' => '' ),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array(
+				array( 'label' => 'NE FIRST event', 'url' => 'https://example.org/ne', 'target' => '_blank' ),
+				array( 'label' => 'FTC MA event', 'url' => 'https://example.org/ftc', 'target' => '_blank' ),
+				array( 'label' => 'FIRST event', 'url' => 'https://example.org/f', 'target' => '_blank' ),
+				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank' ),
+				array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank' ),
+				array( 'label' => 'Agenda', 'url' => 'https://example.org/a', 'target' => '_blank' ),
+				array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ),
+			),
+			$details['links']
+		);
+	}
+
+	public function test_tba_key_is_trimmed_and_lowercased(): void {
+		$id      = $this->competition( array( 'hyperpress_competition_tba_event_key' => '  2026MABos ' ) );
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array( array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank' ) ),
+			$details['links']
+		);
+	}
+
+	/** @return array<string,array{0:mixed}> */
+	public static function invalid_tba_keys(): array {
+		return array(
+			'empty'            => array( '' ),
+			'whitespace only'  => array( '   ' ),
+			'no year'          => array( 'mabos' ),
+			'year only'        => array( '2026' ),
+			'inner characters' => array( '2026ma/bos' ),
+			'path traversal'   => array( '2026../x' ),
+			'not a string'     => array( array( '2026mabos' ) ),
+		);
+	}
+
+	/** @dataProvider invalid_tba_keys */
+	public function test_invalid_tba_key_adds_no_link( $key ): void {
+		$id      = $this->competition( array( 'hyperpress_competition_tba_event_key' => $key ) );
+		$details = Details::for_post( $id );
+
+		$this->assertSame( array(), $details['links'] );
+	}
+
+	public function test_frc_events_and_agenda_links_use_default_labels_and_titles(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_frc_events_url' => array( 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'title' => '' ),
+				'hyperpress_competition_agenda_url'     => array( 'url' => 'https://example.org/agenda', 'title' => 'Schedule' ),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array(
+				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank' ),
+				array( 'label' => 'Schedule', 'url' => 'https://example.org/agenda', 'target' => '_blank' ),
+			),
+			$details['links']
+		);
+	}
+
+	public function test_multiple_streams_use_their_titles_or_numbered_labels(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_stream_url' => array(
+					array( 'url' => 'https://example.org/s1', 'title' => 'Main stage' ),
+					array( 'url' => 'https://example.org/s2', 'title' => '' ),
+					array( 'url' => 'https://example.org/s3', 'title' => 'https://example.org/s3' ),
+				),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array(
+				array( 'label' => 'Main stage', 'url' => 'https://example.org/s1', 'target' => '_blank' ),
+				array( 'label' => 'Stream 2', 'url' => 'https://example.org/s2', 'target' => '_blank' ),
+				array( 'label' => 'Stream 3', 'url' => 'https://example.org/s3', 'target' => '_blank' ),
+			),
+			$details['links']
+		);
+	}
+
+	public function test_untitled_streams_are_numbered(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_stream_url' => array(
+					array( 'url' => 'https://example.org/s1', 'title' => '' ),
+					array( 'url' => 'https://example.org/s2' ),
+				),
+			)
+		);
+		$labels  = wp_list_pluck( Details::for_post( $id )['links'], 'label' );
+
+		$this->assertSame( array( 'Stream 1', 'Stream 2' ), $labels );
+	}
+
+	public function test_a_single_stream_in_a_list_is_labelled_stream(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_stream_url' => array( array( 'url' => 'https://example.org/s1', 'title' => '' ) ),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array( array( 'label' => 'Stream', 'url' => 'https://example.org/s1', 'target' => '_blank' ) ),
+			$details['links']
+		);
+	}
+
+	public function test_streams_without_a_safe_url_are_dropped(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_stream_url' => array(
+					array( 'url' => '', 'title' => 'Empty' ),
+					array( 'url' => 'javascript:alert(1)', 'title' => 'Bad' ),
+					array( 'url' => 'https://example.org/ok', 'title' => 'Ok' ),
+				),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame(
+			array( array( 'label' => 'Ok', 'url' => 'https://example.org/ok', 'target' => '_blank' ) ),
+			$details['links']
+		);
+	}
+
+	public function test_empty_stream_values_give_no_links(): void {
+		foreach ( array( '', array(), null ) as $value ) {
+			$id = $this->competition( array( 'hyperpress_competition_stream_url' => $value ) );
+
+			$this->assertSame( array(), Details::for_post( $id )['links'] );
+		}
+	}
+
 	public function test_missing_start_date_gives_null_when(): void {
 		$details = Details::for_post( $this->competition( array() ) );
 

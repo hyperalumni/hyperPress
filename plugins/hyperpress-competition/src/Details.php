@@ -5,11 +5,20 @@ defined( 'ABSPATH' ) || exit;
 
 final class Details {
 
-	private const LINKS = array(
+	private const TBA_KEY = 'hyperpress_competition_tba_event_key';
+
+	private const STREAMS = 'hyperpress_competition_stream_url';
+
+	/** Link fields in display order; the derived Blue Alliance link follows `first` + `frc_events`, then the agenda. */
+	private const LINKS_BEFORE_TBA = array(
 		'hyperpress_competition_ne_first_event_url' => 'NE FIRST event',
 		'hyperpress_competition_ftc_ma_event_url'   => 'FTC MA event',
 		'hyperpress_competition_first_event_url'    => 'FIRST event',
-		'hyperpress_competition_stream_url'         => 'Stream',
+		'hyperpress_competition_frc_events_url'     => 'FRC Events',
+	);
+
+	private const LINKS_AFTER_TBA = array(
+		'hyperpress_competition_agenda_url' => 'Agenda',
 	);
 
 	/**
@@ -21,26 +30,32 @@ final class Details {
 	 */
 	public static function for_post( int $post_id ): array {
 		$links = array();
-		foreach ( self::LINKS as $key => $default_label ) {
-			$link = \HyperPress\Utils\Meta::get( $key, $post_id );
-			if ( ! is_array( $link ) ) {
-				continue;
+		foreach ( self::LINKS_BEFORE_TBA as $key => $default_label ) {
+			$entry = self::link_entry( \HyperPress\Utils\Meta::get( $key, $post_id ), $default_label );
+			if ( null !== $entry ) {
+				$links[] = $entry;
 			}
-			$raw = self::text( $link['url'] ?? '' );
-			$url = esc_url_raw( $raw );
-			if ( '' === $url ) {
-				continue;
+		}
+
+		$tba = self::tba_link( \HyperPress\Utils\Meta::get( self::TBA_KEY, $post_id ) );
+		if ( null !== $tba ) {
+			$links[] = $tba;
+		}
+
+		foreach ( self::LINKS_AFTER_TBA as $key => $default_label ) {
+			$entry = self::link_entry( \HyperPress\Utils\Meta::get( $key, $post_id ), $default_label );
+			if ( null !== $entry ) {
+				$links[] = $entry;
 			}
-			$title = self::text( $link['title'] ?? '' );
-			// Meta Box fills the title with the URL when none is typed.
-			if ( 0 === strcasecmp( $title, $raw ) || 0 === strcasecmp( $title, $url ) ) {
-				$title = '';
+		}
+
+		$streams = self::stream_list( \HyperPress\Utils\Meta::get( self::STREAMS, $post_id ) );
+		foreach ( $streams as $index => $stream ) {
+			$label = count( $streams ) > 1 ? 'Stream ' . ( $index + 1 ) : 'Stream';
+			$entry = self::link_entry( $stream, $label );
+			if ( null !== $entry ) {
+				$links[] = $entry;
 			}
-			$links[] = array(
-				'label'  => '' !== $title ? $title : $default_label,
-				'url'    => $url,
-				'target' => '_blank',
-			);
 		}
 
 		return array(
@@ -50,6 +65,72 @@ final class Details {
 			'when'    => StartDate::instant( $post_id ),
 			'links'   => $links,
 		);
+	}
+
+	/**
+	 * One link from a Meta Box link array, or null when it has no safe URL.
+	 *
+	 * @param mixed  $link          Stored link array.
+	 * @param string $default_label Label used when the link has no title.
+	 * @return array{label:string,url:string,target:string}|null
+	 */
+	private static function link_entry( mixed $link, string $default_label ): ?array {
+		if ( ! is_array( $link ) ) {
+			return null;
+		}
+		$raw = self::text( $link['url'] ?? '' );
+		$url = esc_url_raw( $raw );
+		if ( '' === $url ) {
+			return null;
+		}
+		$title = self::text( $link['title'] ?? '' );
+		// Meta Box fills the title with the URL when none is typed.
+		if ( 0 === strcasecmp( $title, $raw ) || 0 === strcasecmp( $title, $url ) ) {
+			$title = '';
+		}
+
+		return array(
+			'label'  => '' !== $title ? $title : $default_label,
+			'url'    => $url,
+			'target' => '_blank',
+		);
+	}
+
+	/**
+	 * The Blue Alliance link for an event key such as 2026mabos, or null when the key is empty or malformed.
+	 *
+	 * @param mixed $key Stored event key.
+	 * @return array{label:string,url:string,target:string}|null
+	 */
+	private static function tba_link( mixed $key ): ?array {
+		$key = strtolower( self::text( $key ) );
+		if ( 1 !== preg_match( '/^\d{4}[a-z0-9]+$/', $key ) ) {
+			return null;
+		}
+
+		return array(
+			'label'  => 'The Blue Alliance',
+			'url'    => 'https://www.thebluealliance.com/event/' . $key,
+			'target' => '_blank',
+		);
+	}
+
+	/**
+	 * Normalizes the stream field to a list of link arrays. Cloned fields stored as multiple rows come back as a
+	 * list; data saved before the field was cloneable is a single link array.
+	 *
+	 * @param mixed $value Stored value.
+	 * @return list<mixed>
+	 */
+	private static function stream_list( mixed $value ): array {
+		if ( ! is_array( $value ) ) {
+			return array();
+		}
+		if ( array_key_exists( 'url', $value ) || array_key_exists( 'title', $value ) ) {
+			return array( $value );
+		}
+
+		return array_values( $value );
 	}
 
 	private static function text( mixed $value ): string {

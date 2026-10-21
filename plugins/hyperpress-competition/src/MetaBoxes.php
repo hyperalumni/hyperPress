@@ -105,9 +105,11 @@ final class MetaBoxes {
 					'save_format' => 'Y-m-d H:i',
 				),
 				array(
-					'name' => 'The Blue Alliance Event Key',
-					'id'   => 'hyperpress_competition_tba_event_key',
-					'type' => 'text',
+					'name'              => 'The Blue Alliance Event Key',
+					'id'                => 'hyperpress_competition_tba_event_key',
+					'type'              => 'text',
+					'desc'              => __( 'TBA event key, e.g. 2026mabos. Used to link to The Blue Alliance.', 'hyperpress' ),
+					'sanitize_callback' => 'sanitize_key',
 				),
 				array(
 					'name'              => 'NE FIRST Event Page',
@@ -128,9 +130,24 @@ final class MetaBoxes {
 					'sanitize_callback' => array( self::class, 'event_link' ),
 				),
 				array(
-					'name'              => 'Stream',
+					'name'              => 'FRC Events Page',
+					'id'                => 'hyperpress_competition_frc_events_url',
+					'type'              => 'link',
+					'sanitize_callback' => array( self::class, 'event_link' ),
+				),
+				array(
+					'name'              => 'Public Agenda',
+					'id'                => 'hyperpress_competition_agenda_url',
+					'type'              => 'link',
+					'sanitize_callback' => array( self::class, 'event_link' ),
+				),
+				array(
+					'name'              => 'Streams',
 					'id'                => 'hyperpress_competition_stream_url',
 					'type'              => 'link',
+					'clone'             => true,
+					'clone_as_multiple' => true,
+					'add_button'        => __( 'Add stream', 'hyperpress' ),
 					'sanitize_callback' => array( self::class, 'event_link' ),
 				),
 			),
@@ -142,7 +159,8 @@ final class MetaBoxes {
 	/**
 	 * Sanitizer for the event and stream links. A Meta Box `link` field submits an array
 	 * (url, title, target, post_id). Returns that array sanitized, or array() when there is
-	 * no safe URL, which makes Meta Box delete the meta.
+	 * no safe URL, which makes Meta Box delete the meta. For the cloneable stream field Meta Box
+	 * calls this once per clone and drops the clones that come back empty.
 	 *
 	 * @param mixed $value Submitted value.
 	 * @return array{url?:string,title?:string,target?:string,post_id?:int}
