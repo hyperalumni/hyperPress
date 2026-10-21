@@ -47,6 +47,7 @@ final class Plugin {
 		Countdown::register();
 		Content::register();
 		Map::register();
+		AdminAssets::register();
 	}
 
 	/**
