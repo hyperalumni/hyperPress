@@ -126,7 +126,7 @@ final class CountdownTest extends WP_UnitTestCase {
 	public function test_shortcode_renders_the_same_markup_for_an_id(): void {
 		$id        = $this->competition( array( self::START => '2030-07-01 10:00', self::VENUE => 'Memorial Field' ) );
 		$strip     = static fn( string $html ): string => (string) preg_replace( '/\d+/', 'N', (string) preg_replace( '/id="[^"]*"/', 'id=""', $html ) );
-		$direct    = Countdown::render( $id );
+		$direct    = Countdown::render( $id, true, false, true );
 		$shortcode = do_shortcode( '[hyperpress_competition_countdown id="' . $id . '"]' );
 
 		$this->assertNotSame( '', $direct );
@@ -221,5 +221,61 @@ final class CountdownTest extends WP_UnitTestCase {
 		update_post_meta( $id, 'hyperpress_competition_event_start_date', '2030-07-01 10:00' );
 
 		$this->assertSame( '', Countdown::render( $id ) );
+	}
+
+	/** @return int A competition titled `$title` with one day labelled `$label` (an empty label is stored as such). */
+	private function titled( string $title, string $label = 'Day 1' ): int {
+		return $this->competition( array(), array( 'post_title' => $title ), array( array( 'label' => $label, 'start' => '2030-07-01 10:00' ) ) );
+	}
+
+	public function test_shortcode_heading_is_the_title_and_the_day_label(): void {
+		$id = $this->titled( 'UNH District Event 2026' );
+
+		$this->assertStringContainsString( '<h2 class="cell align-center">UNH District Event 2026: Day 1</h2>', do_shortcode( '[hyperpress_competition_countdown id="' . $id . '"]' ) );
+	}
+
+	public function test_shortcode_without_a_label_heads_with_the_title_only(): void {
+		$id = $this->titled( 'UNH District Event 2026', '' );
+
+		$this->assertStringContainsString( '<h2 class="cell align-center">UNH District Event 2026</h2>', do_shortcode( '[hyperpress_competition_countdown id="' . $id . '"]' ) );
+	}
+
+	public function test_render_defaults_to_the_label_only(): void {
+		$id = $this->titled( 'UNH District Event 2026' );
+
+		$this->assertStringContainsString( '<h2 class="cell align-center">Day 1</h2>', Countdown::render( $id, true, true ) );
+		$this->assertStringNotContainsString( 'UNH District', Countdown::render( $id ) );
+	}
+
+	public function test_render_with_title_prefixes_the_title(): void {
+		$id = $this->titled( 'UNH District Event 2026' );
+
+		$this->assertStringContainsString( '<h2 class="cell align-center">UNH District Event 2026: Day 1</h2>', Countdown::render( $id, true, false, true ) );
+	}
+
+	public function test_title_special_characters_render_once_and_tags_are_stripped(): void {
+		$output = Countdown::render( $this->titled( "Tom & Jerry's <b>Cup</b>" ), true, false, true );
+
+		$this->assertStringContainsString( 'Tom &amp; Jerry', $output );
+		$this->assertStringContainsString( 'Cup: Day 1</h2>', $output );
+		$this->assertStringNotContainsString( '&amp;amp;', $output );
+		$this->assertStringNotContainsString( '&amp;#', $output );
+		$this->assertStringNotContainsString( '<b>', $output );
+	}
+
+	public function test_an_empty_title_leaves_the_label_only(): void {
+		$id = $this->titled( '' );
+
+		$this->assertStringContainsString( '<h2 class="cell align-center">Day 1</h2>', Countdown::render( $id, true, false, true ) );
+	}
+
+	public function test_an_empty_title_and_label_print_no_heading(): void {
+		$this->assertStringNotContainsString( '<h2', Countdown::render( $this->titled( '', '' ), true, false, true ) );
+	}
+
+	public function test_shortcode_gives_nothing_without_a_counted_day(): void {
+		$id = $this->competition( array(), array( 'post_title' => 'UNH District Event 2026' ), array( array( 'label' => 'Day 1', 'start' => '2030-07-01 10:00', 'skip' => '1' ) ) );
+
+		$this->assertSame( '', do_shortcode( '[hyperpress_competition_countdown id="' . $id . '"]' ) );
 	}
 }
