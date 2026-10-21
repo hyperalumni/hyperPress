@@ -26,10 +26,13 @@ final class Details {
 	 *
 	 * @param int $post_id Competition post ID.
 	 *
-	 * @return array{host:string,venue:string,address:string,when:?\DateTimeImmutable,links:list<array{label:string,url:string,target:string,rel:string,group:string}>} Each link's `group` is `info` or `live` (streams).
+	 * @return array{host:string,venue:string,address:string,when:?\DateTimeImmutable,days:list<array{label:string,start:\DateTimeImmutable,state:string}>,links:list<array{label:string,url:string,target:string,rel:string,group:string}>} Each link's `group` is `info` or `live` (streams); each day's `state` is `past`, `current` (the day the countdown targets) or `upcoming`.
 	 */
 	public static function for_post( int $post_id ): array {
-		$links = array();
+		$days    = Schedule::days( $post_id );
+		$now     = Schedule::now();
+		$current = Schedule::pick_index( $days, $now );
+		$links   = array();
 		foreach ( self::LINKS_BEFORE_TBA as $key => $default_label ) {
 			$entry = self::link_entry( \HyperPress\Utils\Meta::get( $key, $post_id ), $default_label, 'info' );
 			if ( null !== $entry ) {
@@ -62,9 +65,42 @@ final class Details {
 			'host'    => self::text( \HyperPress\Utils\Meta::get( 'hyperpress_competition_host_name', $post_id ) ),
 			'venue'   => self::text( \HyperPress\Utils\Meta::get( 'hyperpress_competition_venue_name', $post_id ) ),
 			'address' => self::text( \HyperPress\Utils\Meta::get( 'hyperpress_competition_venue_address', $post_id ) ),
-			'when'    => StartDate::instant( $post_id ),
+			'when'    => null === $current ? null : $days[ $current ]['start'],
+			'days'    => self::day_states( $days, $current, $now ),
 			'links'   => $links,
 		);
+	}
+
+	/**
+	 * Every day with its display state, comparing calendar dates in the site timezone.
+	 *
+	 * `past` is a day whose date is before today's; `current` is the day at `$current` (the countdown's target) when its
+	 * date is today or later; everything else is `upcoming`. So a finished event has no `current` day.
+	 *
+	 * @param list<array{label:string,start:\DateTimeImmutable,countdown:bool}> $days    Days in chronological order.
+	 * @param int|null                                                          $current Index of the day the countdown targets.
+	 * @param \DateTimeImmutable                                                $now     The moment to compare against.
+	 *
+	 * @return list<array{label:string,start:\DateTimeImmutable,state:string}>
+	 */
+	private static function day_states( array $days, ?int $current, \DateTimeImmutable $now ): array {
+		$zone   = wp_timezone();
+		$today  = $now->setTimezone( $zone )->format( 'Y-m-d' );
+		$states = array();
+		foreach ( $days as $index => $day ) {
+			if ( $day['start']->setTimezone( $zone )->format( 'Y-m-d' ) < $today ) {
+				$state = 'past';
+			} else {
+				$state = $index === $current ? 'current' : 'upcoming';
+			}
+			$states[] = array(
+				'label' => $day['label'],
+				'start' => $day['start'],
+				'state' => $state,
+			);
+		}
+
+		return $states;
 	}
 
 	/**

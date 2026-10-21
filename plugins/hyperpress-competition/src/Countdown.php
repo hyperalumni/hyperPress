@@ -4,7 +4,7 @@ namespace HyperPress\Competition;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Renders the shared countdown from a competition's start date.
+ * Renders the shared countdown from a competition's schedule.
  */
 final class Countdown {
 
@@ -26,7 +26,7 @@ final class Countdown {
 	}
 
 	/**
-	 * The countdown markup, or '' unless the competition is readable and has a usable start date.
+	 * The countdown markup, or '' unless the competition is readable and has a counted day in its schedule.
 	 *
 	 * @param int  $post_id       Competition post ID.
 	 * @param bool $show_location Whether to show the venue name under the countdown.
@@ -37,14 +37,15 @@ final class Countdown {
 			return '';
 		}
 
-		$when = StartDate::instant( $post_id );
-		if ( null === $when ) {
+		$day = Schedule::current( $post_id );
+		if ( null === $day ) {
 			return '';
 		}
 
 		return \HyperPress\Countdown\Renderer::render(
-			$when,
+			$day['start'],
 			array(
+				'name'      => $day['label'],
 				'location'  => $show_location ? Details::for_post( $post_id )['venue'] : '',
 				'past_zero' => Settings::past_zero(),
 				'slug'      => 'competition-' . $post_id,

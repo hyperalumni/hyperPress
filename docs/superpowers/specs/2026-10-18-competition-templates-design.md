@@ -46,6 +46,8 @@ A `hyper_competition` has no editor content: it supports only title and thumbnai
 
 `hyperpress_competition_event_start_date` in `plugins/hyperpress-competition/src/MetaBoxes.php` changes from `'timestamp' => true` to `'timestamp' => false`, configured like the countdown's `hyperpress_countdown_event_date_time` (wall-clock text such as `2026-10-18 18:00`, no zone). Both plugins then share one rule: a wall-clock time with no zone, read in `wp_timezone()`. The field sets `'save_format' => 'Y-m-d H:i'` so the stored text format is explicit. Only `MetaBoxes.php` references the field today. The countdown plugin's field is not changed.
 
+> Superseded 2026-10-20: this single field was replaced by the cloneable `hyperpress_competition_event_days` group (label, start and a "Don't count down to this day" checkbox per day), read through `HyperPress\Competition\Schedule`; the wall-clock text format and the `save_format` rule below now apply to the group's `start` sub-field. See the follow-up in `docs/superpowers/plans/2026-10-18-competition-templates.md`.
+
 A small helper in the competition plugin turns the stored text into a `DateTimeImmutable` in the site timezone (or `null` when empty or unparseable). It is the single place that reads the field.
 
 ### Countdown render function (countdown plugin)

@@ -2,22 +2,26 @@
 namespace HyperPress\Tests\Integration\Competition;
 
 use HyperPress\Competition\Details;
+use HyperPress\Competition\Schedule;
 use WP_UnitTestCase;
 
 final class DetailsTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		unset( $GLOBALS['hyperpress_test_rwmb_posts'] );
+		remove_all_filters( 'hyperpress_competition_now' );
 		delete_option( 'timezone_string' );
 		parent::tear_down();
 	}
 
-	/** @param array<string,mixed> $meta */
-	private function competition( array $meta ): int {
+	/**
+	 * @param array<string,mixed>            $meta Meta fixtures.
+	 * @param list<array<string,mixed>>|null $days Raw schedule rows, stored as given.
+	 */
+	private function competition( array $meta, ?array $days = null ): int {
 		$id = self::factory()->post->create( array( 'post_type' => 'hyper_competition', 'post_status' => 'publish' ) );
-		if ( isset( $meta['hyperpress_competition_event_start_date'] ) ) {
-			update_post_meta( $id, 'hyperpress_competition_event_start_date', $meta['hyperpress_competition_event_start_date'] );
-			unset( $meta['hyperpress_competition_event_start_date'] );
+		if ( null !== $days ) {
+			update_post_meta( $id, Schedule::FIELD, $days );
 		}
 		$GLOBALS['hyperpress_test_rwmb_posts'][ $id ] = $meta;
 		return $id;
@@ -304,12 +308,13 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $this->competition( array() ) );
 
 		$this->assertNull( $details['when'] );
+		$this->assertSame( array(), $details['days'] );
 		$this->assertSame( array(), $details['links'] );
 	}
 
 	public function test_when_uses_the_site_timezone(): void {
 		update_option( 'timezone_string', 'America/New_York' );
-		$id      = $this->competition( array( 'hyperpress_competition_event_start_date' => '2030-01-15 10:00' ) );
+		$id      = $this->competition( array(), array( array( 'label' => '', 'start' => '2030-01-15 10:00' ) ) );
 		$details = Details::for_post( $id );
 
 		$this->assertSame( '2030-01-15T10:00:00-05:00', $details['when']->format( 'c' ) );
@@ -337,5 +342,115 @@ final class DetailsTest extends WP_UnitTestCase {
 			array( 'NE FIRST Event', 'The Blue Alliance', 'Public Agenda', 'Saturday', 'Sunday' ),
 			wp_list_pluck( $links, 'label' )
 		);
+	}
+
+	/** @return list<array<string,string>> Load In (unticked), Day 1 and Day 2, deliberately stored out of order. */
+	private static function three_day_rows(): array {
+		return array(
+			array( 'label' => 'Day 2', 'start' => '2030-07-02 09:00' ),
+			array( 'label' => 'Load In', 'start' => '2030-06-30 16:00', 'skip' => '1' ),
+			array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00' ),
+		);
+	}
+
+	/** @param string $text Wall-clock time in the site zone. */
+	private function set_now( string $text ): void {
+		remove_all_filters( 'hyperpress_competition_now' );
+		add_filter( 'hyperpress_competition_now', fn() => new \DateTimeImmutable( $text, wp_timezone() ) );
+	}
+
+	public function test_when_is_the_next_counted_day(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id = $this->competition( array(), self::three_day_rows() );
+
+		$this->set_now( '2030-06-29 08:00' );
+		$this->assertSame( '2030-07-01T09:00:00-04:00', Details::for_post( $id )['when']->format( 'c' ) );
+
+		$this->set_now( '2030-07-01 12:00' );
+		$this->assertSame( '2030-07-02T09:00:00-04:00', Details::for_post( $id )['when']->format( 'c' ) );
+
+		$this->set_now( '2030-07-09 12:00' );
+		$this->assertSame( '2030-07-02T09:00:00-04:00', Details::for_post( $id )['when']->format( 'c' ) );
+	}
+
+	public function test_when_is_null_when_no_day_is_counted(): void {
+		$id = $this->competition( array(), array( array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00', 'skip' => '1' ) ) );
+
+		$this->assertNull( Details::for_post( $id )['when'] );
+		$this->assertCount( 1, Details::for_post( $id )['days'] );
+	}
+
+	public function test_days_lists_every_day_in_order(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$days = Details::for_post( $this->competition( array(), self::three_day_rows() ) )['days'];
+
+		$this->assertSame( array( 'Load In', 'Day 1', 'Day 2' ), wp_list_pluck( $days, 'label' ) );
+		foreach ( $days as $day ) {
+			$this->assertSame( array( 'label', 'start', 'state' ), array_keys( $day ) );
+			$this->assertInstanceOf( \DateTimeImmutable::class, $day['start'] );
+		}
+		$this->assertSame( '2030-06-30T16:00:00-04:00', $days[0]['start']->format( 'c' ) );
+	}
+
+	/** @return list<string> The `state` of every day at the given wall-clock time. */
+	private function states_at( int $id, string $now ): array {
+		$this->set_now( $now );
+		return wp_list_pluck( Details::for_post( $id )['days'], 'state' );
+	}
+
+	public function test_days_carry_a_state_by_calendar_date(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id = $this->competition( array(), self::three_day_rows() );
+
+		$this->assertSame( array( 'upcoming', 'current', 'upcoming' ), $this->states_at( $id, '2030-06-29 08:00' ), 'before the event' );
+		$this->assertSame( array( 'upcoming', 'current', 'upcoming' ), $this->states_at( $id, '2030-06-30 17:00' ), 'skipped Load In is today and not the target' );
+		$this->assertSame( array( 'past', 'upcoming', 'current' ), $this->states_at( $id, '2030-07-01 12:00' ), 'between days: Day 1 is today but the countdown moved on' );
+		$this->assertSame( array( 'past', 'past', 'current' ), $this->states_at( $id, '2030-07-02 12:00' ), 'last day, after its start' );
+		$this->assertSame( array( 'past', 'past', 'past' ), $this->states_at( $id, '2030-07-03 00:00' ), 'the day after the last day' );
+		$this->assertSame( array( 'past', 'past', 'past' ), $this->states_at( $id, '2030-07-09 12:00' ), 'long after the event' );
+	}
+
+	public function test_state_changes_at_local_midnight(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id = $this->competition( array(), self::three_day_rows() );
+
+		$this->assertSame( array( 'past', 'upcoming', 'current' ), $this->states_at( $id, '2030-07-01 23:59' ), 'Day 1 is still today at 23:59' );
+		$this->assertSame( array( 'past', 'past', 'current' ), $this->states_at( $id, '2030-07-02 00:00' ), 'Day 2 is current from midnight' );
+		$this->assertSame( array( 'past', 'past', 'current' ), $this->states_at( $id, '2030-07-02 23:59' ) );
+		$this->assertSame( array( 'past', 'past', 'past' ), $this->states_at( $id, '2030-07-03 00:00' ) );
+	}
+
+	public function test_midnight_boundaries_hold_on_a_dst_date(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id = $this->competition( array(), array( array( 'label' => 'Day 1', 'start' => '2030-03-09 12:00' ), array( 'label' => 'Day 2', 'start' => '2030-03-10 12:00' ) ) );
+
+		$this->assertSame( array( 'past', 'current' ), $this->states_at( $id, '2030-03-10 00:00' ), 'the clocks jump at 02:00, the date still changes at midnight' );
+		$this->assertSame( array( 'past', 'current' ), $this->states_at( $id, '2030-03-10 23:59' ) );
+		$this->assertSame( array( 'past', 'past' ), $this->states_at( $id, '2030-03-11 00:00' ) );
+	}
+
+	public function test_the_clock_is_compared_in_the_site_zone(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id = $this->competition( array(), array( array( 'label' => 'Day 1', 'start' => '2030-07-01 20:00' ) ) );
+		// 2030-07-02 01:00 UTC is still 21:00 on July 1 in New York.
+		remove_all_filters( 'hyperpress_competition_now' );
+		add_filter( 'hyperpress_competition_now', fn() => new \DateTimeImmutable( '2030-07-02 01:00', new \DateTimeZone( 'UTC' ) ) );
+
+		$this->assertSame( array( 'current' ), wp_list_pluck( Details::for_post( $id )['days'], 'state' ) );
+	}
+
+	public function test_no_day_is_current_when_none_is_counted(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id = $this->competition( array(), array( array( 'label' => 'A', 'start' => '2030-07-01 09:00', 'skip' => '1' ), array( 'label' => 'B', 'start' => '2030-07-02 09:00', 'skip' => '1' ) ) );
+
+		$this->assertSame( array( 'upcoming', 'upcoming' ), $this->states_at( $id, '2030-07-01 12:00' ) );
+		$this->assertSame( array( 'past', 'upcoming' ), $this->states_at( $id, '2030-07-02 12:00' ) );
+		$this->assertSame( array( 'past', 'past' ), $this->states_at( $id, '2030-07-03 00:00' ) );
+	}
+
+	public function test_days_has_one_entry_for_a_single_day(): void {
+		$id = $this->competition( array(), array( array( 'label' => '', 'start' => '2030-07-01 09:00' ) ) );
+
+		$this->assertCount( 1, Details::for_post( $id )['days'] );
 	}
 }

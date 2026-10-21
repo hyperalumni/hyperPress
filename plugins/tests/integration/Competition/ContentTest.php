@@ -2,10 +2,14 @@
 namespace HyperPress\Tests\Integration\Competition;
 
 use HyperPress\Competition\Content;
+use HyperPress\Competition\Schedule;
 use HyperPress\Countdown\Assets;
 use WP_UnitTestCase;
 
 final class ContentTest extends WP_UnitTestCase {
+
+	/** Shorthand in a fixture's meta for a one-day schedule that counts down. */
+	private const START = 'start_shorthand';
 
 	public function set_up(): void {
 		parent::set_up();
@@ -17,19 +21,27 @@ final class ContentTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		unset( $GLOBALS['hyperpress_test_rwmb_posts'] );
+		remove_all_filters( 'hyperpress_competition_now' );
 		delete_option( 'timezone_string' );
 		$GLOBALS['wp_scripts'] = null;
 		parent::tear_down();
 	}
 
-	/** @param array<string,mixed> $meta */
-	private function competition( array $meta, string $title = 'Granite State' ): int {
+	/**
+	 * @param array<string,mixed>            $meta  Meta fixtures; self::START becomes a one-row schedule.
+	 * @param string                         $title Post title.
+	 * @param list<array<string,mixed>>|null $days  Raw schedule rows, stored as given.
+	 */
+	private function competition( array $meta, string $title = 'Granite State', ?array $days = null ): int {
 		$id = self::factory()->post->create(
 			array( 'post_type' => 'hyper_competition', 'post_status' => 'publish', 'post_title' => $title )
 		);
-		if ( isset( $meta['hyperpress_competition_event_start_date'] ) ) {
-			update_post_meta( $id, 'hyperpress_competition_event_start_date', $meta['hyperpress_competition_event_start_date'] );
-			unset( $meta['hyperpress_competition_event_start_date'] );
+		if ( isset( $meta[ self::START ] ) ) {
+			$days = array( array( 'label' => '', 'start' => $meta[ self::START ] ) );
+			unset( $meta[ self::START ] );
+		}
+		if ( null !== $days ) {
+			update_post_meta( $id, Schedule::FIELD, $days );
 		}
 		$GLOBALS['hyperpress_test_rwmb_posts'][ $id ] = $meta;
 		return $id;
@@ -41,7 +53,7 @@ final class ContentTest extends WP_UnitTestCase {
 			'hyperpress_competition_venue_name'         => 'Arena <b>One</b>',
 			'hyperpress_competition_host_name'          => 'Host & Co',
 			'hyperpress_competition_venue_address'      => '1 Main St',
-			'hyperpress_competition_event_start_date'   => '2030-07-01 10:00',
+			self::START                                 => '2030-07-01 10:00',
 			'hyperpress_competition_ne_first_event_url' => array( 'url' => 'https://external.example/e?a=1&b=2', 'title' => 'Event "page"' ),
 			'hyperpress_competition_stream_url'         => array( 'url' => '', 'title' => 'Empty' ),
 		);
@@ -97,7 +109,7 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertSame( 1, substr_count( $html, 'Arena &lt;b&gt;One&lt;/b&gt;' ) );
 		$this->assertStringContainsString( 'Host &amp; Co', $html );
 		$this->assertStringContainsString( '1 Main St', $html );
-		$this->assertMatchesRegularExpression( '#<a class="button" href="https://external\.example/e\?a=1(&amp;|&\#038;)b=2" target="_blank" rel="noopener noreferrer">Event &quot;page&quot;</a>#', $html );
+		$this->assertMatchesRegularExpression( '#<a class="button small-down-expanded" href="https://external\.example/e\?a=1(&amp;|&\#038;)b=2" target="_blank" rel="noopener noreferrer">Event &quot;page&quot;</a>#', $html );
 		$this->assertSame( 1, substr_count( $html, '<a ' ) );
 	}
 
@@ -118,7 +130,7 @@ final class ContentTest extends WP_UnitTestCase {
 
 	public function test_full_view_without_a_start_date_still_shows_the_venue(): void {
 		$meta = $this->full_meta();
-		unset( $meta['hyperpress_competition_event_start_date'] );
+		unset( $meta[ self::START ] );
 		$id = $this->competition( $meta );
 		$this->go_to( get_permalink( $id ) );
 		the_post();
@@ -175,11 +187,11 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '<h6 class="subheader">Event Info</h6>', $html );
 		$this->assertStringContainsString( '<h6 class="subheader">Watch Live</h6>', $html );
 		$this->assertLessThan( strpos( $html, 'Watch Live' ), strpos( $html, 'Event Info' ) );
-		$this->assertMatchesRegularExpression( '#<a class="button alert" href="https://external\.example/sat\?x=1(&amp;|&\#038;)y=2" target="_blank" rel="noopener noreferrer">Saturday &lt;b&gt; <i class="fa-solid fa-circle-play" aria-hidden="true"></i></a>#', $html );
+		$this->assertMatchesRegularExpression( '#<a class="button alert small-down-expanded" href="https://external\.example/sat\?x=1(&amp;|&\#038;)y=2" target="_blank" rel="noopener noreferrer">Saturday &lt;b&gt; <i class="fa-solid fa-circle-play" aria-hidden="true"></i></a>#', $html );
 		$this->assertStringContainsString( '>Sunday <i class="fa-solid fa-circle-play" aria-hidden="true"></i></a>', $html );
-		$this->assertSame( 2, substr_count( $html, 'class="button alert"' ) );
-		$this->assertMatchesRegularExpression( '#</a>\s+<a class="button alert"#', $html );
-		$this->assertSame( 1, substr_count( $html, 'class="button"' ) );
+		$this->assertSame( 2, substr_count( $html, 'class="button alert small-down-expanded"' ) );
+		$this->assertMatchesRegularExpression( '#</a>\s+<a class="button alert small-down-expanded"#', $html );
+		$this->assertSame( 1, substr_count( $html, 'class="button small-down-expanded"' ) );
 		$this->assertStringNotContainsString( '<ul class="competition-links"', $html );
 	}
 
@@ -222,7 +234,7 @@ final class ContentTest extends WP_UnitTestCase {
 		include Content::add_content_template( '' );
 		$html = (string) ob_get_clean();
 
-		$this->assertMatchesRegularExpression( '#<a class="button" href="[^"]*/agenda/" target="_self">Agenda</a>#', $html );
+		$this->assertMatchesRegularExpression( '#<a class="button small-down-expanded" href="[^"]*/agenda/" target="_self">Agenda</a>#', $html );
 		$this->assertStringNotContainsString( 'noopener', $html );
 	}
 
@@ -315,5 +327,186 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'Hosted by', $html );
 		$this->assertStringNotContainsString( 'Event Info', $html );
 		$this->assertStringNotContainsString( 'Watch Live', $html );
+	}
+
+	/**
+	 * @return list<array<string,string>> Load In (unticked), Day 1 and Day 2.
+	 */
+	private static function three_days(): array {
+		return array(
+			array( 'label' => 'Load In', 'start' => '2030-06-30 16:00', 'skip' => '1' ),
+			array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00' ),
+			array( 'label' => 'Day 2', 'start' => '2030-07-02 09:00' ),
+		);
+	}
+
+	private function full_html( int $id ): string {
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		return (string) ob_get_clean();
+	}
+
+	/** @param string $text Wall-clock time in the site zone. */
+	private function set_now( string $text ): void {
+		remove_all_filters( 'hyperpress_competition_now' );
+		add_filter( 'hyperpress_competition_now', fn() => new \DateTimeImmutable( $text, wp_timezone() ) );
+	}
+
+	public function test_single_day_has_no_schedule_list(): void {
+		$html = $this->full_html( $this->competition( $this->full_meta() ) );
+
+		$this->assertStringNotContainsString( 'competition-schedule', $html );
+		$this->assertStringNotContainsString( 'Schedule', $html );
+	}
+
+	/**
+	 * @return list<array<string,string>> $n counted days labelled "Day 1"... on consecutive mornings.
+	 */
+	private static function n_days( int $n ): array {
+		$days = array();
+		for ( $i = 1; $i <= $n; $i++ ) {
+			$days[] = array( 'label' => 'Day ' . $i, 'start' => sprintf( '2030-07-%02d 09:00', $i ) );
+		}
+		return $days;
+	}
+
+	private function fmt( string $text, string $format ): string {
+		return wp_date( $format, ( new \DateTimeImmutable( $text, wp_timezone() ) )->getTimestamp(), wp_timezone() );
+	}
+
+	/** @return list<string> The opening tag of every schedule card, in order. */
+	private function card_tags( string $html ): array {
+		preg_match_all( '#<div class="callout text-center[^"]*"[^>]*>#', $html, $m );
+		return $m[0];
+	}
+
+	/** @return array<string,array{0:int,1:string}> Day count => expected column classes. */
+	public static function column_cases(): array {
+		return array(
+			'two'   => array( 2, 'small-up-1 medium-up-2 large-up-2' ),
+			'three' => array( 3, 'small-up-1 medium-up-3 large-up-3' ),
+			'four'  => array( 4, 'small-up-2 medium-up-2 large-up-4' ),
+			'five'  => array( 5, 'small-up-2 medium-up-3 large-up-5' ),
+			'seven' => array( 7, 'small-up-2 medium-up-3 large-up-3' ),
+		);
+	}
+
+	/** @dataProvider column_cases */
+	public function test_schedule_cards_use_the_column_rules( int $count, string $classes ): void {
+		$html = $this->full_html( $this->competition( array(), 'Granite State', self::n_days( $count ) ) );
+
+		$this->assertStringContainsString( '<div class="competition-schedule grid-x grid-margin-x align-center ' . $classes . '">', $html );
+		$this->assertSame( $count, substr_count( $html, '<div class="cell"><div class="callout text-center' ) );
+		$this->assertStringContainsString( '<strong>Schedule:</strong>', $html );
+		$this->assertStringNotContainsString( '<ul class="competition-schedule', $html );
+	}
+
+	public function test_two_and_three_days_show_the_full_date(): void {
+		$html = $this->full_html( $this->competition( array(), 'Granite State', self::n_days( 3 ) ) );
+
+		$this->assertStringContainsString( '<h6>Day 1</h6><div><strong>' . $this->fmt( '2030-07-01 09:00', 'l, F j' ) . '</strong></div><div>9:00 AM</div>', $html );
+		$this->assertStringContainsString( '<strong>Tuesday, July 2</strong>', $html );
+		$this->assertLessThan( strpos( $html, 'Day 3</h6>' ), strpos( $html, 'Day 2</h6>' ) );
+		$this->assertLessThan( strpos( $html, 'Day 2</h6>' ), strpos( $html, 'Day 1</h6>' ) );
+	}
+
+	public function test_four_or_more_days_show_the_short_date(): void {
+		$html = $this->full_html( $this->competition( array(), 'Granite State', self::n_days( 4 ) ) );
+
+		$this->assertStringContainsString( '<h6>Day 1</h6><div><strong>' . $this->fmt( '2030-07-01 09:00', 'D, M j' ) . '</strong></div><div>9:00 AM</div>', $html );
+		$this->assertStringContainsString( '<strong>Tue, Jul 2</strong>', $html );
+		$this->assertStringNotContainsString( 'Tuesday', $html );
+	}
+
+	public function test_schedule_time_uses_the_site_zone_and_a_12_hour_clock(): void {
+		$days = array( array( 'label' => 'Load In', 'start' => '2030-06-30 16:00' ), array( 'label' => 'Day 1', 'start' => '2030-07-01 09:05' ) );
+		$html = $this->full_html( $this->competition( array(), 'Granite State', $days ) );
+
+		$this->assertStringContainsString( '<strong>Sunday, June 30</strong></div><div>4:00 PM</div>', $html );
+		$this->assertStringContainsString( '<div>9:05 AM</div>', $html );
+	}
+
+	public function test_a_card_without_a_label_has_no_heading(): void {
+		$days = array( array( 'label' => '', 'start' => '2030-07-01 10:00' ), array( 'label' => 'Day 2', 'start' => '2030-07-02 09:00' ) );
+		$html = $this->full_html( $this->competition( array(), 'Granite State', $days ) );
+
+		$this->assertSame( 1, substr_count( $html, '<h6>' ) );
+		$this->assertStringContainsString( '<div class="callout text-center primary" aria-current="true"><div><strong>' . $this->fmt( '2030-07-01 10:00', 'l, F j' ) . '</strong></div><div>10:00 AM</div>', $html );
+	}
+
+	public function test_schedule_labels_are_escaped(): void {
+		$days = array( array( 'label' => 'A <b>&"x"', 'start' => '2030-07-01 09:00' ), array( 'label' => 'Day 2', 'start' => '2030-07-02 09:00' ) );
+		$html = $this->full_html( $this->competition( array(), 'Granite State', $days ) );
+
+		$this->assertStringContainsString( '<h6>A &lt;b&gt;&amp;&quot;x&quot;</h6>', $html );
+		$this->assertStringNotContainsString( 'A <b>', $html );
+	}
+
+	public function test_card_states_follow_the_calendar(): void {
+		$id      = $this->competition( array(), 'Granite State', self::three_days() );
+		$plain   = '<div class="callout text-center">';
+		$faded   = '<div class="callout text-center faded">';
+		$current = '<div class="callout text-center primary" aria-current="true">';
+
+		$this->set_now( '2030-06-29 08:00' );
+		$this->assertSame( array( $plain, $current, $plain ), $this->card_tags( $this->full_html( $id ) ) );
+
+		$this->set_now( '2030-07-01 12:00' );
+		$this->assertSame( array( $faded, $plain, $current ), $this->card_tags( $this->full_html( $id ) ), 'Day 1 is today but the countdown moved on' );
+
+		$this->set_now( '2030-07-02 12:00' );
+		$this->assertSame( array( $faded, $faded, $current ), $this->card_tags( $this->full_html( $id ) ), 'the last day stays current all day' );
+
+		$this->set_now( '2030-07-03 00:00' );
+		$html = $this->full_html( $id );
+		$this->assertSame( array( $faded, $faded, $faded ), $this->card_tags( $html ), 'a finished event highlights nothing' );
+		$this->assertStringNotContainsString( 'aria-current', $html );
+	}
+
+	public function test_no_card_is_current_when_every_day_is_skipped(): void {
+		$days = array( array( 'label' => 'A', 'start' => '2030-07-01 09:00', 'skip' => '1' ), array( 'label' => 'B', 'start' => '2030-07-02 09:00', 'skip' => '1' ) );
+		$this->set_now( '2030-07-02 12:00' );
+		$html = $this->full_html( $this->competition( array(), 'Granite State', $days ) );
+
+		$this->assertStringNotContainsString( 'aria-current', $html );
+		$this->assertSame( array( '<div class="callout text-center faded">', '<div class="callout text-center">' ), $this->card_tags( $html ) );
+	}
+
+	public function test_schedule_is_full_view_only(): void {
+		$id = $this->competition( array(), 'Granite State', self::three_days() );
+		$this->go_to( home_url( '/' ) );
+		$this->assertStringNotContainsString( 'competition-schedule', $this->render( $id ) );
+
+		$page = self::factory()->post->create( array( 'post_type' => 'page', 'post_status' => 'publish' ) );
+		$this->go_to( get_permalink( $page ) );
+		$html = $this->render( $id );
+		$this->assertFalse( $this->rendered_full_view );
+		$this->assertStringNotContainsString( 'competition-schedule', $html );
+		$this->assertStringNotContainsString( 'Schedule', $html );
+	}
+
+	public function test_summary_date_follows_the_current_day(): void {
+		$id = $this->competition( array(), 'Granite State', self::three_days() );
+		$this->go_to( home_url( '/' ) );
+		$format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$day    = static fn( string $text ): string => wp_date( $format, ( new \DateTimeImmutable( $text, wp_timezone() ) )->getTimestamp() );
+
+		$this->set_now( '2030-06-29 08:00' );
+		$this->assertStringContainsString( '<p class="competition-date">' . $day( '2030-07-01 09:00' ) . '</p>', $this->render( $id ) );
+
+		$this->set_now( '2030-07-01 12:00' );
+		$html = $this->render( $id );
+		$this->assertStringContainsString( '<p class="competition-date">' . $day( '2030-07-02 09:00' ) . '</p>', $html );
+		$this->assertStringNotContainsString( $day( '2030-07-01 09:00' ), $html );
+	}
+
+	public function test_countdown_heading_shows_the_day_label_in_the_full_view(): void {
+		$this->set_now( '2030-06-30 20:00' );
+		$html = $this->full_html( $this->competition( array(), 'Granite State', self::three_days() ) );
+
+		$this->assertStringContainsString( '<h2 class="cell align-center">Day 1</h2>', $html );
+		$this->assertStringContainsString( 'data-date="2030-07-01T09:00:00-04:00"', $html );
 	}
 }

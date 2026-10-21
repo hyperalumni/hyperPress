@@ -50,6 +50,27 @@ $hyperpress_when_s  = $hyperpress_when instanceof \DateTimeImmutable
 		<?php if ( '' !== $hyperpress_details['host'] ) : ?>
 			<p class="competition-host"><strong><?php esc_html_e( 'Hosted by', 'hyperpress' ); ?>:</strong> <?php echo esc_html( $hyperpress_details['host'] ); ?></p>
 		<?php endif; ?>
+		<?php if ( count( $hyperpress_details['days'] ) >= 2 ) : ?>
+			<?php
+			$hyperpress_day_count = count( $hyperpress_details['days'] );
+			$hyperpress_columns   = \HyperPress\Competition\Schedule::columns( $hyperpress_day_count );
+			$hyperpress_date_fmt  = $hyperpress_day_count >= 4 ? 'D, M j' : 'l, F j';
+			?>
+			<div class="competition-schedule-block">
+				<p class="competition-schedule-label"><strong><?php esc_html_e( 'Schedule', 'hyperpress' ); ?>:</strong></p>
+				<div class="competition-schedule grid-x grid-margin-x align-center small-up-<?php echo (int) $hyperpress_columns['small']; ?> medium-up-<?php echo (int) $hyperpress_columns['medium']; ?> large-up-<?php echo (int) $hyperpress_columns['large']; ?>">
+					<?php foreach ( $hyperpress_details['days'] as $hyperpress_day ) : ?>
+						<?php
+						$hyperpress_card = 'current' === $hyperpress_day['state'] ? ' primary" aria-current="true"' : '"';
+						if ( 'past' === $hyperpress_day['state'] ) {
+							$hyperpress_card = ' faded"';
+						}
+						?>
+						<div class="cell"><div class="callout text-center<?php echo $hyperpress_card; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed attribute strings chosen above. ?>><?php echo '' !== $hyperpress_day['label'] ? '<h6>' . esc_html( $hyperpress_day['label'] ) . '</h6>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Label escaped by esc_html(). ?><div><strong><?php echo esc_html( wp_date( $hyperpress_date_fmt, $hyperpress_day['start']->getTimestamp(), wp_timezone() ) ); ?></strong></div><div><?php echo esc_html( wp_date( 'g:i A', $hyperpress_day['start']->getTimestamp(), wp_timezone() ) ); ?></div></div></div>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		<?php endif; ?>
 		<?php
 		$hyperpress_groups    = array(
 			'info' => __( 'Event Info', 'hyperpress' ),
@@ -71,7 +92,7 @@ $hyperpress_when_s  = $hyperpress_when instanceof \DateTimeImmutable
 						<h6 class="subheader"><?php echo esc_html( $hyperpress_group_label ); ?></h6>
 						<div class="competition-links-group competition-links-<?php echo esc_attr( $hyperpress_group ); ?>">
 							<?php foreach ( $hyperpress_by[ $hyperpress_group ] as $hyperpress_link ) : ?>
-								<a class="button<?php echo 'live' === $hyperpress_group ? ' alert' : ''; ?>" href="<?php echo esc_url( $hyperpress_link['url'] ); ?>" target="<?php echo esc_attr( $hyperpress_link['target'] ); ?>"<?php echo '' !== $hyperpress_link['rel'] ? ' rel="' . esc_attr( $hyperpress_link['rel'] ) . '"' : ''; ?>><?php echo esc_html( $hyperpress_link['label'] ); ?><?php echo 'live' === $hyperpress_group ? ' ' . $hyperpress_play_icon : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static markup defined above. ?></a>
+								<a class="button<?php echo 'live' === $hyperpress_group ? ' alert' : ''; ?> small-down-expanded" href="<?php echo esc_url( $hyperpress_link['url'] ); ?>" target="<?php echo esc_attr( $hyperpress_link['target'] ); ?>"<?php echo '' !== $hyperpress_link['rel'] ? ' rel="' . esc_attr( $hyperpress_link['rel'] ) . '"' : ''; ?>><?php echo esc_html( $hyperpress_link['label'] ); ?><?php echo 'live' === $hyperpress_group ? ' ' . $hyperpress_play_icon : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static markup defined above. ?></a>
 							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>
