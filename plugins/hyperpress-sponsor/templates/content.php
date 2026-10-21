@@ -27,7 +27,10 @@ $hyperpress_entry_tag = ( isset( $hyperpress_title_tag ) && in_array( $hyperpres
 	<?php $sponsor_website = get_post_custom_values( 'hyperpress_sponsor_website', get_the_ID() )[0] ?? ''; ?>
 
 	<?php if ( ! empty( $sponsor_website ) ) : ?>
-		<p><strong>Website:</strong> <a href="<?php echo esc_url( $sponsor_website ); ?>" target="_blank"
-										rel="noopener"><?php echo esc_url( $sponsor_website ); ?></a></p>
+		<?php
+		$sponsor_target = \HyperPress\Utils\Link::target( $sponsor_website );
+		$sponsor_rel    = \HyperPress\Utils\Link::rel( $sponsor_target );
+		?>
+		<p><strong>Website:</strong> <a href="<?php echo esc_url( $sponsor_website ); ?>" target="<?php echo esc_attr( $sponsor_target ); ?>"<?php echo '' !== $sponsor_rel ? ' rel="' . esc_attr( $sponsor_rel ) . '"' : ''; ?>><?php echo esc_url( $sponsor_website ); ?></a></p>
 	<?php endif; ?>
 </div>

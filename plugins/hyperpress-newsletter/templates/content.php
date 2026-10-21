@@ -48,6 +48,10 @@ $season       = ! is_wp_error( $seasons ) && ! empty( $seasons ) ? $seasons[0] :
 					src="<?php echo esc_url( $canva_url . '?embed' ); ?>" allowfullscreen="allowfullscreen"
 					allow="fullscreen"></iframe>
 		</div>
-		<a href="<?php echo esc_url( $canva_url ); ?>" target="_blank" rel="noopener">View on Canva</a>
+		<?php
+		$canva_target = \HyperPress\Utils\Link::target( $canva_url );
+		$canva_rel    = \HyperPress\Utils\Link::rel( $canva_target );
+		?>
+		<a href="<?php echo esc_url( $canva_url ); ?>" target="<?php echo esc_attr( $canva_target ); ?>"<?php echo '' !== $canva_rel ? ' rel="' . esc_attr( $canva_rel ) . '"' : ''; ?>>View on Canva</a>
 	<?php endif; ?>
 </div>
