@@ -26,7 +26,7 @@ final class Details {
 	 *
 	 * @param int $post_id Competition post ID.
 	 *
-	 * @return array{host:string,venue:string,address:string,when:?\DateTimeImmutable,links:list<array{label:string,url:string,target:string}>}
+	 * @return array{host:string,venue:string,address:string,when:?\DateTimeImmutable,links:list<array{label:string,url:string,target:string,rel:string}>}
 	 */
 	public static function for_post( int $post_id ): array {
 		$links = array();
@@ -72,7 +72,7 @@ final class Details {
 	 *
 	 * @param mixed  $link          Stored link array.
 	 * @param string $default_label Label used when the link has no title.
-	 * @return array{label:string,url:string,target:string}|null
+	 * @return array{label:string,url:string,target:string,rel:string}|null
 	 */
 	private static function link_entry( mixed $link, string $default_label ): ?array {
 		if ( ! is_array( $link ) ) {
@@ -89,10 +89,13 @@ final class Details {
 			$title = '';
 		}
 
+		$target = \HyperPress\Utils\Link::target( $url );
+
 		return array(
 			'label'  => '' !== $title ? $title : $default_label,
 			'url'    => $url,
-			'target' => '_blank',
+			'target' => $target,
+			'rel'    => \HyperPress\Utils\Link::rel( $target ),
 		);
 	}
 
@@ -100,7 +103,7 @@ final class Details {
 	 * The Blue Alliance link for an event key such as 2026mabos, or null when the key is empty or malformed.
 	 *
 	 * @param mixed $key Stored event key.
-	 * @return array{label:string,url:string,target:string}|null
+	 * @return array{label:string,url:string,target:string,rel:string}|null
 	 */
 	private static function tba_link( mixed $key ): ?array {
 		$key = strtolower( self::text( $key ) );
@@ -108,10 +111,14 @@ final class Details {
 			return null;
 		}
 
+		$url    = 'https://www.thebluealliance.com/event/' . $key;
+		$target = \HyperPress\Utils\Link::target( $url );
+
 		return array(
 			'label'  => 'The Blue Alliance',
-			'url'    => 'https://www.thebluealliance.com/event/' . $key,
-			'target' => '_blank',
+			'url'    => $url,
+			'target' => $target,
+			'rel'    => \HyperPress\Utils\Link::rel( $target ),
 		);
 	}
 

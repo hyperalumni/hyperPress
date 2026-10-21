@@ -41,19 +41,19 @@ final class DetailsTest extends WP_UnitTestCase {
 	public function test_links_keep_order_and_titles_override_labels(): void {
 		$id      = $this->competition(
 			array(
-				'hyperpress_competition_stream_url'         => array( 'url' => 'https://example.org/s', 'title' => '' ),
-				'hyperpress_competition_ne_first_event_url' => array( 'url' => 'https://example.org/ne', 'title' => 'Custom' ),
+				'hyperpress_competition_stream_url'         => array( 'url' => 'https://external.example/s', 'title' => '' ),
+				'hyperpress_competition_ne_first_event_url' => array( 'url' => 'https://external.example/ne', 'title' => 'Custom' ),
 				'hyperpress_competition_ftc_ma_event_url'   => array( 'url' => '', 'title' => 'Dropped' ),
-				'hyperpress_competition_first_event_url'    => array( 'url' => 'https://example.org/f' ),
+				'hyperpress_competition_first_event_url'    => array( 'url' => 'https://external.example/f' ),
 			)
 		);
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
 			array(
-				array( 'label' => 'Custom', 'url' => 'https://example.org/ne', 'target' => '_blank' ),
-				array( 'label' => 'FIRST event', 'url' => 'https://example.org/f', 'target' => '_blank' ),
-				array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ),
+				array( 'label' => 'Custom', 'url' => 'https://external.example/ne', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'FIRST event', 'url' => 'https://external.example/f', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
 			),
 			$details['links']
 		);
@@ -62,13 +62,13 @@ final class DetailsTest extends WP_UnitTestCase {
 	public function test_link_title_equal_to_its_url_uses_the_default_label(): void {
 		$id      = $this->competition(
 			array(
-				'hyperpress_competition_stream_url' => array( 'url' => 'https://example.org/s', 'title' => 'https://example.org/s' ),
+				'hyperpress_competition_stream_url' => array( 'url' => 'https://external.example/s', 'title' => 'https://external.example/s' ),
 			)
 		);
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ) ),
+			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
 			$details['links']
 		);
 	}
@@ -76,13 +76,13 @@ final class DetailsTest extends WP_UnitTestCase {
 	public function test_link_title_equal_to_its_url_apart_from_case_and_whitespace_uses_the_default_label(): void {
 		$id      = $this->competition(
 			array(
-				'hyperpress_competition_stream_url' => array( 'url' => 'https://example.org/s', 'title' => '  HTTPS://Example.org/S ' ),
+				'hyperpress_competition_stream_url' => array( 'url' => 'https://external.example/s', 'title' => '  HTTPS://External.example/S ' ),
 			)
 		);
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ) ),
+			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
 			$details['links']
 		);
 	}
@@ -90,13 +90,13 @@ final class DetailsTest extends WP_UnitTestCase {
 	public function test_link_title_different_from_its_url_still_overrides_the_default_label(): void {
 		$id      = $this->competition(
 			array(
-				'hyperpress_competition_stream_url' => array( 'url' => 'https://example.org/s', 'title' => 'Watch live' ),
+				'hyperpress_competition_stream_url' => array( 'url' => 'https://external.example/s', 'title' => 'Watch live' ),
 			)
 		);
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Watch live', 'url' => 'https://example.org/s', 'target' => '_blank' ) ),
+			array( array( 'label' => 'Watch live', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
 			$details['links']
 		);
 	}
@@ -106,13 +106,13 @@ final class DetailsTest extends WP_UnitTestCase {
 			array(
 				'hyperpress_competition_ne_first_event_url' => array( 'url' => 'javascript:alert(1)', 'title' => 'Bad' ),
 				'hyperpress_competition_ftc_ma_event_url'   => array( 'url' => '', 'title' => 'Empty' ),
-				'hyperpress_competition_stream_url'         => array( 'url' => 'https://example.org/s', 'title' => '' ),
+				'hyperpress_competition_stream_url'         => array( 'url' => 'https://external.example/s', 'title' => '' ),
 			)
 		);
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ) ),
+			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
 			$details['links']
 		);
 	}
@@ -120,26 +120,26 @@ final class DetailsTest extends WP_UnitTestCase {
 	public function test_links_follow_the_documented_order_with_derived_tba_link(): void {
 		$id      = $this->competition(
 			array(
-				'hyperpress_competition_stream_url'         => array( 'url' => 'https://example.org/s', 'title' => '' ),
-				'hyperpress_competition_agenda_url'         => array( 'url' => 'https://example.org/a', 'title' => '' ),
+				'hyperpress_competition_stream_url'         => array( 'url' => 'https://external.example/s', 'title' => '' ),
+				'hyperpress_competition_agenda_url'         => array( 'url' => 'https://external.example/a', 'title' => '' ),
 				'hyperpress_competition_tba_event_key'      => '2026mabos',
 				'hyperpress_competition_frc_events_url'     => array( 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'title' => '' ),
-				'hyperpress_competition_first_event_url'    => array( 'url' => 'https://example.org/f', 'title' => '' ),
-				'hyperpress_competition_ftc_ma_event_url'   => array( 'url' => 'https://example.org/ftc', 'title' => '' ),
-				'hyperpress_competition_ne_first_event_url' => array( 'url' => 'https://example.org/ne', 'title' => '' ),
+				'hyperpress_competition_first_event_url'    => array( 'url' => 'https://external.example/f', 'title' => '' ),
+				'hyperpress_competition_ftc_ma_event_url'   => array( 'url' => 'https://external.example/ftc', 'title' => '' ),
+				'hyperpress_competition_ne_first_event_url' => array( 'url' => 'https://external.example/ne', 'title' => '' ),
 			)
 		);
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
 			array(
-				array( 'label' => 'NE FIRST event', 'url' => 'https://example.org/ne', 'target' => '_blank' ),
-				array( 'label' => 'FTC MA event', 'url' => 'https://example.org/ftc', 'target' => '_blank' ),
-				array( 'label' => 'FIRST event', 'url' => 'https://example.org/f', 'target' => '_blank' ),
-				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank' ),
-				array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank' ),
-				array( 'label' => 'Agenda', 'url' => 'https://example.org/a', 'target' => '_blank' ),
-				array( 'label' => 'Stream', 'url' => 'https://example.org/s', 'target' => '_blank' ),
+				array( 'label' => 'NE FIRST event', 'url' => 'https://external.example/ne', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'FTC MA event', 'url' => 'https://external.example/ftc', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'FIRST event', 'url' => 'https://external.example/f', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'Agenda', 'url' => 'https://external.example/a', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
 			),
 			$details['links']
 		);
@@ -150,7 +150,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank' ) ),
+			array( array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
 			$details['links']
 		);
 	}
@@ -180,15 +180,15 @@ final class DetailsTest extends WP_UnitTestCase {
 		$id      = $this->competition(
 			array(
 				'hyperpress_competition_frc_events_url' => array( 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'title' => '' ),
-				'hyperpress_competition_agenda_url'     => array( 'url' => 'https://example.org/agenda', 'title' => 'Schedule' ),
+				'hyperpress_competition_agenda_url'     => array( 'url' => 'https://external.example/agenda', 'title' => 'Schedule' ),
 			)
 		);
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
 			array(
-				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank' ),
-				array( 'label' => 'Schedule', 'url' => 'https://example.org/agenda', 'target' => '_blank' ),
+				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'Schedule', 'url' => 'https://external.example/agenda', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
 			),
 			$details['links']
 		);
@@ -198,9 +198,9 @@ final class DetailsTest extends WP_UnitTestCase {
 		$id      = $this->competition(
 			array(
 				'hyperpress_competition_stream_url' => array(
-					array( 'url' => 'https://example.org/s1', 'title' => 'Main stage' ),
-					array( 'url' => 'https://example.org/s2', 'title' => '' ),
-					array( 'url' => 'https://example.org/s3', 'title' => 'https://example.org/s3' ),
+					array( 'url' => 'https://external.example/s1', 'title' => 'Main stage' ),
+					array( 'url' => 'https://external.example/s2', 'title' => '' ),
+					array( 'url' => 'https://external.example/s3', 'title' => 'https://external.example/s3' ),
 				),
 			)
 		);
@@ -208,9 +208,9 @@ final class DetailsTest extends WP_UnitTestCase {
 
 		$this->assertSame(
 			array(
-				array( 'label' => 'Main stage', 'url' => 'https://example.org/s1', 'target' => '_blank' ),
-				array( 'label' => 'Stream 2', 'url' => 'https://example.org/s2', 'target' => '_blank' ),
-				array( 'label' => 'Stream 3', 'url' => 'https://example.org/s3', 'target' => '_blank' ),
+				array( 'label' => 'Main stage', 'url' => 'https://external.example/s1', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'Stream 2', 'url' => 'https://external.example/s2', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'Stream 3', 'url' => 'https://external.example/s3', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
 			),
 			$details['links']
 		);
@@ -220,8 +220,8 @@ final class DetailsTest extends WP_UnitTestCase {
 		$id      = $this->competition(
 			array(
 				'hyperpress_competition_stream_url' => array(
-					array( 'url' => 'https://example.org/s1', 'title' => '' ),
-					array( 'url' => 'https://example.org/s2' ),
+					array( 'url' => 'https://external.example/s1', 'title' => '' ),
+					array( 'url' => 'https://external.example/s2' ),
 				),
 			)
 		);
@@ -233,13 +233,13 @@ final class DetailsTest extends WP_UnitTestCase {
 	public function test_a_single_stream_in_a_list_is_labelled_stream(): void {
 		$id      = $this->competition(
 			array(
-				'hyperpress_competition_stream_url' => array( array( 'url' => 'https://example.org/s1', 'title' => '' ) ),
+				'hyperpress_competition_stream_url' => array( array( 'url' => 'https://external.example/s1', 'title' => '' ) ),
 			)
 		);
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Stream', 'url' => 'https://example.org/s1', 'target' => '_blank' ) ),
+			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s1', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
 			$details['links']
 		);
 	}
@@ -250,14 +250,14 @@ final class DetailsTest extends WP_UnitTestCase {
 				'hyperpress_competition_stream_url' => array(
 					array( 'url' => '', 'title' => 'Empty' ),
 					array( 'url' => 'javascript:alert(1)', 'title' => 'Bad' ),
-					array( 'url' => 'https://example.org/ok', 'title' => 'Ok' ),
+					array( 'url' => 'https://external.example/ok', 'title' => 'Ok' ),
 				),
 			)
 		);
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Ok', 'url' => 'https://example.org/ok', 'target' => '_blank' ) ),
+			array( array( 'label' => 'Ok', 'url' => 'https://external.example/ok', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
 			$details['links']
 		);
 	}
@@ -268,6 +268,36 @@ final class DetailsTest extends WP_UnitTestCase {
 
 			$this->assertSame( array(), Details::for_post( $id )['links'] );
 		}
+	}
+
+	public function test_internal_urls_open_in_the_same_tab_without_rel(): void {
+		$internal = home_url( '/agenda/' );
+		$id       = $this->competition(
+			array(
+				'hyperpress_competition_agenda_url' => array( 'url' => $internal, 'title' => '' ),
+				'hyperpress_competition_stream_url' => array( 'url' => 'https://external.example/s', 'title' => '' ),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array( 'label' => 'Agenda', 'url' => $internal, 'target' => '_self', 'rel' => '' ),
+				array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+			),
+			Details::for_post( $id )['links']
+		);
+	}
+
+	public function test_internal_pdf_opens_in_a_new_tab(): void {
+		$pdf = home_url( '/wp-content/uploads/2026/agenda.pdf' );
+		$id  = $this->competition(
+			array( 'hyperpress_competition_agenda_url' => array( 'url' => $pdf, 'title' => '' ) )
+		);
+
+		$this->assertSame(
+			array( array( 'label' => 'Agenda', 'url' => $pdf, 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
+			Details::for_post( $id )['links']
+		);
 	}
 
 	public function test_missing_start_date_gives_null_when(): void {

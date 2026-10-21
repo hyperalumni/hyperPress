@@ -42,7 +42,7 @@ final class ContentTest extends WP_UnitTestCase {
 			'hyperpress_competition_host_name'          => 'Host & Co',
 			'hyperpress_competition_venue_address'      => '1 Main St',
 			'hyperpress_competition_event_start_date'   => '2030-07-01 10:00',
-			'hyperpress_competition_ne_first_event_url' => array( 'url' => 'https://example.org/e?a=1&b=2', 'title' => 'Event "page"' ),
+			'hyperpress_competition_ne_first_event_url' => array( 'url' => 'https://external.example/e?a=1&b=2', 'title' => 'Event "page"' ),
 			'hyperpress_competition_stream_url'         => array( 'url' => '', 'title' => 'Empty' ),
 		);
 	}
@@ -98,8 +98,22 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'Host &amp; Co', $html );
 		$this->assertStringContainsString( '1 Main St', $html );
 		$this->assertStringContainsString( $this->date_text(), $html );
-		$this->assertMatchesRegularExpression( '#<a href="https://example\.org/e\?a=1(&amp;|&\#038;)b=2" target="_blank" rel="noopener noreferrer">Event &quot;page&quot;</a>#', $html );
+		$this->assertMatchesRegularExpression( '#<a href="https://external\.example/e\?a=1(&amp;|&\#038;)b=2" target="_blank" rel="noopener noreferrer">Event &quot;page&quot;</a>#', $html );
 		$this->assertSame( 1, substr_count( $html, '<a ' ) );
+	}
+
+	public function test_internal_link_opens_in_the_same_tab_without_rel(): void {
+		$id   = $this->competition(
+			array( 'hyperpress_competition_agenda_url' => array( 'url' => home_url( '/agenda/' ), 'title' => 'Agenda' ) )
+		);
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$html = (string) ob_get_clean();
+
+		$this->assertMatchesRegularExpression( '#<a href="[^"]*/agenda/" target="_self">Agenda</a>#', $html );
+		$this->assertStringNotContainsString( 'noopener', $html );
 	}
 
 	public function test_summary_in_a_list(): void {
@@ -151,7 +165,7 @@ final class ContentTest extends WP_UnitTestCase {
 	}
 
 	public function test_thumbnail_appears_in_both_views(): void {
-		$marker = static fn(): string => '<img class="thumbnail" src="https://example.org/t.jpg" alt="">';
+		$marker = static fn(): string => '<img class="thumbnail" src="https://external.example/t.jpg" alt="">';
 		add_filter( 'post_thumbnail_html', $marker );
 
 		$id = $this->competition( $this->full_meta() );

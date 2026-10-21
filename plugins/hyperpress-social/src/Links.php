@@ -93,7 +93,7 @@ final class Links {
 			}
 
 			$url    = (string) $url;
-			$target = self::is_internal( $url ) ? '_self' : '_blank';
+			$target = \HyperPress\Utils\Link::target( $url );
 
 			$links[] = array(
 				'key'       => $social['key'],
@@ -103,7 +103,7 @@ final class Links {
 				'title'     => $social['title'],
 				'url'       => $url,
 				'target'    => $target,
-				'rel'       => '_blank' === $target ? 'noopener noreferrer' : '',
+				'rel'       => \HyperPress\Utils\Link::rel( $target ),
 			);
 		}
 
@@ -123,22 +123,5 @@ final class Links {
 		$link = get_permalink( $page_id );
 
 		return false === $link ? '' : $link;
-	}
-
-	/**
-	 * True when the URL points at this site: a relative URL, or one whose host equals the site's host.
-	 * Comparing hosts (not substrings) stops `https://other.example/?r=<site url>` passing as internal.
-	 *
-	 * @param string $url Link URL.
-	 */
-	private static function is_internal( string $url ): bool {
-		$host = wp_parse_url( $url, PHP_URL_HOST );
-
-		if ( null === $host || false === $host ) {
-			// No host: a relative URL (or an unparseable one, which esc_url() will reject).
-			return 0 === strpos( $url, '/' ) && 0 !== strpos( $url, '//' );
-		}
-
-		return strtolower( $host ) === strtolower( (string) wp_parse_url( get_site_url(), PHP_URL_HOST ) );
 	}
 }

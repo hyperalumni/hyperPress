@@ -46,7 +46,7 @@ $hyperpress_when_s  = $hyperpress_when instanceof \DateTimeImmutable
 		<?php if ( ! empty( $hyperpress_details['links'] ) ) : ?>
 			<ul class="competition-links">
 				<?php foreach ( $hyperpress_details['links'] as $hyperpress_link ) : ?>
-					<li><a href="<?php echo esc_url( $hyperpress_link['url'] ); ?>" target="<?php echo esc_attr( $hyperpress_link['target'] ); ?>" rel="noopener noreferrer"><?php echo esc_html( $hyperpress_link['label'] ); ?></a></li>
+					<li><a href="<?php echo esc_url( $hyperpress_link['url'] ); ?>" target="<?php echo esc_attr( $hyperpress_link['target'] ); ?>"<?php echo '' !== $hyperpress_link['rel'] ? ' rel="' . esc_attr( $hyperpress_link['rel'] ) . '"' : ''; ?>><?php echo esc_html( $hyperpress_link['label'] ); ?></a></li>
 				<?php endforeach; ?>
 			</ul>
 		<?php endif; ?>
