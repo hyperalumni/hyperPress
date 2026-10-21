@@ -175,23 +175,46 @@ final class CountdownTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'Load In', $output );
 	}
 
-	public function test_between_days_targets_the_next_day_and_after_the_last_keeps_the_last_day(): void {
+	public function test_a_day_holds_the_countdown_until_it_ends_then_the_next_day_takes_over(): void {
 		update_option( 'timezone_string', 'America/New_York' );
-		$id = $this->competition(
-			array(),
-			array(),
-			array( array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00' ), array( 'label' => 'Day 2', 'start' => '2030-07-02 09:00' ) )
+		$id    = $this->competition( array(), array(), array( array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00' ), array( 'label' => 'Day 2', 'start' => '2030-07-02 09:00' ) ) );
+		$cases = array(
+			'2030-07-01 09:00'    => array( '2030-07-01T09:00:00-04:00', 'Day 1' ),
+			'2030-07-01 12:00'    => array( '2030-07-01T09:00:00-04:00', 'Day 1' ),
+			'2030-07-01 19:59:59' => array( '2030-07-01T09:00:00-04:00', 'Day 1' ),
+			'2030-07-01 20:00'    => array( '2030-07-02T09:00:00-04:00', 'Day 2' ),
+			'2030-07-02 20:00'    => array( '2030-07-02T09:00:00-04:00', 'Day 2' ),
+			'2030-07-09 12:00'    => array( '2030-07-02T09:00:00-04:00', 'Day 2' ),
 		);
+		foreach ( $cases as $now => $expected ) {
+			$this->set_now( $now );
+			$output = Countdown::render( $id );
+			$this->assertStringContainsString( 'data-date="' . $expected[0] . '"', $output, $now );
+			$this->assertStringContainsString( '>' . $expected[1] . '</h2>', $output, $now );
+		}
+	}
 
-		$this->set_now( '2030-07-01 12:00' );
-		$between = Countdown::render( $id );
-		$this->assertStringContainsString( 'data-date="2030-07-02T09:00:00-04:00"', $between );
-		$this->assertStringContainsString( '>Day 2</h2>', $between );
+	public function test_a_row_end_extends_the_day_and_a_skipped_day_never_holds_the_countdown(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id = $this->competition( array(), array(), array( array( 'label' => 'Load In', 'start' => '2030-06-30 16:00', 'end' => '21:00', 'skip' => '1' ), array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00', 'end' => '22:00' ), array( 'label' => 'Day 2', 'start' => '2030-07-02 09:00' ) ) );
 
-		$this->set_now( '2030-07-09 12:00' );
-		$after = Countdown::render( $id );
-		$this->assertStringContainsString( 'data-date="2030-07-02T09:00:00-04:00"', $after );
-		$this->assertStringContainsString( '>Day 2</h2>', $after );
+		$this->set_now( '2030-06-30 18:00' );
+		$this->assertStringContainsString( '>Day 1</h2>', Countdown::render( $id ) );
+		$this->set_now( '2030-07-01 21:59' );
+		$this->assertStringContainsString( '>Day 1</h2>', Countdown::render( $id ) );
+		$this->set_now( '2030-07-01 22:00' );
+		$this->assertStringContainsString( '>Day 2</h2>', Countdown::render( $id ) );
+	}
+
+	public function test_the_shortcode_heading_follows_the_same_switch(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id = $this->titled( 'UNH District Event 2026' );
+		update_post_meta( $id, Schedule::FIELD, array( array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00' ), array( 'label' => 'Day 2', 'start' => '2030-07-02 09:00' ) ) );
+
+		$this->set_now( '2030-07-01 19:59' );
+		$this->assertStringContainsString( '>UNH District Event 2026: Day 1</h2>', do_shortcode( '[hyperpress_competition_countdown id="' . $id . '"]' ) );
+		$this->set_now( '2030-07-01 20:00' );
+		$this->assertStringContainsString( '>UNH District Event 2026: Day 2</h2>', do_shortcode( '[hyperpress_competition_countdown id="' . $id . '"]' ) );
 	}
 
 	public function test_no_counted_day_gives_nothing(): void {

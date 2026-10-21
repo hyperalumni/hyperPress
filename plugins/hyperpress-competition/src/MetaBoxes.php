@@ -39,6 +39,16 @@ final class MetaBoxes {
 					'desc' => __( 'Keep counting after the start time instead of stopping at zero.', 'hyperpress' ),
 					'type' => 'checkbox',
 				),
+				array(
+					'id'                => Settings::DAY_END,
+					'name'              => __( 'Days end at', 'hyperpress' ),
+					'desc'              => __( 'The countdown stays on a day until this time, then moves to the next day. A day can override it.', 'hyperpress' ),
+					'type'              => 'time',
+					'timestamp'         => false,
+					'save_format'       => 'H:i',
+					'std'               => Settings::DAY_END_DEFAULT,
+					'sanitize_callback' => array( Settings::class, 'sanitize_day_end' ),
+				),
 			),
 		);
 
@@ -118,6 +128,14 @@ final class MetaBoxes {
 							'inline'      => false,
 							'timestamp'   => false,
 							'save_format' => 'Y-m-d H:i',
+						),
+						array(
+							'name'        => 'Ends at',
+							'id'          => 'end',
+							'type'        => 'time',
+							'inline'      => false,
+							'timestamp'   => false,
+							'save_format' => 'H:i',
 						),
 						array(
 							'name' => "Don't count down to this day",

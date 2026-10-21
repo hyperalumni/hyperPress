@@ -2,6 +2,7 @@
 namespace HyperPress\Tests\Integration\Competition;
 
 use HyperPress\Competition\Schedule;
+use HyperPress\Competition\Settings;
 use WP_UnitTestCase;
 
 final class ScheduleTest extends WP_UnitTestCase {
@@ -13,6 +14,7 @@ final class ScheduleTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		remove_all_filters( 'hyperpress_competition_now' );
+		delete_option( Settings::OPTION );
 		parent::tear_down();
 	}
 
@@ -28,23 +30,26 @@ final class ScheduleTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * @return list<array{label:string,start:\DateTimeImmutable,countdown:bool}>
+	 * @return list<array{label:string,start:\DateTimeImmutable,end:\DateTimeImmutable,countdown:bool}> Load In (ends 21:00), Day 1 and Day 2 (end 20:00).
 	 */
 	private function three_days( bool $load_in_counts = true, bool $last_counts = true ): array {
 		return array(
 			array(
 				'label'     => 'Load In',
 				'start'     => $this->instant_at( '2030-06-30 16:00' ),
+				'end'       => $this->instant_at( '2030-06-30 21:00' ),
 				'countdown' => $load_in_counts,
 			),
 			array(
 				'label'     => 'Day 1',
 				'start'     => $this->instant_at( '2030-07-01 09:00' ),
+				'end'       => $this->instant_at( '2030-07-01 20:00' ),
 				'countdown' => true,
 			),
 			array(
 				'label'     => 'Day 2',
 				'start'     => $this->instant_at( '2030-07-02 09:00' ),
+				'end'       => $this->instant_at( '2030-07-02 20:00' ),
 				'countdown' => $last_counts,
 			),
 		);
@@ -226,16 +231,80 @@ final class ScheduleTest extends WP_UnitTestCase {
 		$this->assertSame( ( new \DateTimeImmutable( '2030-03-10T16:00:00+00:00' ) )->getTimestamp(), $days[1]['start']->getTimestamp() );
 	}
 
+	public function test_the_default_end_is_eight_pm_on_the_start_date_and_follows_the_setting(): void {
+		$id = $this->post_with( array( array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00' ) ) );
+
+		$this->assertSame( '2030-07-01T20:00:00-04:00', Schedule::days( $id )[0]['end']->format( 'c' ) );
+
+		update_option( Settings::OPTION, array( Settings::DAY_END => '18:30' ) );
+		$this->assertSame( '2030-07-01T18:30:00-04:00', Schedule::days( $id )[0]['end']->format( 'c' ) );
+	}
+
+	public function test_a_row_end_overrides_the_setting(): void {
+		$days = Schedule::days( $this->post_with( array( array( 'label' => 'Load In', 'start' => '2030-06-30 16:00', 'end' => '21:00' ), array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00' ) ) ) );
+
+		$this->assertSame( '2030-06-30T21:00:00-04:00', $days[0]['end']->format( 'c' ) );
+		$this->assertSame( '2030-07-01T20:00:00-04:00', $days[1]['end']->format( 'c' ) );
+	}
+
+	/** @return array<string,array<int,mixed>> */
+	public static function invalid_ends(): array {
+		return array( 'empty' => array( '' ), 'junk' => array( 'junk' ), 'hour 25' => array( '25:00' ), 'am pm' => array( '9pm' ), 'array' => array( array( '21:00' ) ), 'null' => array( null ), 'seconds' => array( '21:00:00' ) );
+	}
+
+	/**
+	 * @dataProvider invalid_ends
+	 * @param mixed $end Stored end.
+	 */
+	public function test_an_invalid_row_end_falls_back_to_the_setting( $end ): void {
+		$days = Schedule::days( $this->post_with( array( array( 'start' => '2030-07-01 09:00', 'end' => $end ) ) ) );
+
+		$this->assertSame( '2030-07-01T20:00:00-04:00', $days[0]['end']->format( 'c' ) );
+	}
+
+	public function test_an_end_that_is_not_after_the_start_becomes_the_end_of_that_date(): void {
+		$days = Schedule::days( $this->post_with( array( array( 'start' => '2030-07-01 21:00' ), array( 'start' => '2030-07-02 09:00', 'end' => '09:00' ), array( 'start' => '2030-07-03 09:00', 'end' => '08:00' ) ) ) );
+
+		foreach ( array( '2030-07-01', '2030-07-02', '2030-07-03' ) as $index => $date ) {
+			$this->assertSame( $date . 'T23:59:59-04:00', $days[ $index ]['end']->format( 'c' ), $date );
+		}
+	}
+
+	public function test_the_end_keeps_the_right_offset_across_dst(): void {
+		$days = Schedule::days( $this->post_with( array( array( 'start' => '2030-03-09 12:00' ), array( 'start' => '2030-03-10 12:00' ), array( 'start' => '2030-11-02 12:00' ), array( 'start' => '2030-11-03 12:00' ) ) ) );
+
+		$this->assertSame( array( '2030-03-09T20:00:00-05:00', '2030-03-10T20:00:00-04:00', '2030-11-02T20:00:00-04:00', '2030-11-03T20:00:00-05:00' ), array_map( static fn( array $day ): string => $day['end']->format( 'c' ), $days ) );
+	}
+
+	public function test_a_normalised_day_has_label_start_end_and_countdown(): void {
+		$days = Schedule::days( $this->post_with( array( array( 'label' => 'Day 1', 'start' => '2030-07-01 09:00' ) ) ) );
+
+		$this->assertSame( array( 'label', 'start', 'end', 'countdown' ), array_keys( $days[0] ) );
+		$this->assertInstanceOf( \DateTimeImmutable::class, $days[0]['end'] );
+	}
+
 	public function test_pick_before_the_first_day_gives_the_first_counted_day(): void {
 		$day = Schedule::pick( $this->three_days(), $this->instant_at( '2030-06-29 08:00' ) );
 
 		$this->assertSame( 'Load In', $day['label'] );
 	}
 
-	public function test_pick_between_days_gives_the_next_counted_day(): void {
-		$day = Schedule::pick( $this->three_days(), $this->instant_at( '2030-07-01 12:00' ) );
+	public function test_pick_during_a_day_keeps_that_day_until_it_ends(): void {
+		$this->assertSame( 'Day 1', Schedule::pick( $this->three_days(), $this->instant_at( '2030-07-01 12:00' ) )['label'] );
+		$this->assertSame( 'Day 1', Schedule::pick( $this->three_days(), $this->instant_at( '2030-07-01 19:59:59' ) )['label'] );
+	}
 
-		$this->assertSame( 'Day 2', $day['label'] );
+	public function test_pick_at_exactly_the_end_gives_the_next_counted_day(): void {
+		$this->assertSame( 'Day 2', Schedule::pick( $this->three_days(), $this->instant_at( '2030-07-01 20:00' ) )['label'] );
+		$this->assertSame( 'Day 2', Schedule::pick( $this->three_days(), $this->instant_at( '2030-07-01 21:00' ) )['label'] );
+	}
+
+	public function test_pick_after_the_last_day_ends_keeps_the_last_counted_day(): void {
+		$this->assertSame( 'Day 2', Schedule::pick( $this->three_days(), $this->instant_at( '2030-07-02 20:00' ) )['label'] );
+	}
+
+	public function test_a_skipped_day_that_is_still_running_never_holds_the_countdown(): void {
+		$this->assertSame( 'Day 1', Schedule::pick( $this->three_days( false ), $this->instant_at( '2030-06-30 18:00' ) )['label'] );
 	}
 
 	public function test_pick_after_the_last_day_gives_the_last_counted_day(): void {
@@ -276,8 +345,11 @@ final class ScheduleTest extends WP_UnitTestCase {
 		$cases = array(
 			'2030-06-29 08:00' => 0,
 			'2030-06-30 16:00' => 0,
-			'2030-06-30 17:00' => 1,
-			'2030-07-01 12:00' => 2,
+			'2030-06-30 20:59:59' => 0,
+			'2030-06-30 21:00' => 1,
+			'2030-07-01 12:00' => 1,
+			'2030-07-01 19:59:59' => 1,
+			'2030-07-01 20:00' => 2,
 			'2030-07-05 12:00' => 2,
 		);
 		foreach ( $cases as $now => $index ) {
@@ -327,7 +399,7 @@ final class ScheduleTest extends WP_UnitTestCase {
 			)
 		);
 
-		add_filter( 'hyperpress_competition_now', fn() => $this->instant_at( '2030-07-01 12:00' ) );
+		add_filter( 'hyperpress_competition_now', fn() => $this->instant_at( '2030-07-01 21:00' ) );
 		$this->assertSame( 'Day 2', Schedule::current( $id )['label'] );
 
 		remove_all_filters( 'hyperpress_competition_now' );

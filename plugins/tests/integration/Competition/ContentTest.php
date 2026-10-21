@@ -444,22 +444,24 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'A <b>', $html );
 	}
 
-	public function test_card_states_follow_the_calendar(): void {
+	public function test_card_states_follow_each_days_end(): void {
 		$id      = $this->competition( array(), 'Granite State', self::three_days() );
 		$plain   = '<div class="callout text-center">';
 		$faded   = '<div class="callout text-center faded">';
 		$current = '<div class="callout text-center primary" aria-current="true">';
+		$cases   = array(
+			'2030-06-29 08:00'    => array( $plain, $current, $plain ),
+			'2030-07-01 12:00'    => array( $faded, $current, $plain ),
+			'2030-07-01 19:59:59' => array( $faded, $current, $plain ),
+			'2030-07-01 20:00'    => array( $faded, $faded, $current ),
+			'2030-07-02 19:59:59' => array( $faded, $faded, $current ),
+		);
+		foreach ( $cases as $now => $tags ) {
+			$this->set_now( $now );
+			$this->assertSame( $tags, $this->card_tags( $this->full_html( $id ) ), $now );
+		}
 
-		$this->set_now( '2030-06-29 08:00' );
-		$this->assertSame( array( $plain, $current, $plain ), $this->card_tags( $this->full_html( $id ) ) );
-
-		$this->set_now( '2030-07-01 12:00' );
-		$this->assertSame( array( $faded, $plain, $current ), $this->card_tags( $this->full_html( $id ) ), 'Day 1 is today but the countdown moved on' );
-
-		$this->set_now( '2030-07-02 12:00' );
-		$this->assertSame( array( $faded, $faded, $current ), $this->card_tags( $this->full_html( $id ) ), 'the last day stays current all day' );
-
-		$this->set_now( '2030-07-03 00:00' );
+		$this->set_now( '2030-07-02 20:00' );
 		$html = $this->full_html( $id );
 		$this->assertSame( array( $faded, $faded, $faded ), $this->card_tags( $html ), 'a finished event highlights nothing' );
 		$this->assertStringNotContainsString( 'aria-current', $html );
@@ -497,6 +499,9 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '<p class="competition-date">' . $day( '2030-07-01 09:00' ) . '</p>', $this->render( $id ) );
 
 		$this->set_now( '2030-07-01 12:00' );
+		$this->assertStringContainsString( '<p class="competition-date">' . $day( '2030-07-01 09:00' ) . '</p>', $this->render( $id ) );
+
+		$this->set_now( '2030-07-01 20:00' );
 		$html = $this->render( $id );
 		$this->assertStringContainsString( '<p class="competition-date">' . $day( '2030-07-02 09:00' ) . '</p>', $html );
 		$this->assertStringNotContainsString( $day( '2030-07-01 09:00' ), $html );

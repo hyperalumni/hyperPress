@@ -72,23 +72,22 @@ final class Details {
 	}
 
 	/**
-	 * Every day with its display state, comparing calendar dates in the site timezone.
+	 * Every day with its display state, from each day's end.
 	 *
-	 * `past` is a day whose date is before today's; `current` is the day at `$current` (the countdown's target) when its
-	 * date is today or later; everything else is `upcoming`. So a finished event has no `current` day.
+	 * `past` is a day whose end is not after `$now`; `current` is the day at `$current` (the countdown's target) unless
+	 * it is past; everything else is `upcoming`, which includes a skipped day that is in progress. After the last day
+	 * ends every day is `past` and none is `current`.
 	 *
-	 * @param list<array{label:string,start:\DateTimeImmutable,countdown:bool}> $days    Days in chronological order.
-	 * @param int|null                                                          $current Index of the day the countdown targets.
-	 * @param \DateTimeImmutable                                                $now     The moment to compare against.
+	 * @param list<array{label:string,start:\DateTimeImmutable,end:\DateTimeImmutable,countdown:bool}> $days    Days in chronological order.
+	 * @param int|null                                                                                 $current Index of the day the countdown targets.
+	 * @param \DateTimeImmutable                                                                       $now     The moment to compare against.
 	 *
 	 * @return list<array{label:string,start:\DateTimeImmutable,state:string}>
 	 */
 	private static function day_states( array $days, ?int $current, \DateTimeImmutable $now ): array {
-		$zone   = wp_timezone();
-		$today  = $now->setTimezone( $zone )->format( 'Y-m-d' );
 		$states = array();
 		foreach ( $days as $index => $day ) {
-			if ( $day['start']->setTimezone( $zone )->format( 'Y-m-d' ) < $today ) {
+			if ( $day['end'] <= $now ) {
 				$state = 'past';
 			} else {
 				$state = $index === $current ? 'current' : 'upcoming';

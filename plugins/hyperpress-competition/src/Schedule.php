@@ -17,7 +17,7 @@ final class Schedule {
 	 *
 	 * @param int $post_id Competition post ID.
 	 *
-	 * @return list<array{label:string,start:\DateTimeImmutable,countdown:bool}>
+	 * @return list<array{label:string,start:\DateTimeImmutable,end:\DateTimeImmutable,countdown:bool}>
 	 */
 	public static function days( int $post_id ): array {
 		return self::normalize( get_post_meta( $post_id, self::FIELD, true ) );
@@ -28,16 +28,21 @@ final class Schedule {
 	 *
 	 * Meta Box leaves an unticked checkbox out of the stored row, so a day is counted unless its row has a non-empty `skip`.
 	 *
+	 * A day's `end` is the row's `end` (a 24-hour `H:i` time of day; Meta Box omits an empty one) or else
+	 * `Settings::day_end()`, applied to the date of the start in the site timezone. An end that is not after the start
+	 * becomes 23:59:59 of that date.
+	 *
 	 * @param mixed $rows Stored group value.
 	 *
-	 * @return list<array{label:string,start:\DateTimeImmutable,countdown:bool}>
+	 * @return list<array{label:string,start:\DateTimeImmutable,end:\DateTimeImmutable,countdown:bool}>
 	 */
 	public static function normalize( mixed $rows ): array {
 		if ( ! is_array( $rows ) ) {
 			return array();
 		}
 
-		$days = array();
+		$default_end = Settings::day_end();
+		$days        = array();
 		foreach ( array_values( $rows ) as $order => $row ) {
 			if ( ! is_array( $row ) ) {
 				continue;
@@ -51,6 +56,7 @@ final class Schedule {
 				'order'     => $order,
 				'label'     => is_string( $label ) ? trim( $label ) : '',
 				'start'     => $start,
+				'end'       => self::end_of( $start, $row['end'] ?? null, $default_end ),
 				'countdown' => empty( $row['skip'] ),
 			);
 		}
@@ -64,6 +70,7 @@ final class Schedule {
 			static fn( array $day ): array => array(
 				'label'     => $day['label'],
 				'start'     => $day['start'],
+				'end'       => $day['end'],
 				'countdown' => $day['countdown'],
 			),
 			$days
@@ -71,12 +78,26 @@ final class Schedule {
 	}
 
 	/**
-	 * The first counted day starting at or after `$now`, else the last counted day, else null.
+	 * When a day ends: `$end` (or `$fallback` when it is not a valid `H:i` time) on the date of `$start`.
 	 *
-	 * @param list<array{label:string,start:\DateTimeImmutable,countdown:bool}> $days Days in chronological order.
-	 * @param \DateTimeImmutable                                                $now  The moment to compare against.
+	 * @param \DateTimeImmutable $start    The day's start.
+	 * @param mixed              $end      The row's stored end.
+	 * @param string             $fallback The setting's `H:i` time.
+	 */
+	private static function end_of( \DateTimeImmutable $start, mixed $end, string $fallback ): \DateTimeImmutable {
+		$time = is_string( $end ) && 1 === preg_match( Settings::TIME_PATTERN, $end ) ? $end : $fallback;
+		$when = $start->setTime( (int) substr( $time, 0, 2 ), (int) substr( $time, 3, 2 ) );
+
+		return $when > $start ? $when : $start->setTime( 23, 59, 59 );
+	}
+
+	/**
+	 * The first counted day that ends after `$now`, else the last counted day, else null.
 	 *
-	 * @return array{label:string,start:\DateTimeImmutable,countdown:bool}|null
+	 * @param list<array{label:string,start:\DateTimeImmutable,end:\DateTimeImmutable,countdown:bool}> $days Days in chronological order.
+	 * @param \DateTimeImmutable                                                                       $now  The moment to compare against.
+	 *
+	 * @return array{label:string,start:\DateTimeImmutable,end:\DateTimeImmutable,countdown:bool}|null
 	 */
 	public static function pick( array $days, \DateTimeImmutable $now ): ?array {
 		$index = self::pick_index( $days, $now );
@@ -89,8 +110,8 @@ final class Schedule {
 	 *
 	 * Lets a caller mark the current day by position (labels can repeat or be empty).
 	 *
-	 * @param list<array{label:string,start:\DateTimeImmutable,countdown:bool}> $days Days in chronological order.
-	 * @param \DateTimeImmutable                                                $now  The moment to compare against.
+	 * @param list<array{label:string,start:\DateTimeImmutable,end:\DateTimeImmutable,countdown:bool}> $days Days in chronological order.
+	 * @param \DateTimeImmutable                                                                       $now  The moment to compare against.
 	 */
 	public static function pick_index( array $days, \DateTimeImmutable $now ): ?int {
 		$last = null;
@@ -98,7 +119,7 @@ final class Schedule {
 			if ( ! $day['countdown'] ) {
 				continue;
 			}
-			if ( $day['start'] >= $now ) {
+			if ( $day['end'] > $now ) {
 				return $index;
 			}
 			$last = $index;
@@ -133,7 +154,7 @@ final class Schedule {
 	 * @param int                     $post_id Competition post ID.
 	 * @param \DateTimeImmutable|null $now     Moment to compare against; defaults to self::now().
 	 *
-	 * @return array{label:string,start:\DateTimeImmutable,countdown:bool}|null
+	 * @return array{label:string,start:\DateTimeImmutable,end:\DateTimeImmutable,countdown:bool}|null
 	 */
 	public static function current( int $post_id, ?\DateTimeImmutable $now = null ): ?array {
 		return self::pick( self::days( $post_id ), $now ?? self::now() );

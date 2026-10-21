@@ -43,12 +43,16 @@ final class MetaBoxesTest extends WP_UnitTestCase {
 		$fields = $this->days_field()['fields'];
 		$by_id  = array_column( $fields, null, 'id' );
 
-		$this->assertSame( array( 'label', 'start', 'skip' ), array_column( $fields, 'id' ) );
+		$this->assertSame( array( 'label', 'start', 'end', 'skip' ), array_column( $fields, 'id' ) );
 		$this->assertSame( 'text', $by_id['label']['type'] );
 		$this->assertSame( 'datetime', $by_id['start']['type'] );
 		$this->assertFalse( $by_id['start']['timestamp'] );
 		$this->assertSame( 'Y-m-d H:i', $by_id['start']['save_format'] );
 		$this->assertArrayNotHasKey( 'format', $by_id['start'] );
+		$this->assertSame( 'time', $by_id['end']['type'] );
+		$this->assertFalse( $by_id['end']['timestamp'] );
+		$this->assertSame( 'H:i', $by_id['end']['save_format'] );
+		$this->assertArrayNotHasKey( 'std', $by_id['end'] );
 		$this->assertSame( 'checkbox', $by_id['skip']['type'] );
 		$this->assertEmpty( $by_id['skip']['std'] ?? null, 'no default: the unticked state must be the normal one' );
 	}

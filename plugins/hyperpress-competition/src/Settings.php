@@ -12,6 +12,9 @@ final class Settings {
 	public const BANNER_SUBTITLE         = 'hyperpress_competition_banner_subtitle';
 	public const BANNER_SUBTITLE_DEFAULT = '';
 	public const PAST_ZERO               = 'hyperpress_competition_countdown_past_zero';
+	public const DAY_END                 = 'hyperpress_competition_day_end';
+	public const DAY_END_DEFAULT         = '20:00';
+	public const TIME_PATTERN            = '/^([01]\d|2[0-3]):[0-5]\d$/';
 
 	/**
 	 * Default values, keyed by field id.
@@ -22,6 +25,7 @@ final class Settings {
 		return array(
 			self::BANNER_SUBTITLE => self::BANNER_SUBTITLE_DEFAULT,
 			self::PAST_ZERO       => false,
+			self::DAY_END         => self::DAY_END_DEFAULT,
 		);
 	}
 
@@ -65,5 +69,29 @@ final class Settings {
 	public static function past_zero(): bool {
 		$option = get_option( self::OPTION );
 		return is_array( $option ) && ! empty( $option[ self::PAST_ZERO ] );
+	}
+
+	/**
+	 * The time of day (24-hour `H:i`) a schedule day ends at unless its own row says otherwise.
+	 *
+	 * Option missing or not an array, key missing (Meta Box drops the key of an empty field), value not a string or
+	 * malformed: the default.
+	 */
+	public static function day_end(): string {
+		$option = get_option( self::OPTION );
+		$value  = is_array( $option ) ? ( $option[ self::DAY_END ] ?? null ) : null;
+
+		return is_string( $value ) && 1 === preg_match( self::TIME_PATTERN, $value ) ? $value : self::DAY_END_DEFAULT;
+	}
+
+	/**
+	 * Sanitize callback for the "Days end at" field: a valid `H:i` time, else '' (Meta Box then drops the key).
+	 *
+	 * @param mixed $value Submitted value.
+	 */
+	public static function sanitize_day_end( $value ): string {
+		$value = is_string( $value ) ? trim( $value ) : '';
+
+		return 1 === preg_match( self::TIME_PATTERN, $value ) ? $value : '';
 	}
 }
