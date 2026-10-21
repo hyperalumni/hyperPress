@@ -64,6 +64,17 @@ final class CountdownTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'Array', Countdown::render( $array_id ) );
 	}
 
+	public function test_date_is_shown_only_when_asked_for(): void {
+		update_option( 'timezone_string', 'America/New_York' );
+		$id = $this->competition( array( self::START => '2030-07-01 10:00', self::VENUE => 'Memorial Field' ) );
+
+		$with = Countdown::render( $id, true, true );
+		$this->assertStringContainsString( '<time>Monday July 01, 2030 @ 10:00AM</time>', $with );
+		$this->assertStringContainsString( 'Memorial Field', $with );
+		$this->assertStringNotContainsString( '<time>', Countdown::render( $id, true ) );
+		$this->assertStringNotContainsString( '<time>', do_shortcode( '[hyperpress_competition_countdown id="' . $id . '"]' ) );
+	}
+
 	public function test_past_start_still_renders_and_the_setting_reaches_the_script(): void {
 		update_option( Settings::OPTION, array( Settings::PAST_ZERO => '1' ) );
 		$id     = $this->competition( array( self::START => '2001-01-01 10:00' ) );

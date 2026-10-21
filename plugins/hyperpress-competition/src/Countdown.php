@@ -29,9 +29,10 @@ final class Countdown {
 	 * The countdown markup, or '' unless the competition is readable and has a usable start date.
 	 *
 	 * @param int  $post_id       Competition post ID.
-	 * @param bool $show_location Whether to show the venue name beside the countdown.
+	 * @param bool $show_location Whether to show the venue name under the countdown.
+	 * @param bool $show_date     Whether to show the formatted start date under the circles.
 	 */
-	public static function render( int $post_id, bool $show_location = true ): string {
+	public static function render( int $post_id, bool $show_location = true, bool $show_date = false ): string {
 		if ( ! class_exists( '\HyperPress\Countdown\Renderer' ) || ! self::is_renderable( get_post( $post_id ) ) ) {
 			return '';
 		}
@@ -47,7 +48,7 @@ final class Countdown {
 				'location'  => $show_location ? Details::for_post( $post_id )['venue'] : '',
 				'past_zero' => Settings::past_zero(),
 				'slug'      => 'competition-' . $post_id,
-				'show_date' => false,
+				'show_date' => $show_date,
 			)
 		);
 	}

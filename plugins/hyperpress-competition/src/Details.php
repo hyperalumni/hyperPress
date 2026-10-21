@@ -11,14 +11,14 @@ final class Details {
 
 	/** Link fields in display order; the derived Blue Alliance link follows `first` + `frc_events`, then the agenda. */
 	private const LINKS_BEFORE_TBA = array(
-		'hyperpress_competition_ne_first_event_url' => 'NE FIRST event',
-		'hyperpress_competition_ftc_ma_event_url'   => 'FTC MA event',
-		'hyperpress_competition_first_event_url'    => 'FIRST event',
+		'hyperpress_competition_ne_first_event_url' => 'NE FIRST Event',
+		'hyperpress_competition_ftc_ma_event_url'   => 'FTC MA Event',
+		'hyperpress_competition_first_event_url'    => 'FIRST Event',
 		'hyperpress_competition_frc_events_url'     => 'FRC Events',
 	);
 
 	private const LINKS_AFTER_TBA = array(
-		'hyperpress_competition_agenda_url' => 'Agenda',
+		'hyperpress_competition_agenda_url' => 'Public Agenda',
 	);
 
 	/**
@@ -26,12 +26,12 @@ final class Details {
 	 *
 	 * @param int $post_id Competition post ID.
 	 *
-	 * @return array{host:string,venue:string,address:string,when:?\DateTimeImmutable,links:list<array{label:string,url:string,target:string,rel:string}>}
+	 * @return array{host:string,venue:string,address:string,when:?\DateTimeImmutable,links:list<array{label:string,url:string,target:string,rel:string,group:string}>} Each link's `group` is `info` or `live` (streams).
 	 */
 	public static function for_post( int $post_id ): array {
 		$links = array();
 		foreach ( self::LINKS_BEFORE_TBA as $key => $default_label ) {
-			$entry = self::link_entry( \HyperPress\Utils\Meta::get( $key, $post_id ), $default_label );
+			$entry = self::link_entry( \HyperPress\Utils\Meta::get( $key, $post_id ), $default_label, 'info' );
 			if ( null !== $entry ) {
 				$links[] = $entry;
 			}
@@ -43,7 +43,7 @@ final class Details {
 		}
 
 		foreach ( self::LINKS_AFTER_TBA as $key => $default_label ) {
-			$entry = self::link_entry( \HyperPress\Utils\Meta::get( $key, $post_id ), $default_label );
+			$entry = self::link_entry( \HyperPress\Utils\Meta::get( $key, $post_id ), $default_label, 'info' );
 			if ( null !== $entry ) {
 				$links[] = $entry;
 			}
@@ -52,7 +52,7 @@ final class Details {
 		$streams = self::stream_list( \HyperPress\Utils\Meta::get( self::STREAMS, $post_id ) );
 		foreach ( $streams as $index => $stream ) {
 			$label = count( $streams ) > 1 ? 'Stream ' . ( $index + 1 ) : 'Stream';
-			$entry = self::link_entry( $stream, $label );
+			$entry = self::link_entry( $stream, $label, 'live' );
 			if ( null !== $entry ) {
 				$links[] = $entry;
 			}
@@ -72,9 +72,10 @@ final class Details {
 	 *
 	 * @param mixed  $link          Stored link array.
 	 * @param string $default_label Label used when the link has no title.
-	 * @return array{label:string,url:string,target:string,rel:string}|null
+	 * @param string $group         Display group: `info` or `live`.
+	 * @return array{label:string,url:string,target:string,rel:string,group:string}|null
 	 */
-	private static function link_entry( mixed $link, string $default_label ): ?array {
+	private static function link_entry( mixed $link, string $default_label, string $group ): ?array {
 		if ( ! is_array( $link ) ) {
 			return null;
 		}
@@ -96,6 +97,7 @@ final class Details {
 			'url'    => $url,
 			'target' => $target,
 			'rel'    => \HyperPress\Utils\Link::rel( $target ),
+			'group'  => $group,
 		);
 	}
 
@@ -103,7 +105,7 @@ final class Details {
 	 * The Blue Alliance link for an event key such as 2026mabos, or null when the key is empty or malformed.
 	 *
 	 * @param mixed $key Stored event key.
-	 * @return array{label:string,url:string,target:string,rel:string}|null
+	 * @return array{label:string,url:string,target:string,rel:string,group:string}|null
 	 */
 	private static function tba_link( mixed $key ): ?array {
 		$key = strtolower( self::text( $key ) );
@@ -119,6 +121,7 @@ final class Details {
 			'url'    => $url,
 			'target' => $target,
 			'rel'    => \HyperPress\Utils\Link::rel( $target ),
+			'group'  => 'info',
 		);
 	}
 

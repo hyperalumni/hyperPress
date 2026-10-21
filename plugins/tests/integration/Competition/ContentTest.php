@@ -97,9 +97,119 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertSame( 1, substr_count( $html, 'Arena &lt;b&gt;One&lt;/b&gt;' ) );
 		$this->assertStringContainsString( 'Host &amp; Co', $html );
 		$this->assertStringContainsString( '1 Main St', $html );
-		$this->assertStringContainsString( $this->date_text(), $html );
-		$this->assertMatchesRegularExpression( '#<a href="https://external\.example/e\?a=1(&amp;|&\#038;)b=2" target="_blank" rel="noopener noreferrer">Event &quot;page&quot;</a>#', $html );
+		$this->assertMatchesRegularExpression( '#<a class="button" href="https://external\.example/e\?a=1(&amp;|&\#038;)b=2" target="_blank" rel="noopener noreferrer">Event &quot;page&quot;</a>#', $html );
 		$this->assertSame( 1, substr_count( $html, '<a ' ) );
+	}
+
+	public function test_full_view_prints_date_and_venue_inside_the_countdown_only(): void {
+		$id = $this->competition( $this->full_meta() );
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '<h4 class="cell align-center"><time>Monday July 01, 2030 @ 10:00AM</time></h4>', $html );
+		$this->assertStringContainsString( '<h4 class="cell align-center">Arena &lt;b&gt;One&lt;/b&gt;</h4>', $html );
+		$this->assertStringNotContainsString( 'competition-date', $html );
+		$this->assertStringNotContainsString( 'competition-venue', $html );
+		$this->assertSame( 1, substr_count( $html, '<time>' ) );
+	}
+
+	public function test_full_view_without_a_start_date_still_shows_the_venue(): void {
+		$meta = $this->full_meta();
+		unset( $meta['hyperpress_competition_event_start_date'] );
+		$id = $this->competition( $meta );
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringNotContainsString( 'data-date', $html );
+		$this->assertStringContainsString( '<p class="competition-venue">Arena &lt;b&gt;One&lt;/b&gt;</p>', $html );
+		$this->assertStringNotContainsString( 'competition-date', $html );
+	}
+
+	public function test_full_view_without_a_venue_has_no_venue_line(): void {
+		$meta = $this->full_meta();
+		unset( $meta['hyperpress_competition_venue_name'] );
+		$id = $this->competition( $meta );
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '<time>', $html );
+		$this->assertStringNotContainsString( 'Arena', $html );
+		$this->assertStringNotContainsString( 'competition-venue', $html );
+	}
+
+	public function test_full_view_labels_address_and_host(): void {
+		$id = $this->competition( $this->full_meta() );
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '<p class="competition-address"><strong>Address:</strong> 1 Main St</p>', $html );
+		$this->assertStringContainsString( '<p class="competition-host"><strong>Hosted by:</strong> Host &amp; Co</p>', $html );
+	}
+
+	public function test_full_view_groups_links_into_info_and_stream_buttons(): void {
+		$meta                                      = $this->full_meta();
+		$meta['hyperpress_competition_stream_url'] = array(
+			array( 'url' => 'https://external.example/sat?x=1&y=2', 'title' => 'Saturday <b>' ),
+			array( 'url' => 'https://external.example/sun', 'title' => 'Sunday' ),
+		);
+		$id = $this->competition( $meta );
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( '<div class="competition-links">', $html );
+		$this->assertStringContainsString( '<h6 class="subheader">Event Info</h6>', $html );
+		$this->assertStringContainsString( '<h6 class="subheader">Watch Live</h6>', $html );
+		$this->assertLessThan( strpos( $html, 'Watch Live' ), strpos( $html, 'Event Info' ) );
+		$this->assertMatchesRegularExpression( '#<a class="button alert" href="https://external\.example/sat\?x=1(&amp;|&\#038;)y=2" target="_blank" rel="noopener noreferrer">Saturday &lt;b&gt; <i class="fa-solid fa-circle-play" aria-hidden="true"></i></a>#', $html );
+		$this->assertStringContainsString( '>Sunday <i class="fa-solid fa-circle-play" aria-hidden="true"></i></a>', $html );
+		$this->assertSame( 2, substr_count( $html, 'class="button alert"' ) );
+		$this->assertMatchesRegularExpression( '#</a>\s+<a class="button alert"#', $html );
+		$this->assertSame( 1, substr_count( $html, 'class="button"' ) );
+		$this->assertStringNotContainsString( '<ul class="competition-links"', $html );
+	}
+
+	public function test_a_link_group_without_links_is_omitted_with_its_label(): void {
+		$id = $this->competition(
+			array( 'hyperpress_competition_stream_url' => array( 'url' => 'https://external.example/s', 'title' => '' ) )
+		);
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'Watch Live', $html );
+		$this->assertStringNotContainsString( 'Event Info', $html );
+		$this->assertStringContainsString( '>Stream <i class="fa-solid fa-circle-play" aria-hidden="true"></i></a>', $html );
+
+		$id = $this->competition(
+			array( 'hyperpress_competition_agenda_url' => array( 'url' => 'https://external.example/a', 'title' => '' ) )
+		);
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'Event Info', $html );
+		$this->assertStringNotContainsString( 'Watch Live', $html );
+		$this->assertStringNotContainsString( 'button alert', $html );
+		$this->assertStringNotContainsString( 'fa-circle-play', $html );
 	}
 
 	public function test_internal_link_opens_in_the_same_tab_without_rel(): void {
@@ -112,7 +222,7 @@ final class ContentTest extends WP_UnitTestCase {
 		include Content::add_content_template( '' );
 		$html = (string) ob_get_clean();
 
-		$this->assertMatchesRegularExpression( '#<a href="[^"]*/agenda/" target="_self">Agenda</a>#', $html );
+		$this->assertMatchesRegularExpression( '#<a class="button" href="[^"]*/agenda/" target="_self">Agenda</a>#', $html );
 		$this->assertStringNotContainsString( 'noopener', $html );
 	}
 
@@ -125,6 +235,9 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( $this->date_text(), $html );
 		$this->assertStringContainsString( 'Arena &lt;b&gt;One&lt;/b&gt;', $html );
 		$this->assertStringContainsString( '1 Main St', $html );
+		$this->assertStringContainsString( '<p class="competition-date">', $html );
+		$this->assertStringContainsString( '<p class="competition-venue">', $html );
+		$this->assertStringNotContainsString( '<strong>Address:</strong>', $html );
 		$this->assertStringNotContainsString( 'countdown', $html );
 		$this->assertStringNotContainsString( 'target="_blank"', $html );
 		$this->assertStringNotContainsString( 'hyperpress-map', $html );
@@ -198,5 +311,9 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'competition-host', $html );
 		$this->assertStringNotContainsString( 'competition-date', $html );
 		$this->assertStringNotContainsString( 'competition-links', $html );
+		$this->assertStringNotContainsString( 'Address', $html );
+		$this->assertStringNotContainsString( 'Hosted by', $html );
+		$this->assertStringNotContainsString( 'Event Info', $html );
+		$this->assertStringNotContainsString( 'Watch Live', $html );
 	}
 }

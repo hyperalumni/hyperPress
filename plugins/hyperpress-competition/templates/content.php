@@ -25,30 +25,58 @@ $hyperpress_when_s  = $hyperpress_when instanceof \DateTimeImmutable
 <div class="entry-content">
 	<?php the_post_thumbnail( 'full', array( 'class' => 'thumbnail' ) ); ?>
 
-	<?php if ( $hyperpress_full ) : ?>
-		<?php echo \HyperPress\Competition\Countdown::render( (int) get_the_ID(), false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Countdown::render() returns pre-escaped markup. ?>
-	<?php endif; ?>
+	<?php
+	// The full view prints the date and venue inside the countdown; without a countdown (no start date, or the
+	// countdown plugin is off) and in the summary they are plain paragraphs.
+	$hyperpress_countdown = $hyperpress_full
+		? \HyperPress\Competition\Countdown::render( (int) get_the_ID(), true, true )
+		: '';
+	echo $hyperpress_countdown; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Countdown::render() returns pre-escaped markup.
+	?>
 
-	<?php if ( '' !== $hyperpress_when_s ) : ?>
-		<p class="competition-date"><?php echo esc_html( $hyperpress_when_s ); ?></p>
-	<?php endif; ?>
-	<?php if ( '' !== $hyperpress_details['venue'] ) : ?>
-		<p class="competition-venue"><?php echo esc_html( $hyperpress_details['venue'] ); ?></p>
+	<?php if ( '' === $hyperpress_countdown ) : ?>
+		<?php if ( '' !== $hyperpress_when_s ) : ?>
+			<p class="competition-date"><?php echo esc_html( $hyperpress_when_s ); ?></p>
+		<?php endif; ?>
+		<?php if ( '' !== $hyperpress_details['venue'] ) : ?>
+			<p class="competition-venue"><?php echo esc_html( $hyperpress_details['venue'] ); ?></p>
+		<?php endif; ?>
 	<?php endif; ?>
 	<?php if ( '' !== $hyperpress_details['address'] ) : ?>
-		<p class="competition-address"><?php echo esc_html( $hyperpress_details['address'] ); ?></p>
+		<p class="competition-address"><?php echo $hyperpress_full ? '<strong>' . esc_html__( 'Address', 'hyperpress' ) . ':</strong> ' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Label escaped by esc_html__(). ?><?php echo esc_html( $hyperpress_details['address'] ); ?></p>
 	<?php endif; ?>
 
 	<?php if ( $hyperpress_full ) : ?>
 		<?php if ( '' !== $hyperpress_details['host'] ) : ?>
-			<p class="competition-host"><?php echo esc_html( $hyperpress_details['host'] ); ?></p>
+			<p class="competition-host"><strong><?php esc_html_e( 'Hosted by', 'hyperpress' ); ?>:</strong> <?php echo esc_html( $hyperpress_details['host'] ); ?></p>
 		<?php endif; ?>
+		<?php
+		$hyperpress_groups    = array(
+			'info' => __( 'Event Info', 'hyperpress' ),
+			'live' => __( 'Watch Live', 'hyperpress' ),
+		);
+		$hyperpress_play_icon = '<i class="fa-solid fa-circle-play" aria-hidden="true"></i>';
+		$hyperpress_by        = array(
+			'info' => array(),
+			'live' => array(),
+		);
+		foreach ( $hyperpress_details['links'] as $hyperpress_link ) {
+			$hyperpress_by[ 'live' === $hyperpress_link['group'] ? 'live' : 'info' ][] = $hyperpress_link;
+		}
+		?>
 		<?php if ( ! empty( $hyperpress_details['links'] ) ) : ?>
-			<ul class="competition-links">
-				<?php foreach ( $hyperpress_details['links'] as $hyperpress_link ) : ?>
-					<li><a href="<?php echo esc_url( $hyperpress_link['url'] ); ?>" target="<?php echo esc_attr( $hyperpress_link['target'] ); ?>"<?php echo '' !== $hyperpress_link['rel'] ? ' rel="' . esc_attr( $hyperpress_link['rel'] ) . '"' : ''; ?>><?php echo esc_html( $hyperpress_link['label'] ); ?></a></li>
+			<div class="competition-links">
+				<?php foreach ( $hyperpress_groups as $hyperpress_group => $hyperpress_group_label ) : ?>
+					<?php if ( ! empty( $hyperpress_by[ $hyperpress_group ] ) ) : ?>
+						<h6 class="subheader"><?php echo esc_html( $hyperpress_group_label ); ?></h6>
+						<div class="competition-links-group competition-links-<?php echo esc_attr( $hyperpress_group ); ?>">
+							<?php foreach ( $hyperpress_by[ $hyperpress_group ] as $hyperpress_link ) : ?>
+								<a class="button<?php echo 'live' === $hyperpress_group ? ' alert' : ''; ?>" href="<?php echo esc_url( $hyperpress_link['url'] ); ?>" target="<?php echo esc_attr( $hyperpress_link['target'] ); ?>"<?php echo '' !== $hyperpress_link['rel'] ? ' rel="' . esc_attr( $hyperpress_link['rel'] ) . '"' : ''; ?>><?php echo esc_html( $hyperpress_link['label'] ); ?><?php echo 'live' === $hyperpress_group ? ' ' . $hyperpress_play_icon : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static markup defined above. ?></a>
+							<?php endforeach; ?>
+						</div>
+					<?php endif; ?>
 				<?php endforeach; ?>
-			</ul>
+			</div>
 		<?php endif; ?>
 	<?php endif; ?>
 </div>

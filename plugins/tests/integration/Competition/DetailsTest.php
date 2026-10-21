@@ -51,9 +51,9 @@ final class DetailsTest extends WP_UnitTestCase {
 
 		$this->assertSame(
 			array(
-				array( 'label' => 'Custom', 'url' => 'https://external.example/ne', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'FIRST event', 'url' => 'https://external.example/f', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'Custom', 'url' => 'https://external.example/ne', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
+				array( 'label' => 'FIRST Event', 'url' => 'https://external.example/f', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
+				array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ),
 			),
 			$details['links']
 		);
@@ -68,7 +68,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
+			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ) ),
 			$details['links']
 		);
 	}
@@ -82,7 +82,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
+			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ) ),
 			$details['links']
 		);
 	}
@@ -96,7 +96,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Watch live', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
+			array( array( 'label' => 'Watch live', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ) ),
 			$details['links']
 		);
 	}
@@ -112,7 +112,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
+			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ) ),
 			$details['links']
 		);
 	}
@@ -133,13 +133,13 @@ final class DetailsTest extends WP_UnitTestCase {
 
 		$this->assertSame(
 			array(
-				array( 'label' => 'NE FIRST event', 'url' => 'https://external.example/ne', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'FTC MA event', 'url' => 'https://external.example/ftc', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'FIRST event', 'url' => 'https://external.example/f', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'Agenda', 'url' => 'https://external.example/a', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'NE FIRST Event', 'url' => 'https://external.example/ne', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
+				array( 'label' => 'FTC MA Event', 'url' => 'https://external.example/ftc', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
+				array( 'label' => 'FIRST Event', 'url' => 'https://external.example/f', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
+				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
+				array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
+				array( 'label' => 'Public Agenda', 'url' => 'https://external.example/a', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
+				array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ),
 			),
 			$details['links']
 		);
@@ -150,7 +150,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
+			array( array( 'label' => 'The Blue Alliance', 'url' => 'https://www.thebluealliance.com/event/2026mabos', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ) ),
 			$details['links']
 		);
 	}
@@ -187,8 +187,8 @@ final class DetailsTest extends WP_UnitTestCase {
 
 		$this->assertSame(
 			array(
-				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'Schedule', 'url' => 'https://external.example/agenda', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'FRC Events', 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
+				array( 'label' => 'Schedule', 'url' => 'https://external.example/agenda', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ),
 			),
 			$details['links']
 		);
@@ -208,9 +208,9 @@ final class DetailsTest extends WP_UnitTestCase {
 
 		$this->assertSame(
 			array(
-				array( 'label' => 'Main stage', 'url' => 'https://external.example/s1', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'Stream 2', 'url' => 'https://external.example/s2', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
-				array( 'label' => 'Stream 3', 'url' => 'https://external.example/s3', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'Main stage', 'url' => 'https://external.example/s1', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ),
+				array( 'label' => 'Stream 2', 'url' => 'https://external.example/s2', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ),
+				array( 'label' => 'Stream 3', 'url' => 'https://external.example/s3', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ),
 			),
 			$details['links']
 		);
@@ -239,7 +239,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s1', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
+			array( array( 'label' => 'Stream', 'url' => 'https://external.example/s1', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ) ),
 			$details['links']
 		);
 	}
@@ -257,7 +257,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $id );
 
 		$this->assertSame(
-			array( array( 'label' => 'Ok', 'url' => 'https://external.example/ok', 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
+			array( array( 'label' => 'Ok', 'url' => 'https://external.example/ok', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ) ),
 			$details['links']
 		);
 	}
@@ -281,8 +281,8 @@ final class DetailsTest extends WP_UnitTestCase {
 
 		$this->assertSame(
 			array(
-				array( 'label' => 'Agenda', 'url' => $internal, 'target' => '_self', 'rel' => '' ),
-				array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer' ),
+				array( 'label' => 'Public Agenda', 'url' => $internal, 'target' => '_self', 'rel' => '', 'group' => 'info' ),
+				array( 'label' => 'Stream', 'url' => 'https://external.example/s', 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'live' ),
 			),
 			Details::for_post( $id )['links']
 		);
@@ -295,7 +295,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		);
 
 		$this->assertSame(
-			array( array( 'label' => 'Agenda', 'url' => $pdf, 'target' => '_blank', 'rel' => 'noopener noreferrer' ) ),
+			array( array( 'label' => 'Public Agenda', 'url' => $pdf, 'target' => '_blank', 'rel' => 'noopener noreferrer', 'group' => 'info' ) ),
 			Details::for_post( $id )['links']
 		);
 	}
@@ -313,5 +313,29 @@ final class DetailsTest extends WP_UnitTestCase {
 		$details = Details::for_post( $id );
 
 		$this->assertSame( '2030-01-15T10:00:00-05:00', $details['when']->format( 'c' ) );
+	}
+
+	public function test_links_are_grouped_streams_live_and_everything_else_info(): void {
+		$id    = $this->competition(
+			array(
+				'hyperpress_competition_ne_first_event_url' => array( 'url' => 'https://external.example/ne', 'title' => '' ),
+				'hyperpress_competition_tba_event_key'      => '2026mabos',
+				'hyperpress_competition_agenda_url'         => array( 'url' => 'https://external.example/a', 'title' => '' ),
+				'hyperpress_competition_stream_url'         => array(
+					array( 'url' => 'https://external.example/s1', 'title' => 'Saturday' ),
+					array( 'url' => 'https://external.example/s2', 'title' => 'Sunday' ),
+				),
+			)
+		);
+		$links = Details::for_post( $id )['links'];
+
+		$this->assertSame(
+			array( 'info', 'info', 'info', 'live', 'live' ),
+			wp_list_pluck( $links, 'group' )
+		);
+		$this->assertSame(
+			array( 'NE FIRST Event', 'The Blue Alliance', 'Public Agenda', 'Saturday', 'Sunday' ),
+			wp_list_pluck( $links, 'label' )
+		);
 	}
 }
