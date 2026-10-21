@@ -147,7 +147,7 @@ final class MetaBoxes {
 					'type'              => 'link',
 					'clone'             => true,
 					'clone_as_multiple' => true,
-					'add_button'        => __( 'Add stream', 'hyperpress' ),
+					'add_button'        => __( 'Add another stream', 'hyperpress' ),
 					'sanitize_callback' => array( self::class, 'event_link' ),
 				),
 			),
