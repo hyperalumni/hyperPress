@@ -277,3 +277,159 @@ Test conventions (from the existing suites): integration tests extend `WP_UnitTe
 - 2026-10-20: the last two hardcoded `target="_blank" rel="noopener"` links also use `Link::target()` / `::rel()`: the sponsor "Website" link (`hyperpress-sponsor/templates/content.php`) and the newsletter "View on Canva" link (`hyperpress-newsletter/templates/content.php`). Their `rel` is now `noopener noreferrer`, printed only when non-empty. Canva URLs are always external (`MetaBoxes::is_canva_url`), so that link is always `_blank`. Covered by `SponsorContentTemplateTest` and `NewsletterContentTemplateTest`.
 - 2026-10-20: on the competition edit screen the Meta Box `osm` address autocomplete menu rendered behind the Leaflet map: jQuery UI adds `ui-front`, and `.ui-front { z-index: 100 }` (WordPress and Meta Box core CSS) ties with and loads after Meta Box's `.ui-autocomplete { z-index: 999999 }`, while Leaflet panes and controls use 200-1000. `AdminAssets` (hooked from `Plugin::boot` on `admin_enqueue_scripts` priority 20, after Meta Box enqueues `rwmb-osm` at priority 10) attaches `.ui-autocomplete.ui-front{z-index:999999}` to the `rwmb-osm` style on `post.php`/`post-new.php` for `hyper_competition` only; the two-class selector wins whatever the load order.
 - 2026-10-20: single competition page redesign (owner-approved mockup, option A). The full view calls `Countdown::render( $id, true, true )`, so the date line (`l F d, Y @ h:iA`, the homepage format) and the venue name render under the circles inside the countdown block; the `competition-date` / `competition-venue` paragraphs are only printed in the summary view, or in the full view when no countdown renders (no start date, or the countdown plugin is inactive), so a competition without a date still shows its venue. The shortcode `[hyperpress_competition_countdown]` and `Countdown::render( $id )` are unchanged (venue, no date). Address and host paragraphs carry a bold `Address:` / `Hosted by:` label in the full view (translatable, text domain `hyperpress`; the summary address stays unlabelled). The links `<ul>` is replaced by `<div class="competition-links">` with up to two groups, each a `<h6 class="subheader">` (`Event Info`, `Watch Live`) and a `<div class="competition-links-group">` of `<a class="button">` (info) or `<a class="button alert">` (streams, label followed by a `fa-solid fa-circle-play` icon); an empty group renders nothing, including its label. `Details::for_post` links gained `group` (`info` or `live`). No theme SCSS was added (plugin content is not styled by the theme): the group labels are Foundation `h6.subheader`, the buttons are whitespace-separated inline-block `.button`s that wrap naturally and get their spacing from `.button`'s own margin, and `competition-links`, `competition-links-group`, `competition-links-info` / `-live` are unstyled hooks.
+
+---
+
+## Follow-up: multi-day event schedule (2026-10-20)
+
+> **STATUS: ⏳ NOT STARTED.** Owner-approved extension of the completed plan above. Tasks F1-F6 use the same conventions, constraints and test conventions as Tasks 1-7; the Global Constraints and Review Focus above still apply.
+
+**Goal:** A competition can have several days (for example Load In, Day 1, Day 2), each with its own start and a "Count down to this day" checkbox. The countdown targets the next counted day and shows that day's label as its heading; the full view lists every day when there are two or more.
+
+**Architecture:** The single `hyperpress_competition_event_start_date` field is replaced by a cloneable Meta Box `group` field `hyperpress_competition_event_days` (one serialized array of rows in one meta row). A new `Schedule` class normalizes and sorts the rows and picks the current day. `StartDate` shrinks to the shared text parser. `Countdown` and `Details` read from `Schedule`; nothing changes in `hyperpress-countdown` (`Renderer` already prints its `name` arg as an `<h2>` and nothing when it is empty).
+
+### Decisions (owner-approved)
+
+- The old key is dropped entirely: no migration and no fallback read of `hyperpress_competition_event_start_date` (its values are mostly empty and will be re-entered).
+- A finished event keeps counting its last counted day (past-zero behaviour then follows the existing setting).
+- The schedule list in the full view is this plan's own call, which the owner can flip: it prints only when there are 2 or more days, lists all days regardless of the countdown checkbox, and single-day events show only the countdown (which already carries the date).
+
+### Non-goals
+
+- Switching the page to the next day without a reload when a day reaches zero (a reload shows the next day).
+- End times, per-day streams or per-day venues.
+- Migrating old start-date data.
+- Any change to `plugins/hyperpress-countdown`.
+
+### Interfaces
+
+- `HyperPress\Competition\StartDate::parse( mixed $text ): ?\DateTimeImmutable`: the parsing `StartDate::instant` has today, extracted unchanged (non-string or blank gives `null`; trimmed; `!Y-m-d H:i` then `!Y-m-d H:i:s`, strict, read in `wp_timezone()`; any warning or error gives `null`). `StartDate::instant()` and `StartDate::FIELD` are removed in F5 (they exist until then so each task stays green).
+- `HyperPress\Competition\Schedule` (new, `src/Schedule.php`):
+  - `Schedule::FIELD = 'hyperpress_competition_event_days'`.
+  - `Schedule::days( int $post_id ): list<array{label:string,start:\DateTimeImmutable,countdown:bool}>`: reads the group with `get_post_meta( $post_id, self::FIELD, true )` (not `rwmb_meta()`, which may reformat, as `StartDate` does) and passes it to `normalize()`.
+  - `Schedule::normalize( mixed $rows ): list<...>`: non-array input gives `array()`; each row must be an array whose `start` parses through `StartDate::parse` (otherwise the row is dropped); `label` is `trim` of a scalar string (else `''`); `countdown` is `true` when the key is missing, otherwise `! empty( $row['countdown'] )` (explicit `0`, `'0'`, `''`, `false` are unchecked); the result is sorted ascending by `start->getTimestamp()` with a stable tie-break on the original row order, and re-indexed.
+  - `Schedule::pick( array $days, \DateTimeImmutable $now ): ?array`: among days with `countdown` true, the first whose `start` is later than or equal to `$now`; else the last counted day; `null` when no day is counted.
+  - `Schedule::current( int $post_id, ?\DateTimeImmutable $now = null ): ?array`: `pick( days( $post_id ), $now ?? self::now() )`.
+  - `Schedule::now(): \DateTimeImmutable`: `apply_filters( 'hyperpress_competition_now', new \DateTimeImmutable( 'now', wp_timezone() ) )`, and the filter result is used only when it is a `\DateTimeImmutable`. This is the test seam: unit-style tests call `pick()`/`current()` with an injected `$now`; template and `Countdown` tests control the clock with `add_filter( 'hyperpress_competition_now', fn() => new \DateTimeImmutable( '2030-07-01 09:00', wp_timezone() ) )` and remove it in `tear_down()`.
+- `Countdown::render( int $post_id, bool $show_location = true, bool $show_date = false ): string` keeps its signature. It targets `Schedule::current( $post_id )['start']`, adds `'name' => <day label>` to the `Renderer` args, and keeps `location`, `past_zero`, `slug`, `show_date`. No counted day gives `''`.
+- `Details::for_post()['when']` is now `Schedule::current( $post_id )['start'] ?? null` and a new `days` key holds `list<array{label:string,start:\DateTimeImmutable}>` of ALL days (counted or not) in chronological order. Updated shape: `array{host:string,venue:string,address:string,when:?\DateTimeImmutable,days:list<array{label:string,start:\DateTimeImmutable}>,links:list<...>}`.
+- MetaBoxes: in the `hyperpress_competition_information` box the `hyperpress_competition_event_start_date` field is replaced by a field with `id` `hyperpress_competition_event_days`, `type` `group`, `clone` `true`, `add_button` (translatable "Add another day"), `sort_clone` `true`, and sub-`fields`: `label` (`type` `text`, `sanitize_callback` `sanitize_text_field`, placeholder e.g. "Day 1"), `start` (`type` `datetime`, `inline` `false`, `timestamp` `false`, `save_format` `Y-m-d H:i`, same as the old field), `countdown` (`type` `checkbox`, name "Count down to this day", `std` `1`). Sub-field ids are exactly `label`, `start`, `countdown`. Sub-field `sanitize_callback`s need no custom function.
+
+### Task F1: `StartDate::parse` and `Schedule`
+
+**Files:**
+
+- Modify: `plugins/hyperpress-competition/src/StartDate.php`
+- Create: `plugins/hyperpress-competition/src/Schedule.php`
+- Test: `plugins/tests/integration/Competition/StartDateTest.php` (add parse tests, keep the existing ones), `plugins/tests/integration/Competition/ScheduleTest.php`
+
+**Interfaces:** as above (`StartDate::parse`, `Schedule::*`).
+
+- [ ] **Step 1: Write the failing tests.** In `StartDateTest` add `test_parse_reads_summer_and_winter_text_in_the_site_zone` (`'2030-07-01 10:00'` gives `2030-07-01T10:00:00-04:00`, `'2030-01-01 10:00'` gives `-05:00`) and `test_parse_rejects_blank_or_invalid_input` (provider: `''`, `'  '`, `'not a date'`, `'2030-02-31 10:00'`, `array()`, `0`, `null` all give `null`). In `ScheduleTest` (`set_up` sets `timezone_string` `America/New_York`; `tear_down` removes the `hyperpress_competition_now` filter; rows are stored with `update_post_meta( $id, Schedule::FIELD, array( ... ) )`):
+  - `test_rows_are_normalised_and_sorted_by_start`: rows given out of order, with whitespace in labels, come back as a list sorted ascending with trimmed `label`, a `DateTimeImmutable` `start` in `America/New_York`, and a boolean `countdown`.
+  - `test_invalid_or_empty_rows_are_dropped`: rows with `start` `''`, missing, `'junk'`, a non-array row, and a non-array stored value (`'x'`, `''`, no meta) leave only the valid rows (or `array()`).
+  - `test_missing_countdown_flag_counts_explicit_false_does_not`: a row with no `countdown` key is `true`; `0`, `'0'`, `''`, `false` are `false`; `1`, `'1'`, `true` are `true`.
+  - `test_equal_starts_keep_row_order`: two rows with the same `start` keep their original order.
+  - `test_start_keeps_the_correct_instant_across_dst`: `2030-03-10 12:00` (just after spring-forward) is `-04:00` and `2030-03-09 12:00` is `-05:00`; the row's `getTimestamp()` equals the matching UTC instant.
+  - `test_pick_before_the_first_day_gives_the_first_counted_day`, `test_pick_between_days_gives_the_next_counted_day`, `test_pick_after_the_last_day_gives_the_last_counted_day` (call `Schedule::pick( $days, $now )` with an injected `$now`; a `$now` exactly equal to a day's start still selects that day).
+  - `test_pick_skips_days_with_the_countdown_unticked`: with Load In unticked, `$now` before Load In selects Day 1; with the last day unticked and `$now` after everything, the last counted day is chosen.
+  - `test_pick_gives_null_when_no_day_is_counted` (all unticked, and an empty list).
+  - `test_current_uses_the_now_filter`: with the `hyperpress_competition_now` filter returning a fixed `DateTimeImmutable`, `Schedule::current( $id )` follows it; a filter returning a non-`DateTimeImmutable` falls back to the real clock.
+  - `test_old_start_date_key_is_not_read`: with only `hyperpress_competition_event_start_date` set via `update_post_meta` (literal key), `Schedule::days( $id )` is `array()`.
+- [ ] **Step 2: Run to verify it fails.** From `plugins/`: `docker compose run --rm php composer test:integration -- --filter "(StartDateTest|ScheduleTest)"`. Expected: FAIL (`StartDate::parse` and `Schedule` missing).
+- [ ] **Step 3: Implement.** Extract the body of `StartDate::instant` after the `get_post_meta` call into `public static function parse( mixed $text ): ?\DateTimeImmutable` (same trim, formats, `wp_timezone()` and `getLastErrors` rules), and make `instant()` call `self::parse( get_post_meta( $post_id, self::FIELD, true ) )`. Create `Schedule` per the interfaces (`defined( 'ABSPATH' ) || exit;` guard, `final class`, namespace `HyperPress\Competition`, docblocks with the array shapes as in `Details`).
+- [ ] **Step 4: Run to verify it passes.** Same command. Expected: PASS, with the existing `StartDateTest` cases still green.
+- [ ] **Step 5: Commit** `StartDate.php`, `Schedule.php`, the two tests and the plan: `feat(competition): add a schedule model for multi-day events`.
+
+### Task F2: `Countdown` targets the current day
+
+**Files:**
+
+- Modify: `plugins/hyperpress-competition/src/Countdown.php` (lines 40-53)
+- Test: `plugins/tests/integration/Competition/CountdownTest.php`
+
+**Interfaces:** consumes `Schedule::current`, `Schedule::FIELD`; produces the behaviour in the Interfaces list.
+
+- [ ] **Step 1: Update and add failing tests.** Replace every fixture that sets the old field id (`hyperpress_competition_event_start_date`, set through the meta globals or `update_post_meta`) with `update_post_meta( $id, Schedule::FIELD, array( array( 'label' => '', 'start' => '2030-07-01 10:00', 'countdown' => '1' ) ) )`. Keep the existing assertions (EDT offset, past start still renders and passes `"count_past_zero": true`, nothing without a usable date, nothing for other posts or drafts, shortcode parity). Add:
+  - `test_label_is_the_heading`: a day labelled `Day 1` renders `<h2 class="cell align-center">Day 1</h2>`.
+  - `test_no_label_means_no_heading`: an empty label renders no `<h2`.
+  - `test_label_is_escaped`: label `A <b>&</b>` renders `A &lt;b&gt;&amp;&lt;/b&gt;`.
+  - `test_targets_the_next_counted_day`: rows Load In (`2030-06-30 16:00`, unticked) and Day 1 (`2030-07-01 09:00`), `now` filter at `2030-06-30 08:00`: `data-date="2030-07-01T09:00:00-04:00"` and heading `Day 1`.
+  - `test_between_days_targets_the_next_day_and_after_the_last_keeps_the_last_day`: with two counted days, `now` between them targets the second; `now` after both still targets the second (zeros) and keeps its heading.
+  - `test_no_counted_day_gives_nothing`: all rows unticked returns `''`.
+  - `test_show_date_and_venue_are_unchanged`: `render( $id, true, true )` still contains `<time>` for the current day and the venue.
+  - `test_old_start_date_key_is_ignored`: only the old key set gives `''`.
+- [ ] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter "Competition.*CountdownTest"`. Expected: FAIL.
+- [ ] **Step 3: Implement.** In `Countdown::render` replace `StartDate::instant( $post_id )` with `$day = Schedule::current( $post_id )`; return `''` when `null`; pass `$day['start']` to `Renderer::render` and add `'name' => $day['label']` to the args array. Update the class docblock ("from a competition's schedule").
+- [ ] **Step 4: Run to verify it passes.** Expected: PASS.
+- [ ] **Step 5: Commit** `feat(competition): count down to the current schedule day`.
+
+### Task F3: `Details` follows the schedule
+
+**Files:**
+
+- Modify: `plugins/hyperpress-competition/src/Details.php` (docblock at line 29, return array at lines 61-67)
+- Test: `plugins/tests/integration/Competition/DetailsTest.php`
+
+**Interfaces:** consumes `Schedule::days`, `Schedule::current`; produces `when` and `days` as above.
+
+- [ ] **Step 1: Update and add failing tests.** Move every fixture that sets the old field id to `Schedule::FIELD` rows (as in F2). Keep the January `-05:00` offset assertion on `when`, and the missing-start assertion (`when === null`, now also `days === array()`). Add:
+  - `test_when_is_the_next_counted_day`: rows Load In (unticked, early), Day 1 and Day 2; `now` filter before Load In gives `when` equal to Day 1's start; between Day 1 and Day 2 gives Day 2; after everything gives Day 2 (last counted day).
+  - `test_when_is_null_when_no_day_is_counted`: all unticked gives `null`.
+  - `test_days_lists_every_day_in_order`: `days` holds all rows (including the unticked one) as `array( 'label' => ..., 'start' => DateTimeImmutable )`, sorted chronologically, with no `countdown` key.
+  - `test_days_has_one_entry_for_a_single_day`: one row gives `count( days ) === 1`.
+- [ ] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter "Competition.*DetailsTest"`. Expected: FAIL.
+- [ ] **Step 3: Implement.** Compute `$days = Schedule::days( $post_id )` once; `when` is `Schedule::pick( $days, Schedule::now() )['start'] ?? null`; `days` maps each day to `array( 'label' => $day['label'], 'start' => $day['start'] )`. Update the `@return` shape.
+- [ ] **Step 4: Run to verify it passes.** Expected: PASS, plus a quick `--filter "Competition"` to confirm `ContentTest` has not regressed (its old-field fixtures are fixed in F4).
+- [ ] **Step 5: Commit** `feat(competition): derive the details date from the schedule`.
+
+### Task F4: Schedule list in the full view
+
+**Files:**
+
+- Modify: `plugins/hyperpress-competition/templates/content.php` (after the host paragraph, lines 50-52)
+- Test: `plugins/tests/integration/Competition/ContentTest.php`
+
+**Interfaces:** consumes `Details::for_post()['days']`.
+
+- [ ] **Step 1: Update and add failing tests.** Replace the old-field fixtures in `ContentTest` with `Schedule::FIELD` rows (the existing "Granite State" competition gets one row `2030-07-01 10:00`) and keep all current assertions (the formatted date in the summary still comes from `wp_date( date_format . ' ' . time_format )` of `when`; the full view still prints the date under the circles). Add:
+  - `test_single_day_has_no_schedule_list`: one row on the competition's own page: the HTML contains no `competition-schedule` and no `Schedule`.
+  - `test_multi_day_lists_every_day_in_order`: rows Load In (`2030-06-30 16:00`, countdown unticked), Day 1 (`2030-07-01 09:00`), Day 2 (`2030-07-02 09:00`): the HTML contains `<ul class="competition-schedule">` with three `<li>` in chronological order, the first reading `Load In: Sunday June 30 @ 4:00 PM` (the format is `Label: Weekday Month D @ time`, built with `wp_date( 'l F j @ g:i A', $ts, wp_timezone() )`; assert against the same `wp_date` call rather than a hard-coded string for the other rows), including the unticked day.
+  - `test_schedule_entries_are_escaped`: a label `A <b>&"x"` appears as `A &lt;b&gt;&amp;&quot;x&quot;` and never raw.
+  - `test_schedule_entry_without_a_label_prints_only_the_date`: an empty label gives `<li>Monday July 01 @ 10:00 AM</li>`-style text (computed with `wp_date`) with no leading colon.
+  - `test_schedule_is_full_view_only`: the same competition in a list (`go_to( home_url( '/' ) )`) and inside another page's loop shows no schedule list.
+  - `test_summary_date_follows_the_current_day`: in the list view the date line is the current counted day's date, not the first day's (use the `hyperpress_competition_now` filter).
+  - `test_countdown_heading_shows_the_day_label_in_the_full_view`: the full view contains `<h2 class="cell align-center">Day 1</h2>` for the current day.
+- [ ] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter "Competition.*ContentTest"`. Expected: FAIL.
+- [ ] **Step 3: Implement the template block.** Inside `if ( $hyperpress_full )`, after the host paragraph and before the links groups, add: `if ( count( $hyperpress_details['days'] ) >= 2 )` print `<div class="competition-schedule-block"><p class="competition-schedule-label"><strong><?php esc_html_e( 'Schedule', 'hyperpress' ); ?>:</strong></p><ul class="competition-schedule">` with one `<li>` per day: `esc_html( label )` followed by `: ` only when the label is non-empty, then `esc_html( wp_date( 'l F j @ g:i A', $day['start']->getTimestamp(), wp_timezone() ) )`. Foundation utility classes only; `competition-schedule*` are unstyled hooks, no theme SCSS. Keep the phpcs conventions already used in the file (`hyperpress_` variable prefix, escaping on every value).
+- [ ] **Step 4: Run to verify it passes.** Expected: PASS.
+- [ ] **Step 5: Commit** `feat(competition): list every day of a multi-day event on the full view`.
+
+### Task F5: Event Schedule field, drop the old field
+
+**Files:**
+
+- Modify: `plugins/hyperpress-competition/src/MetaBoxes.php` (the field at lines 99-106), `plugins/hyperpress-competition/src/StartDate.php` (remove `FIELD` and `instant`)
+- Test: `plugins/tests/integration/Competition/StartDateTest.php` (move/replace the field-definition test around line 75), `plugins/tests/integration/Competition/MetaBoxesTest.php` (create if no suitable file exists; otherwise add to the existing metabox test)
+
+- [ ] **Step 1: Write the failing tests.** In the metabox test, find the field `hyperpress_competition_event_days` in the `hyperpress_competition_information` box from `apply_filters( 'rwmb_meta_boxes', array() )` and assert:
+  - `test_event_days_is_a_cloneable_group`: `type` `group`, `clone` `true`, and `clone_as_multiple` is not set (the group is one serialized array).
+  - `test_event_days_sub_fields`: the sub-field ids are exactly `label`, `start`, `countdown` (in that order); `label` is `text`; `start` is `datetime` with `timestamp === false`, `save_format === 'Y-m-d H:i'` and no `format` key; `countdown` is `checkbox` with `std` equal to `1`.
+  - `test_old_start_date_field_is_gone`: no field with id `hyperpress_competition_event_start_date` exists in the box.
+  - In `StartDateTest`, delete `test_start_field_stores_wall_clock_text_in_an_explicit_format` (its assertions now live on the `start` sub-field above) and the `StartDate::instant` cases (parse cases from F1 stay).
+- [ ] **Step 2: Run to verify it fails.** `docker compose run --rm php composer test:integration -- --filter "(StartDateTest|MetaBox)"`. Expected: FAIL.
+- [ ] **Step 3: Implement.** Replace the old field array in `MetaBoxes::register_information_meta_box` with the `group` field per the Interfaces; remove `StartDate::FIELD` and `StartDate::instant`; update the `StartDate` class docblock ("Parses wall-clock date text in the site timezone"). Then `grep -rn "event_start_date\|StartDate::instant\|StartDate::FIELD" plugins themes docs` and fix every remaining code or test hit (docs under `specs/`/`plans/` that describe current behaviour get a one-line note; the historical Tasks 2-5 text above stays as written).
+- [ ] **Step 4: Run to verify it passes.** Same command, then `--filter Competition` for the whole competition group. Expected: PASS.
+- [ ] **Step 5: Commit** `feat(competition): replace the start date with a repeatable event schedule`.
+
+### Task F6: Verification and docs
+
+- [ ] **Step 1: Full verification.** From `plugins/`: `docker compose run --rm php composer lint` (0 violations), `docker compose run --rm php composer test:unit`, `docker compose run --rm php composer test:integration`. Expected: all green, `CountdownShortcodeHardeningTest` and `RendererTest` unedited.
+- [ ] **Step 2: Manual check in the local stack** (`cd docker/hyperonline && docker compose --profile local up -d`, WordPress on http://localhost:4080). In wp-admin edit a competition: the Information box shows "Event Schedule" rows (label, date/time, "Count down to this day" ticked on a new row). Add Load In (untick the countdown box), Day 1 and Day 2, then save and check: `docker compose --profile local run --rm wpcli wp post meta get <id> hyperpress_competition_event_days` prints one serialized array of rows whose `start` values look like `2030-07-01 10:00`; the single page's countdown shows the Day 1 label as its heading and counts to Day 1 (Load In is skipped because it is unticked); the "Schedule" list appears under the host line with all three days in order; with only one row there is no Schedule list; with all rows unticked there is no countdown; a competition with the old field only shows no countdown until a day is entered; `/competitions/` and the blog list show the summary date for the current counted day and no schedule list. Check the group sub-field date picker saves `Y-m-d H:i` (if Meta Box stores a different text format inside a group, adjust `Schedule`/`StartDate::parse` and note it here).
+- [ ] **Step 3: Docs.** Update the `StartDate`/`Schedule` mention in `plugins/hyperpress-competition/` docs or readme if any exist (grep `Event Start Date`), add the decisions above to the Execution notes with the final commit range, and add the COMPLETED banner to this section. Commit: `docs(competition): note the multi-day schedule`.
+
+### Follow-up: known follow-ups
+
+- Reloading the page is needed to move the countdown to the next day when one reaches zero.
+- Per-day end times, venues or streams would extend the group's sub-fields and `Schedule::normalize`.
+- The schedule-list rule (only with 2+ days, all days shown) is the plan's own call; flip it in `templates/content.php` if the owner prefers otherwise.
