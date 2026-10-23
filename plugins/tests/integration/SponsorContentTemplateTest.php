@@ -157,7 +157,7 @@ final class SponsorContentTemplateTest extends WP_UnitTestCase {
 	public function test_single_page_shows_the_full_description_without_the_more_marker(): void {
 		$html = $this->render_sponsor( array( 'hyperpress_sponsor_description' => "Before the marker.\n<!--more-->\nAfter the marker." ), true );
 
-		$this->assertStringContainsString( 'sponsor-description', $html );
+		$this->assertStringContainsString( 'hyperpress-sponsor-description', $html );
 		$this->assertStringContainsString( 'Before the marker.', $html );
 		$this->assertStringContainsString( 'After the marker.', $html );
 		$this->assertStringNotContainsString( '<!--more-->', $html );
@@ -179,7 +179,7 @@ final class SponsorContentTemplateTest extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( 'Only this.', $html );
 		$this->assertStringNotContainsString( 'Learn more about our sponsor', $html );
-		$this->assertStringNotContainsString( 'sponsor-links', $html );
+		$this->assertStringNotContainsString( 'hyperpress-sponsor-buttons', $html );
 	}
 
 	public function test_learn_more_and_website_buttons_share_one_wrapper_in_that_order(): void {
@@ -191,10 +191,10 @@ final class SponsorContentTemplateTest extends WP_UnitTestCase {
 			false
 		);
 
-		$this->assertSame( 1, substr_count( $html, 'sponsor-links' ) );
-		$this->assertMatchesRegularExpression( '/<p class="sponsor-links">\s*<a class="button neutral[^"]*"[^>]*>Learn more about our sponsor<\/a>\s*<a class="button small-down-expanded[^"]*"[^>]*>Visit our sponsor<\/a>\s*<\/p>/', $html );
+		$this->assertSame( 1, substr_count( $html, 'hyperpress-sponsor-buttons' ) );
+		$this->assertMatchesRegularExpression( '/<p class="hyperpress-sponsor-buttons">\s*<a class="button neutral[^"]*"[^>]*>Learn more about our sponsor<\/a>\s*<a class="button small-down-expanded[^"]*"[^>]*>Visit our sponsor<\/a>\s*<\/p>/', $html );
 		$this->assertSame( 2, preg_match_all( '/<a class="button[^"]*\btext-capitalize\b[^"]*"/', $html ) );
-		$this->assertMatchesRegularExpression( '/<div class="sponsor-description">\s*<p>Before\.<\/p>\s*<\/div>/', $html );
+		$this->assertMatchesRegularExpression( '/<div class="hyperpress-sponsor-description">\s*<p>Before\.<\/p>\s*<\/div>/', $html );
 	}
 
 	public function test_no_buttons_wrapper_renders_when_neither_button_applies(): void {
@@ -206,7 +206,7 @@ final class SponsorContentTemplateTest extends WP_UnitTestCase {
 		foreach ( $cases as list( $description, $single ) ) {
 			$html = $this->render_sponsor( array( 'hyperpress_sponsor_description' => $description ), $single );
 
-			$this->assertStringNotContainsString( 'sponsor-links', $html );
+			$this->assertStringNotContainsString( 'hyperpress-sponsor-buttons', $html );
 			$this->assertStringNotContainsString( 'class="button', $html );
 		}
 	}
@@ -224,7 +224,7 @@ final class SponsorContentTemplateTest extends WP_UnitTestCase {
 		foreach ( array( true, false ) as $single ) {
 			$html = $this->render_sponsor( array(), $single );
 
-			$this->assertStringNotContainsString( 'sponsor-description', $html );
+			$this->assertStringNotContainsString( 'hyperpress-sponsor-description', $html );
 		}
 	}
 

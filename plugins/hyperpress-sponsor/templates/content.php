@@ -32,7 +32,7 @@ $hyperpress_entry_tag = ( isset( $hyperpress_title_tag ) && in_array( $hyperpres
 		$sponsor_text     = is_singular( 'hyper_sponsor' ) ? trim( $sponsor_parts['main'] . "\n\n" . $sponsor_parts['extended'] ) : $sponsor_parts['main'];
 		$sponsor_has_more = ! is_singular( 'hyper_sponsor' ) && '' !== trim( $sponsor_parts['extended'] );
 		?>
-		<div class="sponsor-description">
+		<div class="hyperpress-sponsor-description">
 			<?php echo wp_kses_post( wpautop( $sponsor_text ) ); ?>
 		</div>
 	<?php endif; ?>
@@ -51,7 +51,7 @@ $hyperpress_entry_tag = ( isset( $hyperpress_title_tag ) && in_array( $hyperpres
 	?>
 
 	<?php if ( $sponsor_has_more || '' !== $sponsor_url ) : ?>
-		<p class="sponsor-links">
+		<p class="hyperpress-sponsor-buttons">
 			<?php if ( $sponsor_has_more ) : ?>
 				<a class="button neutral small-down-expanded text-capitalize" href="<?php echo esc_url( get_permalink() ); ?>"><?php echo esc_html__( 'Learn more about our sponsor', 'hyperpress' ); ?></a>
 			<?php endif; ?>
