@@ -57,11 +57,11 @@
 
 - Produces: `Details::BLURB` (`'hyperpress_competition_blurb'`); `Details::for_post()['blurb']: string`, ready-to-print HTML (`wpautop( wp_kses_post( text ) )`), `''` when empty or not a string. Update the docblock return shape.
 
-- [ ] **Step 1: Write the failing tests.** `MetaBoxesTest::test_information_box_has_a_blurb_wysiwyg` (field `hyperpress_competition_blurb` is in the Information box, `type` is `wysiwyg`, `sanitize_callback` is `wp_kses_post`). `DetailsTest::test_blurb_is_html_and_stripped_of_scripts` (meta `'Hello <script>x()</script><a href="https://example.org">link</a>'` gives a string containing `<p>Hello` and `<a href="https://example.org">link</a>` and not `script`), `test_blurb_is_empty_when_missing_or_not_text` (no meta and an array value both give `''`). `ContentTest::test_full_view_shows_the_blurb_and_the_feed_view_does_not` (blurb text present when `Content::is_full_view()` is true, absent otherwise).
-- [ ] **Step 2: Run to verify they fail.** `docker compose run --rm php composer test:integration -- --filter 'MetaBoxesTest|DetailsTest|ContentTest'`. Expected: the new tests FAIL.
-- [ ] **Step 3: Implement** the field (WYSIWYG, `media_buttons` off, a few rows, placed before the Event Schedule group), `Details::BLURB` and `for_post()['blurb']`, and print `<div class="competition-blurb">` with the blurb in the full view of `templates/content.php`, after the address and host and before the schedule, only when non-empty.
-- [ ] **Step 4: Run to verify they pass** (the filter above, then `--filter Competition`). Expected: PASS.
-- [ ] **Step 5: Commit** `feat(competition): add a blurb field and show it on the competition page`.
+- [x] **Step 1: Write the failing tests.** `MetaBoxesTest::test_information_box_has_a_blurb_wysiwyg` (field `hyperpress_competition_blurb` is in the Information box, `type` is `wysiwyg`, `sanitize_callback` is `wp_kses_post`). `DetailsTest::test_blurb_is_html_and_stripped_of_scripts` (meta `'Hello <script>x()</script><a href="https://example.org">link</a>'` gives a string containing `<p>Hello` and `<a href="https://example.org">link</a>` and not `script`), `test_blurb_is_empty_when_missing_or_not_text` (no meta and an array value both give `''`). `ContentTest::test_full_view_shows_the_blurb_and_the_feed_view_does_not` (blurb text present when `Content::is_full_view()` is true, absent otherwise).
+- [x] **Step 2: Run to verify they fail.** `docker compose run --rm php composer test:integration -- --filter 'MetaBoxesTest|DetailsTest|ContentTest'`. Expected: the new tests FAIL.
+- [x] **Step 3: Implement** the field (WYSIWYG, `media_buttons` off, a few rows, placed before the Event Schedule group), `Details::BLURB` and `for_post()['blurb']`, and print `<div class="competition-blurb">` with the blurb in the full view of `templates/content.php`, after the address and host and before the schedule, only when non-empty.
+- [x] **Step 4: Run to verify they pass** (the filter above, then `--filter Competition`). Expected: PASS.
+- [x] **Step 5: Commit** `feat(competition): add a blurb field and show it on the competition page`.
 
 ---
 

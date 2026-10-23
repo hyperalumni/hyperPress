@@ -238,6 +238,22 @@ final class ContentTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'noopener', $html );
 	}
 
+	public function test_full_view_shows_the_blurb_and_the_feed_view_does_not(): void {
+		$meta                                  = $this->full_meta();
+		$meta['hyperpress_competition_blurb'] = 'Headed to <a href="https://example.org">Reading</a>';
+		$id                                    = $this->competition( $meta );
+
+		$this->go_to( get_permalink( $id ) );
+		the_post();
+		ob_start();
+		include Content::add_content_template( '' );
+		$full = (string) ob_get_clean();
+		$this->assertStringContainsString( '<div class="competition-blurb"><p>Headed to <a href="https://example.org">Reading</a></p>', $full );
+
+		$this->go_to( home_url( '/' ) );
+		$this->assertStringNotContainsString( 'Headed to', $this->render( $id ) );
+	}
+
 	public function test_summary_in_a_list(): void {
 		$id = $this->competition( $this->full_meta() );
 		$this->go_to( home_url( '/' ) );

@@ -44,6 +44,23 @@ final class DetailsTest extends WP_UnitTestCase {
 		$this->assertSame( '1 Main St', $details['address'] );
 	}
 
+	public function test_blurb_is_html_and_stripped_of_scripts(): void {
+		$id    = $this->competition(
+			array( Details::BLURB => 'Hello <script>x()</script><a href="https://example.org">link</a>' )
+		);
+		$blurb = Details::for_post( $id )['blurb'];
+
+		$this->assertStringContainsString( '<p>Hello', $blurb );
+		$this->assertStringContainsString( '<a href="https://example.org">link</a>', $blurb );
+		$this->assertStringNotContainsString( '<script', $blurb );
+	}
+
+	public function test_blurb_is_empty_when_missing_or_not_text(): void {
+		$this->assertSame( '', Details::for_post( $this->competition( array() ) )['blurb'] );
+		$this->assertSame( '', Details::for_post( $this->competition( array( Details::BLURB => array( 'x' ) ) ) )['blurb'] );
+		$this->assertSame( '', Details::for_post( $this->competition( array( Details::BLURB => "  \n " ) ) )['blurb'] );
+	}
+
 	public function test_links_keep_order_and_titles_override_labels(): void {
 		$id      = $this->competition(
 			array(

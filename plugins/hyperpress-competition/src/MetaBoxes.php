@@ -107,6 +107,19 @@ final class MetaBoxes {
 					'sanitize_callback' => array( self::class, 'map_location' ),
 				),
 				array(
+					'type'              => 'wysiwyg',
+					'id'                => Details::BLURB,
+					'name'              => __( 'Blurb', 'hyperpress' ),
+					'desc'              => __( 'A short description shown on this competition\'s page and in competition lists', 'hyperpress' ),
+					// Meta Box would otherwise run the value through wpautop() and do_shortcode(); Details formats it.
+					'raw'               => true,
+					'options'           => array(
+						'textarea_rows' => 6,
+						'media_buttons' => false,
+					),
+					'sanitize_callback' => 'wp_kses_post',
+				),
+				array(
 					'name'       => 'Event Schedule',
 					'id'         => 'hyperpress_competition_event_days',
 					'type'       => 'group',

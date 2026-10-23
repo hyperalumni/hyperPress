@@ -57,6 +57,14 @@ final class MetaBoxesTest extends WP_UnitTestCase {
 		$this->assertEmpty( $by_id['skip']['std'] ?? null, 'no default: the unticked state must be the normal one' );
 	}
 
+	public function test_information_box_has_a_blurb_wysiwyg(): void {
+		$by_id = array_column( $this->information_box()['fields'], null, 'id' );
+
+		$this->assertArrayHasKey( 'hyperpress_competition_blurb', $by_id );
+		$this->assertSame( 'wysiwyg', $by_id['hyperpress_competition_blurb']['type'] );
+		$this->assertSame( 'wp_kses_post', $by_id['hyperpress_competition_blurb']['sanitize_callback'] );
+	}
+
 	public function test_old_start_date_field_is_gone(): void {
 		$this->assertNotContains( self::OLD_ID, array_column( $this->information_box()['fields'], 'id' ) );
 	}
