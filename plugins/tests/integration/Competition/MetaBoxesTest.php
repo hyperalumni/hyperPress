@@ -63,6 +63,7 @@ final class MetaBoxesTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'hyperpress_competition_blurb', $by_id );
 		$this->assertSame( 'wysiwyg', $by_id['hyperpress_competition_blurb']['type'] );
 		$this->assertSame( 'wp_kses_post', $by_id['hyperpress_competition_blurb']['sanitize_callback'] );
+		$this->assertTrue( $by_id['hyperpress_competition_blurb']['raw'], 'Meta Box would otherwise run the blurb through do_shortcode()' );
 	}
 
 	public function test_old_start_date_field_is_gone(): void {

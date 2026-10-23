@@ -1,5 +1,7 @@
 # Competition list shortcode Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-10-23). Tasks 1-4 done (commits dd0db986..e65c42e3 plus the final-review test commit). `composer lint`, `test:unit` and `test:integration` pass in `plugins/`; the shortcode was rendered against the hyperonline stack with wpcli (read-only).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** A `[hyperpress_competitions]` shortcode lists the competitions matching a season (default: the current one), district, competition type and program, each with its title, week and date range, venue, blurb, countdown and link buttons, so the "FRC District Events" page no longer needs hand-edited content each year.
@@ -127,6 +129,15 @@
 
 ---
 
+## Outcome / execution notes
+
+- 2026-10-23: the blurb field sets `'raw' => true`; otherwise Meta Box runs a WYSIWYG value through `wpautop()` and `do_shortcode()` and the blurb's shortcodes would run. `MetaBoxesTest` pins it.
+- 2026-10-23: `Listing` documents `$ids` as `array<int,int>` (phpcs rejects `list<int>` over a native `array` hint). `list-item.php` uses `require` for `links.php` (phpcs warns about an unconditional `include`).
+- 2026-10-23: the item title is printed with `get_the_title()` unescaped, as core does (it is kses-filtered on save and texturized); the plan's "title is escaped" meant venue and address.
+- 2026-10-23: a saved current season whose term no longer exists makes `[hyperpress_competitions]` render nothing, like any unknown term. Showing every season instead would be the worse surprise; the fix is in Settings → Season.
+- 2026-10-23: final review (no Critical findings) added `DateRangeTest` cases for the site timezone, DST and midnight and a `raw` assertion in `MetaBoxesTest`; all passed on first run, so no code changed.
+
 ## Known follow-ups
 
 - Replace the hand-written content on the "FRC District Events" page with the shortcode and write the blurbs on each competition (content work, not code).
+- Deferred minors from the final review: `Listing::sort_key` ignores the day `skip` flag that `Schedule::pick_index()` honours; the title tie-break uses `<=>`, which compares numeric-looking titles as numbers (use `strnatcasecmp`); only the first `hyper_week` term is shown; `get_term_by( 'name' )` may miss names containing `&`; `WP_Query` with `fields => 'ids'` does not prime post, meta or term caches (add `_prime_post_caches()` if lists grow); `wp_kses_post` keeps the text inside a stripped `<script>`; date-range word order is English-only; password-protected competitions are listed; `Details::for_post` formats the blurb on views that do not show it; the same competition twice on one page repeats the countdown DOM id.
