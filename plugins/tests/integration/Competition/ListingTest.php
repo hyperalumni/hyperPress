@@ -129,6 +129,13 @@ final class ListingTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'Live' ), $this->titles( Listing::ids( array() ) ) );
 	}
 
+	public function test_password_protected_competitions_are_not_listed(): void {
+		$this->competition( 'Open' );
+		self::factory()->post->create( array( 'post_type' => 'hyper_competition', 'post_status' => 'publish', 'post_title' => 'Locked', 'post_password' => 'secret' ) );
+
+		$this->assertSame( array( 'Open' ), $this->titles( Listing::ids( array() ) ) );
+	}
+
 	public function test_upcoming_first_by_next_start_then_past_ascending(): void {
 		$this->competition( 'Past Late', array(), '2030-05-01 09:00' );
 		$this->competition( 'Later', array(), '2030-09-01 09:00' );

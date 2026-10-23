@@ -14,7 +14,7 @@ final class Listing {
 	private const PROGRAM = 'hyper_program';
 
 	/**
-	 * Published competitions matching the filters, in listing order.
+	 * Public competitions matching the filters (published and without a password), in listing order.
 	 *
 	 * A filter that is empty is not applied, except `season`, which falls back to the current season. A filter naming a
 	 * term that does not exist matches nothing. `program` is ignored unless its taxonomy is attached to competitions.
@@ -65,6 +65,7 @@ final class Listing {
 			array(
 				'post_type'           => Plugin::POST_TYPE,
 				'post_status'         => 'publish',
+				'has_password'        => false,
 				'posts_per_page'      => -1,
 				'fields'              => 'ids',
 				'no_found_rows'       => true,
