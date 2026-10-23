@@ -18,11 +18,41 @@ final class SponsorSettingsTest extends WP_UnitTestCase {
 		$this->fail( "$field_id not found" );
 	}
 
+	public function test_website_is_a_link_field(): void {
+		foreach ( apply_filters( 'rwmb_meta_boxes', array() ) as $box ) {
+			foreach ( $box['fields'] ?? array() as $field ) {
+				if ( 'hyperpress_sponsor_website' === ( $field['id'] ?? '' ) ) {
+					$this->assertSame( 'link', $field['type'] );
+					return;
+				}
+			}
+		}
+		$this->fail( 'hyperpress_sponsor_website not found' );
+	}
+
 	public function test_website_drops_hostile_schemes_and_keeps_https(): void {
 		$callback = $this->sanitizer_for( 'hyperpress_sponsor_website' );
 
-		$this->assertSame( '', $callback( 'javascript:alert(1)' ) );
-		$this->assertSame( 'https://example.com/sponsor', $callback( 'https://example.com/sponsor' ) );
+		$this->assertSame( array(), $callback( array( 'url' => 'javascript:alert(1)', 'title' => 'x' ) ) );
+		$this->assertSame( array(), $callback( 'https://example.com/sponsor' ) );
+		$this->assertSame( array(), $callback( array( 'url' => '' ) ) );
+		$this->assertSame(
+			array(
+				'url'     => 'https://example.com/sponsor',
+				'title'   => 'Our <b>sponsor</b>',
+				'target'  => '_blank',
+				'post_id' => 7,
+			),
+			$callback(
+				array(
+					'url'     => 'https://example.com/sponsor',
+					'title'   => 'Our <b>sponsor</b><script></script>',
+					'target'  => '_blank',
+					'post_id' => '7',
+				)
+			)
+		);
+		$this->assertSame( '', $callback( array( 'url' => 'https://example.com/a', 'target' => 'evil' ) )['target'] );
 	}
 
 	public function test_description_strips_scripts_and_keeps_allowed_markup(): void {

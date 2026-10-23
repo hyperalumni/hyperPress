@@ -4,7 +4,6 @@ namespace HyperPress\Sponsor;
 defined( 'ABSPATH' ) || exit;
 
 use HyperPress\Utils\Banner;
-use HyperPress\Utils\Sanitize;
 
 final class MetaBoxes {
 
@@ -62,13 +61,14 @@ final class MetaBoxes {
 				array(
 					'name'              => 'Sponsor Website',
 					'id'                => 'hyperpress_sponsor_website',
-					'type'              => 'url',
-					'placeholder'       => 'https://hyperonline.org',
+					'type'              => 'link',
+					'desc'              => __( 'Optional link text; defaults to “Visit our sponsor”.', 'hyperpress' ),
 					'required'          => false,
-					'sanitize_callback' => array( Sanitize::class, 'url' ),
+					'sanitize_callback' => array( self::class, 'website_link' ),
 				),
 				array(
 					'name'              => 'Sponsor Description',
+					'desc'              => __( 'Add &lt;!--more--&gt; on its own line to end the excerpt shown in sponsor lists; the full text shows on the sponsor\'s page.', 'hyperpress' ),
 					'id'                => 'hyperpress_sponsor_description',
 					'type'              => 'textarea',
 					'placeholder'       => 'A brief description of the Sponsor',
@@ -79,5 +79,31 @@ final class MetaBoxes {
 		);
 
 		return $meta_boxes;
+	}
+
+	/**
+	 * Sanitizer for the sponsor website. A Meta Box `link` field submits an array
+	 * (url, title, target, post_id). Returns that array sanitized, or array() when there is
+	 * no safe URL, which makes Meta Box delete the meta.
+	 *
+	 * @param mixed $value Submitted value.
+	 * @return array{url?:string,title?:string,target?:string,post_id?:int}
+	 */
+	public static function website_link( $value ): array {
+		if ( ! is_array( $value ) ) {
+			return array();
+		}
+
+		$url = isset( $value['url'] ) && is_string( $value['url'] ) ? esc_url_raw( $value['url'] ) : '';
+		if ( '' === $url ) {
+			return array();
+		}
+
+		return array(
+			'url'     => $url,
+			'title'   => isset( $value['title'] ) && is_string( $value['title'] ) ? wp_kses_post( $value['title'] ) : '',
+			'target'  => isset( $value['target'] ) && '_blank' === $value['target'] ? '_blank' : '',
+			'post_id' => isset( $value['post_id'] ) && is_scalar( $value['post_id'] ) ? absint( $value['post_id'] ) : 0,
+		);
 	}
 }

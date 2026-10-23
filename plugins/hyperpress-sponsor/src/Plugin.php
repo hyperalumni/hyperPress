@@ -48,6 +48,7 @@ final class Plugin {
 		SettingsPage::register();
 		Labels::register();
 		MetaBoxes::register();
+		WebsiteMigration::register();
 		Widgets::register();
 		Ordering::register();
 		ArchiveLoop::register();

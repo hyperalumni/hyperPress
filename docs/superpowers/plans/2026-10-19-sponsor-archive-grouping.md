@@ -132,6 +132,10 @@ Test conventions: integration tests extend `WP_UnitTestCase`; look at the existi
 
 ---
 
+## Later changes
+
+- 2026-10-23: `templates/content.php` (shared by the grouped archive and the single page) also renders the `hyperpress_sponsor_description` metabox text after the logo. The single page shows all of it; lists show the text before a `<!--more-->` marker plus a "Learn more about our sponsor" button next to the "Visit our sponsor" button (both `text-capitalize`). The logo no longer gets Foundation's `.thumbnail` border and sits in a `margin-bottom-2` wrapper.
+
 ## Known follow-ups
 
 - A stored tier rank (term meta) would replace the slug-number rule shared by `Ordering` (SQL) and `tier_compare()` (PHP).
