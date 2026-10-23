@@ -28,7 +28,7 @@ final class Details {
 	 *
 	 * @param int $post_id Competition post ID.
 	 *
-	 * @return array{host:string,venue:string,address:string,blurb:string,when:?\DateTimeImmutable,days:list<array{label:string,start:\DateTimeImmutable,state:string}>,links:list<array{label:string,url:string,target:string,rel:string,group:string}>} The blurb is printable HTML. Each link's `group` is `info` or `live` (streams); each day's `state` is `past`, `current` (the day the countdown targets) or `upcoming`.
+	 * @return array{host:string,venue:string,address:string,when:?\DateTimeImmutable,days:list<array{label:string,start:\DateTimeImmutable,state:string}>,links:list<array{label:string,url:string,target:string,rel:string,group:string}>} Each link's `group` is `info` or `live` (streams); each day's `state` is `past`, `current` (the day the countdown targets) or `upcoming`.
 	 */
 	public static function for_post( int $post_id ): array {
 		$days    = Schedule::days( $post_id );
@@ -67,7 +67,6 @@ final class Details {
 			'host'    => self::text( \HyperPress\Utils\Meta::get( 'hyperpress_competition_host_name', $post_id ) ),
 			'venue'   => self::text( \HyperPress\Utils\Meta::get( 'hyperpress_competition_venue_name', $post_id ) ),
 			'address' => self::text( \HyperPress\Utils\Meta::get( 'hyperpress_competition_venue_address', $post_id ) ),
-			'blurb'   => self::blurb( \HyperPress\Utils\Meta::get( self::BLURB, $post_id ) ),
 			'when'    => null === $current ? null : $days[ $current ]['start'],
 			'days'    => self::day_states( $days, $current, $now ),
 			'links'   => $links,
@@ -182,12 +181,14 @@ final class Details {
 	}
 
 	/**
-	 * The blurb as printable HTML: allowed post markup in paragraphs, or '' when empty or not text.
+	 * A competition's blurb as printable HTML: allowed post markup in paragraphs, or '' when empty or not text.
 	 *
-	 * @param mixed $value Stored value.
+	 * Kept out of for_post() because only the full view and the list print it.
+	 *
+	 * @param int $post_id Competition post ID.
 	 */
-	private static function blurb( mixed $value ): string {
-		$text = self::text( $value );
+	public static function blurb( int $post_id ): string {
+		$text = self::text( \HyperPress\Utils\Meta::get( self::BLURB, $post_id ) );
 
 		return '' === $text ? '' : wpautop( wp_kses_post( $text ) );
 	}

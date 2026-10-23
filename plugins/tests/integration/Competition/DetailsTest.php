@@ -48,7 +48,7 @@ final class DetailsTest extends WP_UnitTestCase {
 		$id    = $this->competition(
 			array( Details::BLURB => 'Hello <script>x()</script><a href="https://example.org">link</a>' )
 		);
-		$blurb = Details::for_post( $id )['blurb'];
+		$blurb = Details::blurb( $id );
 
 		$this->assertStringContainsString( '<p>Hello', $blurb );
 		$this->assertStringContainsString( '<a href="https://example.org">link</a>', $blurb );
@@ -56,9 +56,15 @@ final class DetailsTest extends WP_UnitTestCase {
 	}
 
 	public function test_blurb_is_empty_when_missing_or_not_text(): void {
-		$this->assertSame( '', Details::for_post( $this->competition( array() ) )['blurb'] );
-		$this->assertSame( '', Details::for_post( $this->competition( array( Details::BLURB => array( 'x' ) ) ) )['blurb'] );
-		$this->assertSame( '', Details::for_post( $this->competition( array( Details::BLURB => "  \n " ) ) )['blurb'] );
+		$this->assertSame( '', Details::blurb( $this->competition( array() ) ) );
+		$this->assertSame( '', Details::blurb( $this->competition( array( Details::BLURB => array( 'x' ) ) ) ) );
+		$this->assertSame( '', Details::blurb( $this->competition( array( Details::BLURB => "  \n " ) ) ) );
+	}
+
+	public function test_for_post_does_not_carry_the_blurb(): void {
+		$id = $this->competition( array( Details::BLURB => 'Hello' ) );
+
+		$this->assertArrayNotHasKey( 'blurb', Details::for_post( $id ) );
 	}
 
 	public function test_links_keep_order_and_titles_override_labels(): void {

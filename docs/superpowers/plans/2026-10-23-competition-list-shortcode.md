@@ -41,7 +41,7 @@
 
 ## File Structure
 
-- Modify `plugins/hyperpress-competition/src/MetaBoxes.php` (blurb field), `src/Details.php` (`blurb`), `src/Plugin.php` (boot), `templates/content.php` (blurb, shared links part).
+- Modify `plugins/hyperpress-competition/src/MetaBoxes.php` (blurb field), `src/Details.php` (`blurb()`), `src/Plugin.php` (boot), `templates/content.php` (blurb, shared links part).
 - Create `plugins/hyperpress-competition/src/DateRange.php`, `src/Listing.php`, `src/Competitions.php`.
 - Create `plugins/hyperpress-competition/templates/links.php` (link buttons, extracted from `content.php`) and `templates/list-item.php`.
 - Tests: extend `MetaBoxesTest.php`, `DetailsTest.php`, `ContentTest.php`, `BootTest.php`; create `DateRangeTest.php`, `ListingTest.php`, `CompetitionsShortcodeTest.php`.
@@ -57,11 +57,11 @@
 
 **Interfaces:**
 
-- Produces: `Details::BLURB` (`'hyperpress_competition_blurb'`); `Details::for_post()['blurb']: string`, ready-to-print HTML (`wpautop( wp_kses_post( text ) )`), `''` when empty or not a string. Update the docblock return shape.
+- Produces: `Details::BLURB` (`'hyperpress_competition_blurb'`); `Details::blurb( int $post_id ): string`, ready-to-print HTML (`wpautop( wp_kses_post( text ) )`), `''` when empty or not a string. Update the docblock return shape.
 
 - [x] **Step 1: Write the failing tests.** `MetaBoxesTest::test_information_box_has_a_blurb_wysiwyg` (field `hyperpress_competition_blurb` is in the Information box, `type` is `wysiwyg`, `sanitize_callback` is `wp_kses_post`). `DetailsTest::test_blurb_is_html_and_stripped_of_scripts` (meta `'Hello <script>x()</script><a href="https://example.org">link</a>'` gives a string containing `<p>Hello` and `<a href="https://example.org">link</a>` and not `script`), `test_blurb_is_empty_when_missing_or_not_text` (no meta and an array value both give `''`). `ContentTest::test_full_view_shows_the_blurb_and_the_feed_view_does_not` (blurb text present when `Content::is_full_view()` is true, absent otherwise).
 - [x] **Step 2: Run to verify they fail.** `docker compose run --rm php composer test:integration -- --filter 'MetaBoxesTest|DetailsTest|ContentTest'`. Expected: the new tests FAIL.
-- [x] **Step 3: Implement** the field (WYSIWYG, `media_buttons` off, a few rows, placed before the Event Schedule group), `Details::BLURB` and `for_post()['blurb']`, and print `<div class="competition-blurb">` with the blurb in the full view of `templates/content.php`, after the address and host and before the schedule, only when non-empty.
+- [x] **Step 3: Implement** the field (WYSIWYG, `media_buttons` off, a few rows, placed before the Event Schedule group), `Details::BLURB` and `Details::blurb()`, and print `<div class="competition-blurb">` with the blurb in the full view of `templates/content.php`, after the address and host and before the schedule, only when non-empty.
 - [x] **Step 4: Run to verify they pass** (the filter above, then `--filter Competition`). Expected: PASS.
 - [x] **Step 5: Commit** `feat(competition): add a blurb field and show it on the competition page`.
 
@@ -136,9 +136,10 @@
 - 2026-10-23: the item title is printed with `get_the_title()` unescaped, as core does (it is kses-filtered on save and texturized); the plan's "title is escaped" meant venue and address.
 - 2026-10-23: a saved current season whose term no longer exists makes `[hyperpress_competitions]` render nothing, like any unknown term. Showing every season instead would be the worse surprise; the fix is in Settings → Season.
 - 2026-10-23: owner asked for public competitions only, so `Listing::ids()` also passes `has_password => false` (`ListingTest::test_password_protected_competitions_are_not_listed`). Drafts, pending and private competitions were already excluded by `post_status => publish`.
+- 2026-10-23: the blurb is read through `Details::blurb( int $post_id )`, called only by `content.php` (full view) and `list-item.php`, instead of being a `for_post()` key, so the feed, summary and countdown no longer format it (`DetailsTest::test_for_post_does_not_carry_the_blurb`). Tasks 1 and 4 above describe the first design.
 - 2026-10-23: final review (no Critical findings) added `DateRangeTest` cases for the site timezone, DST and midnight and a `raw` assertion in `MetaBoxesTest`; all passed on first run, so no code changed.
 
 ## Known follow-ups
 
 - Replace the hand-written content on the "FRC District Events" page with the shortcode and write the blurbs on each competition (content work, not code).
-- Deferred minors from the final review: `Listing::sort_key` ignores the day `skip` flag that `Schedule::pick_index()` honours; the title tie-break uses `<=>`, which compares numeric-looking titles as numbers (use `strnatcasecmp`); only the first `hyper_week` term is shown; `get_term_by( 'name' )` may miss names containing `&`; `WP_Query` with `fields => 'ids'` does not prime post, meta or term caches (add `_prime_post_caches()` if lists grow); `wp_kses_post` keeps the text inside a stripped `<script>`; date-range word order is English-only; `Details::for_post` formats the blurb on views that do not show it; the same competition twice on one page repeats the countdown DOM id.
+- Deferred minors from the final review: `Listing::sort_key` ignores the day `skip` flag that `Schedule::pick_index()` honours; the title tie-break uses `<=>`, which compares numeric-looking titles as numbers (use `strnatcasecmp`); only the first `hyper_week` term is shown; `get_term_by( 'name' )` may miss names containing `&`; `WP_Query` with `fields => 'ids'` does not prime post, meta or term caches (add `_prime_post_caches()` if lists grow); `wp_kses_post` keeps the text inside a stripped `<script>`; date-range word order is English-only; the same competition twice on one page repeats the countdown DOM id.

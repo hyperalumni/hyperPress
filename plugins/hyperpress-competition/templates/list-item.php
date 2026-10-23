@@ -9,6 +9,7 @@
 defined( 'ABSPATH' ) || exit;
 
 $hyperpress_details   = \HyperPress\Competition\Details::for_post( $hyperpress_post_id );
+$hyperpress_blurb     = \HyperPress\Competition\Details::blurb( $hyperpress_post_id );
 $hyperpress_days      = \HyperPress\Competition\Schedule::days( $hyperpress_post_id );
 $hyperpress_weeks     = get_the_terms( $hyperpress_post_id, \HyperPress\Competition\Plugin::WEEK );
 $hyperpress_when      = implode(
@@ -34,8 +35,8 @@ $hyperpress_countdown = \HyperPress\Competition\Countdown::render( $hyperpress_p
 	<?php if ( '' !== $hyperpress_details['address'] ) : ?>
 		<p class="competition-address"><?php echo esc_html( $hyperpress_details['address'] ); ?></p>
 	<?php endif; ?>
-	<?php if ( '' !== $hyperpress_details['blurb'] ) : ?>
-		<div class="competition-blurb"><?php echo $hyperpress_details['blurb']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Details::for_post() returns kses-filtered HTML. ?></div>
+	<?php if ( '' !== $hyperpress_blurb ) : ?>
+		<div class="competition-blurb"><?php echo $hyperpress_blurb; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Details::blurb() returns kses-filtered HTML. ?></div>
 	<?php endif; ?>
 	<?php echo $hyperpress_countdown; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Countdown::render() returns pre-escaped markup. ?>
 	<?php require __DIR__ . '/links.php'; ?>

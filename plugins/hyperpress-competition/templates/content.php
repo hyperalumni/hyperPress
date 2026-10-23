@@ -50,8 +50,9 @@ $hyperpress_when_s  = $hyperpress_when instanceof \DateTimeImmutable
 		<?php if ( '' !== $hyperpress_details['host'] ) : ?>
 			<p class="competition-host"><strong><?php esc_html_e( 'Hosted by', 'hyperpress' ); ?>:</strong> <?php echo esc_html( $hyperpress_details['host'] ); ?></p>
 		<?php endif; ?>
-		<?php if ( '' !== $hyperpress_details['blurb'] ) : ?>
-			<div class="competition-blurb"><?php echo $hyperpress_details['blurb']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Details::for_post() returns kses-filtered HTML. ?></div>
+		<?php $hyperpress_blurb = \HyperPress\Competition\Details::blurb( (int) get_the_ID() ); ?>
+		<?php if ( '' !== $hyperpress_blurb ) : ?>
+			<div class="competition-blurb"><?php echo $hyperpress_blurb; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Details::blurb() returns kses-filtered HTML. ?></div>
 		<?php endif; ?>
 		<?php if ( count( $hyperpress_details['days'] ) >= 2 ) : ?>
 			<?php
