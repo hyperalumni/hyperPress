@@ -11,6 +11,10 @@ final class BootTest extends WP_UnitTestCase {
 		$this->assertTrue( shortcode_exists( 'hyperpress_competition_countdown' ) );
 	}
 
+	public function test_the_competitions_shortcode_is_registered(): void {
+		$this->assertTrue( shortcode_exists( 'hyperpress_competitions' ) );
+	}
+
 	public function test_the_content_template_filter_is_registered(): void {
 		$this->assertNotFalse( has_filter( 'content_template', array( Content::class, 'add_content_template' ) ) );
 	}
