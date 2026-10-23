@@ -76,11 +76,11 @@
 
 - Produces: `DateRange::format( \DateTimeImmutable $first, \DateTimeImmutable $last ): string`, by calendar date in the site timezone using `wp_date()`, with an en dash.
 
-- [ ] **Step 1: Write the failing tests** `test_one_day` (`March 13, 2026`), `test_same_month` (`March 13–15, 2026`), `test_across_months` (`March 31 – April 2, 2026`), `test_across_years` (`December 30, 2026 – January 2, 2027`), `test_two_times_on_the_same_date_are_one_day` (starts 09:00 and 17:00 on one date give `March 13, 2026`).
-- [ ] **Step 2: Run to verify they fail.** `--filter DateRangeTest`. Expected: FAIL (class missing).
-- [ ] **Step 3: Implement** `DateRange::format`.
-- [ ] **Step 4: Run to verify they pass.** Expected: PASS.
-- [ ] **Step 5: Commit** `feat(competition): format a competition's date range`.
+- [x] **Step 1: Write the failing tests** `test_one_day` (`March 13, 2026`), `test_same_month` (`March 13–15, 2026`), `test_across_months` (`March 31 – April 2, 2026`), `test_across_years` (`December 30, 2026 – January 2, 2027`), `test_two_times_on_the_same_date_are_one_day` (starts 09:00 and 17:00 on one date give `March 13, 2026`).
+- [x] **Step 2: Run to verify they fail.** `--filter DateRangeTest`. Expected: FAIL (class missing).
+- [x] **Step 3: Implement** `DateRange::format`.
+- [x] **Step 4: Run to verify they pass.** Expected: PASS.
+- [x] **Step 5: Commit** `feat(competition): format a competition's date range`.
 
 ---
 
