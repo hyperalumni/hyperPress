@@ -24,6 +24,7 @@ final class CompetitionSettingsTest extends WP_UnitTestCase {
 			'ftc ma'   => array( 'hyperpress_competition_ftc_ma_event_url' ),
 			'first'    => array( 'hyperpress_competition_first_event_url' ),
 			'frc'      => array( 'hyperpress_competition_frc_events_url' ),
+			'ftc'      => array( 'hyperpress_competition_ftc_events_url' ),
 			'agenda'   => array( 'hyperpress_competition_agenda_url' ),
 			'stream'   => array( 'hyperpress_competition_stream_url' ),
 		);

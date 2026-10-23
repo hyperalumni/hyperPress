@@ -223,6 +223,21 @@ final class DetailsTest extends WP_UnitTestCase {
 		);
 	}
 
+	public function test_ftc_events_link_follows_frc_events_and_precedes_the_blue_alliance(): void {
+		$id      = $this->competition(
+			array(
+				'hyperpress_competition_tba_event_key'  => '2026mabos',
+				'hyperpress_competition_ftc_events_url' => array( 'url' => 'https://ftc-events.firstinspires.org/2025/USMANOR', 'title' => '' ),
+				'hyperpress_competition_frc_events_url' => array( 'url' => 'https://frc-events.firstinspires.org/2026/MABOS', 'title' => '' ),
+			)
+		);
+		$details = Details::for_post( $id );
+
+		$this->assertSame( array( 'FRC Events', 'FTC Events', 'The Blue Alliance' ), array_column( $details['links'], 'label' ) );
+		$this->assertSame( 'https://ftc-events.firstinspires.org/2025/USMANOR', $details['links'][1]['url'] );
+		$this->assertSame( 'info', $details['links'][1]['group'] );
+	}
+
 	public function test_multiple_streams_use_their_titles_or_numbered_labels(): void {
 		$id      = $this->competition(
 			array(

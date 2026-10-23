@@ -11,12 +11,13 @@ final class Details {
 
 	public const BLURB = 'hyperpress_competition_blurb';
 
-	/** Link fields in display order; the derived Blue Alliance link follows `first` + `frc_events`, then the agenda. */
+	/** Link fields in display order; the derived Blue Alliance link follows `first` + `frc_events` + `ftc_events`, then the agenda. */
 	private const LINKS_BEFORE_TBA = array(
 		'hyperpress_competition_ne_first_event_url' => 'NE FIRST Event',
 		'hyperpress_competition_ftc_ma_event_url'   => 'FTC MA Event',
 		'hyperpress_competition_first_event_url'    => 'FIRST Event',
 		'hyperpress_competition_frc_events_url'     => 'FRC Events',
+		'hyperpress_competition_ftc_events_url'     => 'FTC Events',
 	);
 
 	private const LINKS_AFTER_TBA = array(

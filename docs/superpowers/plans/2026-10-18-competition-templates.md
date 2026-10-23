@@ -514,3 +514,4 @@ Owner-approved. The countdown should stay on a day until that day ENDS (most day
 - Per-day venues or streams would extend the group's sub-fields and `Schedule::normalize`.
 - The schedule-list rule (only with 2+ days, all days shown) is the plan's own call; flip it in `templates/content.php` if the owner prefers otherwise.
 - 2026-10-23: the competition list shortcode (`docs/superpowers/plans/2026-10-23-competition-list-shortcode.md`) added a `blurb` field and `Details::blurb()`, printed in the full view of `templates/content.php`, and moved the link-button block of `content.php` into `templates/links.php`, shared with the list item. The markup the single page prints is unchanged.
+- 2026-10-23: added the FTC Events Page link field (`hyperpress_competition_ftc_events_url`, default label "FTC Events"), mirroring FRC Events; `Details::for_post` link order is now NE FIRST, FTC MA, FIRST, FRC Events, FTC Events, The Blue Alliance, Public Agenda, streams.

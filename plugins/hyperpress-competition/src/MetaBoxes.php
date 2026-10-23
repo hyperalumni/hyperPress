@@ -189,6 +189,12 @@ final class MetaBoxes {
 					'sanitize_callback' => array( self::class, 'event_link' ),
 				),
 				array(
+					'name'              => 'FTC Events Page',
+					'id'                => 'hyperpress_competition_ftc_events_url',
+					'type'              => 'link',
+					'sanitize_callback' => array( self::class, 'event_link' ),
+				),
+				array(
 					'name'              => 'Public Agenda',
 					'id'                => 'hyperpress_competition_agenda_url',
 					'type'              => 'link',
