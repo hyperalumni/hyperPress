@@ -1,6 +1,6 @@
 # Link shortcode and mailto/tel/anchor handling Implementation Plan
 
-> **STATUS: ✅ COMPLETED** (2026-11-01). Task 1 (`Link` handles mailto/tel/#) and Task 2 (`hyperpress_link` shortcode, utils dependency) done on `feat/link-shortcode`. `composer lint`, `test:unit` (176) and `test:integration` (1497, 6 skipped as before) pass in `plugins/`.
+> **STATUS: 🔄 IN PROGRESS** (2026-11-01): Tasks 1-2 done; Tasks 3-4 take in the final review's minors. Earlier note: Task 1 (`Link` handles mailto/tel/#) and Task 2 (`hyperpress_link` shortcode, utils dependency) done on `feat/link-shortcode`. `composer lint`, `test:unit` (176) and `test:integration` (1497, 6 skipped as before) pass in `plugins/`.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -96,9 +96,32 @@ git add plugins/hyperpress-shortcode/src/Shortcodes/Anchor.php plugins/hyperpres
 git commit -m "feat(shortcode): add the hyperpress_link shortcode and require utils" -- plugins/hyperpress-shortcode plugins/tests/src/Support/Convention.php plugins/tests/integration/Shortcodes/AnchorShortcodeTest.php docs/superpowers/plans/2026-11-01-plugins-link-shortcode.md
 ```
 
+### Task 3: `Link` takes in sms, query-only URLs and leading whitespace
+
+**Files:** Modify `plugins/hyperpress-utils/src/Link.php`; test `plugins/tests/integration/Utils/LinkTest.php`.
+
+**Interfaces:** signatures unchanged. `target()`: regex becomes `/^(mailto|tel|sms):/i` and runs on the trimmed URL. `is_internal()`: trims, then true for URLs starting with `#` or `?`.
+
+- [ ] **Step 1: Write the failing tests.** `urls()`: `'query only' => array( '?page=2', true )`, `'padded fragment' => array( '  #top', true )`, `'padded relative' => array( ' /agenda', true )`. `targets()` (`_self`): `'sms' => 'sms:+31201234567'`, `'padded mailto' => ' mailto:a@b.example'`, `'query only' => '?page=2'`; and `'localhost with port' => array( 'localhost:8080/x', '_blank' )` (pins that the rule is not "any scheme").
+- [ ] **Step 2: Run** `composer test:integration -- --filter LinkTest`. Expected: FAIL on the new `_self`/internal cases (the `localhost` case already passes).
+- [ ] **Step 3: Implement** as in Interfaces; update docblocks.
+- [ ] **Step 4: Run** the Step 2 command (Expected: OK), then `composer lint`.
+- [ ] **Step 5: Commit** `feat(utils): treat sms, query-only and padded urls like their plain forms` with this plan's ticks.
+
+### Task 4: `Anchor` hardening and test gaps
+
+**Files:** Modify `plugins/hyperpress-shortcode/src/Shortcodes/Anchor.php`; test `plugins/tests/integration/Shortcodes/AnchorShortcodeTest.php`.
+
+**Interfaces:** `Anchor::render()` unchanged in signature.
+
+- [ ] **Step 1: Write the failing tests.** (a) `[hyperpress_link url="javascript:alert(1)"]` with no text renders `''`. (b) enclosed `<a href="/x">Inner</a>` renders `<a href="/a" target="_self">Inner</a>` for `url="/a"` (no nested anchor). Add the tests that should already pass (characterization): same-tab provider and the PDF test also assert the exact `href="…"`; `url="/a?x=1&b=2"` renders `href="/a?x=1&#038;b=2"` (and the same for `&amp;` input); `/files/a.pdf?x=1&y=2` is `_blank`; `url="data:text/html,x"` and `url="JaVaScRiPt:alert(1)"` render the text without a link; the script test asserts the exact output `alert(1)Hi` inside the anchor; `sms:` URL is `_self`.
+- [ ] **Step 2: Run** `composer test:integration -- --filter AnchorShortcodeTest`. Expected: FAIL for (a) and (b) only.
+- [ ] **Step 3: Implement.** In `render()`: when the href is empty return `''` if there is no content and no `text`, else the text (do not print the URL as text). Strip `<a>` from enclosed content by `wp_kses()` with `wp_kses_allowed_html( 'post' )` minus its `a` key. Add one comment that kses drops block markup.
+- [ ] **Step 4: Run** the Step 2 command, then `composer lint`, `composer test:unit`, `composer test:integration`. Expected: all green.
+- [ ] **Step 5: Commit** `fix(shortcode): drop nested anchors and unsafe-url text, pin href cases` with this plan's ticks, refresh the STATUS banner and add Outcome lines.
+
 ## Known follow-ups
 
-- Other schemes (`sms:`) and query-only URLs are not handled by `Link`.
 - The plugin `Description:` header does not mention links.
 
 ## Outcome
