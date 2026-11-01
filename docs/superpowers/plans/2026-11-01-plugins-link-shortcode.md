@@ -102,11 +102,11 @@ git commit -m "feat(shortcode): add the hyperpress_link shortcode and require ut
 
 **Interfaces:** signatures unchanged. `target()`: regex becomes `/^(mailto|tel|sms):/i` and runs on the trimmed URL. `is_internal()`: trims, then true for URLs starting with `#` or `?`.
 
-- [ ] **Step 1: Write the failing tests.** `urls()`: `'query only' => array( '?page=2', true )`, `'padded fragment' => array( '  #top', true )`, `'padded relative' => array( ' /agenda', true )`. `targets()` (`_self`): `'sms' => 'sms:+31201234567'`, `'padded mailto' => ' mailto:a@b.example'`, `'query only' => '?page=2'`; and `'localhost with port' => array( 'localhost:8080/x', '_blank' )` (pins that the rule is not "any scheme").
-- [ ] **Step 2: Run** `composer test:integration -- --filter LinkTest`. Expected: FAIL on the new `_self`/internal cases (the `localhost` case already passes).
-- [ ] **Step 3: Implement** as in Interfaces; update docblocks.
-- [ ] **Step 4: Run** the Step 2 command (Expected: OK), then `composer lint`.
-- [ ] **Step 5: Commit** `feat(utils): treat sms, query-only and padded urls like their plain forms` with this plan's ticks.
+- [x] **Step 1: Write the failing tests.** `urls()`: `'query only' => array( '?page=2', true )`, `'padded fragment' => array( '  #top', true )`, `'padded relative' => array( ' /agenda', true )`. `targets()` (`_self`): `'sms' => 'sms:+31201234567'`, `'padded mailto' => ' mailto:a@b.example'`, `'query only' => '?page=2'`; and `'localhost with port' => array( 'localhost:8080/x', '_blank' )` (pins that the rule is not "any scheme").
+- [x] **Step 2: Run** `composer test:integration -- --filter LinkTest`. Expected: FAIL on the new `_self`/internal cases (the `localhost` case already passes).
+- [x] **Step 3: Implement** as in Interfaces; update docblocks.
+- [x] **Step 4: Run** the Step 2 command (Expected: OK), then `composer lint`.
+- [x] **Step 5: Commit** `feat(utils): treat sms, query-only and padded urls like their plain forms` with this plan's ticks.
 
 ### Task 4: `Anchor` hardening and test gaps
 

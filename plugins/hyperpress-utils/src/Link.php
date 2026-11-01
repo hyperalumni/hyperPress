@@ -9,14 +9,16 @@ defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 final class Link {
 
 	/**
-	 * True when the URL points at this site: a relative URL, a fragment-only URL (`#top`, the current page), or one
-	 * whose host equals the site's host.
+	 * True when the URL points at this site: a relative URL, a fragment-only or query-only URL (`#top`, `?page=2`:
+	 * the current page), or one whose host equals the site's host. Surrounding whitespace is ignored.
 	 * Comparing hosts (not substrings) stops `https://other.example/?r=<site url>` passing as internal.
 	 *
 	 * @param string $url Link URL.
 	 */
 	public static function is_internal( string $url ): bool {
-		if ( 0 === strpos( $url, '#' ) ) {
+		$url = trim( $url );
+
+		if ( 0 === strpos( $url, '#' ) || 0 === strpos( $url, '?' ) ) {
 			return true;
 		}
 
@@ -31,14 +33,16 @@ final class Link {
 	}
 
 	/**
-	 * The link `target`: `_self` for `mailto:` and `tel:` URLs; `_blank` for an external URL or one whose path ends
-	 * in `.pdf` (query string and fragment ignored); else `_self`.
+	 * The link `target`: `_self` for `mailto:`, `tel:` and `sms:` URLs; `_blank` for an external URL or one whose path
+	 * ends in `.pdf` (query string and fragment ignored); else `_self`. Surrounding whitespace is ignored.
 	 *
 	 * @param string $url Link URL.
 	 */
 	public static function target( string $url ): string {
+		$url = trim( $url );
+
 		// A regex, not wp_parse_url(): PHP reads a digits-only `tel:5551234` as host `tel`, port 5551234.
-		if ( 1 === preg_match( '/^(mailto|tel):/i', $url ) ) {
+		if ( 1 === preg_match( '/^(mailto|tel|sms):/i', $url ) ) {
 			return '_self';
 		}
 

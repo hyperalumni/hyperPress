@@ -18,6 +18,9 @@ final class LinkTest extends WP_UnitTestCase {
 			'bare word'                      => array( 'agenda', false ),
 			'fragment only'                  => array( '#top', true ),
 			'bare hash'                      => array( '#', true ),
+			'query only'                     => array( '?page=2', true ),
+			'padded fragment'                => array( '  #top', true ),
+			'padded relative'                => array( ' /agenda', true ),
 		);
 	}
 
@@ -59,6 +62,10 @@ final class LinkTest extends WP_UnitTestCase {
 			'mailto with pdf in query'     => array( 'mailto:a@b.example?subject=x.pdf', '_self' ),
 			'tel'                          => array( 'tel:+31201234567', '_self' ),
 			'tel digits only'              => array( 'tel:5551234', '_self' ),
+			'sms'                          => array( 'sms:+31201234567', '_self' ),
+			'padded mailto'                => array( ' mailto:a@b.example', '_self' ),
+			'query only'                   => array( '?page=2', '_self' ),
+			'localhost with port'          => array( 'localhost:8080/x', '_blank' ),
 		);
 	}
 
