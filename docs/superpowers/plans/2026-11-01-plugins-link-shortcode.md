@@ -1,5 +1,6 @@
 # Link shortcode and mailto/tel/anchor handling Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-11-01). Task 1 (`Link` handles mailto/tel/#) and Task 2 (`hyperpress_link` shortcode, utils dependency) done on `feat/link-shortcode`. `composer lint`, `test:unit` (176) and `test:integration` (1497, 6 skipped as before) pass in `plugins/`.
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add a `[hyperpress_link]` shortcode that sets `target` and `rel` through `HyperPress\Utils\Link`, after teaching `Link` that `mailto:`, `tel:` and `#anchor` URLs stay in the same tab.
@@ -70,9 +71,9 @@ git commit -m "feat(utils): keep mailto, tel and anchor links in the same tab" -
 - Consumes: `HyperPress\Utils\Link::target( string ): string` and `Link::rel( string ): string` (Task 1 behavior for mailto/tel/#).
 - Produces: shortcode `hyperpress_link` with attributes `url` and `text`; `Anchor::register(): void` and `Anchor::render( $atts = array(), $content = '' ): string`, same shape as `Emphasis`.
 
-- [ ] **Step 1: Write the failing header test change.** Change the convention entry in `Convention.php` as above. Run `docker compose run --rm php composer test:unit`. Expected: FAIL in `PluginHeadersTest` for `hyperpress-shortcode: Requires Plugins`.
-- [ ] **Step 2: Add the `Requires Plugins` header line** to `hyperpress-shortcode.php`. Re-run `composer test:unit`. Expected: pass.
-- [ ] **Step 3: Write the failing shortcode tests** in `AnchorShortcodeTest.php` (`namespace HyperPress\Tests\Integration\Shortcodes`, `final class AnchorShortcodeTest extends WP_UnitTestCase`, assertions on `do_shortcode()` output):
+- [x] **Step 1: Write the failing header test change.** Change the convention entry in `Convention.php` as above. Run `docker compose run --rm php composer test:unit`. Expected: FAIL in `PluginHeadersTest` for `hyperpress-shortcode: Requires Plugins`.
+- [x] **Step 2: Add the `Requires Plugins` header line** to `hyperpress-shortcode.php`. Re-run `composer test:unit`. Expected: pass.
+- [x] **Step 3: Write the failing shortcode tests** in `AnchorShortcodeTest.php` (`namespace HyperPress\Tests\Integration\Shortcodes`, `final class AnchorShortcodeTest extends WP_UnitTestCase`, assertions on `do_shortcode()` output):
   - `shortcode_exists( 'hyperpress_link' )` is true.
   - external: `[hyperpress_link url="https://other.example/x"]Text[/hyperpress_link]` gives exactly `<a href="https://other.example/x" target="_blank" rel="noopener noreferrer">Text</a>`.
   - internal: `[hyperpress_link url="/agenda"]Agenda[/hyperpress_link]` gives exactly `<a href="/agenda" target="_self">Agenda</a>` (no `rel`).
@@ -84,10 +85,10 @@ git commit -m "feat(utils): keep mailto, tel and anchor links in the same tab" -
   - nested `[hyperpress_link url="/a"][hyperpress_emphasis]Hi[/hyperpress_emphasis][/hyperpress_link]` output contains `<span class="emphasis">Hi</span>`.
   - `url="javascript:alert(1)"` with text `Hi` renders `Hi` with no `<a`; empty `url` with text `Hi` renders `Hi` with no `<a`.
   - empty text with `url="/a"` renders `<a href="/a" target="_self">/a</a>`.
-- [ ] **Step 4: Run to verify failure:** `docker compose run --rm php composer test:integration -- --filter AnchorShortcodeTest`. Expected: FAIL (shortcode not registered).
-- [ ] **Step 5: Implement `Anchor`** (`final class`, ABSPATH guard like `Emphasis`). `register()` calls `add_shortcode( 'hyperpress_link', array( self::class, 'render' ) )`. `render()`: `shortcode_atts` for `url` and `text`; text is enclosed content (`wp_kses_post( do_shortcode( $content ) )`, trimmed) when non-empty, else `esc_html( text )`, else the escaped URL; the href is `esc_url( $url )`; if the href is empty return the text only; target and rel come from `\HyperPress\Utils\Link`; omit `rel` when empty. Add `Shortcodes\Anchor::register();` to `Plugin::register()`.
-- [ ] **Step 6: Run to verify pass:** the Step 4 command, then the full checks from `plugins/`: `composer lint`, `composer test:unit`, `composer test:integration`. Expected: all green. If `ShortcodeParityTest` or another test fails because of the new tag, report it rather than weakening the test.
-- [ ] **Step 7: Commit** (tick this task's boxes first, and add a short "Outcome" note at the bottom of this plan plus the COMPLETED banner at the top):
+- [x] **Step 4: Run to verify failure:** `docker compose run --rm php composer test:integration -- --filter AnchorShortcodeTest`. Expected: FAIL (shortcode not registered).
+- [x] **Step 5: Implement `Anchor`** (`final class`, ABSPATH guard like `Emphasis`). `register()` calls `add_shortcode( 'hyperpress_link', array( self::class, 'render' ) )`. `render()`: `shortcode_atts` for `url` and `text`; text is enclosed content (`wp_kses_post( do_shortcode( $content ) )`, trimmed) when non-empty, else `esc_html( text )`, else the escaped URL; the href is `esc_url( $url )`; if the href is empty return the text only; target and rel come from `\HyperPress\Utils\Link`; omit `rel` when empty. Add `Shortcodes\Anchor::register();` to `Plugin::register()`.
+- [x] **Step 6: Run to verify pass:** the Step 4 command, then the full checks from `plugins/`: `composer lint`, `composer test:unit`, `composer test:integration`. Expected: all green. If `ShortcodeParityTest` or another test fails because of the new tag, report it rather than weakening the test.
+- [x] **Step 7: Commit** (tick this task's boxes first, and add a short "Outcome" note at the bottom of this plan plus the COMPLETED banner at the top):
 
 ```bash
 git add plugins/hyperpress-shortcode/src/Shortcodes/Anchor.php plugins/hyperpress-shortcode/src/Plugin.php plugins/hyperpress-shortcode/hyperpress-shortcode.php plugins/tests/src/Support/Convention.php plugins/tests/integration/Shortcodes/AnchorShortcodeTest.php docs/superpowers/plans/2026-11-01-plugins-link-shortcode.md
@@ -98,3 +99,9 @@ git commit -m "feat(shortcode): add the hyperpress_link shortcode and require ut
 
 - Other schemes (`sms:`) and query-only URLs are not handled by `Link`.
 - The plugin `Description:` header does not mention links.
+
+## Outcome
+
+- `Link::target()` uses a regex for mailto/tel (not `wp_parse_url()`), pinned by the digits-only `tel:5551234` case.
+- `Anchor` runs enclosed content through `do_shortcode()` + `wp_kses_post()`; the `text` attribute is `esc_html()`-ed.
+- `plugins/hyperpress-shortcode` Requires Plugins is now `hyperpress-utils`; `2026-10-02-plugins-04-remaining-plugins.md` carries a note about the changed requirement.

@@ -688,3 +688,5 @@ git commit -m "docs(plans): complete plugins-04-remaining-plugins" -- docs/super
 Note (2026-10-14): the Posts page colour fallback in the singular banner (`$blog_page_id = get_option( 'page_for_posts' )` above, later `HyperPress\Season\SingularBanner`) is gone: it overrode the type colour of every plugin single. A single now uses the post's own colour, else the type colour. See `2026-10-13-plugins-competition-type-breadcrumbs.md`, Outcome "single plugin banners no longer take the Posts page colour".
 
 - 2026-10-19: the sponsor `archive_template` override (`Archive` class and `templates/archive.php`) was removed: the stub had no loop and rendered an empty `<main>` on `/sponsors/`. The theme's archive loop now lists sponsors through the plugin's `content_template`.
+
+- 2026-11-01: `hyperpress-shortcode` now requires `hyperpress-utils` (the `Requires Plugins: none` in Task 6 no longer holds) because it uses `Utils\Link` for the `hyperpress_link` shortcode. See `2026-11-01-plugins-link-shortcode.md`.

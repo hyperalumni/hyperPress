@@ -16,6 +16,7 @@ final class Plugin {
 		Shortcodes\DateDistance::register();
 		Shortcodes\Raw::register();
 		Shortcodes\Emphasis::register();
+		Shortcodes\Anchor::register();
 		Shortcodes\Banner::register();
 		Shortcodes\HYPER::register();
 		Shortcodes\FIRST::register();
