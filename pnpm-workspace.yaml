@@ -65,7 +65,7 @@ catalogs:
     sass-embedded: 1.107.1
     style-sherpa: 1.0.2
     vinyl-named: 1.1.0
-    webpack: 5.111.1
+    webpack: 5.112.2
     webpack-stream: 7.0.0
     what-input: 5.2.12
     yargs: 18.2.0
