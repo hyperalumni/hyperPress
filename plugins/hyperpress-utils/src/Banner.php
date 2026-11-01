@@ -23,6 +23,10 @@ final class Banner {
 	 *                          post type's request. A taxonomy-only archive that also carries a season is the
 	 *                          season's page: no terms are read there, so the Season plugin's banner stands (the
 	 *                          combined view is the post-type archive).
+	 *                          Optional: image (callable returning a stored attachment ID). Only called on this post
+	 *                          type's archive request and validated with ArchiveImage::valid_id(); a valid ID becomes
+	 *                          the banner's 'image' key unless the banner already has one. Never set on singular
+	 *                          requests or taxonomy-only pages.
 	 *
 	 * @throws InvalidArgumentException When subtitle is missing or not callable.
 	 */
@@ -44,6 +48,9 @@ final class Banner {
 					'color'         => get_theme_mod( $args['color_mod'] ),
 					'term_name'     => $season ? $season->name : '',
 					'extra_terms'   => $request['extra_terms'],
+					'image'         => $request['is_archive'] && is_callable( $args['image'] ?? null )
+						? ArchiveImage::valid_id( call_user_func( $args['image'] ) )
+						: 0,
 				);
 				if ( ! $ctx['is_singular'] && ! $ctx['is_archive'] && empty( $ctx['extra_terms'] ) ) {
 					return $banner;
@@ -77,7 +84,8 @@ final class Banner {
 	 * @param array $banner Incoming banner.
 	 * @param array $args   See register().
 	 * @param array $ctx    is_singular, is_archive, is_tax_season, subtitle, color, term_name,
-	 *                      extra_terms (optional list<string> of requested term names from args['taxonomies']).
+	 *                      extra_terms (optional list<string> of requested term names from args['taxonomies']),
+	 *                      image (optional int, a validated attachment ID; applied on archive requests only).
 	 */
 	public static function apply( array $banner, array $args, array $ctx ): array {
 		$extra_terms = $ctx['extra_terms'] ?? array();
@@ -88,6 +96,10 @@ final class Banner {
 		$banner['type']            = $args['type'];
 		$banner['subtitle']        = $ctx['subtitle'];
 		$banner['backgroundColor'] = $ctx['color'];
+
+		if ( $ctx['is_archive'] && ( $ctx['image'] ?? 0 ) > 0 && empty( $banner['image'] ) ) {
+			$banner['image'] = (int) $ctx['image'];
+		}
 
 		if ( $ctx['is_archive'] && empty( $banner['title'] ) ) {
 			$banner['title'] = $args['archive_title'];

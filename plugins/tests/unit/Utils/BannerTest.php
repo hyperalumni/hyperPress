@@ -37,6 +37,26 @@ final class BannerTest extends TestCase {
 		$this->assertSame( array( 'title' => 'T' ), Banner::apply( array( 'title' => 'T' ), $this->args(), $this->ctx() ) );
 	}
 
+	public function test_archive_sets_image_from_context(): void {
+		$banner = Banner::apply( array(), $this->args(), $this->ctx( array( 'is_archive' => true, 'image' => 12 ) ) );
+		$this->assertSame( 12, $banner['image'] );
+	}
+
+	public function test_singular_never_gets_image(): void {
+		$banner = Banner::apply( array(), $this->args(), $this->ctx( array( 'is_singular' => true, 'image' => 12 ) ) );
+		$this->assertArrayNotHasKey( 'image', $banner );
+	}
+
+	public function test_zero_image_is_not_set(): void {
+		$banner = Banner::apply( array(), $this->args(), $this->ctx( array( 'is_archive' => true, 'image' => 0 ) ) );
+		$this->assertArrayNotHasKey( 'image', $banner );
+	}
+
+	public function test_existing_image_is_not_overwritten(): void {
+		$banner = Banner::apply( array( 'image' => 99 ), $this->args(), $this->ctx( array( 'is_archive' => true, 'image' => 12 ) ) );
+		$this->assertSame( 99, $banner['image'] );
+	}
+
 	public function test_singular_sets_type_subtitle_and_color_but_keeps_title(): void {
 		$banner = Banner::apply( array( 'title' => 'Acme' ), $this->args(), $this->ctx( array( 'is_singular' => true ) ) );
 		$this->assertSame( 'sponsor', $banner['type'] );

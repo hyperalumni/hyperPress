@@ -130,11 +130,11 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 - `Banner::register( $post_type, $args )` accepts optional `'image' => callable` returning mixed. In the context it sets `'image' => $ctx['is_archive'] ? ArchiveImage::valid_id( call_user_func( $args['image'] ) ) : 0` (callable absent gives `0`).
 - `Banner::apply()`: when `$ctx['is_archive']` and `( $ctx['image'] ?? 0 ) > 0` and `empty( $banner['image'] )`, sets `$banner['image'] = (int) $ctx['image']`. Never on singular requests. Document the `image` arg and key in the class docblock.
 
-- [ ] **Step 1: Write failing tests.** Unit (`BannerTest`): `apply()` with `is_archive` true and `image => 12` sets `banner['image'] === 12`; with `is_singular` true and `image => 12` the key is absent; with `image => 0` absent; an `image` already in the incoming banner is not overwritten. Integration (`ArchiveImageTest`): `valid_id` returns the ID for a real image attachment, `0` for a deleted attachment, for a non-image attachment (a PDF), for `'abc'`, `-3`, `0` and `null`; `term_image_id` returns the term meta when valid, the fallback when the meta is absent or invalid, `0` when neither; `field()` has `type === 'single_image'`.
-- [ ] **Step 2:** Run both. Expected: FAIL.
-- [ ] **Step 3: Implement** `ArchiveImage` and the `Banner` changes per the interfaces.
-- [ ] **Step 4:** Run `composer test:unit`, `composer test:integration`, `composer lint` from `plugins/`. Expected: all pass.
-- [ ] **Step 5: Commit** `feat(utils): archive image validation and banner image key`.
+- [x] **Step 1: Write failing tests.** Unit (`BannerTest`): `apply()` with `is_archive` true and `image => 12` sets `banner['image'] === 12`; with `is_singular` true and `image => 12` the key is absent; with `image => 0` absent; an `image` already in the incoming banner is not overwritten. Integration (`ArchiveImageTest`): `valid_id` returns the ID for a real image attachment, `0` for a deleted attachment, for a non-image attachment (a PDF), for `'abc'`, `-3`, `0` and `null`; `term_image_id` returns the term meta when valid, the fallback when the meta is absent or invalid, `0` when neither; `field()` has `type === 'single_image'`.
+- [x] **Step 2:** Run both. Expected: FAIL.
+- [x] **Step 3: Implement** `ArchiveImage` and the `Banner` changes per the interfaces.
+- [x] **Step 4:** Run `composer test:unit`, `composer test:integration`, `composer lint` from `plugins/`. Expected: all pass.
+- [x] **Step 5: Commit** `feat(utils): archive image validation and banner image key`.
 
 ---
 
