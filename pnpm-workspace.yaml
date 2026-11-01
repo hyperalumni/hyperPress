@@ -16,7 +16,7 @@ catalog:
   happy-dom: 21.0.4
   nx: *nxVersion
   oxfmt: 0.75.0
-  oxlint: 1.88.0
+  oxlint: 1.90.0
   oxlint-tsgolint: 7.0.2004
   sass: 1.105.1
   stylelint: 17.16.0
