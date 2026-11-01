@@ -85,10 +85,10 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 
 **Interfaces:** Consumes `ArchiveBannerSettings` from Task 1. Produces nothing new.
 
-- [ ] **Step 1:** Convert each plugin the same way as sponsor, keeping each plugin's own default (`''` for award, robot and competition; `'Updates on Team HYPER from our Marketing Team'` for newsletter), labels and descriptions. `subtitle_field( …, $with_std )`: `true` for award, robot and competition (they set `std` today), `false` for newsletter (it does not).
-- [ ] **Step 2:** Competition keeps its own `PAST_ZERO`, `DAY_END`, getters and fields; its `defaults()` returns the helper's defaults merged with its own, and its `default_option()` still returns that merged array.
-- [ ] **Step 3:** Run `composer test:unit`, `composer test:integration`, `composer lint` from `plugins/`. Expected: all pass with no test edited.
-- [ ] **Step 4: Commit** `refactor(plugins): award, robot, newsletter and competition use the archive banner settings helper`.
+- [x] **Step 1:** Convert each plugin the same way as sponsor, keeping each plugin's own default (`''` for award, robot and competition; `'Updates on Team HYPER from our Marketing Team'` for newsletter), labels and descriptions. `subtitle_field( …, $with_std )`: `true` for award, robot and competition (they set `std` today), `false` for newsletter (it does not).
+- [x] **Step 2:** Competition keeps its own `PAST_ZERO`, `DAY_END`, getters and fields; its `defaults()` returns the helper's defaults merged with its own, and its `default_option()` still returns that merged array.
+- [x] **Step 3:** Run `composer test:unit`, `composer test:integration`, `composer lint` from `plugins/`. Expected: all pass with no test edited.
+- [x] **Step 4: Commit** `refactor(plugins): award, robot, newsletter and competition use the archive banner settings helper`.
 
 ---
 

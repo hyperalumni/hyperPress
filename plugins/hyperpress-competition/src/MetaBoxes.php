@@ -24,14 +24,10 @@ final class MetaBoxes {
 			'title'          => __( 'Competition', 'hyperpress' ),
 			'settings_pages' => SettingsPage::ID,
 			'fields'         => array(
-				array(
-					'id'                => Settings::BANNER_SUBTITLE,
-					'name'              => __( 'Banner subtitle', 'hyperpress' ),
-					'desc'              => __( 'Shown under the title on the competitions pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' ),
-					'type'              => 'textarea',
-					'raw'               => true,
-					'std'               => Settings::BANNER_SUBTITLE_DEFAULT,
-					'sanitize_callback' => array( Banner::class, 'sanitize_subtitle' ),
+				Settings::archive_banner()->subtitle_field(
+					__( 'Banner subtitle', 'hyperpress' ),
+					__( 'Shown under the title on the competitions pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' ),
+					true
 				),
 				array(
 					'id'   => Settings::PAST_ZERO,

@@ -29,13 +29,9 @@ final class MetaBoxes {
 			'title'          => __( 'Newsletter', 'hyperpress' ),
 			'settings_pages' => SettingsPage::ID,
 			'fields'         => array(
-				array(
-					'id'                => Settings::BANNER_SUBTITLE,
-					'name'              => __( 'Newsletter Banner Subtitle', 'hyperpress' ),
-					'desc'              => __( 'Shown under the title on newsletter pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' ),
-					'type'              => 'textarea',
-					'raw'               => true,
-					'sanitize_callback' => array( Banner::class, 'sanitize_subtitle' ),
+				Settings::archive_banner()->subtitle_field(
+					__( 'Newsletter Banner Subtitle', 'hyperpress' ),
+					__( 'Shown under the title on newsletter pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' )
 				),
 			),
 		);

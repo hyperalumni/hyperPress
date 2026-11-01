@@ -1,7 +1,7 @@
 <?php
 namespace HyperPress\Newsletter;
 
-use HyperPress\Utils\AdminMenu;
+use HyperPress\Utils\ArchiveBannerSettings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -23,15 +23,7 @@ final class SettingsPage {
 	 * @return array<int,array<string,mixed>>
 	 */
 	public static function pages( array $pages ): array {
-		$pages[] = array(
-			'id'          => self::ID,
-			'option_name' => Settings::OPTION,
-			'menu_title'  => __( 'Newsletter', 'hyperpress' ),
-			'page_title'  => __( 'Newsletter', 'hyperpress' ),
-			'parent'      => AdminMenu::SLUG,
-			'capability'  => 'manage_options',
-			'style'       => 'no-boxes',
-		);
+		$pages[] = ArchiveBannerSettings::page( self::ID, Settings::OPTION, __( 'Newsletter', 'hyperpress' ) );
 		return $pages;
 	}
 }

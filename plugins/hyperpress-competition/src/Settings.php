@@ -1,6 +1,8 @@
 <?php
 namespace HyperPress\Competition;
 
+use HyperPress\Utils\ArchiveBannerSettings;
+
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 /**
@@ -22,11 +24,20 @@ final class Settings {
 	 * @return array<string,mixed>
 	 */
 	public static function defaults(): array {
-		return array(
-			self::BANNER_SUBTITLE => self::BANNER_SUBTITLE_DEFAULT,
-			self::PAST_ZERO       => false,
-			self::DAY_END         => self::DAY_END_DEFAULT,
+		return array_merge(
+			self::archive_banner()->defaults(),
+			array(
+				self::PAST_ZERO => false,
+				self::DAY_END   => self::DAY_END_DEFAULT,
+			)
 		);
+	}
+
+	/**
+	 * The shared archive-banner settings helper bound to this plugin's option.
+	 */
+	public static function archive_banner(): ArchiveBannerSettings {
+		return new ArchiveBannerSettings( self::OPTION, self::BANNER_SUBTITLE, self::BANNER_SUBTITLE_DEFAULT );
 	}
 
 	/**
@@ -51,14 +62,7 @@ final class Settings {
 	 * the default.
 	 */
 	public static function banner_subtitle(): string {
-		$option = get_option( self::OPTION );
-		if ( ! is_array( $option ) ) {
-			return self::BANNER_SUBTITLE_DEFAULT;
-		}
-		if ( ! array_key_exists( self::BANNER_SUBTITLE, $option ) ) {
-			return '';
-		}
-		return is_string( $option[ self::BANNER_SUBTITLE ] ) ? $option[ self::BANNER_SUBTITLE ] : self::BANNER_SUBTITLE_DEFAULT;
+		return self::archive_banner()->banner_subtitle();
 	}
 
 	/**

@@ -20,10 +20,10 @@ final class Settings {
 	 * @return array<string,mixed>
 	 */
 	public static function defaults(): array {
-		return self::banner()->defaults();
+		return self::archive_banner()->defaults();
 	}
 
-	private static function banner(): ArchiveBannerSettings {
+	public static function archive_banner(): ArchiveBannerSettings {
 		return new ArchiveBannerSettings( self::OPTION, self::BANNER_SUBTITLE, self::BANNER_SUBTITLE_DEFAULT );
 	}
 
@@ -36,7 +36,7 @@ final class Settings {
 	 * @return mixed
 	 */
 	public static function default_option( $fallback, $option = '', $passed_default = false ) {
-		return self::banner()->default_option( $fallback, $option, $passed_default );
+		return self::archive_banner()->default_option( $fallback, $option, $passed_default );
 	}
 
 	/**
@@ -48,6 +48,6 @@ final class Settings {
 	 * the default.
 	 */
 	public static function banner_subtitle(): string {
-		return self::banner()->banner_subtitle();
+		return self::archive_banner()->banner_subtitle();
 	}
 }

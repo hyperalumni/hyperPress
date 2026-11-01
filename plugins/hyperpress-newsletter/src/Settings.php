@@ -1,6 +1,8 @@
 <?php
 namespace HyperPress\Newsletter;
 
+use HyperPress\Utils\ArchiveBannerSettings;
+
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 /**
@@ -18,9 +20,14 @@ final class Settings {
 	 * @return array<string,mixed>
 	 */
 	public static function defaults(): array {
-		return array(
-			self::BANNER_SUBTITLE => self::BANNER_SUBTITLE_DEFAULT,
-		);
+		return self::archive_banner()->defaults();
+	}
+
+	/**
+	 * The shared archive-banner settings helper bound to this plugin's option.
+	 */
+	public static function archive_banner(): ArchiveBannerSettings {
+		return new ArchiveBannerSettings( self::OPTION, self::BANNER_SUBTITLE, self::BANNER_SUBTITLE_DEFAULT );
 	}
 
 	/**
@@ -32,8 +39,7 @@ final class Settings {
 	 * @return mixed
 	 */
 	public static function default_option( $fallback, $option = '', $passed_default = false ) {
-		unset( $option );
-		return $passed_default ? $fallback : self::defaults();
+		return self::archive_banner()->default_option( $fallback, $option, $passed_default );
 	}
 
 	/**
@@ -45,13 +51,6 @@ final class Settings {
 	 * the default.
 	 */
 	public static function banner_subtitle(): string {
-		$option = get_option( self::OPTION );
-		if ( ! is_array( $option ) ) {
-			return self::BANNER_SUBTITLE_DEFAULT;
-		}
-		if ( ! array_key_exists( self::BANNER_SUBTITLE, $option ) ) {
-			return '';
-		}
-		return is_string( $option[ self::BANNER_SUBTITLE ] ) ? $option[ self::BANNER_SUBTITLE ] : self::BANNER_SUBTITLE_DEFAULT;
+		return self::archive_banner()->banner_subtitle();
 	}
 }
