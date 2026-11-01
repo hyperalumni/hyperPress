@@ -1,7 +1,7 @@
 <?php
 namespace HyperPress\Program;
 
-use HyperPress\Utils\RequestTerm;
+use HyperPress\Utils\ArchiveRequest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,12 +13,11 @@ final class ProgramBanner {
 	}
 
 	public static function filter( $banner ) {
-		if ( ! is_array( $banner ) || ! empty( $banner['type'] ) || ! is_tax() || is_post_type_archive() ) {
+		if ( ! is_array( $banner ) || ! empty( $banner['type'] ) ) {
 			return $banner;
 		}
 
-		// is_tax( $taxonomy ) only matches the one taxonomy WP picks as the queried object, so ask the program itself.
-		$term = RequestTerm::get( Plugin::TAXONOMY );
+		$term = ArchiveRequest::taxonomy_term( Plugin::TAXONOMY );
 		if ( ! $term ) {
 			return $banner;
 		}

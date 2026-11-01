@@ -105,12 +105,12 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
   - `static taxonomy_term( string $taxonomy ): ?\WP_Term`: `is_tax() && ! is_post_type_archive() ? RequestTerm::get( $taxonomy ) : null`.
 - Consumes `RequestTerm::get( string ): ?WP_Term`.
 
-- [ ] **Step 1: Write the failing test** `ArchiveRequestTest` (integration): `for_post_type( 'hyper_sponsor' )` on the sponsor archive gives `is_archive` true and `is_singular` false; on a single sponsor gives `is_singular` true; on a season term page `taxonomy_term( 'hyper_season' )` returns the term and on a post-type archive carrying a season it returns null; on another post type's archive with a `hyper_week` term query var, `extra_terms` is empty for this post type's call (the existing rule).
-- [ ] **Step 2:** Run it. Expected: FAIL, class not found.
-- [ ] **Step 3: Implement `ArchiveRequest`**, then change `Banner::register()` to build its `$ctx` from `ArchiveRequest::for_post_type()` plus `subtitle`, `color` and `term_name` (`season ? season->name : ''`). Keep the order of calls (the subtitle callable is still called on every request).
-- [ ] **Step 4:** `SeasonBanner::filter()` and `ProgramBanner::filter()` use `ArchiveRequest::taxonomy_term()` in place of their inline `is_tax()` / `is_post_type_archive()` / `RequestTerm::get` checks. Program keeps its `type` guard and priority 20.
-- [ ] **Step 5:** Run the full unit and integration suites and lint from `plugins/`. Expected: all pass, no existing test changed.
-- [ ] **Step 6: Commit** `refactor(utils): archive request helper shared by banner, season and program`.
+- [x] **Step 1: Write the failing test** `ArchiveRequestTest` (integration): `for_post_type( 'hyper_sponsor' )` on the sponsor archive gives `is_archive` true and `is_singular` false; on a single sponsor gives `is_singular` true; on a season term page `taxonomy_term( 'hyper_season' )` returns the term and on a post-type archive carrying a season it returns null; on another post type's archive with a `hyper_week` term query var, `extra_terms` is empty for this post type's call (the existing rule).
+- [x] **Step 2:** Run it. Expected: FAIL, class not found.
+- [x] **Step 3: Implement `ArchiveRequest`**, then change `Banner::register()` to build its `$ctx` from `ArchiveRequest::for_post_type()` plus `subtitle`, `color` and `term_name` (`season ? season->name : ''`). Keep the order of calls (the subtitle callable is still called on every request).
+- [x] **Step 4:** `SeasonBanner::filter()` and `ProgramBanner::filter()` use `ArchiveRequest::taxonomy_term()` in place of their inline `is_tax()` / `is_post_type_archive()` / `RequestTerm::get` checks. Program keeps its `type` guard and priority 20.
+- [x] **Step 5:** Run the full unit and integration suites and lint from `plugins/`. Expected: all pass, no existing test changed.
+- [x] **Step 6: Commit** `refactor(utils): archive request helper shared by banner, season and program`.
 
 ---
 

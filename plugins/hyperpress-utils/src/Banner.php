@@ -33,32 +33,18 @@ final class Banner {
 		add_filter(
 			'hyperpress_banner_content',
 			static function ( $banner ) use ( $post_type, $args ) {
-				// is_tax( $taxonomy ) only matches the one taxonomy WP picks as the queried object, so ask the season itself.
-				$queried       = is_tax() ? RequestTerm::get( self::SEASON_TAXONOMY ) : null;
-				$is_tax_season = null !== $queried;
-				$subtitle      = call_user_func( $args['subtitle'] );
-				$ctx           = array(
-					'is_singular'   => is_singular( $post_type ),
-					'is_archive'    => is_post_type_archive( $post_type ),
-					'is_tax_season' => $is_tax_season,
+				$request  = ArchiveRequest::for_post_type( $post_type, (array) ( $args['taxonomies'] ?? array() ) );
+				$season   = $request['season'];
+				$subtitle = call_user_func( $args['subtitle'] );
+				$ctx      = array(
+					'is_singular'   => $request['is_singular'],
+					'is_archive'    => $request['is_archive'],
+					'is_tax_season' => $request['is_tax_season'],
 					'subtitle'      => is_scalar( $subtitle ) ? (string) $subtitle : '',
 					'color'         => get_theme_mod( $args['color_mod'] ),
-					'term_name'     => $queried ? $queried->name : '',
-					'extra_terms'   => array(),
+					'term_name'     => $season ? $season->name : '',
+					'extra_terms'   => $request['extra_terms'],
 				);
-				// Only this post type's requests: its archive, or a taxonomy archive that is not any post type's archive.
-				// Another post type's archive or singular (or a page carrying a taxonomy query var) must not take the taxonomy branch.
-				// A taxonomy archive that also carries a season is the season's page: the Season plugin's banner stands there.
-				$own_request = ! is_singular() && ( $ctx['is_archive'] || ( is_tax() && ! is_post_type_archive() && ! $is_tax_season ) );
-				if ( $own_request ) {
-					foreach ( (array) ( $args['taxonomies'] ?? array() ) as $taxonomy ) {
-						// Not is_tax( $taxonomy ): it only matches the one taxonomy WP picked as the queried object.
-						$term = RequestTerm::get( (string) $taxonomy );
-						if ( $term instanceof \WP_Term ) {
-							$ctx['extra_terms'][] = $term->name;
-						}
-					}
-				}
 				if ( ! $ctx['is_singular'] && ! $ctx['is_archive'] && empty( $ctx['extra_terms'] ) ) {
 					return $banner;
 				}
