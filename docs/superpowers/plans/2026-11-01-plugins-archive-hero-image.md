@@ -235,7 +235,7 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 
 - [x] **Step 1:** From the repo root run `grep -rln "Banner.php\|SeasonBanner\|ProgramBanner\|featured-image.php\|banner.php" docs/superpowers/plans/`; for each completed plan that describes a file changed here, append a dated line to its "Outcome / execution notes" (create the heading if absent).
 - [x] **Step 2:** Add a `STATUS: ✅ COMPLETED` banner with the date and commit range to the top of this plan, and set the spec's status line to "implemented". Add the page-hero consolidation follow-up to this plan's "Known follow-ups" section (copied from the spec).
-- [x] **Step 3:** Run `pnpm fmt:check` from the repo root (after loading Node and pnpm as in the root `AGENTS.md`). Expected: clean.
+- [x] **Step 3:** Run `pnpm fmt:check` from the repo root (after loading Node and pnpm as in the root `AGENTS.md`). Expected: clean. (2026-11-01: this plan's files are clean; the check still exits 1 on `2026-11-01-plugins-link-shortcode.md` and `2026-11-01-plugins-link-shortcode-design.md`, which are outside this branch.)
 - [x] **Step 4: Commit** `docs(plans): archive hero image completed`.
 
 ## Known follow-ups
