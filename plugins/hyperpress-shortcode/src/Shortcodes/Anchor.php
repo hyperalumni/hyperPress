@@ -25,16 +25,21 @@ final class Anchor {
 		$content = trim( (string) $content );
 		$href    = esc_url( $url );
 
+		$attr_text = trim( (string) $atts['text'] );
+
 		if ( '' !== $content ) {
-			$text = wp_kses_post( do_shortcode( $content ) );
-		} elseif ( '' !== trim( (string) $atts['text'] ) ) {
-			$text = esc_html( trim( (string) $atts['text'] ) );
+			// Post HTML without <a> (no nested anchors); kses also drops block markup such as forms and iframes.
+			$allowed = wp_kses_allowed_html( 'post' );
+			unset( $allowed['a'] );
+			$text = wp_kses( do_shortcode( $content ), $allowed );
+		} elseif ( '' !== $attr_text ) {
+			$text = esc_html( $attr_text );
 		} else {
 			$text = esc_html( $url );
 		}
 
 		if ( '' === $href ) {
-			return $text;
+			return '' === $content && '' === $attr_text ? '' : $text;
 		}
 
 		$target = Link::target( $url );

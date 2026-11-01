@@ -26,8 +26,32 @@ final class AnchorShortcodeTest extends WP_UnitTestCase {
 	public function test_an_internal_pdf_opens_in_a_new_tab(): void {
 		$out = do_shortcode( '[hyperpress_link url="/files/a.pdf"]PDF[/hyperpress_link]' );
 
+		$this->assertStringContainsString( 'href="/files/a.pdf"', $out );
 		$this->assertStringContainsString( 'target="_blank"', $out );
 		$this->assertStringContainsString( 'rel="noopener noreferrer"', $out );
+	}
+
+	public function test_a_pdf_url_with_a_query_string_still_opens_in_a_new_tab(): void {
+		$out = do_shortcode( '[hyperpress_link url="/files/a.pdf?x=1&y=2"]PDF[/hyperpress_link]' );
+
+		$this->assertStringContainsString( 'href="/files/a.pdf?x=1&#038;y=2"', $out );
+		$this->assertStringContainsString( 'target="_blank"', $out );
+	}
+
+	/** @return array<string, array{0: string}> */
+	public static function ampersand_urls(): array {
+		return array(
+			'raw ampersand'     => array( '/a?x=1&b=2' ),
+			'encoded ampersand' => array( '/a?x=1&amp;b=2' ),
+		);
+	}
+
+	/** @dataProvider ampersand_urls */
+	public function test_an_ampersand_in_the_query_string_is_encoded_once( string $url ): void {
+		$this->assertSame(
+			'<a href="/a?x=1&#038;b=2" target="_self">Go</a>',
+			do_shortcode( '[hyperpress_link url="' . $url . '"]Go[/hyperpress_link]' )
+		);
 	}
 
 	/** @return array<string, array{0: string}> */
@@ -35,6 +59,7 @@ final class AnchorShortcodeTest extends WP_UnitTestCase {
 		return array(
 			'mailto' => array( 'mailto:a@b.example' ),
 			'tel'    => array( 'tel:5551234' ),
+			'sms'    => array( 'sms:+31201234567' ),
 			'anchor' => array( '#top' ),
 		);
 	}
@@ -43,6 +68,7 @@ final class AnchorShortcodeTest extends WP_UnitTestCase {
 	public function test_mailto_tel_and_anchor_urls_stay_in_the_tab( string $url ): void {
 		$out = do_shortcode( '[hyperpress_link url="' . $url . '"]Go[/hyperpress_link]' );
 
+		$this->assertStringContainsString( 'href="' . $url . '"', $out );
 		$this->assertStringContainsString( 'target="_self"', $out );
 		$this->assertStringNotContainsString( 'rel=', $out );
 	}
@@ -67,7 +93,17 @@ final class AnchorShortcodeTest extends WP_UnitTestCase {
 
 	public function test_enclosed_inline_markup_is_kept_and_scripts_are_stripped(): void {
 		$this->assertStringContainsString( '<em>Hi</em>', do_shortcode( '[hyperpress_link url="/a"]<em>Hi</em>[/hyperpress_link]' ) );
-		$this->assertStringNotContainsString( '<script', do_shortcode( '[hyperpress_link url="/a"]<script>alert(1)</script>Hi[/hyperpress_link]' ) );
+		$this->assertSame(
+			'<a href="/a" target="_self">alert(1)Hi</a>',
+			do_shortcode( '[hyperpress_link url="/a"]<script>alert(1)</script>Hi[/hyperpress_link]' )
+		);
+	}
+
+	public function test_an_anchor_in_the_enclosed_content_is_not_nested(): void {
+		$this->assertSame(
+			'<a href="/a" target="_self">Inner</a>',
+			do_shortcode( '[hyperpress_link url="/a"]<a href="/x">Inner</a>[/hyperpress_link]' )
+		);
 	}
 
 	public function test_a_nested_shortcode_is_rendered(): void {
@@ -78,6 +114,23 @@ final class AnchorShortcodeTest extends WP_UnitTestCase {
 
 	public function test_an_unsafe_url_renders_the_text_without_a_link(): void {
 		$this->assertSame( 'Hi', do_shortcode( '[hyperpress_link url="javascript:alert(1)"]Hi[/hyperpress_link]' ) );
+	}
+
+	/** @return array<string, array{0: string}> */
+	public static function unsafe_urls(): array {
+		return array(
+			'data'                  => array( 'data:text/html,x' ),
+			'mixed case javascript' => array( 'JaVaScRiPt:alert(1)' ),
+		);
+	}
+
+	/** @dataProvider unsafe_urls */
+	public function test_other_unsafe_urls_render_the_text_without_a_link( string $url ): void {
+		$this->assertSame( 'Hi', do_shortcode( '[hyperpress_link url="' . $url . '"]Hi[/hyperpress_link]' ) );
+	}
+
+	public function test_an_unsafe_url_without_text_renders_nothing(): void {
+		$this->assertSame( '', do_shortcode( '[hyperpress_link url="javascript:alert(1)"]' ) );
 	}
 
 	public function test_an_empty_url_renders_the_text_without_a_link(): void {

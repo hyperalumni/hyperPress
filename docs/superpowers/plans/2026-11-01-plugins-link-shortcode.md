@@ -1,6 +1,6 @@
 # Link shortcode and mailto/tel/anchor handling Implementation Plan
 
-> **STATUS: 🔄 IN PROGRESS** (2026-11-01): Tasks 1-2 done; Tasks 3-4 take in the final review's minors. Earlier note: Task 1 (`Link` handles mailto/tel/#) and Task 2 (`hyperpress_link` shortcode, utils dependency) done on `feat/link-shortcode`. `composer lint`, `test:unit` (176) and `test:integration` (1497, 6 skipped as before) pass in `plugins/`.
+> **STATUS: ✅ COMPLETED** (2026-11-01). Tasks 1-4 done on `feat/link-shortcode` (Tasks 3-4 took in the final review's minors). `composer lint`, `test:unit` (176) and `test:integration` (1512, 6 skipped as before) pass in `plugins/`. Earlier note on Tasks 1-2: Task 1 (`Link` handles mailto/tel/#) and Task 2 (`hyperpress_link` shortcode, utils dependency) done on `feat/link-shortcode`. `composer lint`, `test:unit` (176) and `test:integration` (1497, 6 skipped as before) pass in `plugins/`.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -114,11 +114,11 @@ git commit -m "feat(shortcode): add the hyperpress_link shortcode and require ut
 
 **Interfaces:** `Anchor::render()` unchanged in signature.
 
-- [ ] **Step 1: Write the failing tests.** (a) `[hyperpress_link url="javascript:alert(1)"]` with no text renders `''`. (b) enclosed `<a href="/x">Inner</a>` renders `<a href="/a" target="_self">Inner</a>` for `url="/a"` (no nested anchor). Add the tests that should already pass (characterization): same-tab provider and the PDF test also assert the exact `href="…"`; `url="/a?x=1&b=2"` renders `href="/a?x=1&#038;b=2"` (and the same for `&amp;` input); `/files/a.pdf?x=1&y=2` is `_blank`; `url="data:text/html,x"` and `url="JaVaScRiPt:alert(1)"` render the text without a link; the script test asserts the exact output `alert(1)Hi` inside the anchor; `sms:` URL is `_self`.
-- [ ] **Step 2: Run** `composer test:integration -- --filter AnchorShortcodeTest`. Expected: FAIL for (a) and (b) only.
-- [ ] **Step 3: Implement.** In `render()`: when the href is empty return `''` if there is no content and no `text`, else the text (do not print the URL as text). Strip `<a>` from enclosed content by `wp_kses()` with `wp_kses_allowed_html( 'post' )` minus its `a` key. Add one comment that kses drops block markup.
-- [ ] **Step 4: Run** the Step 2 command, then `composer lint`, `composer test:unit`, `composer test:integration`. Expected: all green.
-- [ ] **Step 5: Commit** `fix(shortcode): drop nested anchors and unsafe-url text, pin href cases` with this plan's ticks, refresh the STATUS banner and add Outcome lines.
+- [x] **Step 1: Write the failing tests.** (a) `[hyperpress_link url="javascript:alert(1)"]` with no text renders `''`. (b) enclosed `<a href="/x">Inner</a>` renders `<a href="/a" target="_self">Inner</a>` for `url="/a"` (no nested anchor). Add the tests that should already pass (characterization): same-tab provider and the PDF test also assert the exact `href="…"`; `url="/a?x=1&b=2"` renders `href="/a?x=1&#038;b=2"` (and the same for `&amp;` input); `/files/a.pdf?x=1&y=2` is `_blank`; `url="data:text/html,x"` and `url="JaVaScRiPt:alert(1)"` render the text without a link; the script test asserts the exact output `alert(1)Hi` inside the anchor; `sms:` URL is `_self`.
+- [x] **Step 2: Run** `composer test:integration -- --filter AnchorShortcodeTest`. Expected: FAIL for (a) and (b) only.
+- [x] **Step 3: Implement.** In `render()`: when the href is empty return `''` if there is no content and no `text`, else the text (do not print the URL as text). Strip `<a>` from enclosed content by `wp_kses()` with `wp_kses_allowed_html( 'post' )` minus its `a` key. Add one comment that kses drops block markup.
+- [x] **Step 4: Run** the Step 2 command, then `composer lint`, `composer test:unit`, `composer test:integration`. Expected: all green.
+- [x] **Step 5: Commit** `fix(shortcode): drop nested anchors and unsafe-url text, pin href cases` with this plan's ticks, refresh the STATUS banner and add Outcome lines.
 
 ## Known follow-ups
 
@@ -129,3 +129,6 @@ git commit -m "feat(shortcode): add the hyperpress_link shortcode and require ut
 - `Link::target()` uses a regex for mailto/tel (not `wp_parse_url()`), pinned by the digits-only `tel:5551234` case.
 - `Anchor` runs enclosed content through `do_shortcode()` + `wp_kses_post()`; the `text` attribute is `esc_html()`-ed.
 - `plugins/hyperpress-shortcode` Requires Plugins is now `hyperpress-utils`; `2026-10-02-plugins-04-remaining-plugins.md` carries a note about the changed requirement.
+- Task 3: `Link` also treats `sms:` as same-tab, `?query` as internal and trims whitespace. A general "any non-http scheme" rule was rejected because `localhost:8080/x` would match it (pinned by a test).
+- Task 4: `Anchor` strips `<a>` from enclosed content, renders nothing for an unsafe URL with no text, and the tests now pin `href`, `&` encoding and `data:` / mixed-case `javascript:`.
+- Still open: no `class_exists` guard for `Link` (by design); nested shortcode output loses block markup to kses (documented in a comment).
