@@ -16,6 +16,8 @@ final class LinkTest extends WP_UnitTestCase {
 			'empty'                          => array( '', false ),
 			'unparseable'                    => array( 'http:///x', false ),
 			'bare word'                      => array( 'agenda', false ),
+			'fragment only'                  => array( '#top', true ),
+			'bare hash'                      => array( '#', true ),
 		);
 	}
 
@@ -36,6 +38,7 @@ final class LinkTest extends WP_UnitTestCase {
 		$this->assertSame( '_blank', Link::target( 'https://other.example/x' ) );
 		$this->assertSame( '', Link::rel( '_self' ) );
 		$this->assertSame( 'noopener noreferrer', Link::rel( '_blank' ) );
+		$this->assertSame( '', Link::rel( Link::target( 'mailto:a@b.example' ) ) );
 	}
 
 	/** @return array<string, array{0: string, 1: string}> */
@@ -50,6 +53,12 @@ final class LinkTest extends WP_UnitTestCase {
 			'internal pdf only in fragment' => array( '/page/#a.pdf', '_self' ),
 			'external page'                => array( 'https://other.example/page', '_blank' ),
 			'external pdf'                 => array( 'https://other.example/a.pdf', '_blank' ),
+			'anchor'                       => array( '#top', '_self' ),
+			'mailto'                       => array( 'mailto:a@b.example', '_self' ),
+			'mailto upper case'            => array( 'MAILTO:A@B.EXAMPLE', '_self' ),
+			'mailto with pdf in query'     => array( 'mailto:a@b.example?subject=x.pdf', '_self' ),
+			'tel'                          => array( 'tel:+31201234567', '_self' ),
+			'tel digits only'              => array( 'tel:5551234', '_self' ),
 		);
 	}
 

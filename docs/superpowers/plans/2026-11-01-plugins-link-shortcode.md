@@ -40,17 +40,17 @@
 - Consumes: nothing.
 - Produces: `Link::target( string $url ): string` now returns `_self` for `mailto:` / `tel:` URLs; `Link::is_internal( string $url ): bool` now returns true for URLs starting with `#`. Signatures unchanged.
 
-- [ ] **Step 1: Write the failing tests** in `LinkTest.php`
+- [x] **Step 1: Write the failing tests** in `LinkTest.php`
   - In `urls()` add `'fragment only' => array( '#top', true )` and `'bare hash' => array( '#', true )`.
   - In `targets()` add `_self` cases: `'anchor' => '#top'`, `'mailto' => 'mailto:a@b.example'`, `'mailto upper case' => 'MAILTO:A@B.EXAMPLE'`, `'mailto with pdf in query' => 'mailto:a@b.example?subject=x.pdf'`, `'tel' => 'tel:+31201234567'`, `'tel digits only' => 'tel:5551234'`.
   - In `test_target_and_rel()` add `$this->assertSame( '', Link::rel( Link::target( 'mailto:a@b.example' ) ) );`.
-- [ ] **Step 2: Run to verify failure:** `docker compose run --rm php composer test:integration -- --filter LinkTest` from `plugins/`. Expected: FAIL on the new `#`, `mailto` and `tel` cases; the existing cases still pass.
-- [ ] **Step 3: Implement.**
+- [x] **Step 2: Run to verify failure:** `docker compose run --rm php composer test:integration -- --filter LinkTest` from `plugins/`. Expected: FAIL on the new `#`, `mailto` and `tel` cases; the existing cases still pass.
+- [x] **Step 3: Implement.**
   - `target()`: first statement returns `'_self'` when `preg_match( '/^(mailto|tel):/i', $url )` is 1. The comment must say it is a regex and not `wp_parse_url()` because of the digits-only host/port parse.
   - `is_internal()`: first statement returns true when `0 === strpos( $url, '#' )` (same page).
   - Update both docblocks to mention the new cases.
-- [ ] **Step 4: Run to verify pass:** the Step 2 command. Expected: `OK`. Then `docker compose run --rm php composer lint`. Expected: no errors.
-- [ ] **Step 5: Commit** (tick this task's boxes in this plan first):
+- [x] **Step 4: Run to verify pass:** the Step 2 command. Expected: `OK`. Then `docker compose run --rm php composer lint`. Expected: no errors.
+- [x] **Step 5: Commit** (tick this task's boxes in this plan first):
 
 ```bash
 git add plugins/hyperpress-utils/src/Link.php plugins/tests/integration/Utils/LinkTest.php docs/superpowers/plans/2026-11-01-plugins-link-shortcode.md
