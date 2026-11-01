@@ -1,6 +1,8 @@
 <?php
 namespace HyperPress\Season;
 
+use HyperPress\Utils\ArchiveImage;
+
 defined( 'ABSPATH' ) || exit;
 
 final class MetaBoxes {
@@ -45,6 +47,25 @@ final class MetaBoxes {
 					'multiple'          => true,
 					'options'           => self::post_type_options(),
 					'sanitize_callback' => array( Sanitizers::class, 'post_types' ),
+				),
+				ArchiveImage::field(
+					Settings::BANNER_IMAGE,
+					__( 'Season Fallback Hero Image', 'hyperpress' ),
+					__( 'Fallback hero image for season pages that have no image of their own.', 'hyperpress' )
+				),
+			),
+		);
+
+		$boxes[] = array(
+			'id'         => 'hyperpress_season_term_box',
+			'title'      => __( 'Season', 'hyperpress' ),
+			'type'       => 'term',
+			'taxonomies' => array( 'hyper_season' ),
+			'fields'     => array(
+				ArchiveImage::field(
+					Settings::BANNER_IMAGE,
+					__( 'Hero Image', 'hyperpress' ),
+					__( 'Hero image for this season\'s page. Without one, the season fallback image is used.', 'hyperpress' )
 				),
 			),
 		);

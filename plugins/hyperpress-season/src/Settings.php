@@ -1,6 +1,8 @@
 <?php
 namespace HyperPress\Season;
 
+use HyperPress\Utils\ArchiveImage;
+
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 /**
@@ -12,6 +14,7 @@ final class Settings {
 	public const CURRENT         = 'hyperpress_season_current';
 	public const BANNER_SUBTITLE = 'hyperpress_season_banner_subtitle';
 	public const POST_TYPES      = 'hyperpress_season_post_types';
+	public const BANNER_IMAGE    = 'hyperpress_season_banner_image';
 
 	/**
 	 * Default values, keyed by field id.
@@ -63,6 +66,13 @@ final class Settings {
 	public static function banner_subtitle(): string {
 		$value = self::saved()[ self::BANNER_SUBTITLE ] ?? '';
 		return is_string( $value ) ? $value : '';
+	}
+
+	/**
+	 * The fallback hero image attachment ID for season pages, or 0.
+	 */
+	public static function banner_image(): int {
+		return ArchiveImage::valid_id( self::saved()[ self::BANNER_IMAGE ] ?? 0 );
 	}
 
 	/**

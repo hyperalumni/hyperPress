@@ -66,12 +66,13 @@ final class SeasonSettingsPageTest extends WP_UnitTestCase {
 		$this->assertSame( 'hyperpress_season', $boxes[0]['settings_pages'] );
 	}
 
-	public function test_the_box_has_the_three_fields_in_order_with_their_types(): void {
+	public function test_the_box_has_the_four_fields_in_order_with_their_types(): void {
 		$this->assertSame(
 			array(
 				'hyperpress_season_current'         => 'select_advanced',
 				'hyperpress_season_banner_subtitle' => 'textarea',
 				'hyperpress_season_post_types'      => 'select_advanced',
+				'hyperpress_season_banner_image'    => 'single_image',
 			),
 			array_map( static fn( $field ) => $field['type'], $this->fields() )
 		);

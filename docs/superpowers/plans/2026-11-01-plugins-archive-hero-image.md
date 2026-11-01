@@ -188,11 +188,11 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 - `Season\MetaBoxes`: add an `ArchiveImage::field( Settings::BANNER_IMAGE, … )` to the existing settings box (the fallback), and a second box with `'type' => 'term'`, `'taxonomies' => array( 'hyper_season' )` holding the same field (term image). No plugin has declared a term-meta box before, so confirm the `type`/`taxonomies` keys against the installed meta-box-aio version.
 - `SeasonBanner::filter()`: after it claims a request, if `empty( $banner['image'] )` and `ArchiveImage::term_image_id( $term->term_id, Settings::BANNER_IMAGE, Settings::banner_image() )` is greater than `0`, set `$banner['image']` to it. The claim logic is untouched.
 
-- [ ] **Step 1: Write failing tests.** On `/seasons/<slug>/`: term meta valid gives the term image; no term meta with a fallback gives the fallback; invalid (deleted) term meta falls back; neither gives no `image` key; term image beats fallback; an `image` already in the banner is kept. A season-scoped post-type archive does not get a season image (the season banner does not claim it). `rwmb_meta_boxes` output contains the term box (`type === 'term'`, `taxonomies === ['hyper_season']`) and the fallback field.
-- [ ] **Step 2:** Run it. Expected: FAIL.
-- [ ] **Step 3: Implement** per the interfaces.
-- [ ] **Step 4:** Run the full unit and integration suites and lint from `plugins/`. Expected: all pass.
-- [ ] **Step 5: Commit** `feat(season): archive hero image per season with a taxonomy fallback`.
+- [x] **Step 1: Write failing tests.** On `/seasons/<slug>/`: term meta valid gives the term image; no term meta with a fallback gives the fallback; invalid (deleted) term meta falls back; neither gives no `image` key; term image beats fallback; an `image` already in the banner is kept. A season-scoped post-type archive does not get a season image (the season banner does not claim it). `rwmb_meta_boxes` output contains the term box (`type === 'term'`, `taxonomies === ['hyper_season']`) and the fallback field.
+- [x] **Step 2:** Run it. Expected: FAIL.
+- [x] **Step 3: Implement** per the interfaces.
+- [x] **Step 4:** Run the full unit and integration suites and lint from `plugins/`. Expected: all pass.
+- [x] **Step 5: Commit** `feat(season): archive hero image per season with a taxonomy fallback`.
 
 ---
 

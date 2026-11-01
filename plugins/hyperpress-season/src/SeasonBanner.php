@@ -1,6 +1,7 @@
 <?php
 namespace HyperPress\Season;
 
+use HyperPress\Utils\ArchiveImage;
 use HyperPress\Utils\ArchiveRequest;
 
 defined( 'ABSPATH' ) || exit;
@@ -28,6 +29,13 @@ final class SeasonBanner {
 
 			if ( empty( $banner['subtitle'] ) ) {
 				$banner['subtitle'] = Settings::banner_subtitle();
+			}
+
+			if ( empty( $banner['image'] ) ) {
+				$image = ArchiveImage::term_image_id( $term->term_id, Settings::BANNER_IMAGE, Settings::banner_image() );
+				if ( $image > 0 ) {
+					$banner['image'] = $image;
+				}
 			}
 		}
 
