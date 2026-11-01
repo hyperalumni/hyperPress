@@ -216,6 +216,127 @@ catalogs:
     vitest:
       specifier: 5.0.5
       version: 5.0.5
+  foundation:
+    '@babel/core':
+      specifier: 8.0.7
+      version: 8.0.7
+    '@babel/preset-env':
+      specifier: 8.0.7
+      version: 8.0.7
+    ansi-colors:
+      specifier: 4.1.3
+      version: 4.1.3
+    babel-loader:
+      specifier: 10.1.1
+      version: 10.1.1
+    browser-sync:
+      specifier: 3.0.4
+      version: 3.0.4
+    dateformat:
+      specifier: 5.0.3
+      version: 5.0.3
+    fancy-log:
+      specifier: 2.0.0
+      version: 2.0.0
+    foundation-sites:
+      specifier: 6.9.0
+      version: 6.9.0
+    gulp:
+      specifier: 5.0.1
+      version: 5.0.1
+    gulp-autoprefixer:
+      specifier: 10.0.0
+      version: 10.0.0
+    gulp-clean-css:
+      specifier: 4.3.0
+      version: 4.3.0
+    gulp-cli:
+      specifier: 3.1.0
+      version: 3.1.0
+    gulp-concat:
+      specifier: 2.6.1
+      version: 2.6.1
+    gulp-extname:
+      specifier: 0.2.2
+      version: 0.2.2
+    gulp-if:
+      specifier: 3.0.0
+      version: 3.0.0
+    gulp-imagemin:
+      specifier: 9.2.0
+      version: 9.2.0
+    gulp-phpcbf:
+      specifier: 0.1.2
+      version: 0.1.2
+    gulp-phpcs:
+      specifier: 3.1.0
+      version: 3.1.0
+    gulp-rename:
+      specifier: 2.1.0
+      version: 2.1.0
+    gulp-rev:
+      specifier: 12.0.0
+      version: 12.0.0
+    gulp-sass:
+      specifier: 6.0.1
+      version: 6.0.1
+    gulp-sourcemaps:
+      specifier: 3.0.0
+      version: 3.0.0
+    gulp-uglify:
+      specifier: 3.0.2
+      version: 3.0.2
+    gulp-zip:
+      specifier: 6.1.0
+      version: 6.1.0
+    imagemin-gifsicle:
+      specifier: 7.0.0
+      version: 7.0.0
+    imagemin-jpegtran:
+      specifier: 8.0.0
+      version: 8.0.0
+    imagemin-optipng:
+      specifier: 8.0.0
+      version: 8.0.0
+    imagemin-svgo:
+      specifier: 12.0.0
+      version: 12.0.0
+    jquery:
+      specifier: 4.0.0
+      version: 4.0.0
+    js-yaml:
+      specifier: 5.4.3
+      version: 5.4.3
+    motion-ui:
+      specifier: 2.0.8
+      version: 2.0.8
+    panini:
+      specifier: 1.7.2
+      version: 1.7.2
+    rimraf:
+      specifier: 6.1.3
+      version: 6.1.3
+    sass-embedded:
+      specifier: 1.105.1
+      version: 1.105.1
+    style-sherpa:
+      specifier: 1.0.2
+      version: 1.0.2
+    vinyl-named:
+      specifier: 1.1.0
+      version: 1.1.0
+    webpack:
+      specifier: 5.111.1
+      version: 5.111.1
+    webpack-stream:
+      specifier: 7.0.0
+      version: 7.0.0
+    what-input:
+      specifier: 5.2.12
+      version: 5.2.12
+    yargs:
+      specifier: 18.2.0
+      version: 18.2.0
 
 importers:
 
@@ -289,125 +410,125 @@ importers:
   themes/hyperpress-foundation:
     dependencies:
       foundation-sites:
-        specifier: ~6.9.0
+        specifier: catalog:foundation
         version: 6.9.0(jquery@4.0.0)(motion-ui@2.0.8)(what-input@5.2.12)
       jquery:
-        specifier: ~4.0.0
+        specifier: catalog:foundation
         version: 4.0.0
       motion-ui:
-        specifier: ^2.0.8
+        specifier: catalog:foundation
         version: 2.0.8(jquery@4.0.0)
       what-input:
-        specifier: ^5.2.12
+        specifier: catalog:foundation
         version: 5.2.12
     devDependencies:
       '@babel/core':
-        specifier: ^8.0.7
+        specifier: catalog:foundation
         version: 8.0.7
       '@babel/preset-env':
-        specifier: ^8.0.7
+        specifier: catalog:foundation
         version: 8.0.7(@babel/core@8.0.7)
       ansi-colors:
-        specifier: ^4.1.3
+        specifier: catalog:foundation
         version: 4.1.3
       babel-loader:
-        specifier: ^10.1.1
+        specifier: catalog:foundation
         version: 10.1.1(@babel/core@8.0.7)(webpack@5.111.1)
       browser-sync:
-        specifier: ^3.0.4
+        specifier: catalog:foundation
         version: 3.0.4(debug@4.4.3)(supports-color@8.1.1)
       dateformat:
-        specifier: ^5.0.3
+        specifier: catalog:foundation
         version: 5.0.3
       fancy-log:
-        specifier: ^2.0.0
+        specifier: catalog:foundation
         version: 2.0.0
       gulp:
-        specifier: ^5.0.1
+        specifier: catalog:foundation
         version: 5.0.1
       gulp-autoprefixer:
-        specifier: ^10.0.0
+        specifier: catalog:foundation
         version: 10.0.0(gulp@5.0.1)
       gulp-clean-css:
-        specifier: ^4.3.0
+        specifier: catalog:foundation
         version: 4.3.0
       gulp-cli:
-        specifier: ^3.1.0
+        specifier: catalog:foundation
         version: 3.1.0
       gulp-concat:
-        specifier: ^2.6.1
+        specifier: catalog:foundation
         version: 2.6.1
       gulp-extname:
-        specifier: ^0.2.2
+        specifier: catalog:foundation
         version: 0.2.2
       gulp-if:
-        specifier: ^3.0.0
+        specifier: catalog:foundation
         version: 3.0.0
       gulp-imagemin:
-        specifier: ^9.2.0
+        specifier: catalog:foundation
         version: 9.2.0(gulp@5.0.1)
       gulp-phpcbf:
-        specifier: ^0.1.2
+        specifier: catalog:foundation
         version: 0.1.2
       gulp-phpcs:
-        specifier: ^3.1.0
+        specifier: catalog:foundation
         version: 3.1.0
       gulp-rename:
-        specifier: ^2.1.0
+        specifier: catalog:foundation
         version: 2.1.0
       gulp-rev:
-        specifier: ^12.0.0
+        specifier: catalog:foundation
         version: 12.0.0(gulp@5.0.1)
       gulp-sass:
-        specifier: ^6.0.1
+        specifier: catalog:foundation
         version: 6.0.1
       gulp-sourcemaps:
-        specifier: ^3.0.0
+        specifier: catalog:foundation
         version: 3.0.0(supports-color@8.1.1)
       gulp-uglify:
-        specifier: ^3.0.2
+        specifier: catalog:foundation
         version: 3.0.2
       gulp-zip:
-        specifier: ^6.1.0
+        specifier: catalog:foundation
         version: 6.1.0(gulp@5.0.1)
       imagemin-gifsicle:
-        specifier: ^7.0.0
+        specifier: catalog:foundation
         version: 7.0.0
       imagemin-jpegtran:
-        specifier: ^8.0.0
+        specifier: catalog:foundation
         version: 8.0.0
       imagemin-optipng:
-        specifier: ^8.0.0
+        specifier: catalog:foundation
         version: 8.0.0
       imagemin-svgo:
-        specifier: ^12.0.0
+        specifier: catalog:foundation
         version: 12.0.0
       js-yaml:
-        specifier: ^5.4.3
+        specifier: catalog:foundation
         version: 5.4.3
       panini:
-        specifier: ^1.7.2
+        specifier: catalog:foundation
         version: 1.7.2
       rimraf:
-        specifier: ^6.1.3
+        specifier: catalog:foundation
         version: 6.1.3
       sass-embedded:
-        specifier: ^1.105.1
+        specifier: catalog:foundation
         version: 1.105.1
       style-sherpa:
-        specifier: ^1.0.2
+        specifier: catalog:foundation
         version: 1.0.2
       vinyl-named:
-        specifier: ^1.1.0
+        specifier: catalog:foundation
         version: 1.1.0
       webpack:
-        specifier: ^5.111.1
+        specifier: catalog:foundation
         version: 5.111.1(clean-css@4.2.3)(csso@5.0.5)(lightningcss@1.33.0)(postcss@8.5.30)(uglify-js@3.19.3)
       webpack-stream:
-        specifier: ^7.0.0
+        specifier: catalog:foundation
         version: 7.0.0(webpack@5.111.1)
       yargs:
-        specifier: ^18.2.0
+        specifier: catalog:foundation
         version: 18.2.0
 
   themes/hyperpress-uikit:

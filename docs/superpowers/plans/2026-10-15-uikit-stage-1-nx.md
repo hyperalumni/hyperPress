@@ -137,3 +137,4 @@
 - Deferred: migrating the theme's existing dependencies into the catalog; the `test:integration` target was not run.
 - Project renamed `@hyper/press` -> `@hyper/press-foundation` after this plan (see commit), because a second theme is coming; text above uses the old name.
 - Root package renamed `@hyper/workspace` -> `@hyper/press` to name the whole repo; before the earlier theme rename `@hyper/press` meant the theme, so older plan text using it refers to the Foundation theme.
+- Done (2026-11-01): the deferred item above is resolved. Every `dependencies`/`devDependencies` entry of `@hyper/press-foundation` is now `"catalog:foundation"`, with exact pins in the named `foundation` catalog (`catalogs:` in `pnpm-workspace.yaml`, separate from the default `catalog:` that the rest of the workspace uses so the legacy stack can be removed as one block) equal to the versions already resolved in `pnpm-lock.yaml` (so the installed tree did not change).

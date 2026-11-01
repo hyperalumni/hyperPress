@@ -23,7 +23,7 @@ pnpm + Nx monorepo for the hyperPress WordPress sites: the Foundation theme, the
 ## Conventions
 
 - Nx project config (targets, cache, tags) lives in each project's `project.json`; `package.json` holds scripts and dependencies only.
-- Shared dependency versions (Nx and `@nx/*` included) are pinned in the `catalog:` in `pnpm-workspace.yaml`; use `"catalog:"` in package.json and bump them there.
+- Shared dependency versions (Nx and `@nx/*` included) are pinned in the default `catalog:` in `pnpm-workspace.yaml`; use `"catalog:"` in package.json and bump them there. The Foundation theme's dependencies are the exception: they live in the named `foundation` catalog (`catalogs:` in the same file) and use `"catalog:foundation"`.
 - Cached targets declare specific `outputs`. A cached `nx:noop` aggregator needs `outputs: []`, otherwise Nx defaults to `dist/<project>` and replaces the theme directory.
 
 ## Commands
