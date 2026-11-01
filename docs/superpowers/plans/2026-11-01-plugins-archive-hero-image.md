@@ -151,11 +151,11 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 - `featured-image.php` keeps its `get_post() && has_post_thumbnail()` guard and calls the hero part with `get_post_thumbnail_id()`.
 - `AGENTS.md`: document the optional `image` banner key (attachment ID, any banner type, rendered under the banner; the theme's own fallback filters never set it).
 
-- [ ] **Step 1: Write the failing test** `ArchiveHeroTest`: render `template-parts/banner` (with `ob_start`) while a test filter on `hyperpress_banner_content` sets `image` to a real attachment: output contains exactly one `class="featured-hero"` with four `data-interchange` URLs for the four sizes, placed after the banner `</header>`; without `image` there is none; with a deleted attachment ID there is none and no PHP notice; with the filter at priority 10 and the theme's priority 80/90/95 filters active on an archive request (as in `ArchiveBannerPriorityTest`), the image is still present. `FeaturedImageTest` stays unchanged and green (one hero for a page with a thumbnail).
-- [ ] **Step 2:** From `themes/hyperpress-foundation/`: `docker compose run --rm php composer test:integration -- --filter ArchiveHeroTest`. Expected: FAIL.
-- [ ] **Step 3: Implement** the template parts and the `AGENTS.md` note per the interfaces.
-- [ ] **Step 4:** Run `composer test:unit`, `composer test:integration` and `composer lint` in the theme. Expected: all pass. Run `pnpm phpcs` if `composer lint` does not cover the new file.
-- [ ] **Step 5: Commit** `feat(theme): render a banner image hero from the banner image key`.
+- [x] **Step 1: Write the failing test** `ArchiveHeroTest`: render `template-parts/banner` (with `ob_start`) while a test filter on `hyperpress_banner_content` sets `image` to a real attachment: output contains exactly one `class="featured-hero"` with four `data-interchange` URLs for the four sizes, placed after the banner `</header>`; without `image` there is none; with a deleted attachment ID there is none and no PHP notice; with the filter at priority 10 and the theme's priority 80/90/95 filters active on an archive request (as in `ArchiveBannerPriorityTest`), the image is still present. `FeaturedImageTest` stays unchanged and green (one hero for a page with a thumbnail).
+- [x] **Step 2:** From `themes/hyperpress-foundation/`: `docker compose run --rm php composer test:integration -- --filter ArchiveHeroTest`. Expected: FAIL.
+- [x] **Step 3: Implement** the template parts and the `AGENTS.md` note per the interfaces.
+- [x] **Step 4:** Run `composer test:unit`, `composer test:integration` and `composer lint` in the theme. Expected: all pass. Run `pnpm phpcs` if `composer lint` does not cover the new file.
+- [x] **Step 5: Commit** `feat(theme): render a banner image hero from the banner image key`.
 
 ---
 

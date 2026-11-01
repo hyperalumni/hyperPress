@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 // to select the optimal image size per named media query.
 if ( get_post() && has_post_thumbnail() ) :
 ?>
-	<header class="featured-hero" role="banner" data-interchange="[<?php the_post_thumbnail_url( 'featured-small' ); ?>, small], [<?php the_post_thumbnail_url( 'featured-medium' ); ?>, medium], [<?php the_post_thumbnail_url( 'featured-large' ); ?>, large], [<?php the_post_thumbnail_url( 'featured-xlarge' ); ?>, xlarge]">
-	</header>
+	<?php get_template_part( 'template-parts/hero', null, array( 'attachment_id' => get_post_thumbnail_id() ) ); ?>
 <?php
 endif;

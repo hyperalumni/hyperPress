@@ -11,6 +11,7 @@ $banner = apply_filters(
 		'backgroundColor' => '',
 		'buttonText'      => '',
 		'buttonLink'      => '',
+		'image'           => 0,
 	)
     );
 // set a default value if the filter provided no value
@@ -67,4 +68,11 @@ style="background-color: <?php echo esc_attr( $banner['backgroundColor'] ); ?>;"
 		</div>
 	</div>
 </header>
-<?php do_action( 'hyperpress_after_banner' ); ?>
+<?php
+// Optional hero under the banner: an image attachment ID set by a `hyperpress_banner_content` filter.
+$banner_image = isset( $banner['image'] ) ? absint( $banner['image'] ) : 0;
+if ( $banner_image > 0 && wp_attachment_is_image( $banner_image ) ) {
+	get_template_part( 'template-parts/hero', null, array( 'attachment_id' => $banner_image ) );
+}
+do_action( 'hyperpress_after_banner' );
+?>
