@@ -5,7 +5,7 @@ packages:
 
 catalog:
   # Nx family — all @nx/* plugins must match the nx core version
-  '@nx/oxlint': &nxVersion 23.3.0
+  '@nx/oxlint': &nxVersion 24.0.3
   '@nx/vite': *nxVersion
   '@nx/workspace': *nxVersion
   '@types/uikit': 3.23.4
