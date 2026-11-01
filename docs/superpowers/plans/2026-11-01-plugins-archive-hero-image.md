@@ -204,11 +204,11 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 
 **Interfaces:** Same shape as Task 7 with `Program\Settings::BANNER_IMAGE = 'hyperpress_program_banner_image'`, `banner_image(): int`, a `type => 'term'` box for `taxonomies => array( Plugin::TAXONOMY )`, and the fallback field added to the existing Program settings box (Program has no subtitle field today; add only the image field). `ProgramBanner::filter()` sets `image` after it sets `type`, with the same non-overwrite and fallback rules; its `! empty( $banner['type'] )` skip and priority 20 are untouched.
 
-- [ ] **Step 1: Write failing tests** mirroring Task 7 for `/programs/<slug>/`, plus: a program page that a priority-10 banner already claimed (banner `type` set) gets no program image.
-- [ ] **Step 2:** Run it. Expected: FAIL.
-- [ ] **Step 3: Implement** per the interfaces.
-- [ ] **Step 4:** Run the full unit and integration suites and lint from `plugins/`, and the theme's `composer test:integration` and `composer lint`. Expected: all pass.
-- [ ] **Step 5: Commit** `feat(program): archive hero image per program with a taxonomy fallback`.
+- [x] **Step 1: Write failing tests** mirroring Task 7 for `/programs/<slug>/`, plus: a program page that a priority-10 banner already claimed (banner `type` set) gets no program image.
+- [x] **Step 2:** Run it. Expected: FAIL.
+- [x] **Step 3: Implement** per the interfaces.
+- [x] **Step 4:** Run the full unit and integration suites and lint from `plugins/`, and the theme's `composer test:integration` and `composer lint`. Expected: all pass.
+- [x] **Step 5: Commit** `feat(program): archive hero image per program with a taxonomy fallback`.
 
 ---
 

@@ -1,6 +1,8 @@
 <?php
 namespace HyperPress\Program;
 
+use HyperPress\Utils\ArchiveImage;
+
 defined( 'ABSPATH' ) || exit;
 
 final class MetaBoxes {
@@ -29,6 +31,25 @@ final class MetaBoxes {
 					'multiple'          => true,
 					'options'           => self::post_type_options(),
 					'sanitize_callback' => array( Sanitizers::class, 'post_types' ),
+				),
+				ArchiveImage::field(
+					Settings::BANNER_IMAGE,
+					__( 'Program Fallback Hero Image', 'hyperpress' ),
+					__( 'Fallback hero image for program pages that have no image of their own.', 'hyperpress' )
+				),
+			),
+		);
+
+		$boxes[] = array(
+			'id'         => 'hyperpress_program_term_box',
+			'title'      => __( 'Program', 'hyperpress' ),
+			'type'       => 'term',
+			'taxonomies' => array( Plugin::TAXONOMY ),
+			'fields'     => array(
+				ArchiveImage::field(
+					Settings::BANNER_IMAGE,
+					__( 'Hero Image', 'hyperpress' ),
+					__( 'Hero image for this program\'s page. Without one, the program fallback image is used.', 'hyperpress' )
 				),
 			),
 		);

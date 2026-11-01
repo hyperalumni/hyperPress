@@ -1,6 +1,8 @@
 <?php
 namespace HyperPress\Program;
 
+use HyperPress\Utils\ArchiveImage;
+
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 /**
@@ -8,8 +10,9 @@ defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
  */
 final class Settings {
 
-	public const OPTION     = 'hyperpress_program';
-	public const POST_TYPES = 'hyperpress_program_post_types';
+	public const OPTION       = 'hyperpress_program';
+	public const POST_TYPES   = 'hyperpress_program_post_types';
+	public const BANNER_IMAGE = 'hyperpress_program_banner_image';
 
 	/**
 	 * Default values, keyed by field id.
@@ -33,6 +36,18 @@ final class Settings {
 	public static function default_option( $fallback, $option = '', $passed_default = false ) {
 		unset( $option );
 		return $passed_default ? $fallback : self::defaults();
+	}
+
+	/**
+	 * The fallback hero image attachment ID for program pages, or 0.
+	 */
+	public static function banner_image(): int {
+		$option = get_option( self::OPTION, false );
+		if ( ! is_array( $option ) ) {
+			return 0;
+		}
+
+		return ArchiveImage::valid_id( $option[ self::BANNER_IMAGE ] ?? 0 );
 	}
 
 	/**

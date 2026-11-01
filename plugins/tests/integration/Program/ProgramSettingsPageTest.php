@@ -28,13 +28,13 @@ final class ProgramSettingsPageTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * The one field of the Program box.
+	 * The post types field of the Program box (it is followed by the fallback hero image field).
 	 *
 	 * @return array<string,mixed>
 	 */
 	private function field(): array {
 		$fields = $this->boxes()[0]['fields'];
-		$this->assertCount( 1, $fields );
+		$this->assertCount( 2, $fields );
 		return $fields[0];
 	}
 
@@ -105,7 +105,7 @@ final class ProgramSettingsPageTest extends WP_UnitTestCase {
 
 		$boxes = \HyperPress\Program\MetaBoxes::boxes( array() );
 
-		$this->assertCount( 1, $boxes );
+		$this->assertCount( 2, $boxes );
 		$this->assertSame( 'hyperpress_program_box', $boxes[0]['id'] );
 		$field = $boxes[0]['fields'][0];
 		$this->assertSame( 'hyperpress_program_post_types', $field['id'] );

@@ -1,6 +1,7 @@
 <?php
 namespace HyperPress\Program;
 
+use HyperPress\Utils\ArchiveImage;
 use HyperPress\Utils\ArchiveRequest;
 
 defined( 'ABSPATH' ) || exit;
@@ -32,6 +33,13 @@ final class ProgramBanner {
 		if ( empty( $banner['subtitle'] ) ) {
 			// The banner template only allows a few inline tags and escapes later; stripping is the safe choice for a term description.
 			$banner['subtitle'] = trim( wp_strip_all_tags( $term->description ) );
+		}
+
+		if ( empty( $banner['image'] ) ) {
+			$image = ArchiveImage::term_image_id( $term->term_id, Settings::BANNER_IMAGE, Settings::banner_image() );
+			if ( $image > 0 ) {
+				$banner['image'] = $image;
+			}
 		}
 
 		return $banner;
