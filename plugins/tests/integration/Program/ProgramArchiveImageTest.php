@@ -70,8 +70,34 @@ final class ProgramArchiveImageTest extends WP_UnitTestCase {
 	public function test_without_a_term_image_or_fallback_there_is_no_image_key(): void {
 		$banner = $this->banner_for( $this->program() );
 
+		$this->assertTrue( is_tax() );
 		$this->assertSame( 'program', $banner['type'] );
 		$this->assertArrayNotHasKey( 'image', $banner );
+	}
+
+	public function test_a_deleted_term_image_without_a_fallback_gives_no_image_key(): void {
+		$term_id = $this->program();
+		$gone    = $this->image();
+		update_term_meta( $term_id, Settings::BANNER_IMAGE, $gone );
+		wp_delete_attachment( $gone, true );
+
+		$errors = array();
+		set_error_handler(
+			static function ( $no, $str ) use ( &$errors ) {
+				$errors[] = $str;
+				return true;
+			}
+		);
+		try {
+			$banner = $this->banner_for( $term_id );
+		} finally {
+			restore_error_handler();
+		}
+
+		$this->assertTrue( is_tax() );
+		$this->assertSame( 'program', $banner['type'] );
+		$this->assertArrayNotHasKey( 'image', $banner );
+		$this->assertSame( array(), $errors );
 	}
 
 	public function test_the_term_image_beats_the_fallback(): void {

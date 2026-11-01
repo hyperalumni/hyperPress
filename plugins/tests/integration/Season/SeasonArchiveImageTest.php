@@ -61,8 +61,34 @@ final class SeasonArchiveImageTest extends WP_UnitTestCase {
 	public function test_without_a_term_image_or_fallback_there_is_no_image_key(): void {
 		$banner = $this->banner_for( $this->season() );
 
+		$this->assertTrue( is_tax() );
 		$this->assertSame( 'season', $banner['type'] );
 		$this->assertArrayNotHasKey( 'image', $banner );
+	}
+
+	public function test_a_deleted_term_image_without_a_fallback_gives_no_image_key(): void {
+		$term_id = $this->season();
+		$gone    = $this->image();
+		update_term_meta( $term_id, Settings::BANNER_IMAGE, $gone );
+		wp_delete_attachment( $gone, true );
+
+		$errors = array();
+		set_error_handler(
+			static function ( $no, $str ) use ( &$errors ) {
+				$errors[] = $str;
+				return true;
+			}
+		);
+		try {
+			$banner = $this->banner_for( $term_id );
+		} finally {
+			restore_error_handler();
+		}
+
+		$this->assertTrue( is_tax() );
+		$this->assertSame( 'season', $banner['type'] );
+		$this->assertArrayNotHasKey( 'image', $banner );
+		$this->assertSame( array(), $errors );
 	}
 
 	public function test_the_term_image_beats_the_fallback(): void {
@@ -106,6 +132,8 @@ final class SeasonArchiveImageTest extends WP_UnitTestCase {
 		$this->go_to( '/?post_type=hyper_gizmo&hyper_season=hero-test-season' );
 		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
 
+		$this->assertTrue( is_post_type_archive() );
+		$this->assertArrayNotHasKey( 'type', $banner );
 		$this->assertArrayNotHasKey( 'image', $banner );
 	}
 

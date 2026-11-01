@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 
 // The hero image, selected per named media query by Interchange. Expects $args['attachment_id'] (an image
 // attachment ID); prints nothing for any other value.
-$hyperpress_hero_id = isset( $args['attachment_id'] ) ? absint( $args['attachment_id'] ) : 0;
+$hyperpress_hero_id = ( isset( $args['attachment_id'] ) && is_scalar( $args['attachment_id'] ) ) ? absint( $args['attachment_id'] ) : 0;
 
 if ( $hyperpress_hero_id > 0 && wp_attachment_is_image( $hyperpress_hero_id ) ) :
 	$hyperpress_hero_sources = array();

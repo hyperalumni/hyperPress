@@ -70,7 +70,7 @@ style="background-color: <?php echo esc_attr( $banner['backgroundColor'] ); ?>;"
 </header>
 <?php
 // Optional hero under the banner: an image attachment ID set by a `hyperpress_banner_content` filter.
-$banner_image = isset( $banner['image'] ) ? absint( $banner['image'] ) : 0;
+$banner_image = ( isset( $banner['image'] ) && is_scalar( $banner['image'] ) ) ? absint( $banner['image'] ) : 0;
 if ( $banner_image > 0 && wp_attachment_is_image( $banner_image ) ) {
 	get_template_part( 'template-parts/hero', null, array( 'attachment_id' => $banner_image ) );
 }

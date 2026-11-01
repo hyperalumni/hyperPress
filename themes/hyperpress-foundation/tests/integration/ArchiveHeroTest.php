@@ -14,9 +14,6 @@ final class ArchiveHeroTest extends WP_UnitTestCase {
 	/** @var callable|null */
 	private $filter = null;
 
-	/** @var list<string> */
-	private $errors = array();
-
 	public function set_up(): void {
 		parent::set_up();
 		register_post_type(
@@ -73,9 +70,23 @@ final class ArchiveHeroTest extends WP_UnitTestCase {
 			$this->assertStringContainsString( '[' . $url . ', ' . $name . ']', $m[1] );
 		}
 		$this->assertSame( 4, substr_count( $m[1], '[' ) );
-		$this->assertLessThan( strpos( $html, 'class="featured-hero"' ), strrpos( substr( $html, 0, strpos( $html, 'class="featured-hero"' ) ), '</header>' ) );
 		$this->assertStringContainsString( 'class="banner', $html );
-		$this->assertLessThan( strpos( $html, 'class="featured-hero"' ), strpos( $html, 'class="banner' ) );
+	}
+
+	public function test_the_hero_directly_follows_the_banner_and_precedes_the_after_banner_hook(): void {
+		$id = $this->make_attachment();
+		$this->set_image( $id );
+		add_action(
+			'hyperpress_after_banner',
+			static function () {
+				echo '<!--after-banner-probe-->';
+			}
+		);
+
+		$html = $this->render_banner();
+
+		$this->assertSame( 1, preg_match( '#<header role="banner" class="banner[^"]*"[^>]*>.*?</header>\s*<header class="featured-hero"#s', $html ), 'The hero must directly follow the banner\'s closing </header>.' );
+		$this->assertSame( 1, preg_match( '#<header class="featured-hero".*?</header>\s*<!--after-banner-probe-->#s', $html ), 'hyperpress_after_banner must run after the hero.' );
 	}
 
 	public function test_a_numeric_string_image_is_accepted(): void {
@@ -129,9 +140,41 @@ final class ArchiveHeroTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'featured-hero', $this->render_banner() );
 	}
 
-	public function test_a_negative_or_junk_image_renders_no_hero(): void {
+	public function test_a_non_numeric_string_image_renders_no_hero(): void {
 		$this->set_image( 'abc' );
 		$this->assertStringNotContainsString( 'featured-hero', $this->render_banner() );
+	}
+
+	public function test_a_negative_image_renders_no_hero(): void {
+		$this->set_image( -5 );
+		$this->assertStringNotContainsString( 'featured-hero', $this->render_banner() );
+	}
+
+	public function test_an_array_or_object_image_renders_no_hero_and_no_warning(): void {
+		$id = $this->make_attachment();
+
+		foreach ( array( array( $id ), array( 1 ), new \stdClass() ) as $junk ) {
+			$this->set_image( $junk );
+
+			$errors = array();
+			set_error_handler(
+				static function ( $no, $str ) use ( &$errors ) {
+					$errors[] = $str;
+					return true;
+				}
+			);
+			try {
+				$html = $this->render_banner();
+			} finally {
+				restore_error_handler();
+			}
+
+			$this->assertStringNotContainsString( 'featured-hero', $html );
+			$this->assertSame( array(), $errors );
+
+			remove_filter( 'hyperpress_banner_content', $this->filter, 10 );
+			$this->filter = null;
+		}
 	}
 
 	public function test_the_image_survives_the_theme_fallback_filters_on_an_archive(): void {

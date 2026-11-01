@@ -1,10 +1,14 @@
 <?php
+namespace HyperPress\Tests\Integration\Utils;
+
 use HyperPress\Utils\ArchiveRequest;
+use WP_Term;
+use WP_UnitTestCase;
 
 /**
  * ArchiveRequest against real requests.
  */
-class ArchiveRequestTest extends WP_UnitTestCase {
+final class ArchiveRequestTest extends WP_UnitTestCase {
 
 	private bool $registered_week = false;
 
@@ -71,6 +75,7 @@ class ArchiveRequestTest extends WP_UnitTestCase {
 		$this->go_to( add_query_arg( 'hyper_season', $term->slug, get_post_type_archive_link( 'hyper_sponsor' ) ) );
 
 		$this->assertTrue( is_post_type_archive( 'hyper_sponsor' ) );
+		$this->assertTrue( is_tax() );
 		$this->assertNull( ArchiveRequest::taxonomy_term( 'hyper_season' ) );
 	}
 
