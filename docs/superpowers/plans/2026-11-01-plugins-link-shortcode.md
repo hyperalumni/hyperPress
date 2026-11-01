@@ -1,6 +1,7 @@
 # Link shortcode and mailto/tel/anchor handling Implementation Plan
 
 > **STATUS: ✅ COMPLETED** (2026-11-01). Task 1 (`Link` handles mailto/tel/#) and Task 2 (`hyperpress_link` shortcode, utils dependency) done on `feat/link-shortcode`. `composer lint`, `test:unit` (176) and `test:integration` (1497, 6 skipped as before) pass in `plugins/`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add a `[hyperpress_link]` shortcode that sets `target` and `rel` through `HyperPress\Utils\Link`, after teaching `Link` that `mailto:`, `tel:` and `#anchor` URLs stay in the same tab.
