@@ -5,21 +5,23 @@ defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 /**
  * Shared pieces of an archive-banner settings page: the option defaults, the banner subtitle accessor,
- * the settings page entry and the subtitle field. One instance per plugin.
+ * the settings page entry, the subtitle field and the archive hero image. One instance per plugin.
  */
 final class ArchiveBannerSettings {
 
 	/**
-	 * Binds the helper to one plugin's option and subtitle field.
+	 * Binds the helper to one plugin's option, subtitle field and optional hero image field.
 	 *
 	 * @param string $option           Option name of the plugin's settings page.
 	 * @param string $subtitle_key     Field id (option key) of the banner subtitle.
 	 * @param string $subtitle_default Default banner subtitle.
+	 * @param string $image_key        Field id (option key) of the archive hero image; '' for none.
 	 */
 	public function __construct(
 		private readonly string $option,
 		private readonly string $subtitle_key,
-		private readonly string $subtitle_default
+		private readonly string $subtitle_default,
+		private readonly string $image_key = ''
 	) {}
 
 	/**
@@ -106,5 +108,33 @@ final class ArchiveBannerSettings {
 			$field['std'] = $this->subtitle_default;
 		}
 		return $field;
+	}
+
+	/**
+	 * The archive hero image attachment ID.
+	 *
+	 * 0 when no image key is configured, the option is not an array (including a missing row), the key is
+	 * absent (Meta Box drops the key of a cleared field), or the stored value is not an image attachment.
+	 */
+	public function image_id(): int {
+		if ( '' === $this->image_key ) {
+			return 0;
+		}
+		$option = get_option( $this->option );
+		if ( ! is_array( $option ) || ! array_key_exists( $this->image_key, $option ) ) {
+			return 0;
+		}
+		return ArchiveImage::valid_id( $option[ $this->image_key ] );
+	}
+
+	/**
+	 * The archive hero image meta box field.
+	 *
+	 * @param string $name Field label.
+	 * @param string $desc Field description.
+	 * @return array<string,mixed>
+	 */
+	public function image_field( string $name, string $desc ): array {
+		return ArchiveImage::field( $this->image_key, $name, $desc );
 	}
 }

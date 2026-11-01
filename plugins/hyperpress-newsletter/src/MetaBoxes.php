@@ -3,8 +3,6 @@ namespace HyperPress\Newsletter;
 
 defined( 'ABSPATH' ) || exit;
 
-use HyperPress\Utils\Banner;
-
 final class MetaBoxes {
 
 	/**
@@ -32,6 +30,10 @@ final class MetaBoxes {
 				Settings::archive_banner()->subtitle_field(
 					__( 'Newsletter Banner Subtitle', 'hyperpress' ),
 					__( 'Shown under the title on newsletter pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' )
+				),
+				Settings::archive_banner()->image_field(
+					__( 'Newsletter Banner Image', 'hyperpress' ),
+					__( 'Shown as a full-width image under the banner on the newsletters pages.', 'hyperpress' )
 				),
 			),
 		);

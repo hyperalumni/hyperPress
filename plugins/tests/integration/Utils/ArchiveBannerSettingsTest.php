@@ -11,6 +11,7 @@ final class ArchiveBannerSettingsTest extends WP_UnitTestCase {
 	private const OPTION  = 'hyperpress_test_archive';
 	private const KEY     = 'hyperpress_test_archive_banner_subtitle';
 	private const DEFAULT = 'Test default subtitle';
+	private const IMAGE   = 'hyperpress_test_archive_banner_image';
 
 	public function tear_down(): void {
 		remove_all_filters( 'default_option_' . self::OPTION );
@@ -19,7 +20,11 @@ final class ArchiveBannerSettingsTest extends WP_UnitTestCase {
 	}
 
 	private function settings(): ArchiveBannerSettings {
-		return new ArchiveBannerSettings( self::OPTION, self::KEY, self::DEFAULT );
+		return new ArchiveBannerSettings( self::OPTION, self::KEY, self::DEFAULT, self::IMAGE );
+	}
+
+	private function image(): int {
+		return (int) self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/test-image.jpg' );
 	}
 
 	public function test_defaults_are_keyed_by_the_subtitle_key(): void {
@@ -98,5 +103,53 @@ final class ArchiveBannerSettingsTest extends WP_UnitTestCase {
 		$field = $this->settings()->subtitle_field( 'Name', 'Desc', true );
 
 		$this->assertSame( self::DEFAULT, $field['std'] );
+	}
+
+	public function test_image_id_is_the_stored_image_attachment(): void {
+		$id = $this->image();
+		update_option( self::OPTION, array( self::IMAGE => $id ) );
+
+		$this->assertSame( $id, $this->settings()->image_id() );
+	}
+
+	public function test_image_id_is_zero_for_a_deleted_attachment(): void {
+		$id = $this->image();
+		update_option( self::OPTION, array( self::IMAGE => $id ) );
+		wp_delete_attachment( $id, true );
+
+		$this->assertSame( 0, $this->settings()->image_id() );
+	}
+
+	public function test_image_id_is_zero_when_the_row_exists_without_the_key(): void {
+		update_option( self::OPTION, array( self::KEY => 'x' ) );
+
+		$this->assertSame( 0, $this->settings()->image_id() );
+	}
+
+	public function test_image_id_is_zero_when_the_option_row_is_missing(): void {
+		delete_option( self::OPTION );
+
+		$this->assertSame( 0, $this->settings()->image_id() );
+	}
+
+	public function test_image_id_is_zero_when_the_option_is_not_an_array(): void {
+		update_option( self::OPTION, 'junk' );
+
+		$this->assertSame( 0, $this->settings()->image_id() );
+	}
+
+	public function test_image_id_is_zero_without_an_image_key(): void {
+		update_option( self::OPTION, array( self::IMAGE => $this->image() ) );
+
+		$this->assertSame( 0, ( new ArchiveBannerSettings( self::OPTION, self::KEY, self::DEFAULT ) )->image_id() );
+	}
+
+	public function test_image_field_is_a_single_image_field_with_the_image_key(): void {
+		$field = $this->settings()->image_field( 'Name', 'Desc' );
+
+		$this->assertSame( self::IMAGE, $field['id'] );
+		$this->assertSame( 'Name', $field['name'] );
+		$this->assertSame( 'Desc', $field['desc'] );
+		$this->assertSame( 'single_image', $field['type'] );
 	}
 }

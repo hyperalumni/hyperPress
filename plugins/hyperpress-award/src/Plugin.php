@@ -32,6 +32,7 @@ final class Plugin {
 			array(
 				'type'          => 'award',
 				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
+				'image'         => array( Settings::class, 'banner_image' ),
 				'color_mod'     => 'hyperpress_hyper_blue',
 				'archive_title' => __( 'Awards', 'hyperpress' ),
 				'term_joiner'   => 'in',

@@ -3,8 +3,6 @@ namespace HyperPress\Award;
 
 defined( 'ABSPATH' ) || exit;
 
-use HyperPress\Utils\Banner;
-
 final class MetaBoxes {
 
 	public static function register(): void {
@@ -27,6 +25,10 @@ final class MetaBoxes {
 					__( 'Banner subtitle', 'hyperpress' ),
 					__( 'Shown under the title on the awards pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' ),
 					true
+				),
+				Settings::archive_banner()->image_field(
+					__( 'Banner image', 'hyperpress' ),
+					__( 'Shown as a full-width image under the banner on the awards pages.', 'hyperpress' )
 				),
 			),
 		);

@@ -169,11 +169,11 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 - `ArchiveBannerSettings::__construct` gains a fourth parameter `string $image_key = ''`. New: `image_id(): int` (reads the option array key `$image_key`, returns `ArchiveImage::valid_id( value )`, `0` when the option is not an array, the key is absent, or `$image_key === ''`); `image_field( string $name, string $desc ): array` (`ArchiveImage::field( $image_key, … )`).
 - Each plugin `Settings` gains `public const BANNER_IMAGE = 'hyperpress_<plugin>_banner_image'` and `public static function banner_image(): int`. Each `MetaBoxes` box gets the `image_field()` right after the subtitle field (description: where it appears, e.g. "Shown as a full-width image under the banner on the sponsors pages"). Each `Plugin::register_banner()` adds `'image' => array( Settings::class, 'banner_image' )`.
 
-- [ ] **Step 1: Write failing tests.** Helper: `image_id()` for the cases valid attachment, deleted attachment, key absent from an existing row, option missing, non-array option. Per plugin (named for the plugin, e.g. `SponsorArchiveImageTest`): with a real attachment saved in the option, `apply_filters( 'hyperpress_banner_content', array() )` on the post-type archive has `image === $id`; on `/page/2/` of the archive, too; on the season-scoped archive (`/seasons/<slug>/<archive>/` or `?post_type=…&hyper_season=<slug>`) the plugin's image, not any season image; on a single post of the type there is no `image` key; on a taxonomy-only page there is none; with the key cleared (row present, key absent) none. The `rwmb_meta_boxes` output contains the `single_image` field with the plugin's id.
-- [ ] **Step 2:** Run them. Expected: FAIL.
-- [ ] **Step 3: Implement** the helper additions and the five plugin changes per the interfaces.
-- [ ] **Step 4:** Run the full unit and integration suites and lint from `plugins/`. Expected: all pass.
-- [ ] **Step 5: Commit** `feat(plugins): archive hero image setting for sponsor, award, robot, newsletter and competition`.
+- [x] **Step 1: Write failing tests.** Helper: `image_id()` for the cases valid attachment, deleted attachment, key absent from an existing row, option missing, non-array option. Per plugin (named for the plugin, e.g. `SponsorArchiveImageTest`): with a real attachment saved in the option, `apply_filters( 'hyperpress_banner_content', array() )` on the post-type archive has `image === $id`; on `/page/2/` of the archive, too; on the season-scoped archive (`/seasons/<slug>/<archive>/` or `?post_type=…&hyper_season=<slug>`) the plugin's image, not any season image; on a single post of the type there is no `image` key; on a taxonomy-only page there is none; with the key cleared (row present, key absent) none. The `rwmb_meta_boxes` output contains the `single_image` field with the plugin's id.
+- [x] **Step 2:** Run them. Expected: FAIL.
+- [x] **Step 3: Implement** the helper additions and the five plugin changes per the interfaces.
+- [x] **Step 4:** Run the full unit and integration suites and lint from `plugins/`. Expected: all pass.
+- [x] **Step 5: Commit** `feat(plugins): archive hero image setting for sponsor, award, robot, newsletter and competition`.
 
 ---
 

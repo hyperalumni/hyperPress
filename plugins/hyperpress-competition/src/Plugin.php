@@ -76,6 +76,7 @@ final class Plugin {
 			array(
 				'type'          => 'competition',
 				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
+				'image'         => array( Settings::class, 'banner_image' ),
 				'color_mod'     => 'hyperpress_hyper_green',
 				'archive_title' => __( 'Competitions', 'hyperpress' ),
 				'term_joiner'   => 'in',

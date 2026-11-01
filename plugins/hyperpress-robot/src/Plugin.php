@@ -32,6 +32,7 @@ final class Plugin {
 			array(
 				'type'          => 'robot',
 				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
+				'image'         => array( Settings::class, 'banner_image' ),
 				'color_mod'     => 'hyperpress_hyper_red',
 				'archive_title' => __( 'Robots', 'hyperpress' ),
 				'term_joiner'   => 'in',

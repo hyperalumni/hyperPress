@@ -44,7 +44,7 @@ final class AwardSettingsPageTest extends WP_UnitTestCase {
 		$this->assertCount( 1, $boxes );
 		$this->assertSame( 'hyperpress_award', $boxes[0]['settings_pages'] );
 		$fields = $boxes[0]['fields'];
-		$this->assertCount( 1, $fields );
+		$this->assertCount( 2, $fields );
 		$this->assertSame( 'hyperpress_award_banner_subtitle', $fields[0]['id'] );
 		$this->assertSame( 'Banner subtitle', $fields[0]['name'] );
 		$this->assertSame( 'textarea', $fields[0]['type'] );

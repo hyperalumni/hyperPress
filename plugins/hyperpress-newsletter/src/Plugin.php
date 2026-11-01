@@ -34,6 +34,7 @@ final class Plugin {
 			array(
 				'type'          => 'newsletter',
 				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
+				'image'         => array( Settings::class, 'banner_image' ),
 				'color_mod'     => 'hyperpress_hyper_orange',
 				'archive_title' => __( 'Newsletters', 'hyperpress' ),
 				'term_joiner'   => 'from',

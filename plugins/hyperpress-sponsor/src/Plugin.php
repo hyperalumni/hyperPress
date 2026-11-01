@@ -60,6 +60,7 @@ final class Plugin {
 			array(
 				'type'          => 'sponsor',
 				'subtitle'      => array( Settings::class, 'banner_subtitle' ),
+				'image'         => array( Settings::class, 'banner_image' ),
 				'color_mod'     => 'hyperpress_hyper_red',
 				'archive_title' => __( 'Sponsors', 'hyperpress' ),
 				'term_joiner'   => 'in',

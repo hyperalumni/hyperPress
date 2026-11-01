@@ -26,6 +26,10 @@ final class MetaBoxes {
 					__( 'Sponsor Banner Subtitle', 'hyperpress' ),
 					__( 'Shown under the title on sponsor pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' )
 				),
+				Settings::archive_banner()->image_field(
+					__( 'Sponsor Banner Image', 'hyperpress' ),
+					__( 'Shown as a full-width image under the banner on the sponsors pages.', 'hyperpress' )
+				),
 			),
 		);
 

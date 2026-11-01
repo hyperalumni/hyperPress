@@ -13,6 +13,7 @@ final class Settings {
 	public const OPTION                  = 'hyperpress_competition';
 	public const BANNER_SUBTITLE         = 'hyperpress_competition_banner_subtitle';
 	public const BANNER_SUBTITLE_DEFAULT = '';
+	public const BANNER_IMAGE            = 'hyperpress_competition_banner_image';
 	public const PAST_ZERO               = 'hyperpress_competition_countdown_past_zero';
 	public const DAY_END                 = 'hyperpress_competition_day_end';
 	public const DAY_END_DEFAULT         = '20:00';
@@ -37,10 +38,12 @@ final class Settings {
 	 * The shared archive-banner settings helper bound to this plugin's option.
 	 */
 	public static function archive_banner(): ArchiveBannerSettings {
-		return new ArchiveBannerSettings( self::OPTION, self::BANNER_SUBTITLE, self::BANNER_SUBTITLE_DEFAULT );
+		return new ArchiveBannerSettings( self::OPTION, self::BANNER_SUBTITLE, self::BANNER_SUBTITLE_DEFAULT, self::BANNER_IMAGE );
 	}
 
 	/**
+	 * Returns the merged defaults (the banner's plus competition's own extras), so it does not delegate to the helper.
+	 *
 	 * Filter on default_option_hyperpress_competition: the defaults, unless the caller passed its own.
 	 *
 	 * @param mixed  $fallback       The default value.
@@ -63,6 +66,13 @@ final class Settings {
 	 */
 	public static function banner_subtitle(): string {
 		return self::archive_banner()->banner_subtitle();
+	}
+
+	/**
+	 * The archive hero image attachment ID, or 0 when none is set or it is not an image.
+	 */
+	public static function banner_image(): int {
+		return self::archive_banner()->image_id();
 	}
 
 	/**

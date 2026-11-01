@@ -13,6 +13,7 @@ final class Settings {
 	public const OPTION                  = 'hyperpress_award';
 	public const BANNER_SUBTITLE         = 'hyperpress_award_banner_subtitle';
 	public const BANNER_SUBTITLE_DEFAULT = '';
+	public const BANNER_IMAGE            = 'hyperpress_award_banner_image';
 
 	/**
 	 * Default values, keyed by field id.
@@ -27,7 +28,7 @@ final class Settings {
 	 * The shared archive-banner settings helper bound to this plugin's option.
 	 */
 	public static function archive_banner(): ArchiveBannerSettings {
-		return new ArchiveBannerSettings( self::OPTION, self::BANNER_SUBTITLE, self::BANNER_SUBTITLE_DEFAULT );
+		return new ArchiveBannerSettings( self::OPTION, self::BANNER_SUBTITLE, self::BANNER_SUBTITLE_DEFAULT, self::BANNER_IMAGE );
 	}
 
 	/**
@@ -52,5 +53,12 @@ final class Settings {
 	 */
 	public static function banner_subtitle(): string {
 		return self::archive_banner()->banner_subtitle();
+	}
+
+	/**
+	 * The archive hero image attachment ID, or 0 when none is set or it is not an image.
+	 */
+	public static function banner_image(): int {
+		return self::archive_banner()->image_id();
 	}
 }
