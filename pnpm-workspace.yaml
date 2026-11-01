@@ -15,7 +15,7 @@ catalog:
   fflate: 0.8.3
   happy-dom: 21.0.4
   nx: *nxVersion
-  oxfmt: 0.73.0
+  oxfmt: 0.75.0
   oxlint: 1.88.0
   oxlint-tsgolint: 7.0.2004
   sass: 1.105.1
