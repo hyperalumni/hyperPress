@@ -16,7 +16,7 @@ Editors write `[hyperpress_link url="…"]Text[/hyperpress_link]` and get a corr
 
 - No extra shortcode attributes (`class`, `title`, `download`, …).
 - No schemes beyond `mailto`, `tel`, `sms` and `#`; no general "any non-http scheme is same-tab" rule (a bare `host:8080/x` must not match it).
-- No `class_exists` guards or fallbacks: utils is a hard requirement.
+- No fallback for a missing `Link` beyond a plain link: utils stays a hard requirement (`Requires Plugins`); the guard in the amendment below only stops a fatal error.
 - No new helper in utils for building the whole anchor (the existing callers each build their attributes differently, so there is no second user).
 
 ## Constraints
@@ -53,3 +53,5 @@ Class and test file naming beyond what the plan states, docblock wording.
 ## Amendment 2026-11-01 (after final review)
 
 The review's minors were taken in: `sms:`, query-only (`?x`) URLs and leading-whitespace trimming in `Link`; no output for an unsafe URL with no text, `<a>` stripped from enclosed content, and the missing `href`, `&` and `data:`/mixed-case `javascript:` tests in the shortcode. Still no `class_exists` guard (ruling stands).
+
+Second amendment: `Anchor` guards `class_exists( Link::class )`. If utils is missing at render time the link is a plain `<a href>` without `target` or `rel`, instead of a fatal error. The missing-class branch cannot be covered by the integration suite (the class is already loaded), so it is checked once by hand with stubbed WordPress functions.

@@ -120,6 +120,15 @@ git commit -m "feat(shortcode): add the hyperpress_link shortcode and require ut
 - [x] **Step 4: Run** the Step 2 command, then `composer lint`, `composer test:unit`, `composer test:integration`. Expected: all green.
 - [x] **Step 5: Commit** `fix(shortcode): drop nested anchors and unsafe-url text, pin href cases` with this plan's ticks, refresh the STATUS banner and add Outcome lines.
 
+### Task 5: Guard against a missing `Link`
+
+**Files:** Modify `plugins/hyperpress-shortcode/src/Shortcodes/Anchor.php`.
+
+- [x] **Step 1: Make `render()` skip `Link::target()` / `Link::rel()` unless `class_exists( Link::class )`**, emitting `<a href="…">text</a>` (no `target`, no `rel`) otherwise.
+- [x] **Step 2: Verify the present branch:** `composer lint`, `test:unit`, `test:integration` stay green (the existing tests pin the output when `Link` exists).
+- [x] **Step 3: Verify the missing branch by hand:** run `Anchor::render()` in a bare PHP process with stubbed `add_shortcode`, `shortcode_atts`, `esc_url`, `esc_html` and no `Link`; expect `<a href="/a">Go</a>`.
+- [x] **Step 4: Commit** `fix(shortcode): fall back to a plain link when utils is missing`.
+
 ## Known follow-ups
 
 - The plugin `Description:` header does not mention links.
@@ -131,4 +140,4 @@ git commit -m "feat(shortcode): add the hyperpress_link shortcode and require ut
 - `plugins/hyperpress-shortcode` Requires Plugins is now `hyperpress-utils`; `2026-10-02-plugins-04-remaining-plugins.md` carries a note about the changed requirement.
 - Task 3: `Link` also treats `sms:` as same-tab, `?query` as internal and trims whitespace. A general "any non-http scheme" rule was rejected because `localhost:8080/x` would match it (pinned by a test).
 - Task 4: `Anchor` strips `<a>` from enclosed content, renders nothing for an unsafe URL with no text, and the tests now pin `href`, `&` encoding and `data:` / mixed-case `javascript:`.
-- Still open: no `class_exists` guard for `Link` (by design); nested shortcode output loses block markup to kses (documented in a comment).
+- Task 5: `Anchor` guards `class_exists( Link::class )` and falls back to a plain `<a href>`; the missing-class branch is checked by hand, not by the suite. Still open: nested shortcode output loses block markup to kses (documented in a comment).

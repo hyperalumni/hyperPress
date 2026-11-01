@@ -42,11 +42,23 @@ final class Anchor {
 			return '' === $content && '' === $attr_text ? '' : $text;
 		}
 
+		return '<a href="' . $href . '"' . self::target_attributes( $url ) . '>' . $text . '</a>';
+	}
+
+	/**
+	 * The ` target` and ` rel` attributes for a URL. Without hyperpress-utils (a hard requirement, but a missing
+	 * class must not take the whole page down) the link is left plain.
+	 *
+	 * @param string $url Link URL.
+	 */
+	private static function target_attributes( string $url ): string {
+		if ( ! class_exists( Link::class ) ) {
+			return '';
+		}
+
 		$target = Link::target( $url );
 		$rel    = Link::rel( $target );
 
-		return '<a href="' . $href . '" target="' . esc_attr( $target ) . '"'
-			. ( '' !== $rel ? ' rel="' . esc_attr( $rel ) . '"' : '' )
-			. '>' . $text . '</a>';
+		return ' target="' . esc_attr( $target ) . '"' . ( '' !== $rel ? ' rel="' . esc_attr( $rel ) . '"' : '' );
 	}
 }
