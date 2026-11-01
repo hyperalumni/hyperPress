@@ -1,5 +1,7 @@
 # Archive Hero Image Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-11-01). Tasks 0-9 are implemented on `feat/archive-hero-image`; commit range `85a02b8f..624608b1` plus this close-out.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** An editor sets a hero image per archive in wp-admin, and the theme draws it under the banner for the sponsor, award, robot, newsletter and competition archives and for season and program term pages (term image, then a taxonomy-wide fallback).
@@ -32,6 +34,7 @@
 ## File Structure
 
 New, in `plugins/hyperpress-utils/src/`:
+
 - `ArchiveBannerSettings.php`: per-plugin config object for the archive-banner settings (option defaults, subtitle getter, settings-page array, subtitle and image field definitions, image getter).
 - `ArchiveRequest.php`: request-context helper extracted from `Banner::register()`.
 - `ArchiveImage.php`: image field definition, sanitizer, attachment validation, term-then-fallback resolution.
@@ -46,18 +49,20 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 
 ### Task 0: Commit the spec and this plan
 
-- [ ] **Step 1:** `git add docs/superpowers/specs/2026-11-01-archive-hero-image-design.md docs/superpowers/plans/2026-11-01-plugins-archive-hero-image.md` then `git commit -m "docs(plans): archive hero image" -- <both paths>`. Confirm with `git show --stat --format='%h %s' HEAD`.
+- [x] **Step 1:** `git add docs/superpowers/specs/2026-11-01-archive-hero-image-design.md docs/superpowers/plans/2026-11-01-plugins-archive-hero-image.md` then `git commit -m "docs(plans): archive hero image" -- <both paths>`. Confirm with `git show --stat --format='%h %s' HEAD`.
 
 ---
 
 ### Task 1: Archive-banner settings helper, converted in the sponsor plugin
 
 **Files:**
+
 - Create: `plugins/hyperpress-utils/src/ArchiveBannerSettings.php`
 - Modify: `plugins/hyperpress-sponsor/src/{Settings,SettingsPage,MetaBoxes}.php`
 - Test: `plugins/tests/integration/Utils/ArchiveBannerSettingsTest.php`; guard: `SponsorSettingsTest.php`, `Sponsor/SponsorSubtitleTest.php`
 
 **Interfaces:**
+
 - Produces, namespace `HyperPress\Utils`:
   - `final class ArchiveBannerSettings`
   - `__construct( string $option, string $subtitle_key, string $subtitle_default )`
@@ -80,6 +85,7 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 ### Task 2: Convert award, robot, newsletter and competition
 
 **Files:**
+
 - Modify: `plugins/hyperpress-{award,robot,newsletter,competition}/src/{Settings,SettingsPage,MetaBoxes}.php`
 - Guards: `plugins/tests/integration/{CompetitionSettingsTest,NewsletterBannerTest}.php`, `Award/AwardBannerTest.php`, `Robot/RobotBannerTest.php`, `Competition/BannerTest.php`, `Utils/BannerRegisterTest.php`, the `*SubtitleTest` files.
 
@@ -95,11 +101,13 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 ### Task 3: Request-context helper
 
 **Files:**
+
 - Create: `plugins/hyperpress-utils/src/ArchiveRequest.php`
 - Modify: `plugins/hyperpress-utils/src/Banner.php:36-61`, `plugins/hyperpress-season/src/SeasonBanner.php`, `plugins/hyperpress-program/src/ProgramBanner.php`
 - Test: `plugins/tests/integration/Utils/ArchiveRequestTest.php`; guards: `Utils/BannerRegisterTest.php`, `unit/Utils/BannerTest.php`, `SeasonBannerTitleTest.php`, `Season/SingularBannerTest.php`, `Competition/BannerTest.php`, Program banner tests
 
 **Interfaces:**
+
 - Produces, `final class HyperPress\Utils\ArchiveRequest`:
   - `static for_post_type( string $post_type, array $taxonomies = array() ): array{ is_singular: bool, is_archive: bool, is_tax_season: bool, season: ?\WP_Term, extra_terms: string[] }`. Exactly today's logic: `season` is `is_tax() ? RequestTerm::get( Banner::SEASON_TAXONOMY ) : null`; `is_tax_season` is `null !== season`; `own_request` and the `extra_terms` loop are as in `Banner.php:49-61`.
   - `static taxonomy_term( string $taxonomy ): ?\WP_Term`: `is_tax() && ! is_post_type_archive() ? RequestTerm::get( $taxonomy ) : null`.
@@ -117,11 +125,13 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 ### Task 4: Image validation, fields and the banner `image` key
 
 **Files:**
+
 - Create: `plugins/hyperpress-utils/src/ArchiveImage.php`
 - Modify: `plugins/hyperpress-utils/src/Banner.php`
 - Test: `plugins/tests/integration/Utils/ArchiveImageTest.php`; extend `plugins/tests/unit/Utils/BannerTest.php`
 
 **Interfaces:**
+
 - Produces, `final class HyperPress\Utils\ArchiveImage`:
   - `static valid_id( $value ): int`: the positive integer attachment ID if `$value` is an int or numeric string and `wp_attachment_is_image()` is true for it, otherwise `0`.
   - `static sanitize( $value ): int`: `absint` of a scalar, else `0`.
@@ -141,11 +151,13 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 ### Task 5: Theme renders the hero
 
 **Files:**
+
 - Create: `themes/hyperpress-foundation/template-parts/hero.php`
 - Modify: `template-parts/banner.php`, `template-parts/featured-image.php`, `themes/hyperpress-foundation/AGENTS.md`
 - Test: `themes/hyperpress-foundation/tests/integration/ArchiveHeroTest.php`; guard `FeaturedImageTest.php`, `ArchiveBannerPriorityTest.php`
 
 **Interfaces:**
+
 - `template-parts/hero.php` takes `$args['attachment_id']` (int) via `get_template_part( 'template-parts/hero', null, array( 'attachment_id' => $id ) )` and prints exactly today's markup: `<header class="featured-hero" role="banner" data-interchange="[URL, small], [URL, medium], [URL, large], [URL, xlarge]">` with URLs from `wp_get_attachment_image_url( $id, 'featured-small|medium|large|xlarge' )` (the sizes registered in `library/responsive-images.php`), each passed through `esc_url`. Prints nothing when the ID is not a positive image attachment.
 - `banner.php`: add `'image' => 0` to the filter's default array; after the `</header>` and before `do_action( 'hyperpress_after_banner' )`, call the hero part when `absint( $banner['image'] )` is an image attachment.
 - `featured-image.php` keeps its `get_post() && has_post_thumbnail()` guard and calls the hero part with `get_post_thumbnail_id()`.
@@ -162,10 +174,12 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 ### Task 6: Image field for sponsor, award, robot, newsletter and competition
 
 **Files:**
+
 - Modify: `plugins/hyperpress-utils/src/ArchiveBannerSettings.php`; `plugins/hyperpress-{sponsor,award,robot,newsletter,competition}/src/{Settings,MetaBoxes,Plugin}.php`
 - Test: extend `ArchiveBannerSettingsTest`; one `…ArchiveImageTest.php` per plugin in its existing test directory
 
 **Interfaces:**
+
 - `ArchiveBannerSettings::__construct` gains a fourth parameter `string $image_key = ''`. New: `image_id(): int` (reads the option array key `$image_key`, returns `ArchiveImage::valid_id( value )`, `0` when the option is not an array, the key is absent, or `$image_key === ''`); `image_field( string $name, string $desc ): array` (`ArchiveImage::field( $image_key, … )`).
 - Each plugin `Settings` gains `public const BANNER_IMAGE = 'hyperpress_<plugin>_banner_image'` and `public static function banner_image(): int`. Each `MetaBoxes` box gets the `image_field()` right after the subtitle field (description: where it appears, e.g. "Shown as a full-width image under the banner on the sponsors pages"). Each `Plugin::register_banner()` adds `'image' => array( Settings::class, 'banner_image' )`.
 
@@ -180,10 +194,12 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 ### Task 7: Season term image with a taxonomy fallback
 
 **Files:**
+
 - Modify: `plugins/hyperpress-season/src/{Settings,MetaBoxes,SeasonBanner}.php`
 - Test: `plugins/tests/integration/Season/SeasonArchiveImageTest.php`
 
 **Interfaces:**
+
 - `Season\Settings`: `public const BANNER_IMAGE = 'hyperpress_season_banner_image'` (used as both the settings-page option key for the taxonomy fallback and the term-meta key) and `public static function banner_image(): int` (`ArchiveImage::valid_id` of the saved option value; `0` if absent or the option is not an array).
 - `Season\MetaBoxes`: add an `ArchiveImage::field( Settings::BANNER_IMAGE, … )` to the existing settings box (the fallback), and a second box with `'type' => 'term'`, `'taxonomies' => array( 'hyper_season' )` holding the same field (term image). No plugin has declared a term-meta box before, so confirm the `type`/`taxonomies` keys against the installed meta-box-aio version.
 - `SeasonBanner::filter()`: after it claims a request, if `empty( $banner['image'] )` and `ArchiveImage::term_image_id( $term->term_id, Settings::BANNER_IMAGE, Settings::banner_image() )` is greater than `0`, set `$banner['image']` to it. The claim logic is untouched.
@@ -199,6 +215,7 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 ### Task 8: Program term image with a taxonomy fallback
 
 **Files:**
+
 - Modify: `plugins/hyperpress-program/src/{Settings,MetaBoxes,ProgramBanner}.php`
 - Test: `plugins/tests/integration/Program/ProgramArchiveImageTest.php` (create the directory if the plugin's tests live elsewhere; follow the existing program banner test location)
 
@@ -216,10 +233,10 @@ Tests: `plugins/tests/unit/Utils/BannerTest.php` (extend), `plugins/tests/integr
 
 **Files:** this plan, the spec, any plan found by the grep.
 
-- [ ] **Step 1:** From the repo root run `grep -rln "Banner.php\|SeasonBanner\|ProgramBanner\|featured-image.php\|banner.php" docs/superpowers/plans/`; for each completed plan that describes a file changed here, append a dated line to its "Outcome / execution notes" (create the heading if absent).
-- [ ] **Step 2:** Add a `STATUS: ✅ COMPLETED` banner with the date and commit range to the top of this plan, and set the spec's status line to "implemented". Add the page-hero consolidation follow-up to this plan's "Known follow-ups" section (copied from the spec).
-- [ ] **Step 3:** Run `pnpm fmt:check` from the repo root (after loading Node and pnpm as in the root `AGENTS.md`). Expected: clean.
-- [ ] **Step 4: Commit** `docs(plans): archive hero image completed`.
+- [x] **Step 1:** From the repo root run `grep -rln "Banner.php\|SeasonBanner\|ProgramBanner\|featured-image.php\|banner.php" docs/superpowers/plans/`; for each completed plan that describes a file changed here, append a dated line to its "Outcome / execution notes" (create the heading if absent).
+- [x] **Step 2:** Add a `STATUS: ✅ COMPLETED` banner with the date and commit range to the top of this plan, and set the spec's status line to "implemented". Add the page-hero consolidation follow-up to this plan's "Known follow-ups" section (copied from the spec).
+- [x] **Step 3:** Run `pnpm fmt:check` from the repo root (after loading Node and pnpm as in the root `AGENTS.md`). Expected: clean.
+- [x] **Step 4: Commit** `docs(plans): archive hero image completed`.
 
 ## Known follow-ups
 

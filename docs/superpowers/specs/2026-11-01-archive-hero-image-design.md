@@ -1,6 +1,6 @@
 # Archive hero image
 
-Date: 2026-11-01. Status: draft, awaiting approval.
+Date: 2026-11-01. Status: approved, implemented on `feat/archive-hero-image`.
 
 ## Intent
 

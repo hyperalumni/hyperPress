@@ -304,3 +304,4 @@ The season crumb link built by `Utils\Breadcrumbs::context()` now ends with a sl
 
 - 2026-10-19: the single competition banner now shows the competition's own title; `SingularBanner::register()` gained an optional `$season_prefix` argument (default true; the competition passes false).
 - 2026-10-19: filtered season archives now also route `/page/N/` (paged rules before the unpaged ones; `RULES_VERSION` in the flush hash).
+- 2026-11-01: the request detection in `Banner::register()`, `SeasonBanner` and `ProgramBanner` moved into `HyperPress\Utils\ArchiveRequest` (same requests claimed, same priorities); `Banner` gained an optional `image` argument and a `banner['image']` key, and `SeasonBanner` and `ProgramBanner` set `image`. See `2026-11-01-plugins-archive-hero-image.md`.

@@ -1755,6 +1755,8 @@ git commit -m "docs(plans): complete plugins-02-shared-utils" -- docs/superpower
 - Baseline after this plan: unit 112 tests, 66 red (header lint for the 13 unmigrated plugins, NoLegacyKeysTest); integration 55 tests, 36 red (contract tests), 3 skipped; `lint:syntax` exit 0.
 - Deferred minors (to triage at the end): `KEY_PATTERN` allows a trailing newline (use `\z`); `resolve_object_types` returns `['']`/`[false]` for a stored falsy theme mod; `Capabilities::ensure` records the version even if no type was registered yet (callers must run it at `init` priority 20 after registration at 10); `BreadcrumbsRequestTest` leaks the `hyper_season` taxonomy until season is migrated; season crumb URL has no trailing slash; Banner builds its context before the early return and callers must pass pre-translated `archive_title`; several untested edge cases listed in the per-task reports.
 
+- Note (2026-11-01): `Banner` gained an optional `image` argument (an attachment ID, validated by `HyperPress\Utils\ArchiveImage`) and a `banner['image']` key, and its archive request detection moved to `HyperPress\Utils\ArchiveRequest`. See `2026-11-01-plugins-archive-hero-image.md`.
+
 ### Theme checklist (OUT OF SCOPE here, for the theme plans)
 
 - Plugin identifiers the theme must learn: post types `hyper_award`, `hyper_competition`, `hyper_countdown`, `hyper_newsletter`, `hyper_robot`, `hyper_sponsor`; taxonomies `hyper_season`, `hyper_program`, `hyper_district`, `hyper_week`, `hyper_tier`.
