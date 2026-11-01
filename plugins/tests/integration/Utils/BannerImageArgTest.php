@@ -68,5 +68,9 @@ final class BannerImageArgTest extends WP_UnitTestCase {
 		apply_filters( 'hyperpress_banner_content', array() );
 
 		$this->assertSame( 0, $this->calls );
+
+		// Positive control: the same callable is invoked on the post type's archive request.
+		$this->archive_banner();
+		$this->assertSame( 1, $this->calls );
 	}
 }
