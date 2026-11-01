@@ -3,7 +3,7 @@ namespace HyperPress\Sponsor;
 
 defined( 'ABSPATH' ) || exit;
 
-use HyperPress\Utils\Banner;
+use HyperPress\Utils\ArchiveBannerSettings;
 
 final class MetaBoxes {
 
@@ -24,13 +24,9 @@ final class MetaBoxes {
 			'title'          => __( 'Sponsor', 'hyperpress' ),
 			'settings_pages' => SettingsPage::ID,
 			'fields'         => array(
-				array(
-					'id'                => Settings::BANNER_SUBTITLE,
-					'name'              => __( 'Sponsor Banner Subtitle', 'hyperpress' ),
-					'desc'              => __( 'Shown under the title on sponsor pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' ),
-					'type'              => 'textarea',
-					'raw'               => true,
-					'sanitize_callback' => array( Banner::class, 'sanitize_subtitle' ),
+				( new ArchiveBannerSettings( Settings::OPTION, Settings::BANNER_SUBTITLE, Settings::BANNER_SUBTITLE_DEFAULT ) )->subtitle_field(
+					__( 'Sponsor Banner Subtitle', 'hyperpress' ),
+					__( 'Shown under the title on sponsor pages. Shortcodes such as [hyperpress_emphasis]text[/hyperpress_emphasis] work, and so do &lt;strong&gt;, &lt;em&gt; and &lt;br&gt; tags; other markup is removed when the banner is displayed.', 'hyperpress' )
 				),
 			),
 		);
