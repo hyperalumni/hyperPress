@@ -233,8 +233,8 @@ catalogs:
       specifier: 3.0.4
       version: 3.0.4
     dateformat:
-      specifier: 5.0.3
-      version: 5.0.3
+      specifier: 5.0.5
+      version: 5.0.5
     fancy-log:
       specifier: 2.0.0
       version: 2.0.0
@@ -439,7 +439,7 @@ importers:
         version: 3.0.4(debug@4.4.3)(supports-color@8.1.1)
       dateformat:
         specifier: catalog:foundation
-        version: 5.0.3
+        version: 5.0.5
       fancy-log:
         specifier: catalog:foundation
         version: 2.0.0
@@ -3332,8 +3332,8 @@ packages:
   dateformat@2.2.0:
     resolution: {integrity: sha512-GODcnWq3YGoTnygPfi02ygEiRxqUxpJwuRHjdhJYuxpcZmDq4rjBiXYmbCCzStxo176ixfLT6i4NPwQooRySnw==}
 
-  dateformat@5.0.3:
-    resolution: {integrity: sha512-Kvr6HmPXUMerlLcLF+Pwq3K7apHpYmGDVqrxcDasBg86UcKeTSNWbEzU8bwdXnxnR44FtMhJAxI4Bov6Y/KUfA==}
+  dateformat@5.0.5:
+    resolution: {integrity: sha512-Co60BtcjsM5XBBbzKHdjH86rz9JCGOib8K1Vw22JQxuPhlWXI6vczIuHJo0SZEAJx27oXnd7lZR64KqyQs0GNQ==}
     engines: {node: '>=12.20'}
 
   debug-fabulous@1.1.0:
@@ -9840,7 +9840,7 @@ snapshots:
 
   dateformat@2.2.0: {}
 
-  dateformat@5.0.3: {}
+  dateformat@5.0.5: {}
 
   debug-fabulous@1.1.0(supports-color@8.1.1):
     dependencies:
