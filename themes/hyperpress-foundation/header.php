@@ -23,20 +23,40 @@ defined( 'ABSPATH' ) || exit;
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
-<?php if ( get_theme_mod( 'wpt_mobile_menu_layout' ) === 'offcanvas' ) : ?>
+<?php if ( hyperpress_mobile_menu_layout() === 'offcanvas' ) : ?>
 	<?php get_template_part( 'template-parts/mobile-off-canvas' ); ?>
 <?php endif; ?>
 <section class="wrapper">
 <section class="site-header-container" data-sticky-container>
 	<header class="site-header" role="banner" data-sticky data-stick-to="top">
 		<div class="site-title-bar title-bar" <?php hyperpress_title_bar_responsive_toggle(); ?>>
-			<div class="title-bar-left">
-				<button aria-label="<?php esc_attr_e( 'Main Menu', 'hyperpress' ); ?>" class="menu-icon" type="button"
-								data-toggle="<?php hyperpress_mobile_menu_id(); ?>"></button>
-				<span class="site-mobile-title title-bar-title">
-					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
-				</span>
-			</div>
+			<?php if ( hyperpress_mobile_menu_layout() === 'drilldown' ) : ?>
+				<div class="title-bar-left">
+					<span class="site-mobile-logo">
+						<?php
+						if ( has_custom_logo() ) {
+							the_custom_logo();
+						} else {
+							?>
+							<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
+							<?php
+						}
+						?>
+					</span>
+				</div>
+				<div class="title-bar-right">
+					<button aria-label="<?php esc_attr_e( 'Main Menu', 'hyperpress' ); ?>" class="menu-icon" type="button"
+									data-toggle="<?php hyperpress_mobile_menu_id(); ?>"></button>
+				</div>
+			<?php else : ?>
+				<div class="title-bar-left">
+					<button aria-label="<?php esc_attr_e( 'Main Menu', 'hyperpress' ); ?>" class="menu-icon" type="button"
+									data-toggle="<?php hyperpress_mobile_menu_id(); ?>"></button>
+					<span class="site-mobile-title title-bar-title">
+						<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
+					</span>
+				</div>
+			<?php endif; ?>
 		</div>
 
 		<nav class="site-navigation top-bar" role="navigation" id="<?php hyperpress_mobile_menu_id(); ?>">
@@ -52,7 +72,7 @@ defined( 'ABSPATH' ) || exit;
 			<div class="top-bar-right">
 				<?php hyperpress_top_bar_r(); ?>
 
-				<?php if ( ! get_theme_mod( 'wpt_mobile_menu_layout' ) || get_theme_mod( 'wpt_mobile_menu_layout' ) === 'topbar' ) : ?>
+				<?php if ( in_array( hyperpress_mobile_menu_layout(), array( 'topbar', 'drilldown' ), true ) ) : ?>
 					<?php get_template_part( 'template-parts/mobile-top-bar' ); ?>
 				<?php endif; ?>
 			</div>

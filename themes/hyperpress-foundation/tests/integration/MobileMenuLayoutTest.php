@@ -90,6 +90,72 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 		$this->assertSame( 'mobile-menu', $id );
 	}
 
+	private function mobile_nav_html(): string {
+		$menu_id   = wp_create_nav_menu( 'mobile-nav' );
+		$parent_id = wp_update_nav_menu_item(
+			$menu_id,
+			0,
+			array(
+				'menu-item-title'  => 'Parent Item',
+				'menu-item-url'    => 'http://example.org/parent',
+				'menu-item-status' => 'publish',
+			)
+		);
+		wp_update_nav_menu_item(
+			$menu_id,
+			0,
+			array(
+				'menu-item-title'     => 'Child Item',
+				'menu-item-url'       => 'http://example.org/child',
+				'menu-item-status'    => 'publish',
+				'menu-item-parent-id' => $parent_id,
+			)
+		);
+
+		ob_start();
+		hyperpress_mobile_nav();
+		return ob_get_clean();
+	}
+
+	public function test_drilldown_layout_renders_drilldown_attributes(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+
+		$html = $this->mobile_nav_html();
+
+		$this->assertStringContainsString( 'data-drilldown', $html );
+		$this->assertStringContainsString( 'data-parent-link="true"', $html );
+		$this->assertStringContainsString( 'data-auto-height="true"', $html );
+		$this->assertStringContainsString( '>Back</a>', $html );
+		$this->assertStringNotContainsString( 'data-accordion-menu', $html );
+		$this->assertStringContainsString( 'Child Item', $html );
+	}
+
+	public function test_topbar_layout_still_renders_the_accordion(): void {
+		$html = $this->mobile_nav_html();
+
+		$this->assertStringContainsString( 'data-accordion-menu', $html );
+		$this->assertStringNotContainsString( 'data-drilldown', $html );
+	}
+
+	public function test_drilldown_back_label_is_translatable(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+		$this->translate_everything();
+
+		$html = $this->mobile_nav_html();
+
+		$this->assertStringContainsString( '>TRANSLATED</a>', $html );
+		$this->assertStringNotContainsString( '>Back</a>', $html );
+	}
+
+	public function test_drilldown_without_a_mobile_menu_renders_nothing(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+
+		ob_start();
+		hyperpress_mobile_nav();
+
+		$this->assertSame( '', ob_get_clean() );
+	}
+
 	public function test_translation_does_not_change_the_layout_default(): void {
 		$this->translate_everything();
 

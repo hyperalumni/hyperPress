@@ -18,6 +18,33 @@ final class HeaderMarkupTest extends WP_UnitTestCase {
 		return ob_get_clean();
 	}
 
+	public function test_topbar_header_keeps_the_hamburger_in_the_left_title_bar(): void {
+		$html = $this->render_header();
+
+		$this->assertMatchesRegularExpression( '/title-bar-left">\s*<button[^>]*class="menu-icon"/', $html );
+		$this->assertStringNotContainsString( 'title-bar-right', $html );
+	}
+
+	public function test_drilldown_header_has_the_logo_left_and_the_hamburger_right(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+
+		$html = $this->render_header();
+
+		$this->assertMatchesRegularExpression( '/title-bar-left">\s*<span class="site-mobile-logo/', $html );
+		$this->assertMatchesRegularExpression( '/title-bar-right">\s*<button[^>]*class="menu-icon"/', $html );
+		$this->assertStringContainsString( 'data-responsive-toggle="mobile-menu"', $html );
+		$this->assertStringContainsString( 'class="mobile-menu vertical menu"', $html );
+	}
+
+	public function test_drilldown_header_falls_back_to_the_site_name_without_a_custom_logo(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+		remove_theme_mod( 'custom_logo' );
+
+		$html = $this->render_header();
+
+		$this->assertMatchesRegularExpression( '/site-mobile-logo[^>]*>\s*<a [^>]*rel="home"[^>]*>' . preg_quote( get_bloginfo( 'name' ), '/' ) . '<\/a>/', $html );
+	}
+
 	public function test_wp_body_open_fires_right_after_the_body_tag(): void {
 		add_action(
 			'wp_body_open',

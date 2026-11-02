@@ -50,13 +50,21 @@ function hyperpress_top_bar_r(): void {
  * Mobile navigation - topbar (default) or offcanvas
  */
 function hyperpress_mobile_nav(): void {
+	$items_wrap = '<ul id="%1$s" class="%2$s" data-accordion-menu data-submenu-toggle="true">%3$s</ul>';
+
+	if ( hyperpress_mobile_menu_layout() === 'drilldown' ) {
+		// items_wrap is a sprintf format, so a literal % in the translated label is doubled.
+		$back_button = str_replace( '%', '%%', '<li class="js-drilldown-back"><a tabindex="0">' . esc_html__( 'Back', 'hyperpress' ) . '</a></li>' );
+		$items_wrap  = '<ul id="%1$s" class="%2$s" data-drilldown data-parent-link="true" data-auto-height="true" data-back-button=\'' . $back_button . '\'>%3$s</ul>';
+	}
+
 	wp_nav_menu(
 		array(
 			'container'      => false,                         // Remove nav container
 			'menu'           => 'mobile-nav',
 			'menu_class'     => 'vertical menu',
 			'theme_location' => 'mobile-nav',
-			'items_wrap'     => '<ul id="%1$s" class="%2$s" data-accordion-menu data-submenu-toggle="true">%3$s</ul>',
+			'items_wrap'     => $items_wrap,
 			'fallback_cb'    => false,
 			'walker'         => new HyperPress_Theme_Mobile_Walker(),
 		)
