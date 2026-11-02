@@ -64,11 +64,11 @@
 
 - Produces: `HyperPress\Countdown\Window` with `public static function is_renderable( $post ): bool` (what `Shortcode::is_renderable` does today: a `hyper_countdown` that is published, or private and readable by the current user); `public static function visibility( int $post_id ): array` returning `array{show_from:?\DateTimeImmutable,show_until:?\DateTimeImmutable}` from the Hide Before / Hide After fields (`hyperpress_countdown_hide_before` / `_hide_after`, read with `Meta::get`, parsed as wall-clock in `wp_timezone()`, empty or unparseable gives `null`); `public static function is_open( ?\DateTimeImmutable $from, ?\DateTimeImmutable $until, \DateTimeImmutable $now ): bool` (strict on both sides); `public static function for_post( int $post_id ): ?array` returning `array{start:\DateTimeImmutable,show_from:?\DateTimeImmutable,show_until:?\DateTimeImmutable}`, or `null` when the post is not renderable or its `hyperpress_countdown_event_date_time` has no parseable date.
 
-- [ ] **Step 1: Write failing tests** in `WindowTest`: `for_post` returns the three values for a published countdown with all fields; `null` for a draft, a private post the user cannot read (and the array for a reader), a post of another type, a missing or garbage event date; empty Hide Before/After give `null` bounds; values are read in the site timezone (set `timezone_string` to a zone with a non-zero offset and compare `getOffset()`); `is_open` truth table for strictness and missing bounds.
-- [ ] **Step 2: Run to verify failure.** `composer test:integration`. Expected: new tests FAIL.
-- [ ] **Step 3: Implement `Window`** and change `Shortcode::add_countdown_shortcode` to use `Window::is_renderable()` and, for the show/hide decision, `Window::visibility()` + `Window::is_open()` with the current time from `new \DateTimeImmutable( 'now', wp_timezone() )`; `ignoreshowhide`, the event-date check, the name, location and past-zero handling stay as they are. Remove the now-unused private `is_renderable` from `Shortcode`.
-- [ ] **Step 4: Run tests and lint.** Full `composer test:integration`, `composer test:unit`, `composer lint`. Expected: PASS, exit 0 (the existing shortcode tests prove parity).
-- [ ] **Step 5: Commit** `feat(countdown): expose a countdown's visibility window`.
+- [x] **Step 1: Write failing tests** in `WindowTest`: `for_post` returns the three values for a published countdown with all fields; `null` for a draft, a private post the user cannot read (and the array for a reader), a post of another type, a missing or garbage event date; empty Hide Before/After give `null` bounds; values are read in the site timezone (set `timezone_string` to a zone with a non-zero offset and compare `getOffset()`); `is_open` truth table for strictness and missing bounds.
+- [x] **Step 2: Run to verify failure.** `composer test:integration`. Expected: new tests FAIL.
+- [x] **Step 3: Implement `Window`** and change `Shortcode::add_countdown_shortcode` to use `Window::is_renderable()` and, for the show/hide decision, `Window::visibility()` + `Window::is_open()` with the current time from `new \DateTimeImmutable( 'now', wp_timezone() )`; `ignoreshowhide`, the event-date check, the name, location and past-zero handling stay as they are. Remove the now-unused private `is_renderable` from `Shortcode`.
+- [x] **Step 4: Run tests and lint.** Full `composer test:integration`, `composer test:unit`, `composer lint`. Expected: PASS, exit 0 (the existing shortcode tests prove parity).
+- [x] **Step 5: Commit** `feat(countdown): expose a countdown's visibility window`.
 
 ### Task 3: One-off countdown candidates
 
@@ -132,6 +132,10 @@
 
 - [ ] **Step 1: Look at it.** With the hyperonline stack running (`cd docker/hyperonline && docker compose --profile local up -d`), open `http://localhost:4080/` in the browser tool (the owner is logged in). Create temporary test data with WP-CLI (`docker compose --profile local run --rm -T wpcli wp ...`): two published countdown posts with future dates and no Hide After, selected in the Front Page "Countdowns" field, and the competition front-page setting ticked. Confirm: exactly one countdown renders and it is the one with the sooner date; after moving the sooner one's date into the past (it has no Hide After) it still shows until the end of its day; once that day is over and the other countdown is open, the other one shows; with only the finished one left it still shows at zero. Competitions cannot be forced into their window without changing their dates, so check them with the integration tests and, if hyperonline has a competition within 60 days, on the page. Remove the temporary posts and restore every option afterwards, and report what was and was not observed.
 - [ ] **Step 2: Close the plan.** Run every suite once more (plugins and theme), add a `STATUS: ✅ COMPLETED` banner with what passed, commit `docs(plans): complete front page countdown selection plan`.
+
+## Outcome / execution notes
+
+- Task 2: the shortcode's Hide Before / Hide After behaviour had no tests, so `tests/integration/Countdown/ShortcodeWindowTest.php` was written first and passed against the old code, then again after the refactor. One deliberate difference: an unparseable Hide After used to hide the countdown (the old `strtotime()` comparison); it is now treated as no bound, like an empty one. The date-time picker cannot produce an unparseable value.
 
 ## Known follow-ups
 
