@@ -1,0 +1,143 @@
+// Drilldown mobile menu (Customizer: Mobile Menu Settings > Drilldown).
+// Row and panel colours come from the colour class on each top-level menu item.
+
+@mixin drilldown-color($color) {
+  > a {
+    color: $color;
+
+    &::after {
+      border-left-color: $color;
+    }
+  }
+
+  // Every nested panel (second and third level) takes the top-level colour.
+  .is-drilldown-submenu {
+    background-color: scale-color($color, $lightness: -20%);
+  }
+}
+
+body.drilldown {
+  .site-title-bar {
+    background: $topbar-background;
+    padding: 0.5rem 1rem;
+
+    .title-bar-left,
+    .title-bar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .title-bar-right {
+      justify-content: flex-end;
+    }
+
+    .menu-icon {
+      @include hamburger($medium-gray, $dark-gray, 24px, 18px, 2px);
+      margin: 0;
+    }
+  }
+
+  .site-mobile-logo {
+    .custom-logo-link {
+      display: block;
+    }
+
+    .custom-logo {
+      width: auto;
+      height: auto;
+      max-height: 3rem;
+    }
+
+    > a {
+      font-family: $header-font-family;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+  }
+
+  // Rows and panels run edge to edge on phones.
+  .site-navigation {
+    @include breakpoint(small only) {
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
+
+  .mobile-menu {
+    display: block;
+    width: 100%;
+    font-family: $header-font-family;
+    text-transform: uppercase;
+
+    .is-drilldown {
+      width: 100%;
+    }
+
+    .drilldown {
+      a {
+        padding: 1rem;
+        border-bottom: 1px solid $dark-gray;
+        background: $topbar-background;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      // Top-level rows: gray unless the item carries a colour class.
+      > li {
+        @include drilldown-color($hyper-gear-gray);
+
+        &.gray {
+          @include drilldown-color($hyper-gear-gray);
+        }
+
+        &.red {
+          @include drilldown-color($hyper-red);
+        }
+
+        &.orange {
+          @include drilldown-color($hyper-orange);
+        }
+
+        &.green {
+          @include drilldown-color($hyper-green);
+        }
+
+        &.blue {
+          @include drilldown-color($hyper-blue);
+        }
+
+        &.purple {
+          @include drilldown-color($hyper-purple);
+        }
+      }
+
+      // Slide-over panels: the top-level item's colour, white text.
+      .is-drilldown-submenu {
+        a {
+          padding: 0.75rem 1rem;
+          border-bottom: 0;
+          background: transparent;
+          color: $white;
+          font-size: 0.875rem;
+          font-weight: 400;
+        }
+
+        .is-drilldown-submenu-parent > a::after {
+          border-left-color: $white;
+        }
+
+        .js-drilldown-back > a {
+          padding-top: 1rem;
+          padding-bottom: 1rem;
+          font-size: 1.25rem;
+          font-weight: 400;
+          text-transform: none;
+
+          &::before {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}

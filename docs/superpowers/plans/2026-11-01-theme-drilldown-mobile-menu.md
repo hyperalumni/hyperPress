@@ -36,11 +36,13 @@ Theme root is `themes/hyperpress-foundation/` (paths below are relative to it un
 ### Task 1: Layout setting and helper
 
 **Files:**
+
 - Modify: `library/custom-nav.php`
 - Modify: `library/foundation.php:192-207`
 - Test: `tests/integration/MobileMenuLayoutTest.php`
 
 **Interfaces:**
+
 - Produces: `hyperpress_mobile_menu_layout(): string` in `library/custom-nav.php`, returning `'topbar'`, `'offcanvas'` or `'drilldown'` (theme mod, defaulting to and sanitizing unknown values to `'topbar'`). Later tasks call it.
 - Consumes: the existing `wpt_mobile_menu_layout` theme mod.
 
@@ -54,11 +56,13 @@ Theme root is `themes/hyperpress-foundation/` (paths below are relative to it un
 ### Task 2: Drilldown markup (nav and title bar)
 
 **Files:**
+
 - Modify: `library/navigation.php` (`hyperpress_mobile_nav()`)
 - Modify: `header.php`
 - Test: `tests/integration/MobileMenuLayoutTest.php`, `tests/integration/HeaderMarkupTest.php` (follow its existing render pattern)
 
 **Interfaces:**
+
 - Consumes: `hyperpress_mobile_menu_layout(): string` (Task 1).
 - Produces: with layout `drilldown`, `hyperpress_mobile_nav()` outputs `<ul ... data-drilldown data-parent-link="true" data-auto-height="true" data-back-button="...">`; `header.php` renders `.title-bar-left` (custom logo, site-name link fallback) and `.title-bar-right` (the `.menu-icon` toggle button) and includes `template-parts/mobile-top-bar` for `topbar` and `drilldown`.
 
@@ -72,25 +76,28 @@ Theme root is `themes/hyperpress-foundation/` (paths below are relative to it un
 ### Task 3: Drilldown styling
 
 **Files:**
+
 - Create: `src/assets/scss/modules/_mobile-drilldown.scss`
 - Modify: `src/assets/scss/app.scss` (add `@import 'modules/mobile-drilldown';` right after `modules/navigation`, line 82)
 
 **Interfaces:**
+
 - Consumes: markup and classes from Task 2 (`body.drilldown`, `.site-title-bar`, `.mobile-menu`, Foundation-generated `.is-drilldown`, `.is-drilldown-submenu`, `.is-drilldown-submenu-parent`, `.js-drilldown-back`); `$hyper-*` colours; `$header-font-family`.
 - Produces: `@mixin drilldown-color($color)` used for each of `.gray .red .orange .green .blue .purple` on top-level items.
 
-- [ ] **Step 1: Write the Sass**, all scoped under `body.drilldown`:
+- [x] **Step 1: Write the Sass**, all scoped under `body.drilldown`:
   - Title bar: light background (`$topbar-background`), logo left (max-height about 3rem), grey hamburger right.
   - Top-level rows: Oswald, uppercase, 1px dark bottom border, coloured text and coloured right-pointing triangle from `drilldown-color`; items without a colour class use the `gray` colour.
   - `.red > .is-drilldown-submenu` etc.: background is the darker shade, items white uppercase and smaller, white arrows, `.js-drilldown-back` larger. Start from `scale-color($color, $lightness: -20%)` and adjust by eye against the owner's screenshots.
-- [ ] **Step 2: Build.** From the repo root with the env line: `pnpm exec nx build @hyper/press-foundation`. Expected: success, no Sass errors.
-- [ ] **Step 3: Verify in a browser** (hyperalumni stack, `cd docker/hyperalumni && docker compose --profile local up -d`, site on port 3080). Create a menu on the Mobile location with top-level items classed `red orange green blue purple` and children two levels deep; set the layout with `docker compose --profile local run --rm wpcli wp theme mod set wpt_mobile_menu_layout drilldown`. At a phone width check: closed bar (logo left, hamburger right); open list; drill into a parent (parent-coloured panel, Back, repeated parent link, white arrows); third level; Back returns; second open/close of the toggle still works; an unclassed top-level item is readable; the desktop menu is unchanged at desktop width; switching the layout back to `topbar` restores the accordion. If the panel is mis-sized from initialising inside the hidden bar, re-initialise the Drilldown on `toggled.zf.responsiveToggle` in `src/assets/js/foundation.js`, then rebuild and recheck.
-- [ ] **Step 4: Lint.** `pnpm exec nx run @hyper/press-foundation:lint-js` (and `lint-css` if it is inferred for this project). Expected: no new errors.
-- [ ] **Step 5: Commit** `feat(theme-foundation): style the drilldown mobile menu`.
+- [x] **Step 2: Build.** From the repo root with the env line: `pnpm exec nx build @hyper/press-foundation`. Expected: success, no Sass errors.
+- [x] **Step 3: Verify in a browser** (hyperalumni stack, `cd docker/hyperalumni && docker compose --profile local up -d`, site on port 3080). Create a menu on the Mobile location with top-level items classed `red orange green blue purple` and children two levels deep; set the layout with `docker compose --profile local run --rm wpcli wp theme mod set wpt_mobile_menu_layout drilldown`. At a phone width check: closed bar (logo left, hamburger right); open list; drill into a parent (parent-coloured panel, Back, repeated parent link, white arrows); third level; Back returns; second open/close of the toggle still works; an unclassed top-level item is readable; the desktop menu is unchanged at desktop width; switching the layout back to `topbar` restores the accordion. If the panel is mis-sized from initialising inside the hidden bar, re-initialise the Drilldown on `toggled.zf.responsiveToggle` in `src/assets/js/foundation.js`, then rebuild and recheck.
+- [x] **Step 4: Lint.** `pnpm exec nx run @hyper/press-foundation:lint-js` (and `lint-css` if it is inferred for this project). Expected: no new errors.
+- [x] **Step 5: Commit** `feat(theme-foundation): style the drilldown mobile menu`.
 
 ### Task 4: Documentation and close-out
 
 **Files:**
+
 - Modify: `themes/hyperpress-foundation/AGENTS.md` (only if it describes the mobile menu or the layout setting; otherwise skip)
 - Modify: this plan (banner and outcome notes)
 
