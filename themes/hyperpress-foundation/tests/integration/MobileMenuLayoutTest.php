@@ -40,6 +40,56 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 		$this->assertSame( 'topbar', $setting->sanitize( array() ) );
 	}
 
+	public function test_layout_setting_accepts_drilldown(): void {
+		$setting = $this->manager()->get_setting( 'wpt_mobile_menu_layout' );
+
+		$this->assertSame( 'drilldown', $setting->sanitize( 'drilldown' ) );
+	}
+
+	public function test_layout_setting_offers_a_drilldown_choice(): void {
+		$control = $this->manager()->get_control( 'mobile_menu_layout' );
+
+		$this->assertArrayHasKey( 'drilldown', $control->choices );
+	}
+
+	public function test_layout_helper_defaults_to_topbar(): void {
+		$this->assertSame( 'topbar', hyperpress_mobile_menu_layout() );
+	}
+
+	public function test_layout_helper_returns_the_saved_layout(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+		$this->assertSame( 'drilldown', hyperpress_mobile_menu_layout() );
+
+		set_theme_mod( 'wpt_mobile_menu_layout', 'offcanvas' );
+		$this->assertSame( 'offcanvas', hyperpress_mobile_menu_layout() );
+
+		set_theme_mod( 'wpt_mobile_menu_layout', 'nonsense' );
+		$this->assertSame( 'topbar', hyperpress_mobile_menu_layout() );
+	}
+
+	public function test_body_class_is_drilldown(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+
+		$classes = mobile_nav_class( array() );
+
+		$this->assertContains( 'drilldown', $classes );
+		$this->assertNotContains( 'topbar', $classes );
+	}
+
+	public function test_drilldown_uses_the_topbar_toggle_and_menu_id(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+
+		ob_start();
+		hyperpress_title_bar_responsive_toggle();
+		$toggle = ob_get_clean();
+		ob_start();
+		hyperpress_mobile_menu_id();
+		$id = ob_get_clean();
+
+		$this->assertSame( 'data-responsive-toggle="mobile-menu"', $toggle );
+		$this->assertSame( 'mobile-menu', $id );
+	}
+
 	public function test_translation_does_not_change_the_layout_default(): void {
 		$this->translate_everything();
 

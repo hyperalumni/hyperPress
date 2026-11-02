@@ -40,7 +40,7 @@ function wpt_register_theme_customizer( $wp_customize ): void {
 		array(
 			'default'           => 'topbar',
 			'sanitize_callback' => static function ( $value ): string {
-				return in_array( $value, array( 'topbar', 'offcanvas' ), true ) ? $value : 'topbar';
+				return in_array( $value, array( 'topbar', 'offcanvas', 'drilldown' ), true ) ? $value : 'topbar';
 			},
 		)
 	);
@@ -57,20 +57,26 @@ function wpt_register_theme_customizer( $wp_customize ): void {
 				'choices'  => array(
 					'topbar'    => 'Topbar',
 					'offcanvas' => 'Offcanvas',
+					'drilldown' => 'Drilldown',
 				),
 			)
 		)
 	);
 }
 
+/**
+ * The saved mobile menu layout: 'topbar' (default), 'offcanvas' or 'drilldown'.
+ */
+function hyperpress_mobile_menu_layout(): string {
+	$layout = get_theme_mod( 'wpt_mobile_menu_layout' );
+
+	return in_array( $layout, array( 'offcanvas', 'drilldown' ), true ) ? $layout : 'topbar';
+}
+
 // Add class to body to help w/ CSS
 add_filter( 'body_class', 'mobile_nav_class' );
 function mobile_nav_class( $classes ) {
-	if ( ! get_theme_mod( 'wpt_mobile_menu_layout' ) || get_theme_mod( 'wpt_mobile_menu_layout' ) === 'topbar' ) :
-		$classes[] = 'topbar';
-	elseif ( get_theme_mod( 'wpt_mobile_menu_layout' ) === 'offcanvas' ) :
-		$classes[] = 'offcanvas';
-	endif;
+	$classes[] = hyperpress_mobile_menu_layout();
 
 	return $classes;
 }

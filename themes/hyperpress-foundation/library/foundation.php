@@ -190,7 +190,7 @@ function hyperpress_active_list_pages_class( $input ) {
  * Get mobile menu ID
  */
 function hyperpress_mobile_menu_id() {
-	if ( get_theme_mod( 'wpt_mobile_menu_layout' ) === 'offcanvas' ) {
+	if ( hyperpress_mobile_menu_layout() === 'offcanvas' ) {
 		echo 'off-canvas-menu';
 	} else {
 		echo 'mobile-menu';
@@ -201,7 +201,7 @@ function hyperpress_mobile_menu_id() {
  * Get title bar responsive toggle attribute
  */
 function hyperpress_title_bar_responsive_toggle() {
-	if ( ! get_theme_mod( 'wpt_mobile_menu_layout' ) || get_theme_mod( 'wpt_mobile_menu_layout' ) === 'topbar' ) {
+	if ( in_array( hyperpress_mobile_menu_layout(), array( 'topbar', 'drilldown' ), true ) ) {
 		echo 'data-responsive-toggle="mobile-menu"';
 	}
 }
