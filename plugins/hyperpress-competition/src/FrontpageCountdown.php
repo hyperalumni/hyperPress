@@ -61,7 +61,7 @@ final class FrontpageCountdown {
 				'show_from'  => $counted[0]['start']->modify( '-' . $lead . ' days' ),
 				'show_until' => $counted[ count( $counted ) - 1 ]['end'],
 				'priority'   => 10,
-				'render'     => static fn(): string => Countdown::render( $id, true, false, true ),
+				'render'     => static fn(): string => Countdown::render( $id, true, true, true ),
 			);
 		}
 

@@ -149,4 +149,14 @@ final class FrontpageCountdownTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'countdown align-center', $html );
 		$this->assertStringContainsString( 'UNH District Event: Day 1', $html );
 	}
+
+	public function test_render_shows_the_date_of_the_day_being_counted_to(): void {
+		$this->competition( array( array( 'label' => 'Day 1', 'start' => '2030-03-10 09:00' ), array( 'label' => 'Day 2', 'start' => '2030-03-11 09:00' ) ) );
+
+		$this->assertStringContainsString( '<time>Sunday March 10, 2030 @ 09:00AM</time>', ( $this->candidates()[0]['render'] )() );
+
+		$this->clock( '2030-03-10 21:00:00' ); // Day 1 is over: the countdown and its date move to Day 2.
+
+		$this->assertStringContainsString( '<time>Monday March 11, 2030 @ 09:00AM</time>', ( $this->candidates()[0]['render'] )() );
+	}
 }
