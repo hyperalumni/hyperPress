@@ -82,9 +82,16 @@
           background-color: $lighter-hue;
         }
 
-        // Triangle arrows come from Foundation; only the colour changes.
+        // Foundation draws the triangle (and flips opens-left/opens-right); only the colour and the
+        // right-hand inset change. Left-opening submenus keep Foundation's left-hand arrow.
+        &.is-dropdown-submenu-parent > a::after {
+          // The triangle is twice the arrow size tall; centre it on the row.
+          margin-top: -1 * $dropdownmenu-arrow-size;
+        }
+
         &.is-dropdown-submenu-parent.opens-right > a::after {
           border-left-color: $white;
+          right: 1rem;
         }
 
         &.is-dropdown-submenu-parent.opens-left > a::after {

@@ -46,6 +46,26 @@ function hyperpress_top_bar_r(): void {
 }
 
 
+add_filter( 'nav_menu_css_class', 'hyperpress_strip_dropdown_direction_classes', 10, 3 );
+
+/**
+ * Foundation's DropdownMenu adds and flips opens-left, opens-right and opens-inner itself. Copies saved in a
+ * menu item's CSS Classes field (a habit from older FoundationPress sites) would sit next to the live one, and
+ * the arrow styles could no longer tell which direction is current.
+ *
+ * @param string[] $classes CSS classes of the menu item.
+ * @param WP_Post  $item    The menu item.
+ * @param stdClass $args    The wp_nav_menu() arguments.
+ * @return string[]
+ */
+function hyperpress_strip_dropdown_direction_classes( $classes, $item, $args ) {
+	if ( ! isset( $args->theme_location ) || 'top-bar-r' !== $args->theme_location ) {
+		return $classes;
+	}
+
+	return array_values( array_diff( $classes, array( 'opens-left', 'opens-right', 'opens-inner' ) ) );
+}
+
 /**
  * Mobile navigation - topbar (default) or offcanvas
  */
