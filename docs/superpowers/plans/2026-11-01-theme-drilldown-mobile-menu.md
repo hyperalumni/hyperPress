@@ -1,3 +1,5 @@
+> **STATUS: ✅ COMPLETED** (2026-11-02). Unit 64/64 and integration 347 (12 skipped) pass, `composer lint` clean, theme build OK; menu checked in the browser at 400px on the hyperalumni stack. Awaiting owner's visual review and merge.
+
 # Drilldown Mobile Menu Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -101,9 +103,17 @@ Theme root is `themes/hyperpress-foundation/` (paths below are relative to it un
 - Modify: `themes/hyperpress-foundation/AGENTS.md` (only if it describes the mobile menu or the layout setting; otherwise skip)
 - Modify: this plan (banner and outcome notes)
 
-- [ ] **Step 1:** `grep -rn "offcanvas\|wpt_mobile_menu_layout\|mobile menu" themes/hyperpress-foundation/AGENTS.md docs/superpowers/plans` and update any file that describes the layouts to mention `drilldown`.
-- [ ] **Step 2:** Run the full theme suites once: `docker compose run --rm php composer test:unit && docker compose run --rm php composer test:integration` and `pnpm fmt:check`. Expected: all pass.
-- [ ] **Step 3:** Add the `STATUS: ✅ COMPLETED` banner to this plan with what passed; commit `docs(plans): complete drilldown mobile menu plan`.
+- [x] **Step 1:** `grep -rn "offcanvas\|wpt_mobile_menu_layout\|mobile menu" themes/hyperpress-foundation/AGENTS.md docs/superpowers/plans` and update any file that describes the layouts to mention `drilldown`.
+- [x] **Step 2:** Run the full theme suites once: `docker compose run --rm php composer test:unit && docker compose run --rm php composer test:integration` and `pnpm fmt:check`. Expected: all pass.
+- [x] **Step 3:** Add the `STATUS: ✅ COMPLETED` banner to this plan with what passed; commit `docs(plans): complete drilldown mobile menu plan`.
+
+## Outcome / execution notes
+
+- The mobile walker needed no change; only `items_wrap` in `hyperpress_mobile_nav()` differs by layout.
+- Drilldown initialised inside the hidden toggled bar sized correctly (no re-init needed in `foundation.js`).
+- Nested (third-level) panels needed the colour rule on every `.is-drilldown-submenu`, not only direct children of the top-level item.
+- On phones `.site-navigation` has 10px side padding; it is removed under `body.drilldown` (`small only`) so rows run edge to edge.
+- The `lint-css` target is not inferred for this project, so Sass is checked by the build only.
 
 ## Known follow-ups
 
