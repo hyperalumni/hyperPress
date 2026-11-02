@@ -82,11 +82,11 @@
 - Consumes: `HyperPress\Countdown\Window::for_post( int ): ?array` (Task 2), `Settings::COUNTDOWNS` option key.
 - Produces: `Countdowns::selected_countdown_candidates( $candidates ): array`, hooked on `CANDIDATES_FILTER` at priority 5 in `register()`. Each selected, valid countdown yields `id` `countdown-<ID>`, `start`, `show_from`, `show_until` = Hide After (or `null`), `fallback_after` = 23:59:59 of the start's date in `wp_timezone()` when Hide After is empty, else `null`, `priority` 10, `render` = `do_shortcode( '[hyperpress_countdown id="<ID>" /]' )`.
 
-- [ ] **Step 1: Write failing tests**: IDs `array( '12', '7" x="y', 'abc', '0', 12 )` are sanitized with `absint`, zeros dropped, duplicates ignored (use real countdown posts with the matching IDs where needed); unpublished and non-countdown posts are skipped; fields map to the candidate (`show_until` from Hide After, `fallback_after` null when Hide After is set); with no Hide After `fallback_after` is 23:59:59 on the start's date, in a zone with DST (start on a spring-forward date) and for a start at 23:50; the option missing or not an array gives no candidates; the candidate's `render` returns the shortcode output (register a stub `hyperpress_countdown` shortcode if the real one is absent).
-- [ ] **Step 2: Run to verify failure.** `composer test:integration`. Expected: FAIL.
-- [ ] **Step 3: Implement** `selected_countdown_candidates` reading `get_option( Settings::OPTION )[ Settings::COUNTDOWNS ]` and hook it in `register()`.
-- [ ] **Step 4: Run tests and lint.** Full integration, unit, lint. Expected: PASS, exit 0.
-- [ ] **Step 5: Commit** `feat(frontpage): offer the selected countdowns as candidates`.
+- [x] **Step 1: Write failing tests**: IDs `array( '12', '7" x="y', 'abc', '0', 12 )` are sanitized with `absint`, zeros dropped, duplicates ignored (use real countdown posts with the matching IDs where needed); unpublished and non-countdown posts are skipped; fields map to the candidate (`show_until` from Hide After, `fallback_after` null when Hide After is set); with no Hide After `fallback_after` is 23:59:59 on the start's date, in a zone with DST (start on a spring-forward date) and for a start at 23:50; the option missing or not an array gives no candidates; the candidate's `render` returns the shortcode output (register a stub `hyperpress_countdown` shortcode if the real one is absent).
+- [x] **Step 2: Run to verify failure.** `composer test:integration`. Expected: FAIL.
+- [x] **Step 3: Implement** `selected_countdown_candidates` reading `get_option( Settings::OPTION )[ Settings::COUNTDOWNS ]` and hook it in `register()`.
+- [x] **Step 4: Run tests and lint.** Full integration, unit, lint. Expected: PASS, exit 0.
+- [x] **Step 5: Commit** `feat(frontpage): offer the selected countdowns as candidates`.
 
 ### Task 4: Competition candidates and settings
 

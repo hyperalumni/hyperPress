@@ -23,6 +23,56 @@ final class Countdowns {
 
 	public static function register(): void {
 		add_filter( self::HTML_FILTER, array( self::class, 'html' ) );
+		add_filter( self::CANDIDATES_FILTER, array( self::class, 'selected_countdown_candidates' ), 5 );
+	}
+
+	/**
+	 * Candidates for the one-off countdowns chosen in the Front Page "Countdowns" field.
+	 *
+	 * The window is the countdown's Hide Before / Hide After. A countdown with no Hide After stays through the end of
+	 * its event's day and after that only while nothing else is open, so a finished one never blocks the next one
+	 * but is not replaced by an empty front page. Does nothing when the countdown plugin is not active.
+	 *
+	 * @param mixed $candidates Candidates offered so far.
+	 * @return array<int,mixed>
+	 */
+	public static function selected_countdown_candidates( $candidates ): array {
+		$candidates = is_array( $candidates ) ? $candidates : array();
+		if ( ! class_exists( '\HyperPress\Countdown\Window' ) ) {
+			return $candidates;
+		}
+
+		$option = get_option( Settings::OPTION );
+		$ids    = is_array( $option ) ? ( $option[ Settings::COUNTDOWNS ] ?? array() ) : array();
+		if ( ! is_array( $ids ) ) {
+			return $candidates;
+		}
+
+		$seen = array();
+		foreach ( $ids as $value ) {
+			$id = is_scalar( $value ) ? absint( $value ) : 0;
+			if ( 0 === $id || isset( $seen[ $id ] ) ) {
+				continue;
+			}
+			$seen[ $id ] = true;
+
+			$window = \HyperPress\Countdown\Window::for_post( $id );
+			if ( null === $window ) {
+				continue;
+			}
+
+			$candidates[] = array(
+				'id'             => 'countdown-' . $id,
+				'start'          => $window['start'],
+				'show_from'      => $window['show_from'],
+				'show_until'     => $window['show_until'],
+				'fallback_after' => null === $window['show_until'] ? $window['start']->setTime( 23, 59, 59 ) : null,
+				'priority'       => 10,
+				'render'         => static fn(): string => do_shortcode( '[hyperpress_countdown id="' . $id . '" /]' ),
+			);
+		}
+
+		return $candidates;
 	}
 
 	/**
