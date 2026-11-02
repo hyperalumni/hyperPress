@@ -1,3 +1,5 @@
+> **STATUS: ✅ COMPLETED** (2026-11-02). Unit 180/180, integration 1635 (6 skipped) pass, `composer lint` clean; checked on the hyperonline admin: the competition list shows District/Week/Competition Type filters that filter, the sponsor list shows a Tier filter that filters; Program shows nowhere because that site assigns it to no post type. Narrow-width wrapping not checked in a browser.
+
 # Taxonomy Admin Filters Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -76,9 +78,16 @@ Run everything from `plugins/` with `docker compose run --rm php composer <scrip
 
 - Modify: `plugins/AGENTS.md` (one line under Plugin conventions), this plan
 
-- [ ] **Step 1: Look at it.** Start the hyperonline stack (`cd docker/hyperonline && docker compose --profile local up -d`), open `http://localhost:4080/wp-admin/edit.php?post_type=hyper_competition` in the browser tool (login needs the site's admin credentials: ask the owner if they are not already logged in) and confirm: the row shows All dates, All seasons, All programs (if assigned), All districts, All weeks, All competition types, Filter; choosing a district and pressing Filter narrows the list; the row wraps cleanly at a narrow width. Check the sponsors list shows All tiers and filters. If the admin is not reachable, say so and rely on the integration tests.
-- [ ] **Step 2: Document.** Add a bullet to `plugins/AGENTS.md`: taxonomy filters in admin lists come from `TaxonomyAdminFilter::register()` on `init`, shown only on post types attached to the taxonomy.
-- [ ] **Step 3: Close the plan.** Run the full suites once more, add a `STATUS: ✅ COMPLETED` banner with what passed, commit `docs(plans): complete taxonomy admin filters plan`.
+- [x] **Step 1: Look at it.** Start the hyperonline stack (`cd docker/hyperonline && docker compose --profile local up -d`), open `http://localhost:4080/wp-admin/edit.php?post_type=hyper_competition` in the browser tool (login needs the site's admin credentials: ask the owner if they are not already logged in) and confirm: the row shows All dates, All seasons, All programs (if assigned), All districts, All weeks, All competition types, Filter; choosing a district and pressing Filter narrows the list; the row wraps cleanly at a narrow width. Check the sponsors list shows All tiers and filters. If the admin is not reachable, say so and rely on the integration tests.
+- [x] **Step 2: Document.** Add a bullet to `plugins/AGENTS.md`: taxonomy filters in admin lists come from `TaxonomyAdminFilter::register()` on `init`, shown only on post types attached to the taxonomy.
+- [x] **Step 3: Close the plan.** Run the full suites once more, add a `STATUS: ✅ COMPLETED` banner with what passed, commit `docs(plans): complete taxonomy admin filters plan`.
+
+## Outcome / execution notes
+
+- Core keeps a non-public taxonomy's query var only while `is_admin()` is true (`class-wp-taxonomy.php:374`). Removing Tier's `query_var => false` override therefore turns it on in wp-admin only; the front end stays closed, `RegistrationParityTest` needed no exception and the Tier tests register Sponsor as wp-admin would.
+- `SeasonAdminFilterTest::test_nothing_is_printed_when_there_are_no_terms` fails when run alone with `--filter` (the test database holds seeded seasons); it passes in the full suite. Pre-existing.
+- Final review fixes: the "All …" label is `esc_html`'d (core only runs `wptexturize` on `show_option_all`); each dropdown gets a screen-reader `<label>` ("Filter by District"), which also applies to Season's dropdown; the redundant `has_action` guard is gone; test teardown resets the screen before re-registering; the Tier-not-on-competitions test now runs as wp-admin so it pins the post-type gate.
+- Deferred minors: a second `wp_count_terms` query per dropdown (`hide_if_empty` could replace it); the registry has no `reset()` for tests; the plugins must be released together with the new `hyperpress-utils` (`Requires Plugins` does not pin versions); Tier's query var also exists during `admin-ajax.php`/`admin-post.php` requests, where `is_admin()` is true.
 
 ## Known follow-ups
 

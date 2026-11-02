@@ -39,6 +39,23 @@ final class TaxonomyAdminFilterTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'value="alpha"', $html );
 	}
 
+	public function test_the_all_label_is_escaped(): void {
+		$this->term( 'Alpha', 'alpha' );
+
+		$html = $this->render( 'hyper_taf_tree', 'post', '<b>x</b>' );
+
+		$this->assertStringContainsString( '&lt;b&gt;x&lt;/b&gt;', $html );
+		$this->assertStringNotContainsString( '<b>', $html );
+	}
+
+	public function test_the_dropdown_has_a_screen_reader_label_tied_to_it(): void {
+		$this->term( 'Alpha', 'alpha' );
+
+		$html = $this->render( 'hyper_taf_tree' );
+
+		$this->assertMatchesRegularExpression( '/<label class="screen-reader-text" for="hyper_taf_tree">Filter by [^<]+<\/label>\s*<select[^>]*id=\'hyper_taf_tree\'/', $html );
+	}
+
 	public function test_child_terms_are_listed_under_their_parent(): void {
 		$parent = $this->term( 'Parent', 'parent' );
 		$this->term( 'Child', 'child', 'hyper_taf_tree', $parent );
@@ -93,7 +110,7 @@ final class TaxonomyAdminFilterTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( '<script>', $html );
 	}
 
-	public function test_registering_twice_prints_one_dropdown_through_the_hook(): void {
+	public function test_registering_a_taxonomy_twice_keeps_one_entry_in_the_registry(): void {
 		$this->term( 'Alpha', 'alpha' );
 		TaxonomyAdminFilter::register( 'hyper_taf_tree', static fn() => 'All things' );
 		TaxonomyAdminFilter::register( 'hyper_taf_tree', static fn() => 'All things' );

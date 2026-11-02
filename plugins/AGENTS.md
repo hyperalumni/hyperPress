@@ -19,6 +19,7 @@ Part of the hyperPress monorepo (`plugins/`); the root `../AGENTS.md` also appli
 - `hyperpress-utils` is the base dependency, and `hyperpress-season` is a base CPT/taxonomy that many plugins depend on. Meta boxes come from the `meta-box-aio` plugin.
 - The top-level "hyperPress" wp-admin menu lives in `hyperpress-utils` (`AdminMenu`); other plugins attach their settings pages to it with `parent => AdminMenu::SLUG`.
 - `hyperpress-student` is a single-file placeholder with no behavior.
+- Admin list filters: taxonomy "All …" dropdowns come from `HyperPress\Utils\TaxonomyAdminFilter::register( $taxonomy, static fn() => __( 'All …', 'hyperpress' ) )`, called from the plugin's `Plugin::register()` (on `init`). A dropdown shows only on post types attached to the taxonomy and only when it has terms. Core filters through the taxonomy's `query_var`; a non-public taxonomy has one only inside wp-admin (WordPress forces it off elsewhere).
 - Labels: `hyperpress-label` owns the registry, the Labels settings page and the renderer. Season, program, competition (district, week, type) and sponsor register their own. Plugins register labels on the `hyperpress_label_register` action; theme templates call `do_action( 'hyperpress_labels' )`.
 
 ## Git

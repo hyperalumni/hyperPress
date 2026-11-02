@@ -7,6 +7,10 @@ defined( 'ABSPATH' ) || exit;
 
 final class AdminFilter {
 
+	/**
+	 * Season keeps its own hook instead of using TaxonomyAdminFilter::register(); registering hyper_season there as
+	 * well would print the dropdown twice.
+	 */
 	public static function register(): void {
 		add_action( 'restrict_manage_posts', array( self::class, 'render' ) );
 	}

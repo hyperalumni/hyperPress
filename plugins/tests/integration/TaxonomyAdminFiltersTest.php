@@ -12,9 +12,9 @@ final class TaxonomyAdminFiltersTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		delete_option( ProgramSettings::OPTION );
+		set_current_screen( 'front' );
 		Program::register();
 		Sponsor::register();
-		set_current_screen( 'front' );
 		parent::tear_down();
 	}
 
@@ -80,6 +80,7 @@ final class TaxonomyAdminFiltersTest extends WP_UnitTestCase {
 	}
 
 	public function test_competition_dropdowns_do_not_appear_on_sponsors_or_the_tier_on_competitions(): void {
+		$this->as_admin(); // Tier's query var exists only in wp-admin, so the Tier dropdown could print if it were not gated by post type.
 		$this->term( Competition::DISTRICT, 'district' );
 		$this->term( Sponsor::TIER, 'tier' );
 

@@ -28,9 +28,8 @@ final class TaxonomyAdminFilter {
 	public static function register( string $taxonomy, callable $all_label ): void {
 		self::$labels[ $taxonomy ] = $all_label;
 
-		if ( false === has_action( 'restrict_manage_posts', array( self::class, 'on_restrict_manage_posts' ) ) ) {
-			add_action( 'restrict_manage_posts', array( self::class, 'on_restrict_manage_posts' ) );
-		}
+		// WordPress ignores a second add_action() of the same callback and priority, so this is safe to repeat.
+		add_action( 'restrict_manage_posts', array( self::class, 'on_restrict_manage_posts' ) );
 	}
 
 	/**
@@ -73,11 +72,19 @@ final class TaxonomyAdminFilter {
 			$selected = sanitize_title( wp_unslash( $_GET[ $object->query_var ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 
+		// Core prints show_option_all as it is (only wptexturize runs on it), and wp_dropdown_categories has no label
+		// option, so escape the text here and add the screen-reader label core's own Category filter has.
+		printf(
+			'<label class="screen-reader-text" for="%1$s">%2$s</label>',
+			esc_attr( $object->query_var ),
+			/* translators: %s: taxonomy singular name, e.g. District. */
+			esc_html( sprintf( __( 'Filter by %s', 'hyperpress' ), $object->labels->singular_name ) )
+		);
 		wp_dropdown_categories(
 			array(
 				'taxonomy'        => $taxonomy,
 				'name'            => $object->query_var,
-				'show_option_all' => $all_label,
+				'show_option_all' => esc_html( $all_label ),
 				'hierarchical'    => true,
 				'hide_empty'      => false,
 				'orderby'         => 'name',
