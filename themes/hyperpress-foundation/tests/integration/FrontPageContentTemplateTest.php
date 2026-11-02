@@ -55,33 +55,40 @@ final class FrontPageContentTemplateTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'Golden Widget Award', $html );
 	}
 
-	public function test_front_page_only_passes_integer_countdown_ids_to_the_shortcode(): void {
+	/** Replace every callback on the countdown filter so the real plugins' candidates cannot interfere. */
+	private function countdown_filter_returns( $value ): void {
+		remove_all_filters( 'hyperpress_frontpage_countdown_html' );
+		add_filter( 'hyperpress_frontpage_countdown_html', static fn() => $value );
+	}
+
+	private function mark_the_countdown_block(): void {
+		add_action(
+			'hyperpress_page_before_entry_content',
+			static function () {
+				echo '<!--countdown-block-->';
+			}
+		);
+	}
+
+	public function test_front_page_prints_the_countdown_html_from_the_filter_in_the_entry_content(): void {
 		self::factory()->post->create( array( 'post_status' => 'publish' ) );
-		update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_countdowns' => array( '12', '7" x="y', 'abc', '0' ) ) );
+		$this->countdown_filter_returns( '<p class="cd-test">counting</p>' );
+		$this->mark_the_countdown_block();
 
-		$seen = array();
-		add_filter(
-			'pre_do_shortcode_tag',
-			static function ( $output, $tag, $attr ) use ( &$seen ) {
-				if ( 'hyperpress_countdown' === $tag ) {
-					$seen[] = $attr;
-					return ''; // Short-circuit: only the attributes matter here.
-				}
-				return $output;
-			},
-			10,
-			3
-		);
+		$html = $this->render_front_page();
 
-		$this->render_front_page();
+		$this->assertMatchesRegularExpression( '/<!--countdown-block-->\s*<div class="entry-content">\s*<p class="cd-test">counting<\/p>\s*<\/div>/', $html );
+	}
 
-		$this->assertSame(
-			array(
-				array( 'id' => '12' ),
-				array( 'id' => '7' ),
-			),
-			$seen
-		);
+	public function test_front_page_prints_no_countdown_block_when_the_filter_returns_nothing(): void {
+		self::factory()->post->create( array( 'post_status' => 'publish' ) );
+		$this->mark_the_countdown_block();
+
+		$this->countdown_filter_returns( '' );
+		$this->assertStringNotContainsString( '<!--countdown-block-->', $this->render_front_page() );
+
+		$this->countdown_filter_returns( array( 'not a string' ) );
+		$this->assertStringNotContainsString( '<!--countdown-block-->', $this->render_front_page() );
 	}
 
 	public function test_front_page_prints_no_literal_shortcode_when_the_countdown_plugin_is_inactive(): void {
@@ -98,18 +105,5 @@ final class FrontPageContentTemplateTest extends WP_UnitTestCase {
 		}
 
 		$this->assertStringNotContainsString( '[hyperpress_countdown', $html );
-	}
-
-	public function test_front_page_renders_the_countdown_when_the_shortcode_is_registered(): void {
-		self::factory()->post->create( array( 'post_status' => 'publish' ) );
-		update_option( 'hyperpress_frontpage', array( 'hyperpress_frontpage_countdowns' => array( '12' ) ) );
-		add_filter(
-			'pre_do_shortcode_tag',
-			static fn( $output, $tag ) => 'hyperpress_countdown' === $tag ? '<div class="countdown-rendered"></div>' : $output,
-			10,
-			2
-		);
-
-		$this->assertStringContainsString( 'countdown-rendered', $this->render_front_page() );
 	}
 }

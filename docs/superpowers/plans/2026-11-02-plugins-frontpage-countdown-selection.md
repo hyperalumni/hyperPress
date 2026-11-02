@@ -119,12 +119,12 @@
 
 - Consumes: `apply_filters( 'hyperpress_frontpage_countdown_html', '' )` (Task 1).
 
-- [ ] **Step 1: Write failing tests** in the theme's `FrontPageContentTemplateTest`, replacing `test_front_page_only_passes_integer_countdown_ids_to_the_shortcode` (its ID sanitising now lives in Task 3): `test_front_page_prints_the_countdown_html_from_the_filter_in_the_entry_content` (a filter returning `<p class="cd-test">x</p>` on `hyperpress_frontpage_countdown_html`; the HTML appears inside `.entry-content`); `test_front_page_prints_no_countdown_wrapper_when_the_filter_returns_nothing` (no `entry-content` block from that section; assert via the surrounding markup the template prints today for the countdown block); keep `test_front_page_prints_no_literal_shortcode_when_the_countdown_plugin_is_inactive` passing.
-- [ ] **Step 2: Run to verify failure.** From the theme dir: `docker compose run --rm php composer test:integration -- --filter FrontPageContentTemplateTest`. Expected: FAIL.
-- [ ] **Step 3: Update `front-page.php`**: replace the `hyperpress_frontpage_setting( 'hyperpress_frontpage_countdowns' ...)` block and its `foreach`/`do_shortcode` loop with `$hyperpress_countdown = apply_filters( 'hyperpress_frontpage_countdown_html', '' );` and print the existing wrapper (post loop, `post_class`, `hyperpress_page_before_entry_content`, `entry-content`, `hyperpress_page_after_entry_content`) only when the string is non-empty, echoing it as the plugin returned it (add the same kind of `phpcs:ignore` the old `echo do_shortcode` needed, if lint asks).
-- [ ] **Step 4: Document.** Theme `AGENTS.md`: add `hyperpress_frontpage_countdown_html` to the filter list in "Direction". `plugins/AGENTS.md`: a bullet describing the candidate contract (keys, window rule, fallback rule, pick order, who supplies what, and that a future event plugin hooks `hyperpress_frontpage_countdown_candidates`).
-- [ ] **Step 5: Run tests and lint.** Theme: `composer test:integration`, `composer test:unit`, `composer lint`. Plugins: full suites once more. Expected: PASS, exit 0.
-- [ ] **Step 6: Commit** `feat(theme-foundation): print the front page countdown from a filter`.
+- [x] **Step 1: Write failing tests** in the theme's `FrontPageContentTemplateTest`, replacing `test_front_page_only_passes_integer_countdown_ids_to_the_shortcode` (its ID sanitising now lives in Task 3): `test_front_page_prints_the_countdown_html_from_the_filter_in_the_entry_content` (a filter returning `<p class="cd-test">x</p>` on `hyperpress_frontpage_countdown_html`; the HTML appears inside `.entry-content`); `test_front_page_prints_no_countdown_wrapper_when_the_filter_returns_nothing` (no `entry-content` block from that section; assert via the surrounding markup the template prints today for the countdown block); keep `test_front_page_prints_no_literal_shortcode_when_the_countdown_plugin_is_inactive` passing.
+- [x] **Step 2: Run to verify failure.** From the theme dir: `docker compose run --rm php composer test:integration -- --filter FrontPageContentTemplateTest`. Expected: FAIL.
+- [x] **Step 3: Update `front-page.php`**: replace the `hyperpress_frontpage_setting( 'hyperpress_frontpage_countdowns' ...)` block and its `foreach`/`do_shortcode` loop with `$hyperpress_countdown = apply_filters( 'hyperpress_frontpage_countdown_html', '' );` and print the existing wrapper (post loop, `post_class`, `hyperpress_page_before_entry_content`, `entry-content`, `hyperpress_page_after_entry_content`) only when the string is non-empty, echoing it as the plugin returned it (add the same kind of `phpcs:ignore` the old `echo do_shortcode` needed, if lint asks).
+- [x] **Step 4: Document.** Theme `AGENTS.md`: add `hyperpress_frontpage_countdown_html` to the filter list in "Direction". `plugins/AGENTS.md`: a bullet describing the candidate contract (keys, window rule, fallback rule, pick order, who supplies what, and that a future event plugin hooks `hyperpress_frontpage_countdown_candidates`).
+- [x] **Step 5: Run tests and lint.** Theme: `composer test:integration`, `composer test:unit`, `composer lint`. Plugins: full suites once more. Expected: PASS, exit 0.
+- [x] **Step 6: Commit** `feat(theme-foundation): print the front page countdown from a filter`.
 
 ### Task 6: Check it on the hyperonline site and close out
 
@@ -138,6 +138,8 @@
 - Task 2: the shortcode's Hide Before / Hide After behaviour had no tests, so `tests/integration/Countdown/ShortcodeWindowTest.php` was written first and passed against the old code, then again after the refactor. One deliberate difference: an unparseable Hide After used to hide the countdown (the old `strtotime()` comparison); it is now treated as no bound, like an empty one. The date-time picker cannot produce an unparseable value.
 
 - Task 4: `CompetitionSettingsPageTest::test_the_box_has_the_subtitle_field` pinned four settings fields; it now pins six (the two new front-page fields). The candidate uses `Schedule::days()` for the first and last counted days and `Schedule::current()` for the target, so the clock filter `hyperpress_competition_now` controls both in tests.
+
+- Task 5: the theme's old `test_front_page_only_passes_integer_countdown_ids_to_the_shortcode` and `test_front_page_renders_the_countdown_when_the_shortcode_is_registered` tested the removed loop; they are replaced by filter-based tests (the ID sanitising is covered in `CountdownCandidatesTest`). The theme tests clear the filter before adding their own so the real plugins' candidates cannot interfere.
 
 ## Known follow-ups
 

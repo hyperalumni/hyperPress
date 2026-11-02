@@ -32,24 +32,16 @@ if ( function_exists( 'add_revslider' ) ) {
 <?php do_action( 'hyperpress_before_content' ); ?>
 	<div class="main-container">
 		<div class="main-grid">
-			<?php $countdowns = hyperpress_frontpage_setting( 'hyperpress_frontpage_countdowns', array() ); ?>
-			<?php if ( ! empty( $countdowns ) ) : ?>
+			<?php $hyperpress_countdown = apply_filters( 'hyperpress_frontpage_countdown_html', '' ); ?>
+			<?php if ( is_string( $hyperpress_countdown ) && '' !== $hyperpress_countdown ) : ?>
 				<?php
-                while ( have_posts() ) :
-the_post();
-?>
+				while ( have_posts() ) :
+					the_post();
+					?>
 					<div <?php post_class(); ?> id="post-<?php the_ID(); ?>">
 						<?php do_action( 'hyperpress_page_before_entry_content' ); ?>
 						<div class="entry-content">
-							<?php
-		foreach ( (array) $countdowns as $countdown_id ) :
-				$countdown_id = absint( $countdown_id );
-				if ( 0 === $countdown_id || ! shortcode_exists( 'hyperpress_countdown' ) ) {
-					continue;
-				}
-				echo do_shortcode( '[hyperpress_countdown id="' . $countdown_id . '" /]' );
-			endforeach;
-							?>
+							<?php echo $hyperpress_countdown; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup built and escaped by the plugin that supplied the countdown. ?>
 						</div>
 						<?php do_action( 'hyperpress_page_after_entry_content' ); ?>
 					</div>
