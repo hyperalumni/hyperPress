@@ -122,7 +122,7 @@ Theme root is `themes/hyperpress-foundation/` (paths below are relative to it un
 - Final review, still deferred: WCAG contrast of orange/green row text on white (brand colours); Customizer choice labels are untranslated (pre-existing).
 - The redundant `&.gray` block in `_mobile-drilldown.scss` is removed: grey is the default for top-level rows, so the `gray` class and no class render the same.
 - The title bar is now `template-parts/title-bar.php` (default) and `title-bar-drilldown.php`, chosen by `get_template_part( 'template-parts/title-bar', $name )` in `header.php`; both include the shared `template-parts/menu-toggle.php` hamburger, which removes the duplicated button markup.
-- Final review, decision for the owner: the desktop dropdown changes (`data-alignment="left"`, stripped direction classes, triangle arrows) apply to every site using the theme, including hyperonline, which previously opened left-aligned by Foundation's default.
+- Final review, decision for the owner (resolved): the desktop dropdown changes (`data-alignment="left"`, stripped direction classes, triangle arrows) apply to every site using the theme, hyperonline included. The owner confirmed this is intended: the old site's menu already behaved this way, and the theme now follows it.
 - The `lint-css` target is not inferred for this project, so Sass is checked by the build only.
 
 ## Known follow-ups
