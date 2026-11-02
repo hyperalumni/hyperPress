@@ -129,13 +129,19 @@ body.drilldown {
         .js-drilldown-back > a {
           padding-top: 1rem;
           padding-bottom: 1rem;
-          font-size: 1.25rem;
+          font-size: 1rem;
           font-weight: 400;
           text-transform: none;
 
           &::before {
-            display: none;
+            border-right-color: $white;
           }
+        }
+
+        // The parent link repeated at the top of each panel is the panel's title.
+        .is-submenu-parent-item > a {
+          font-size: 1.25rem;
+          font-weight: 600;
         }
       }
     }

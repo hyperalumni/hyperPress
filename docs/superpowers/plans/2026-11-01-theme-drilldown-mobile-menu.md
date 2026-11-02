@@ -113,6 +113,7 @@ Theme root is `themes/hyperpress-foundation/` (paths below are relative to it un
 - Drilldown initialised inside the hidden toggled bar sized correctly (no re-init needed in `foundation.js`).
 - Nested (third-level) panels needed the colour rule on every `.is-drilldown-submenu`, not only direct children of the top-level item.
 - On phones `.site-navigation` has 10px side padding; it is removed under `body.drilldown` (`small only`) so rows run edge to edge.
+- Owner review tweak: "Back" is 1rem with a white left arrow; the repeated parent link (`.is-submenu-parent-item`) is the larger 1.25rem panel title.
 - The `lint-css` target is not inferred for this project, so Sass is checked by the build only.
 
 ## Known follow-ups
