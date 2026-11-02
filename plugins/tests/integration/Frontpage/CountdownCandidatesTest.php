@@ -135,4 +135,40 @@ final class CountdownCandidatesTest extends WP_UnitTestCase {
 
 		$this->assertSame( "countdown-$id", $picked['id'] );
 	}
+
+	public function test_the_render_does_not_re_check_the_window_the_picker_already_applied(): void {
+		$id = $this->countdown();
+		$this->select( array( $id ) );
+		$seen = array();
+		add_filter(
+			'pre_do_shortcode_tag',
+			static function ( $output, $tag, $attr ) use ( &$seen ) {
+				if ( 'hyperpress_countdown' === $tag ) {
+					$seen[] = $attr;
+					return '<div>rendered</div>';
+				}
+				return $output;
+			},
+			10,
+			3
+		);
+
+		( $this->candidates()[0]['render'] )();
+
+		$this->assertSame( array( array( 'id' => (string) $id, 'ignoreshowhide' => 'true' ) ), $seen );
+		remove_all_filters( 'pre_do_shortcode_tag' );
+	}
+
+	public function test_render_gives_an_empty_string_when_the_shortcode_is_not_registered(): void {
+		$id = $this->countdown();
+		$this->select( array( $id ) );
+		$render = $this->candidates()[0]['render'];
+		remove_shortcode( 'hyperpress_countdown' );
+
+		try {
+			$this->assertSame( '', $render() );
+		} finally {
+			\HyperPress\Countdown\Shortcode::register();
+		}
+	}
 }

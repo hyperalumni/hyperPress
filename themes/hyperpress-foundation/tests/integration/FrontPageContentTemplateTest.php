@@ -80,6 +80,17 @@ final class FrontPageContentTemplateTest extends WP_UnitTestCase {
 		$this->assertMatchesRegularExpression( '/<!--countdown-block-->\s*<div class="entry-content">\s*<p class="cd-test">counting<\/p>\s*<\/div>/', $html );
 	}
 
+	public function test_front_page_prints_the_countdown_once_even_with_several_posts_in_the_loop(): void {
+		self::factory()->post->create_many( 3, array( 'post_status' => 'publish' ) );
+		$this->countdown_filter_returns( '<p class="cd-test">counting</p>' );
+		$this->mark_the_countdown_block();
+
+		$html = $this->render_front_page();
+
+		$this->assertSame( 1, substr_count( $html, '<!--countdown-block-->' ) );
+		$this->assertSame( 1, substr_count( $html, 'class="cd-test"' ) );
+	}
+
 	public function test_front_page_prints_no_countdown_block_when_the_filter_returns_nothing(): void {
 		self::factory()->post->create( array( 'post_status' => 'publish' ) );
 		$this->mark_the_countdown_block();

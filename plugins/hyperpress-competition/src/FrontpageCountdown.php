@@ -43,10 +43,14 @@ final class FrontpageCountdown {
 			)
 		);
 
+		update_meta_cache( 'post', $ids ); // One query for every schedule instead of one per competition.
+		$now = Schedule::now();
+
 		foreach ( $ids as $id ) {
 			$id      = (int) $id;
-			$counted = array_values( array_filter( Schedule::days( $id ), static fn( array $day ): bool => $day['countdown'] ) );
-			$current = Schedule::current( $id );
+			$days    = Schedule::days( $id );
+			$counted = array_values( array_filter( $days, static fn( array $day ): bool => $day['countdown'] ) );
+			$current = Schedule::pick( $days, $now );
 			if ( array() === $counted || null === $current ) {
 				continue;
 			}

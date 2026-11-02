@@ -140,4 +140,29 @@ final class CountdownsPickTest extends TestCase {
 
 		$this->assertSame( 'good', $this->picked_id( array_merge( $bad, array( $good ) ) ) );
 	}
+
+	public function test_rank_lists_primary_candidates_by_start_then_the_fallbacks_latest_first(): void {
+		$stale_old    = $this->candidate( 'stale-old', '2026-08-01 00:00:00', array( 'fallback_after' => $this->when( '2026-08-01 23:59:59' ) ) );
+		$stale_recent = $this->candidate( 'stale-recent', '2026-10-01 00:00:00', array( 'fallback_after' => $this->when( '2026-10-01 23:59:59' ) ) );
+		$soon         = $this->candidate( 'soon', '2026-11-20 00:00:00' );
+		$later        = $this->candidate( 'later', '2026-12-20 00:00:00' );
+		$closed       = $this->candidate( 'closed', '2026-11-10 00:00:00', array( 'show_until' => $this->when( '2026-11-01 00:00:00' ) ) );
+
+		$ranked = Countdowns::rank( array( $stale_old, $later, $closed, $stale_recent, $soon ), $this->now() );
+
+		$this->assertSame( array( 'soon', 'later', 'stale-recent', 'stale-old' ), array_column( $ranked, 'id' ) );
+		$this->assertSame( array(), Countdowns::rank( array(), $this->now() ) );
+	}
+
+	public function test_pick_is_the_first_ranked_candidate(): void {
+		$list = array( $this->candidate( 'b', '2026-12-01 00:00:00' ), $this->candidate( 'a', '2026-11-20 00:00:00' ) );
+
+		$this->assertSame( Countdowns::rank( $list, $this->now() )[0], Countdowns::pick( $list, $this->now() ) );
+	}
+
+	public function test_ids_are_compared_as_strings_so_numeric_looking_ids_are_stable(): void {
+		$start = '2026-12-01 00:00:00';
+
+		$this->assertSame( '10', $this->picked_id( array( $this->candidate( '9', $start ), $this->candidate( '10', $start ) ) ) );
+	}
 }

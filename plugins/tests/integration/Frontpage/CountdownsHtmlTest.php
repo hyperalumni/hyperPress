@@ -96,4 +96,37 @@ final class CountdownsHtmlTest extends WP_UnitTestCase {
 
 		$this->assertInstanceOf( DateTimeImmutable::class, Countdowns::now() );
 	}
+
+	public function test_a_winner_that_renders_nothing_falls_through_to_the_next_candidate(): void {
+		$this->offer( $this->candidate( 'empty', static fn() => '', '2026-11-20 00:00:00' ) );
+		$this->offer( $this->candidate( 'array', static fn() => array( 'x' ), '2026-11-21 00:00:00' ) );
+		$this->offer( $this->candidate( 'next', static fn() => '<p>next</p>', '2026-12-20 00:00:00' ) );
+
+		$this->assertSame( '<p>next</p>', Countdowns::html() );
+	}
+
+	public function test_a_winner_that_throws_falls_through_and_the_error_is_reported(): void {
+		$reported = array();
+		add_action(
+			'hyperpress_frontpage_countdown_error',
+			static function ( $id, $error ) use ( &$reported ) {
+				$reported[] = array( $id, $error->getMessage() );
+			},
+			10,
+			2
+		);
+		$this->offer( $this->candidate( 'broken', static function () {
+			throw new \RuntimeException( 'boom' );
+		}, '2026-11-20 00:00:00' ) );
+		$this->offer( $this->candidate( 'next', static fn() => '<p>next</p>', '2026-12-20 00:00:00' ) );
+
+		$this->assertSame( '<p>next</p>', Countdowns::html() );
+		$this->assertSame( array( array( 'broken', 'boom' ) ), $reported );
+	}
+
+	public function test_when_every_candidate_renders_nothing_the_incoming_value_is_kept(): void {
+		$this->offer( $this->candidate( 'empty', static fn() => '' ) );
+
+		$this->assertSame( 'kept', Countdowns::html( 'kept' ) );
+	}
 }

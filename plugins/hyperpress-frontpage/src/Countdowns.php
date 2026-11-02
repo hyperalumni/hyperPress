@@ -68,7 +68,14 @@ final class Countdowns {
 				'show_until'     => $window['show_until'],
 				'fallback_after' => null === $window['show_until'] ? $window['start']->setTime( 23, 59, 59 ) : null,
 				'priority'       => 10,
-				'render'         => static fn(): string => do_shortcode( '[hyperpress_countdown id="' . $id . '" /]' ),
+				// The picker has already applied the window, so the shortcode must not judge it again with another clock.
+				'render'         => static function () use ( $id ): string {
+					if ( ! shortcode_exists( 'hyperpress_countdown' ) ) {
+						return '';
+					}
+
+					return do_shortcode( '[hyperpress_countdown id="' . $id . '" ignoreshowhide="true" /]' );
+				},
 			);
 		}
 
@@ -76,7 +83,11 @@ final class Countdowns {
 	}
 
 	/**
-	 * The HTML of the chosen countdown, or `$html` unchanged when there is none (or it cannot be rendered).
+	 * The HTML of the best countdown that renders, or `$html` unchanged when there is none.
+	 *
+	 * Candidates are tried in ranked order: one whose `render` returns nothing, returns a non-string or throws is
+	 * skipped (a throw also fires `hyperpress_frontpage_countdown_error` with the candidate id and the error), so a
+	 * broken first choice never blanks a usable second one.
 	 *
 	 * @param mixed $html Incoming value of the theme filter.
 	 */
@@ -87,18 +98,19 @@ final class Countdowns {
 			return $html;
 		}
 
-		$picked = self::pick( $candidates, self::now() );
-		if ( null === $picked ) {
-			return $html;
+		foreach ( self::rank( $candidates, self::now() ) as $candidate ) {
+			try {
+				$output = ( $candidate['render'] )();
+			} catch ( \Throwable $error ) {
+				do_action( 'hyperpress_frontpage_countdown_error', $candidate['id'], $error );
+				continue;
+			}
+			if ( is_string( $output ) && '' !== $output ) {
+				return $output;
+			}
 		}
 
-		try {
-			$output = ( $picked['render'] )();
-		} catch ( \Throwable $error ) {
-			return $html;
-		}
-
-		return is_string( $output ) ? $output : $html;
+		return $html;
 	}
 
 	/**
@@ -111,18 +123,29 @@ final class Countdowns {
 	}
 
 	/**
-	 * Choose the candidate to show.
-	 *
-	 * A window is open when `show_from < now` and `now < show_until` (both strict, each optional). Open candidates that
-	 * are not past their `fallback_after` are primary: the one with the earliest `start` wins, then the highest
-	 * `priority`, then the lowest `id`. When there is no primary candidate, the open fallback with the latest `start`
-	 * wins (same tie-breaks). Closed or not-yet-open candidates never count.
+	 * Choose the candidate to show: the first of `rank()`.
 	 *
 	 * @param array<int,mixed>   $candidates Candidates; anything malformed is ignored.
 	 * @param \DateTimeImmutable $now        The moment to judge the windows at.
 	 * @return array<string,mixed>|null The chosen candidate, or null.
 	 */
 	public static function pick( array $candidates, \DateTimeImmutable $now ): ?array {
+		return self::rank( $candidates, $now )[0] ?? null;
+	}
+
+	/**
+	 * The usable candidates in the order they should be tried.
+	 *
+	 * A window is open when `show_from < now` and `now < show_until` (both strict, each optional). Open candidates that
+	 * are not past their `fallback_after` are primary: earliest `start` first, then highest `priority`, then `id` as a
+	 * string. They are followed by the open fallbacks, the most recently started first (same tie-breaks). Closed or
+	 * not-yet-open candidates are left out.
+	 *
+	 * @param array<int,mixed>   $candidates Candidates; anything malformed is ignored.
+	 * @param \DateTimeImmutable $now        The moment to judge the windows at.
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function rank( array $candidates, \DateTimeImmutable $now ): array {
 		$primary   = array();
 		$fallbacks = array();
 
@@ -147,27 +170,31 @@ final class Countdowns {
 			}
 		}
 
-		if ( array() !== $primary ) {
-			usort(
-				$primary,
-				static fn( array $a, array $b ): int => array( $a['start']->getTimestamp(), -self::priority( $a ), $a['id'] )
-					<=> array( $b['start']->getTimestamp(), -self::priority( $b ), $b['id'] )
-			);
+		usort( $primary, static fn( array $a, array $b ): int => self::compare( $a, $b, 1 ) );
+		usort( $fallbacks, static fn( array $a, array $b ): int => self::compare( $a, $b, -1 ) );
 
-			return $primary[0];
+		return array_merge( $primary, $fallbacks );
+	}
+
+	/**
+	 * Order two candidates: by start (`$direction` 1 earliest first, -1 latest first), then higher priority, then id.
+	 *
+	 * @param array<string,mixed> $a         A valid candidate.
+	 * @param array<string,mixed> $b         A valid candidate.
+	 * @param int                 $direction 1 or -1.
+	 */
+	private static function compare( array $a, array $b, int $direction ): int {
+		$by_start = $direction * ( $a['start']->getTimestamp() <=> $b['start']->getTimestamp() );
+		if ( 0 !== $by_start ) {
+			return $by_start;
 		}
 
-		if ( array() !== $fallbacks ) {
-			usort(
-				$fallbacks,
-				static fn( array $a, array $b ): int => array( -$a['start']->getTimestamp(), -self::priority( $a ), $a['id'] )
-					<=> array( -$b['start']->getTimestamp(), -self::priority( $b ), $b['id'] )
-			);
-
-			return $fallbacks[0];
+		$by_priority = self::priority( $b ) <=> self::priority( $a );
+		if ( 0 !== $by_priority ) {
+			return $by_priority;
 		}
 
-		return null;
+		return strcmp( $a['id'], $b['id'] );
 	}
 
 	/**
