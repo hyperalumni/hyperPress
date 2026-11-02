@@ -74,9 +74,11 @@ function hyperpress_mobile_nav(): void {
 	$items_wrap = '<ul id="%1$s" class="%2$s" data-accordion-menu data-submenu-toggle="true">%3$s</ul>';
 
 	if ( hyperpress_mobile_menu_layout() === 'drilldown' ) {
-		// items_wrap is a sprintf format, so a literal % in the translated label is doubled.
-		$back_button = str_replace( '%', '%%', '<li class="js-drilldown-back"><a tabindex="0">' . esc_html__( 'Back', 'hyperpress' ) . '</a></li>' );
-		$items_wrap  = '<ul id="%1$s" class="%2$s" data-drilldown data-parent-link="true" data-auto-height="true" data-back-button=\'' . $back_button . '\'>%3$s</ul>';
+		// Foundation inserts data-back-button as HTML: the label is HTML-escaped, then the whole string attribute-escaped
+		// with double encoding (esc_attr() would not re-encode the label's entities, and the browser would decode them
+		// back into markup). items_wrap is a sprintf format, so a literal % in a translated label is doubled.
+		$back_button = htmlspecialchars( '<li class="js-drilldown-back"><a tabindex="0">' . esc_html__( 'Back', 'hyperpress' ) . '</a></li>', ENT_QUOTES, 'UTF-8', true );
+		$items_wrap  = '<ul id="%1$s" class="%2$s" data-drilldown data-parent-link="true" data-auto-height="true" data-back-button="' . str_replace( '%', '%%', $back_button ) . '">%3$s</ul>';
 	}
 
 	wp_nav_menu(

@@ -78,6 +78,16 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 		$this->assertNotContains( 'topbar', $classes );
 	}
 
+	public function test_other_layouts_keep_their_body_class(): void {
+		$this->assertContains( 'topbar', mobile_nav_class( array() ) );
+
+		set_theme_mod( 'wpt_mobile_menu_layout', 'topbar' );
+		$this->assertContains( 'topbar', mobile_nav_class( array() ) );
+
+		set_theme_mod( 'wpt_mobile_menu_layout', 'offcanvas' );
+		$this->assertContains( 'offcanvas', mobile_nav_class( array() ) );
+	}
+
 	public function test_drilldown_uses_the_topbar_toggle_and_menu_id(): void {
 		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
 
@@ -90,6 +100,13 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 
 		$this->assertSame( 'data-responsive-toggle="mobile-menu"', $toggle );
 		$this->assertSame( 'mobile-menu', $id );
+	}
+
+	private function back_button( string $html ): string {
+		$tags = new \WP_HTML_Tag_Processor( $html );
+		$tags->next_tag( 'ul' );
+
+		return (string) $tags->get_attribute( 'data-back-button' );
 	}
 
 	private function mobile_nav_html(): string {
@@ -127,7 +144,7 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'data-drilldown', $html );
 		$this->assertStringContainsString( 'data-parent-link="true"', $html );
 		$this->assertStringContainsString( 'data-auto-height="true"', $html );
-		$this->assertStringContainsString( '>Back</a>', $html );
+		$this->assertSame( '<li class="js-drilldown-back"><a tabindex="0">Back</a></li>', $this->back_button( $html ) );
 		$this->assertStringNotContainsString( 'data-accordion-menu', $html );
 		$this->assertStringContainsString( 'Child Item', $html );
 	}
@@ -145,8 +162,27 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 
 		$html = $this->mobile_nav_html();
 
-		$this->assertStringContainsString( '>TRANSLATED</a>', $html );
-		$this->assertStringNotContainsString( '>Back</a>', $html );
+		$this->assertSame( '<li class="js-drilldown-back"><a tabindex="0">TRANSLATED</a></li>', $this->back_button( $html ) );
+	}
+
+	public function test_back_label_is_escaped_for_both_the_attribute_and_the_html_it_carries(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+		add_filter(
+			'gettext',
+			static function ( $translation, $text, $domain ) {
+				return 'hyperpress' === $domain && 'Back' === $text ? 'It\'s "a" & <b>100%</b>' : $translation;
+			},
+			10,
+			3
+		);
+
+		$html = $this->mobile_nav_html();
+
+		// Foundation inserts this string as HTML, so markup in a label must stay inert text.
+		$this->assertSame(
+			'<li class="js-drilldown-back"><a tabindex="0">It&#039;s &quot;a&quot; &amp; &lt;b&gt;100%&lt;/b&gt;</a></li>',
+			$this->back_button( $html )
+		);
 	}
 
 	public function test_drilldown_without_a_mobile_menu_renders_nothing(): void {

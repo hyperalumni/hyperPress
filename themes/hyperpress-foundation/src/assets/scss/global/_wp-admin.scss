@@ -13,7 +13,8 @@ html:has(body.admin-bar) {
 body.admin-bar {
   // Offset sticky top bar
   &.topbar,
-  &.offcanvas {
+  &.offcanvas,
+  &.mobile-drilldown {
     .site-header.sticky.is-stuck {
       margin-top: rem-calc(32) !important;
     }

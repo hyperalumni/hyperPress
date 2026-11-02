@@ -45,6 +45,15 @@ final class HeaderMarkupTest extends WP_UnitTestCase {
 		$this->assertMatchesRegularExpression( '/site-mobile-logo[^>]*>\s*<a [^>]*rel="home"[^>]*>' . preg_quote( get_bloginfo( 'name' ), '/' ) . '<\/a>/', $html );
 	}
 
+	public function test_drilldown_header_falls_back_to_the_site_name_when_the_saved_logo_is_gone(): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
+		set_theme_mod( 'custom_logo', 999999 );
+
+		$html = $this->render_header();
+
+		$this->assertMatchesRegularExpression( '/site-mobile-logo[^>]*>\s*<a [^>]*rel="home"[^>]*>' . preg_quote( get_bloginfo( 'name' ), '/' ) . '<\/a>/', $html );
+	}
+
 	public function test_wp_body_open_fires_right_after_the_body_tag(): void {
 		add_action(
 			'wp_body_open',
