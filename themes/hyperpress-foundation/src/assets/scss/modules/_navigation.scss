@@ -82,12 +82,13 @@
           background-color: $lighter-hue;
         }
 
-        a:after {
-          border: none;
-          content: '\00bb';
-          top: 0.75rem;
-          right: 1.5rem;
-          left: auto;
+        // Triangle arrows come from Foundation; only the colour changes.
+        &.is-dropdown-submenu-parent.opens-right > a::after {
+          border-left-color: $white;
+        }
+
+        &.is-dropdown-submenu-parent.opens-left > a::after {
+          border-right-color: $white;
         }
       }
     }

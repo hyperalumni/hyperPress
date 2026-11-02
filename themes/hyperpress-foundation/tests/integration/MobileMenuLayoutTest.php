@@ -67,12 +67,14 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 		$this->assertSame( 'topbar', hyperpress_mobile_menu_layout() );
 	}
 
-	public function test_body_class_is_drilldown(): void {
+	public function test_body_class_for_drilldown_does_not_collide_with_foundation(): void {
 		set_theme_mod( 'wpt_mobile_menu_layout', 'drilldown' );
 
 		$classes = mobile_nav_class( array() );
 
-		$this->assertContains( 'drilldown', $classes );
+		$this->assertContains( 'mobile-drilldown', $classes );
+		// Foundation styles every `.drilldown a`, so a body class of exactly `drilldown` restyles all links.
+		$this->assertNotContains( 'drilldown', $classes );
 		$this->assertNotContains( 'topbar', $classes );
 	}
 

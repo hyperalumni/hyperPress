@@ -51,7 +51,7 @@ opt-in layout, so the other sites (hyperonline) keep their current mobile menu.
   `HyperPress_Theme_Mobile_Walker` (`ul.vertical.nested.menu`) is reused unchanged.
 - In `header.php` the drilldown layout renders the custom logo (site name as fallback) on the left and the
   hamburger on the right of the title bar.
-- A new Sass module scopes everything under `body.drilldown`.
+- A new Sass module scopes everything under `body.mobile-drilldown`.
 
 ## Left to the builder
 

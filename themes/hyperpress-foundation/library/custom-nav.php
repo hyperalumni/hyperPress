@@ -76,7 +76,9 @@ function hyperpress_mobile_menu_layout(): string {
 // Add class to body to help w/ CSS
 add_filter( 'body_class', 'mobile_nav_class' );
 function mobile_nav_class( $classes ) {
-	$classes[] = hyperpress_mobile_menu_layout();
+	$layout = hyperpress_mobile_menu_layout();
+	// Foundation styles every `.drilldown a`, so the drilldown layout gets a prefixed body class.
+	$classes[] = 'drilldown' === $layout ? 'mobile-drilldown' : $layout;
 
 	return $classes;
 }

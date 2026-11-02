@@ -6,7 +6,7 @@
 
 **Goal:** Add an opt-in `drilldown` mobile menu layout to the hyperpress-foundation theme that matches the old site (logo + grey hamburger bar, coloured rows, slide-over parent-coloured panels with a Back header).
 
-**Architecture:** A new `drilldown` value for the `wpt_mobile_menu_layout` Customizer setting, read through one helper. It reuses the top-bar toggle structure, swaps the accordion attributes in `hyperpress_mobile_nav()` for Foundation Drilldown attributes, and is styled by a new Sass module scoped to `body.drilldown`. Row and panel colours come from the CSS classes on top-level menu items.
+**Architecture:** A new `drilldown` value for the `wpt_mobile_menu_layout` Customizer setting, read through one helper. It reuses the top-bar toggle structure, swaps the accordion attributes in `hyperpress_mobile_nav()` for Foundation Drilldown attributes, and is styled by a new Sass module scoped to `body.mobile-drilldown`. Row and panel colours come from the CSS classes on top-level menu items.
 
 **Tech Stack:** PHP 8.3 (WordPress, PHPUnit integration tests in Docker), Foundation 6.9 (Drilldown plugin; JS and Sass already bundled), Sass, Nx/pnpm.
 
@@ -84,10 +84,10 @@ Theme root is `themes/hyperpress-foundation/` (paths below are relative to it un
 
 **Interfaces:**
 
-- Consumes: markup and classes from Task 2 (`body.drilldown`, `.site-title-bar`, `.mobile-menu`, Foundation-generated `.is-drilldown`, `.is-drilldown-submenu`, `.is-drilldown-submenu-parent`, `.js-drilldown-back`); `$hyper-*` colours; `$header-font-family`.
+- Consumes: markup and classes from Task 2 (`body.mobile-drilldown`, `.site-title-bar`, `.mobile-menu`, Foundation-generated `.is-drilldown`, `.is-drilldown-submenu`, `.is-drilldown-submenu-parent`, `.js-drilldown-back`); `$hyper-*` colours; `$header-font-family`.
 - Produces: `@mixin drilldown-color($color)` used for each of `.gray .red .orange .green .blue .purple` on top-level items.
 
-- [x] **Step 1: Write the Sass**, all scoped under `body.drilldown`:
+- [x] **Step 1: Write the Sass**, all scoped under `body.mobile-drilldown`:
   - Title bar: light background (`$topbar-background`), logo left (max-height about 3rem), grey hamburger right.
   - Top-level rows: Oswald, uppercase, 1px dark bottom border, coloured text and coloured right-pointing triangle from `drilldown-color`; items without a colour class use the `gray` colour.
   - `.red > .is-drilldown-submenu` etc.: background is the darker shade, items white uppercase and smaller, white arrows, `.js-drilldown-back` larger. Start from `scale-color($color, $lightness: -20%)` and adjust by eye against the owner's screenshots.
@@ -112,8 +112,10 @@ Theme root is `themes/hyperpress-foundation/` (paths below are relative to it un
 - The mobile walker needed no change; only `items_wrap` in `hyperpress_mobile_nav()` differs by layout.
 - Drilldown initialised inside the hidden toggled bar sized correctly (no re-init needed in `foundation.js`).
 - Nested (third-level) panels needed the colour rule on every `.is-drilldown-submenu`, not only direct children of the top-level item.
-- On phones `.site-navigation` has 10px side padding; it is removed under `body.drilldown` (`small only`) so rows run edge to edge.
+- On phones `.site-navigation` has 10px side padding; it is removed under `body.mobile-drilldown` (`small only`) so rows run edge to edge.
 - Owner review tweak: "Back" is 1rem with a white left arrow; the repeated parent link (`.is-submenu-parent-item`) is the larger 1.25rem panel title.
+- The drilldown body class is `mobile-drilldown`, not `drilldown`: Foundation styles every `.drilldown a` (white background, padding), so a plain `drilldown` body class restyled all links on the page, including the desktop dropdown's. Found when switching the desktop dropdown to Foundation's triangle arrows.
+- Desktop dropdown arrows: the `»` glyph in `_navigation.scss` is replaced by Foundation's own triangle, recoloured white for `opens-right` (left border) and `opens-left` (right border) items.
 - The `lint-css` target is not inferred for this project, so Sass is checked by the build only.
 
 ## Known follow-ups
