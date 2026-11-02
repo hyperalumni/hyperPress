@@ -33,6 +33,13 @@ final class TopBarWalkerTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'opens-inner', $html );
 	}
 
+	public function test_dropdowns_open_to_the_right_by_default(): void {
+		$html = $this->desktop_menu_html( array( 'red' ) );
+
+		// Foundation's DropdownMenu reads this as `alignment: 'left'` and adds opens-right (flipping only when there is no room).
+		$this->assertStringContainsString( 'data-dropdown-menu data-alignment="left"', $html );
+	}
+
 	public function test_other_item_classes_are_kept(): void {
 		$html = $this->desktop_menu_html( array( 'red', 'opens-right', 'is-dropdown-submenu-parent' ) );
 

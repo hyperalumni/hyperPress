@@ -36,7 +36,7 @@ function hyperpress_top_bar_r(): void {
 		array(
 			'container'      => false,
 			'menu_class'     => 'dropdown menu desktop-menu',
-			'items_wrap'     => '<ul id="%1$s" class="%2$s" data-dropdown-menu>%3$s</ul>',
+			'items_wrap'     => '<ul id="%1$s" class="%2$s" data-dropdown-menu data-alignment="left">%3$s</ul>',
 			'theme_location' => 'top-bar-r',
 			'depth'          => 3,
 			'fallback_cb'    => false,
@@ -49,9 +49,10 @@ function hyperpress_top_bar_r(): void {
 add_filter( 'nav_menu_css_class', 'hyperpress_strip_dropdown_direction_classes', 10, 3 );
 
 /**
- * Foundation's DropdownMenu adds and flips opens-left, opens-right and opens-inner itself. Copies saved in a
- * menu item's CSS Classes field (a habit from older FoundationPress sites) would sit next to the live one, and
- * the arrow styles could no longer tell which direction is current.
+ * Foundation's DropdownMenu adds and flips opens-left, opens-right and opens-inner itself (the desktop menu's
+ * data-alignment="left" makes it start with opens-right). Copies saved in a menu item's CSS Classes field (a
+ * habit from older FoundationPress sites, used to force opens-right) would sit next to the live one, and the
+ * arrow styles could no longer tell which direction is current.
  *
  * @param string[] $classes CSS classes of the menu item.
  * @param WP_Post  $item    The menu item.
