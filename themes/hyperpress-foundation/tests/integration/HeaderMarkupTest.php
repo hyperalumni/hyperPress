@@ -54,6 +54,27 @@ final class HeaderMarkupTest extends WP_UnitTestCase {
 		$this->assertMatchesRegularExpression( '/site-mobile-logo[^>]*>\s*<a [^>]*rel="home"[^>]*>' . preg_quote( get_bloginfo( 'name' ), '/' ) . '<\/a>/', $html );
 	}
 
+	/**
+	 * @dataProvider toggle_attribute_provider
+	 */
+	public function test_the_menu_toggle_button_names_the_menu_it_controls( string $layout, string $controls, bool $reports_expanded ): void {
+		set_theme_mod( 'wpt_mobile_menu_layout', $layout );
+
+		$html = $this->render_header();
+
+		$this->assertMatchesRegularExpression( '/<button[^>]*class="menu-icon"[^>]*aria-controls="' . preg_quote( $controls, '/' ) . '"/', $html );
+		$this->assertSame( $reports_expanded ? 1 : 0, preg_match( '/<button[^>]*class="menu-icon"[^>]*aria-expanded="false"/', $html ) );
+	}
+
+	public static function toggle_attribute_provider(): array {
+		return array(
+			'topbar'    => array( 'topbar', 'mobile-menu', true ),
+			'drilldown' => array( 'drilldown', 'mobile-menu', true ),
+			// Foundation's OffCanvas plugin manages its own trigger state, so no initial aria-expanded.
+			'offcanvas' => array( 'offcanvas', 'off-canvas-menu', false ),
+		);
+	}
+
 	public function test_wp_body_open_fires_right_after_the_body_tag(): void {
 		add_action(
 			'wp_body_open',

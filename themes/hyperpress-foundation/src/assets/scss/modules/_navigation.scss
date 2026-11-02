@@ -97,6 +97,14 @@
         &.is-dropdown-submenu-parent.opens-left > a::after {
           border-right-color: $white;
         }
+
+        // Foundation defines no arrow for a submenu that opens below its item (no room on either side).
+        &.is-dropdown-submenu-parent.opens-inner > a::after {
+          @include css-triangle($dropdownmenu-arrow-size, $white, down);
+          right: 1rem;
+          left: auto;
+          margin-top: -0.5 * $dropdownmenu-arrow-size;
+        }
       }
     }
   }

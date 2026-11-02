@@ -45,12 +45,12 @@ defined( 'ABSPATH' ) || exit;
 					</span>
 				</div>
 				<div class="title-bar-right">
-					<button aria-label="<?php esc_attr_e( 'Main Menu', 'hyperpress' ); ?>" class="menu-icon" type="button"
+					<button aria-label="<?php esc_attr_e( 'Main Menu', 'hyperpress' ); ?>" class="menu-icon" type="button" <?php hyperpress_mobile_toggle_attributes(); ?>
 									data-toggle="<?php hyperpress_mobile_menu_id(); ?>"></button>
 				</div>
 			<?php else : ?>
 				<div class="title-bar-left">
-					<button aria-label="<?php esc_attr_e( 'Main Menu', 'hyperpress' ); ?>" class="menu-icon" type="button"
+					<button aria-label="<?php esc_attr_e( 'Main Menu', 'hyperpress' ); ?>" class="menu-icon" type="button" <?php hyperpress_mobile_toggle_attributes(); ?>
 									data-toggle="<?php hyperpress_mobile_menu_id(); ?>"></button>
 					<span class="site-mobile-title title-bar-title">
 						<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>

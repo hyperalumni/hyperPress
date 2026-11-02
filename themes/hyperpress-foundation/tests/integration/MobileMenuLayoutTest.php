@@ -144,7 +144,7 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'data-drilldown', $html );
 		$this->assertStringContainsString( 'data-parent-link="true"', $html );
 		$this->assertStringContainsString( 'data-auto-height="true"', $html );
-		$this->assertSame( '<li class="js-drilldown-back"><a tabindex="0">Back</a></li>', $this->back_button( $html ) );
+		$this->assertSame( '<li class="js-drilldown-back"><a tabindex="0" role="button">Back</a></li>', $this->back_button( $html ) );
 		$this->assertStringNotContainsString( 'data-accordion-menu', $html );
 		$this->assertStringContainsString( 'Child Item', $html );
 	}
@@ -162,7 +162,7 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 
 		$html = $this->mobile_nav_html();
 
-		$this->assertSame( '<li class="js-drilldown-back"><a tabindex="0">TRANSLATED</a></li>', $this->back_button( $html ) );
+		$this->assertSame( '<li class="js-drilldown-back"><a tabindex="0" role="button">TRANSLATED</a></li>', $this->back_button( $html ) );
 	}
 
 	public function test_back_label_is_escaped_for_both_the_attribute_and_the_html_it_carries(): void {
@@ -180,7 +180,7 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 
 		// Foundation inserts this string as HTML, so markup in a label must stay inert text.
 		$this->assertSame(
-			'<li class="js-drilldown-back"><a tabindex="0">It&#039;s &quot;a&quot; &amp; &lt;b&gt;100%&lt;/b&gt;</a></li>',
+			'<li class="js-drilldown-back"><a tabindex="0" role="button">It&#039;s &quot;a&quot; &amp; &lt;b&gt;100%&lt;/b&gt;</a></li>',
 			$this->back_button( $html )
 		);
 	}

@@ -189,12 +189,26 @@ function hyperpress_active_list_pages_class( $input ) {
 /**
  * Get mobile menu ID
  */
+function hyperpress_get_mobile_menu_id(): string {
+	return hyperpress_mobile_menu_layout() === 'offcanvas' ? 'off-canvas-menu' : 'mobile-menu';
+}
+
 function hyperpress_mobile_menu_id() {
-	if ( hyperpress_mobile_menu_layout() === 'offcanvas' ) {
-		echo 'off-canvas-menu';
-	} else {
-		echo 'mobile-menu';
+	echo esc_attr( hyperpress_get_mobile_menu_id() );
+}
+
+/**
+ * ARIA attributes for the hamburger button. Foundation's ResponsiveToggle sets none, so aria-expanded starts closed
+ * here and is kept in sync by src/assets/js/foundation.js. The off-canvas plugin manages its own trigger state.
+ */
+function hyperpress_mobile_toggle_attributes(): void {
+	$attributes = 'aria-controls="' . esc_attr( hyperpress_get_mobile_menu_id() ) . '"';
+
+	if ( hyperpress_mobile_menu_layout() !== 'offcanvas' ) {
+		$attributes .= ' aria-expanded="false"';
 	}
+
+	echo $attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts above.
 }
 
 /**
