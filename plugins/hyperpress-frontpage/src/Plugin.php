@@ -9,5 +9,6 @@ final class Plugin {
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 		SettingsPage::register();
 		MetaBoxes::register();
+		Countdowns::register();
 	}
 }
