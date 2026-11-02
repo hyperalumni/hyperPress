@@ -9,6 +9,7 @@ use HyperPress\Utils\Breadcrumbs;
 use HyperPress\Utils\Capabilities;
 use HyperPress\Utils\NotFound;
 use HyperPress\Utils\PostTypeRegistrar;
+use HyperPress\Utils\TaxonomyAdminFilter;
 use HyperPress\Utils\TaxonomyRegistrar;
 use HyperPress\Utils\TermSeeder;
 use HyperPress\Utils\Version;
@@ -90,6 +91,9 @@ final class Plugin {
 		TaxonomyRegistrar::register( self::district_definition() );
 		TaxonomyRegistrar::register( self::week_definition() );
 		TaxonomyRegistrar::register( self::type_definition() );
+		TaxonomyAdminFilter::register( self::DISTRICT, static fn(): string => __( 'All districts', 'hyperpress' ) );
+		TaxonomyAdminFilter::register( self::WEEK, static fn(): string => __( 'All weeks', 'hyperpress' ) );
+		TaxonomyAdminFilter::register( self::TYPE, static fn(): string => __( 'All competition types', 'hyperpress' ) );
 	}
 
 	/**

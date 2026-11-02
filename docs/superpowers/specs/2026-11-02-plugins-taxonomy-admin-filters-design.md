@@ -39,12 +39,15 @@ These are the only taxonomies the plugins register through `TaxonomyRegistrar`.
 - `hyperpress-season` `AdminFilter::render()` keeps its signature and calls the helper, so `SeasonAdminFilterTest` is unchanged.
 - Program registers "All programs" in `Plugin::boot`; competition registers its three; sponsor registers "All tiers".
 
-## Sponsor Tier: turn its query var on
+## Sponsor Tier: drop the query var override
 
-Tier was registered with `query_var => false` (a legacy choice on an internal taxonomy), so core ignores `?hyper_tier=` and the dropdown would filter nothing. The owner is fine with enabling it, so Tier drops the `'args' => array( 'query_var' => false )` override in `Plugin::tier_definition()` and takes the registrar default (`true`, giving `hyper_tier`). Every dropdown then works the same way, with no special case in the helper. Consequences:
+Tier was registered with `query_var => false` (a legacy choice on an internal taxonomy), so even in wp-admin core ignored `?hyper_tier=` and the dropdown would filter nothing. The owner is fine with enabling it. `Plugin::tier_definition()` therefore drops the `'args' => array( 'query_var' => false )` override and takes the registrar default (`true`).
 
-- `?hyper_tier=gold` also narrows front-end queries on sponsors (accepted by the owner).
-- `RegistrationParityTest` pins the legacy `query_var: false` for Tier; add a "deliberate change" exception there (the fixture stays a legacy snapshot).
+Core (`WP_Taxonomy::set_props`) keeps a non-public taxonomy's query var only while `is_admin()` is true, so the result is `hyper_tier` in wp-admin and `false` on the front end. Consequences (found while building, and better than first assumed):
+
+- `?hyper_tier=gold` filters the sponsors list in wp-admin; front-end queries are unaffected (no public exposure).
+- `RegistrationParityTest` needs no exception: outside wp-admin Tier's query var is still `false`, matching the legacy snapshot.
+- Tests for the Tier dropdown run as wp-admin (`set_current_screen( 'edit-hyper_sponsor' )` then `Sponsor::register()`).
 - Nothing else reads Tier's query var (`Ordering::is_season_scoped` reads only Season's).
 
 ## Constraints

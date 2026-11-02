@@ -3,6 +3,7 @@ namespace HyperPress\Program;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Utils\TaxonomyAdminFilter;
 use HyperPress\Utils\TaxonomyRegistrar;
 use HyperPress\Utils\TermSeeder;
 
@@ -45,6 +46,7 @@ final class Plugin {
 
 	public static function register(): void {
 		TaxonomyRegistrar::register( self::definition() );
+		TaxonomyAdminFilter::register( self::TAXONOMY, static fn(): string => __( 'All programs', 'hyperpress' ) );
 	}
 
 	/**

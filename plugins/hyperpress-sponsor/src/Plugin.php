@@ -7,6 +7,7 @@ use HyperPress\Utils\Banner;
 use HyperPress\Utils\Breadcrumbs;
 use HyperPress\Utils\Capabilities;
 use HyperPress\Utils\PostTypeRegistrar;
+use HyperPress\Utils\TaxonomyAdminFilter;
 use HyperPress\Utils\TaxonomyRegistrar;
 use HyperPress\Utils\TermSeeder;
 use HyperPress\Utils\Version;
@@ -71,6 +72,7 @@ final class Plugin {
 	public static function register(): void {
 		PostTypeRegistrar::register( self::definition() );
 		TaxonomyRegistrar::register( self::tier_definition() );
+		TaxonomyAdminFilter::register( self::TIER, static fn(): string => __( 'All tiers', 'hyperpress' ) );
 	}
 
 	public static function ensure_capabilities(): void {
@@ -124,8 +126,6 @@ final class Plugin {
 			'show_in_quick_edit' => false,
 			'show_admin_column'  => true,
 			'meta_box_cb'        => false,
-			// Legacy tier had query_var disabled on an internal, non-public taxonomy.
-			'args'               => array( 'query_var' => false ),
 		);
 	}
 }
