@@ -82,13 +82,10 @@ body.mobile-drilldown {
         line-height: 1.2;
       }
 
-      // Top-level rows: gray unless the item carries a colour class.
+      // Top-level rows: gray is the default, so an item with no colour class or with the `gray` class looks the same
+      // and needs no rule of its own. The other colour classes override it.
       > li {
         @include drilldown-color($hyper-gear-gray);
-
-        &.gray {
-          @include drilldown-color($hyper-gear-gray);
-        }
 
         &.red {
           @include drilldown-color($hyper-red);
