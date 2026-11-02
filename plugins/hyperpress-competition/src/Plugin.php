@@ -46,6 +46,7 @@ final class Plugin {
 		MetaBoxes::register();
 		Labels::register();
 		Countdown::register();
+		FrontpageCountdown::register();
 		Competitions::register();
 		Content::register();
 		Map::register();

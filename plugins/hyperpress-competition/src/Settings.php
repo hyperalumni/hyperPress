@@ -10,14 +10,18 @@ defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
  */
 final class Settings {
 
-	public const OPTION                  = 'hyperpress_competition';
-	public const BANNER_SUBTITLE         = 'hyperpress_competition_banner_subtitle';
-	public const BANNER_SUBTITLE_DEFAULT = '';
-	public const BANNER_IMAGE            = 'hyperpress_competition_banner_image';
-	public const PAST_ZERO               = 'hyperpress_competition_countdown_past_zero';
-	public const DAY_END                 = 'hyperpress_competition_day_end';
-	public const DAY_END_DEFAULT         = '20:00';
-	public const TIME_PATTERN            = '/^([01]\d|2[0-3]):[0-5]\d$/';
+	public const OPTION                      = 'hyperpress_competition';
+	public const BANNER_SUBTITLE             = 'hyperpress_competition_banner_subtitle';
+	public const BANNER_SUBTITLE_DEFAULT     = '';
+	public const BANNER_IMAGE                = 'hyperpress_competition_banner_image';
+	public const PAST_ZERO                   = 'hyperpress_competition_countdown_past_zero';
+	public const DAY_END                     = 'hyperpress_competition_day_end';
+	public const DAY_END_DEFAULT             = '20:00';
+	public const TIME_PATTERN                = '/^([01]\d|2[0-3]):[0-5]\d$/';
+	public const FRONTPAGE                   = 'hyperpress_competition_frontpage';
+	public const FRONTPAGE_LEAD_DAYS         = 'hyperpress_competition_frontpage_lead_days';
+	public const FRONTPAGE_LEAD_DAYS_DEFAULT = 60;
+	public const FRONTPAGE_LEAD_DAYS_MAX     = 365;
 
 	/**
 	 * Default values, keyed by field id.
@@ -28,8 +32,10 @@ final class Settings {
 		return array_merge(
 			self::archive_banner()->defaults(),
 			array(
-				self::PAST_ZERO => false,
-				self::DAY_END   => self::DAY_END_DEFAULT,
+				self::PAST_ZERO           => false,
+				self::DAY_END             => self::DAY_END_DEFAULT,
+				self::FRONTPAGE           => true,
+				self::FRONTPAGE_LEAD_DAYS => self::FRONTPAGE_LEAD_DAYS_DEFAULT,
 			)
 		);
 	}
@@ -107,5 +113,55 @@ final class Settings {
 		$value = is_string( $value ) ? trim( $value ) : '';
 
 		return 1 === preg_match( self::TIME_PATTERN, $value ) ? $value : '';
+	}
+
+	/**
+	 * Whether competitions are offered to the front page countdown.
+	 *
+	 * Option row missing: the default_option filter makes get_option() return the defaults (on). Row present: Meta Box
+	 * drops the key of an unchecked checkbox, so a missing key (or a non-array option) is off.
+	 */
+	public static function frontpage_enabled(): bool {
+		$option = get_option( self::OPTION );
+
+		return is_array( $option ) && ! empty( $option[ self::FRONTPAGE ] );
+	}
+
+	/**
+	 * How many days before its first counted day a competition's countdown can appear on the front page.
+	 *
+	 * Missing, malformed or out of range (0 to 365): the default.
+	 */
+	public static function frontpage_lead_days(): int {
+		$option = get_option( self::OPTION );
+		$days   = is_array( $option ) ? self::lead_days( $option[ self::FRONTPAGE_LEAD_DAYS ] ?? null ) : null;
+
+		return $days ?? self::FRONTPAGE_LEAD_DAYS_DEFAULT;
+	}
+
+	/**
+	 * Sanitize callback for the lead time field: whole days from 0 to 365 as a string, else '' (Meta Box then drops the key).
+	 *
+	 * @param mixed $value Submitted value.
+	 */
+	public static function sanitize_lead_days( $value ): string {
+		$days = self::lead_days( $value );
+
+		return null === $days ? '' : (string) $days;
+	}
+
+	/**
+	 * A whole number of days from 0 to 365 from an int or a digit string (surrounding space allowed), else null.
+	 *
+	 * @param mixed $value Stored or submitted value.
+	 */
+	private static function lead_days( $value ): ?int {
+		$text = is_int( $value ) ? (string) $value : ( is_string( $value ) ? trim( $value ) : '' );
+		if ( 1 !== preg_match( '/^\d{1,3}$/', $text ) ) {
+			return null;
+		}
+		$days = (int) $text;
+
+		return $days <= self::FRONTPAGE_LEAD_DAYS_MAX ? $days : null;
 	}
 }

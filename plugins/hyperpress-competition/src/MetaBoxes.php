@@ -38,6 +38,23 @@ final class MetaBoxes {
 					'type' => 'checkbox',
 				),
 				array(
+					'id'   => Settings::FRONTPAGE,
+					'name' => __( 'Show on the front page', 'hyperpress' ),
+					'desc' => __( 'Show a competition\'s countdown on the front page automatically while it is coming up. Only one countdown is shown at a time: the one that starts soonest.', 'hyperpress' ),
+					'type' => 'checkbox',
+				),
+				array(
+					'id'                => Settings::FRONTPAGE_LEAD_DAYS,
+					'name'              => __( 'Front page lead time (days)', 'hyperpress' ),
+					'desc'              => __( 'How many days before its first counted day a competition\'s countdown appears on the front page. It disappears when the last counted day ends.', 'hyperpress' ),
+					'type'              => 'number',
+					'min'               => 0,
+					'max'               => Settings::FRONTPAGE_LEAD_DAYS_MAX,
+					'step'              => 1,
+					'std'               => Settings::FRONTPAGE_LEAD_DAYS_DEFAULT,
+					'sanitize_callback' => array( Settings::class, 'sanitize_lead_days' ),
+				),
+				array(
 					'id'                => Settings::DAY_END,
 					'name'              => __( 'Days end at', 'hyperpress' ),
 					'desc'              => __( 'The countdown stays on a day until this time, then moves to the next day. A day can override it.', 'hyperpress' ),
