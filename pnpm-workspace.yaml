@@ -22,7 +22,7 @@ catalog:
   stylelint: 17.16.0
   stylelint-config-standard-scss: 17.0.0
   typescript: 7.0.2
-  uikit: 3.25.28
+  uikit: 3.25.29
   vite: 8.3.5
   vitest: *vitestVersion
 

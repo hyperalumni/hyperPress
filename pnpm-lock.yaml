@@ -208,8 +208,8 @@ catalogs:
       specifier: 7.0.2
       version: 7.0.2
     uikit:
-      specifier: 3.25.28
-      version: 3.25.28
+      specifier: 3.25.29
+      version: 3.25.29
     vite:
       specifier: 8.3.5
       version: 8.3.5
@@ -374,7 +374,7 @@ importers:
     dependencies:
       uikit:
         specifier: 'catalog:'
-        version: 3.25.28
+        version: 3.25.29
     devDependencies:
       '@types/uikit':
         specifier: 'catalog:'
@@ -396,7 +396,7 @@ importers:
         version: 1.107.1
       uikit:
         specifier: 'catalog:'
-        version: 3.25.28
+        version: 3.25.29
       vitest:
         specifier: 'catalog:'
         version: 5.0.5(@types/node@25.0.3)(happy-dom@21.0.4)(vite@8.3.5)
@@ -541,7 +541,7 @@ importers:
         version: link:../../libs/uikit-tokens
       uikit:
         specifier: 'catalog:'
-        version: 3.25.28
+        version: 3.25.29
     devDependencies:
       fflate:
         specifier: 'catalog:'
@@ -6513,8 +6513,8 @@ packages:
     engines: {node: '>=0.8.0'}
     hasBin: true
 
-  uikit@3.25.28:
-    resolution: {integrity: sha512-pbfKQ2wVaAfdoywdvcPdcB0dMMlbyAyC8aW8EbJk90tfaafMBRuL06qGkibfQMHbfBLBZri8xcygaABB03NDTw==}
+  uikit@3.25.29:
+    resolution: {integrity: sha512-6pxXLPUXs0qJMn2KW+/KMn03LWOlIm54BOVK6Lb/ZhTSC/6sjzBDLNyFEiWNyj152lterTE6+wHAHcA8LGHeXA==}
 
   uint8array-extras@1.5.0:
     resolution: {integrity: sha512-rvKSBiC5zqCCiDZ9kAOszZcDvdAHwwIKJG33Ykj43OKcWsnmcBRL09YTU4nOeHZ8Y2a7l1MgTd08SBe9A8Qj6A==}
@@ -13318,7 +13318,7 @@ snapshots:
 
   uglify-js@3.19.3: {}
 
-  uikit@3.25.28: {}
+  uikit@3.25.29: {}
 
   uint8array-extras@1.5.0: {}
 
