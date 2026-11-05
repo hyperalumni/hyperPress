@@ -1,7 +1,8 @@
 packages:
-  - themes/*
-  - plugins/*
-  - libs/*
+  - 'themes/*'
+  - 'plugins/*'
+  - 'libs/*'
+  - '!**/vendor/**'
 
 catalog:
   # Nx family — all @nx/* plugins must match the nx core version
