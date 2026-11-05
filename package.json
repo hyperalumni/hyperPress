@@ -2,9 +2,12 @@
   "name": "@hyper/press",
   "private": true,
   "scripts": {
+    "audit": "pnpm install --no-frozen-lockfile; pnpm audit --fix=override --interactive; pnpm install --no-frozen-lockfile; pnpm dedupe;",
     "preinstall": "npx only-allow pnpm",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check",
+    "inup": "pnpm dlx inup",
+    "knip": "pnpm dlx knip"
   },
   "devEngines": {
     "packageManager": {

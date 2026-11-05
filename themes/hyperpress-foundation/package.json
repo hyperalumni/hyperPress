@@ -8,16 +8,11 @@
   "private": true,
   "main": "gulpfile.mjs",
   "scripts": {
-    "audit": "pnpm install --no-frozen-lockfile; pnpm audit --fix=override --interactive; pnpm install --no-frozen-lockfile; pnpm dedupe;",
     "build": "gulp build --production",
     "dev": "gulp build --dev",
-    "inup": "pnpm dlx inup",
-    "knip": "pnpm dlx knip",
-    "outdated": "pnpm inup; pnpm dedupe",
     "package": "gulp package --production",
     "phpcs": "gulp phpcs",
     "phpcbf": "gulp phpcbf",
-    "preinstall": "npx only-allow pnpm",
     "start": "gulp",
     "test:node": "node --test 'tests/node/*.test.mjs'"
   },
