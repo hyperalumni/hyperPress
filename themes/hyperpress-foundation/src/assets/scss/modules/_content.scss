@@ -91,6 +91,8 @@
         .sidebar {
           @include breakpoint(small) {
             @include xy-cell(12);
+            // Stacked below the content: the grid has no vertical gutter, so space it explicitly.
+            margin-top: 2rem;
           }
 
           @include breakpoint(medium) {
