@@ -1,5 +1,8 @@
 .breadcrumbs {
   display: flex;
+  // Let whole crumbs drop to the next line: a long trail otherwise outgrows the screen on a phone.
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
 
   li {
     display: flex;
