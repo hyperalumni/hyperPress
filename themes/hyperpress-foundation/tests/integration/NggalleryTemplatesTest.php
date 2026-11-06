@@ -84,12 +84,49 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 		);
 
 		$this->assertStringContainsString( '<div class="cell" id="ngg-image-5">', $html );
-		$this->assertStringContainsString( 'class="thumbnail"', $html );
+		$this->assertStringContainsString( 'class="lightbox thumbnail"', $html );
 		$this->assertStringContainsString( 'data-image-id="5"', $html );
 		$this->assertStringContainsString( 'loading="lazy"', $html );
 		$this->assertStringContainsString( "width='240' height='160'", $html );
 		$this->assertStringContainsString( 'alt="Alt text"', $html );
 		$this->assertStringContainsString( 'src="https://example.test/thumb-5.jpg"', $html );
+	}
+
+	public function test_gallery_merges_the_thumbnail_class_into_the_thumbcode_class(): void {
+		$html = $this->render(
+			'gallery.php',
+			array(
+				'gallery'    => $this->gallery(),
+				'images'     => array( $this->image( array( 'thumbcode' => 'class="ngg-simplelightbox" rel="x" data-image-id="5"' ) ) ),
+				'pagination' => '',
+			)
+		);
+
+		$this->assertSame( 1, preg_match( '/<div class="cell" id="ngg-image-5">\s*(<a [^>]*>)/s', $html, $match ) );
+		$anchor = $match[1];
+
+		$this->assertSame( 1, substr_count( $anchor, 'class=' ), 'The anchor must carry exactly one class attribute.' );
+		$this->assertSame( 1, preg_match( '/class="([^"]*)"/', $anchor, $classes ) );
+		$this->assertContains( 'ngg-simplelightbox', preg_split( '/\s+/', $classes[1] ) );
+		$this->assertContains( 'thumbnail', preg_split( '/\s+/', $classes[1] ) );
+		$this->assertStringContainsString( 'rel="x"', $anchor );
+		$this->assertStringContainsString( 'data-image-id="5"', $anchor );
+	}
+
+	public function test_gallery_adds_the_thumbnail_class_when_the_thumbcode_has_none(): void {
+		$html = $this->render(
+			'gallery.php',
+			array(
+				'gallery'    => $this->gallery(),
+				'images'     => array( $this->image( array( 'thumbcode' => 'rel="x" data-image-id="5"' ) ) ),
+				'pagination' => '',
+			)
+		);
+
+		$this->assertSame( 1, preg_match( '/<div class="cell" id="ngg-image-5">\s*(<a [^>]*>)/s', $html, $match ) );
+		$this->assertSame( 1, substr_count( $match[1], 'class=' ) );
+		$this->assertStringContainsString( 'class="thumbnail"', $match[1] );
+		$this->assertStringContainsString( 'rel="x"', $match[1] );
 	}
 
 	public function test_gallery_image_attributes_go_through_the_nextgen_filter(): void {

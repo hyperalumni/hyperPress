@@ -1,4 +1,4 @@
-> **STATUS: ✅ COMPLETED** (2026-11-05). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 393 tests, 1075 assertions, 12 skipped); awaiting the owner's visual check (Task 7).
+> **STATUS: ✅ COMPLETED** (2026-11-05). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 395 tests, 1086 assertions, 12 skipped); awaiting the owner's visual check (Task 7).
 
 # NextGEN Legacy Templates on Foundation 6 Implementation Plan
 
@@ -500,10 +500,19 @@ use \Imagely\NGG\Util\Router;
 					continue;
 				}
 				?>
+				<?php
+				// NextGEN's thumbcode carries its own class attribute (the lightbox hook), so a second
+				// class attribute would be dropped by the browser: merge the Foundation class instead.
+				$anchor = new WP_HTML_Tag_Processor(
+					'<a href="' . Router::esc_url( $image->imageURL ) . '" title="' . esc_attr( $image->description ) . '" ' . $image->thumbcode . '>' // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- href escaped by NextGen's Router::esc_url(); property names are defined by NextGen
+				);
+				if ( $anchor->next_tag( 'a' ) ) {
+					$anchor->add_class( 'thumbnail' );
+				}
+				?>
 				<div class="cell" id="ngg-image-<?php echo (int) $image->pid; ?>">
-					<a class="thumbnail" href="<?php echo Router::esc_url( $image->imageURL ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>"
-						title="<?php echo esc_attr( $image->description ); ?>"
-						<?php echo $image->thumbcode; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- lightbox attributes built by NextGen ?>>
+					<?php echo $anchor->get_updated_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- href and title are escaped above; thumbcode is raw attribute HTML built by NextGen (lightbox class and data-* attributes) ?>
+
 						<img<?php echo GalleryImage::attributes( array( 'loading' => 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attributes() escapes each attribute with esc_attr() ?>
 							src="<?php echo Router::esc_url( $image->thumbnailURL ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>"
 							alt="<?php echo esc_attr( I18N::ngg_plain_text_alt_title_attributes( $image->alttext ) ); ?>"
@@ -771,7 +780,7 @@ use \Imagely\NGG\Util\Router;
 			<h5><?php echo esc_html( $album->name ); ?></h5>
 		<?php endif; ?>
 		<?php if ( ! empty( $album->albumdesc ) ) : ?>
-			<p><?php echo wp_kses_post( $album->albumdesc ); ?></p>
+			<div><?php echo wp_kses_post( $album->albumdesc ); ?></div>
 		<?php endif; ?>
 	</div>
 <?php endif; ?>
@@ -914,7 +923,7 @@ Expected: the first new test FAILs (no callout yet); the second may already pass
 				<?php if ( ! empty( $gallery->title ) ) : ?>
 					<h5><?php echo esc_html( $gallery->title ); ?></h5>
 				<?php endif; ?>
-				<p><?php echo wp_kses_post( $gallery->description ); ?></p>
+				<div><?php echo wp_kses_post( $gallery->description ); ?></div>
 			</div>
 		<?php endif; ?>
 ```
@@ -1005,7 +1014,7 @@ Executed 2026-11-05 on branch `feat/nggallery-foundation-templates`.
 
 - `composer lint`: 0 violations.
 - `composer test:unit`: OK (64 tests, 269 assertions).
-- `composer test:integration`: OK, but incomplete, skipped, or risky tests: 393 tests, 1075 assertions, 12 skipped (the pre-existing skips).
+- `composer test:integration`: OK, but incomplete, skipped, or risky tests: 395 tests, 1086 assertions, 12 skipped (the pre-existing skips; counts after the final-review fix wave, 393 and 1075 before it).
 - `oxfmt --check` on the spec and this plan: all matched files use the correct format. `pnpm fmt:check` over the repo flags only `docs/superpowers/plans/2026-11-01-plugins-link-shortcode.md` and `docs/superpowers/specs/2026-11-01-plugins-link-shortcode-design.md`, which this branch did not change.
 
 **Deviations during execution**
@@ -1020,8 +1029,11 @@ Executed 2026-11-05 on branch `feat/nggallery-foundation-templates`.
 **Parked minors**
 
 - A gallery whose images are all hidden renders an empty `grid-x` with no callout.
-- The gallery description is wrapped in a `<p>`, so block-level tags that `wp_kses_post` allows nest badly (same in the album header).
 - `$gallery->previewpic`, `pagelink` and `$pagination` are read unguarded in `album-compact.php`, as in stock NextGEN.
 - There is no explicit test for `open_gallery_in_lightbox = 0`.
+
+**Final review**
+
+The whole-branch review found a duplicate-`class` bug in `gallery.php`: the anchor printed `class="thumbnail"` and then NextGEN's `$image->thumbcode`, which carries its own `class` attribute (the default lightbox setting is `class="ngg-simplelightbox" rel="%GALLERY_NAME%"`). Browsers keep the first `class`, so NextGEN's `.ngg-simplelightbox` hook was lost. The test stub used `class="lightbox"` and never exercised a second class. Fixed in the final fix-wave commit: the anchor's opening tag is built as a string and the Foundation class is merged through `WP_HTML_Tag_Processor` (`add_class( 'thumbnail' )`); the regression tests cover a thumbcode with and without a class. The same commit changes the gallery and album description wrappers from `<p>` to `<div>`, because `wp_kses_post` may return block-level tags. The remaining parked minors (the all-hidden empty grid, the unguarded album fields, the missing `open_gallery_in_lightbox = 0` test) were left alone.
 
 **Pending:** Task 7 (the owner's visual check in a browser) is not done; its checkboxes stay unticked.

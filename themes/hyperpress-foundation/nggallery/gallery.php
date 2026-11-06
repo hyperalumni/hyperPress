@@ -33,7 +33,7 @@ use Imagely\NGG\Util\Router;
 				<?php if ( ! empty( $gallery->title ) ) : ?>
 					<h5><?php echo esc_html( $gallery->title ); ?></h5>
 				<?php endif; ?>
-				<p><?php echo wp_kses_post( $gallery->description ); ?></p>
+				<div><?php echo wp_kses_post( $gallery->description ); ?></div>
 			</div>
 		<?php endif; ?>
 
@@ -52,10 +52,19 @@ use Imagely\NGG\Util\Router;
 					continue;
 				}
 				?>
+				<?php
+				// NextGEN's thumbcode carries its own class attribute (the lightbox hook), so a second
+				// class attribute would be dropped by the browser: merge the Foundation class instead.
+				$anchor = new WP_HTML_Tag_Processor(
+					'<a href="' . Router::esc_url( $image->imageURL ) . '" title="' . esc_attr( $image->description ) . '" ' . $image->thumbcode . '>' // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- href escaped by NextGen's Router::esc_url(); property names are defined by NextGen
+				);
+				if ( $anchor->next_tag( 'a' ) ) {
+					$anchor->add_class( 'thumbnail' );
+				}
+				?>
 				<div class="cell" id="ngg-image-<?php echo (int) $image->pid; ?>">
-					<a class="thumbnail" href="<?php echo Router::esc_url( $image->imageURL ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- escaped by NextGen's Router::esc_url(); property names are defined by NextGen ?>"
-						title="<?php echo esc_attr( $image->description ); ?>"
-						<?php echo $image->thumbcode; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- lightbox attributes built by NextGen ?>>
+					<?php echo $anchor->get_updated_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- href and title are escaped above; thumbcode is raw attribute HTML built by NextGen (lightbox class and data-* attributes) ?>
+
 						<img<?php echo GalleryImage::attributes( array( 'loading' => 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attributes() escapes each attribute with esc_attr() ?>
 							src="<?php echo Router::esc_url( $image->thumbnailURL ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- escaped by NextGen's Router::esc_url(); property names are defined by NextGen ?>"
 							alt="<?php echo esc_attr( I18N::ngg_plain_text_alt_title_attributes( $image->alttext ) ); ?>"

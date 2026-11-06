@@ -23,7 +23,7 @@ use Imagely\NGG\Util\Router;
 			<h5><?php echo esc_html( $album->name ); ?></h5>
 		<?php endif; ?>
 		<?php if ( ! empty( $album->albumdesc ) ) : ?>
-			<p><?php echo wp_kses_post( $album->albumdesc ); ?></p>
+			<div><?php echo wp_kses_post( $album->albumdesc ); ?></div>
 		<?php endif; ?>
 	</div>
 <?php endif; ?>
