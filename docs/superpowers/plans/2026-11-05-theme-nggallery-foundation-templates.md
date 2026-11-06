@@ -48,7 +48,7 @@ NextGEN builds its pagination as one HTML string; this helper reshapes it into [
 - Create: `tests/integration/NextGenPaginationTest.php`
 - Modify: `library/helpers.php` (next to `hyperpress_nextgen_ratio()`)
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```php
 <?php
@@ -99,12 +99,12 @@ final class NextGenPaginationTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [x] **Step 2: Run the tests and confirm they fail**
 
 Run: `docker compose run --rm php composer test:integration -- --filter NextGenPaginationTest`
 Expected: FAIL with `Call to undefined function hyperpress_nextgen_pagination()`.
 
-- [ ] **Step 3: Add the helper to `library/helpers.php`**
+- [x] **Step 3: Add the helper to `library/helpers.php`**
 
 ```php
 /**
@@ -156,12 +156,12 @@ function hyperpress_nextgen_pagination( string $html ): string {
 }
 ```
 
-- [ ] **Step 4: Run the tests and lint**
+- [x] **Step 4: Run the tests and lint**
 
 Run: `docker compose run --rm php composer test:integration -- --filter NextGenPaginationTest` then `docker compose run --rm php composer lint`
 Expected: PASS and 0 violations. The helper output contains NextGEN-built anchor attributes and link text; the templates pass it through `wp_kses_post()`, so the helper itself needs no escaping beyond what it adds.
 
-- [ ] **Step 5: Tick the Task 0 boxes in this plan and commit**
+- [x] **Step 5: Tick the Task 0 boxes in this plan and commit**
 
 ```sh
 git add themes/hyperpress-foundation/library/helpers.php themes/hyperpress-foundation/tests/integration/NextGenPaginationTest.php docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md
