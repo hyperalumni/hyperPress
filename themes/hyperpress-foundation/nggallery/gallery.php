@@ -28,6 +28,15 @@ use Imagely\NGG\Util\Router;
 
 	<div class="ngg-galleryoverview" id="<?php echo esc_attr( $gallery->anchor ); ?>">
 
+		<?php if ( ! empty( $gallery->description ) ) : ?>
+			<div class="gallery-info callout primary">
+				<?php if ( ! empty( $gallery->title ) ) : ?>
+					<h5><?php echo esc_html( $gallery->title ); ?></h5>
+				<?php endif; ?>
+				<p><?php echo wp_kses_post( $gallery->description ); ?></p>
+			</div>
+		<?php endif; ?>
+
 		<?php if ( $gallery->show_slideshow ) : ?>
 			<p class="text-center"><a class="button small hollow" href="<?php echo Router::esc_url( $gallery->slideshow_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>"><?php echo esc_html( $gallery->slideshow_link_text ); ?></a></p>
 		<?php endif; ?>

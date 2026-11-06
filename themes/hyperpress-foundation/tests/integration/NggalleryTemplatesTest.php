@@ -202,6 +202,51 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'grid-x', $html );
 	}
 
+	public function test_gallery_shows_its_title_and_description_in_a_callout_above_the_grid(): void {
+		$html = $this->render(
+			'gallery.php',
+			array(
+				'gallery'    => $this->gallery(
+					array(
+						'title'       => 'Spring <i>2026</i>',
+						'description' => '<strong>Notes</strong><script>x()</script>',
+					)
+				),
+				'images'     => array( $this->image() ),
+				'pagination' => '',
+			)
+		);
+
+		$this->assertStringContainsString( 'gallery-info callout primary', $html );
+		$this->assertStringContainsString( '<h5>Spring &lt;i&gt;2026&lt;/i&gt;</h5>', $html );
+		$this->assertStringContainsString( '<strong>Notes</strong>', $html );
+		$this->assertStringNotContainsString( '<script>', $html );
+		$this->assertLessThan( strpos( $html, 'grid-x' ), strpos( $html, 'gallery-info' ) );
+	}
+
+	public function test_gallery_has_no_callout_without_a_description(): void {
+		$vars = array(
+			'images'     => array( $this->image() ),
+			'pagination' => '',
+		);
+
+		$without = $this->render( 'gallery.php', $vars + array( 'gallery' => $this->gallery() ) );
+		$title   = $this->render(
+			'gallery.php',
+			$vars + array(
+				'gallery' => $this->gallery(
+					array(
+						'title'       => 'Only a title',
+						'description' => '',
+					)
+				),
+			)
+		);
+
+		$this->assertStringNotContainsString( 'gallery-info', $without );
+		$this->assertStringNotContainsString( 'gallery-info', $title );
+	}
+
 	public function test_gallery_renders_nothing_without_a_gallery(): void {
 		$this->assertSame(
 			'',

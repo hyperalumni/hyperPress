@@ -852,6 +852,80 @@ git add themes/hyperpress-foundation/nggallery/album-compact.php themes/hyperpre
 git commit -m "refactor(theme): nextgen compact album with nested foundation cards" -- themes/hyperpress-foundation/nggallery/album-compact.php themes/hyperpress-foundation/tests/integration/NggalleryTemplatesTest.php docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md
 ```
 
+### Task 4b: Gallery title and description callout
+
+NextGEN fills `$gallery->title` and `$gallery->description` (the description is `html_entity_decode( stripslashes( galdesc ) )`) from the gallery record when a display shows a single gallery (`DisplayType/Controller.php:676-680`); for mixed or tag displays they are empty. Mirror the album header: a callout at the top of the gallery, only when there is a description.
+
+**Files:**
+
+- Modify: `tests/integration/NggalleryTemplatesTest.php`, `nggallery/gallery.php`
+
+- [x] **Step 1: Add the failing tests** (before `test_gallery_renders_nothing_without_a_gallery`)
+
+```php
+	public function test_gallery_shows_its_title_and_description_in_a_callout_above_the_grid(): void {
+		$html = $this->render(
+			'gallery.php',
+			array(
+				'gallery'    => $this->gallery(
+					array(
+						'title'       => 'Spring <i>2026</i>',
+						'description' => '<strong>Notes</strong><script>x()</script>',
+					)
+				),
+				'images'     => array( $this->image() ),
+				'pagination' => '',
+			)
+		);
+
+		$this->assertStringContainsString( 'gallery-info callout primary', $html );
+		$this->assertStringContainsString( '<h5>Spring &lt;i&gt;2026&lt;/i&gt;</h5>', $html );
+		$this->assertStringContainsString( '<strong>Notes</strong>', $html );
+		$this->assertStringNotContainsString( '<script>', $html );
+		$this->assertLessThan( strpos( $html, 'grid-x' ), strpos( $html, 'gallery-info' ) );
+	}
+
+	public function test_gallery_has_no_callout_without_a_description(): void {
+		$vars = array(
+			'images'     => array( $this->image() ),
+			'pagination' => '',
+		);
+
+		$without = $this->render( 'gallery.php', $vars + array( 'gallery' => $this->gallery() ) );
+		$title   = $this->render( 'gallery.php', $vars + array( 'gallery' => $this->gallery( array( 'title' => 'Only a title', 'description' => '' ) ) ) );
+
+		$this->assertStringNotContainsString( 'gallery-info', $without );
+		$this->assertStringNotContainsString( 'gallery-info', $title );
+	}
+```
+
+- [x] **Step 2: Run, confirm FAIL**
+
+Run: `docker compose run --rm php composer test:integration -- --filter NggalleryTemplatesTest`
+Expected: the first new test FAILs (no callout yet); the second may already pass.
+
+- [x] **Step 3: Add the callout to `gallery.php`**, directly after the wrapper's opening `<div class="ngg-galleryoverview" ...>` and before the slideshow link:
+
+```php
+		<?php if ( ! empty( $gallery->description ) ) : ?>
+			<div class="gallery-info callout primary">
+				<?php if ( ! empty( $gallery->title ) ) : ?>
+					<h5><?php echo esc_html( $gallery->title ); ?></h5>
+				<?php endif; ?>
+				<p><?php echo wp_kses_post( $gallery->description ); ?></p>
+			</div>
+		<?php endif; ?>
+```
+
+- [x] **Step 4: Run the tests and lint** (`--filter NggalleryTemplatesTest`, then `composer lint`). Expected: PASS and 0 violations.
+
+- [x] **Step 5: Tick this task's boxes in this plan and commit**
+
+```sh
+git add themes/hyperpress-foundation/nggallery/gallery.php themes/hyperpress-foundation/tests/integration/NggalleryTemplatesTest.php docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md
+git commit -m "feat(theme): gallery title and description callout" -- themes/hyperpress-foundation/nggallery/gallery.php themes/hyperpress-foundation/tests/integration/NggalleryTemplatesTest.php docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md
+```
+
 ### Task 5: Full verification
 
 **Files:** none
