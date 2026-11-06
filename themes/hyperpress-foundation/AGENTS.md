@@ -36,6 +36,10 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
   setting selects the parent theme. `gallery.php` keeps `class="ngg-galleryoverview"` and the anchor `id` on its outer
   wrapper because NextGEN's AJAX pagination script finds the gallery through them; NextGEN's pagination HTML is reshaped
   by `hyperpress_nextgen_pagination()` (`library/helpers.php`).
+  Present: `gallery.php`, `gallery-caption.php`, `album-compact.php`, `album-extend.php`, `imagebrowser.php`,
+  `imagebrowser-caption.php`, `gallery-carousel.php` and `Widget/Display/Gallery.php` (overrides NextGEN's random-image
+  widget template with no widget setting). Shared markup is in `template-parts/nextgen/`: `gallery-grid.php` (a
+  `$captions` flag adds the figcaptions) and `imagebrowser.php`. Keep NextGEN's JS hooks (ids and classes) in any change.
 
 ## Direction
 

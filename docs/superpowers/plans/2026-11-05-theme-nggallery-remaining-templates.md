@@ -1,3 +1,5 @@
+> **STATUS: ✅ COMPLETED** (2026-11-06). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 548 tests, 1443 assertions, 12 skipped); the owner's visual check on the live site (Task 7 Step 3) is still to do.
+
 # NextGEN Remaining Templates on Foundation 6 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -122,10 +124,10 @@ What is known (NextGEN 4.5.5, verified in the source and on production on 2026-1
 
 ### Task 7: Verification and notes
 
-- [ ] **Step 1:** `docker compose run --rm php composer lint`, `composer test:unit`, `composer test:integration` from `themes/hyperpress-foundation/`: lint 0 violations; suites pass.
-- [ ] **Step 2:** `pnpm exec oxfmt --check` on this plan and any new Markdown.
+- [x] **Step 1:** `docker compose run --rm php composer lint`, `composer test:unit`, `composer test:integration` from `themes/hyperpress-foundation/`: lint 0 violations; suites pass.
+- [x] **Step 2:** `pnpm exec oxfmt --check` on this plan and any new Markdown.
 - [ ] **Step 3: Owner visual check (manual).** Set the Template of each display and of the widget to the parent-theme file. Check at 400px, 800px and 1200px: album-extend stacks on small screens; captions line up under the thumbnails; the image browser moves between images in place (the AJAX path) and its buttons work; the carousel behaves as chosen in Task 5; the widget looks right in a real sidebar with random images; no NextGEN float, border or background shows.
-- [ ] **Step 4:** Fill in "Outcome / execution notes", add the COMPLETED banner at the top, and update `docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md` (follow-ups) in the same commit.
+- [x] **Step 4:** Fill in "Outcome / execution notes", add the COMPLETED banner at the top, and update `docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md` (follow-ups) in the same commit.
 
 ## Known follow-ups
 
@@ -135,8 +137,43 @@ What is known (NextGEN 4.5.5, verified in the source and on production on 2026-1
 
 ## Outcome / execution notes
 
-(Filled in on completion.)
+Executed 2026-11-05 and 2026-11-06 on branch `feat/nggallery-remaining-templates`.
 
-**Task 6 (widget template), done in the working tree, not committed; Tasks 1-5 are still open.** Step 1: `static/Widget/display.css` styles only `.ngg-widget` (overflow hidden, padding) and `.ngg-widget img` (border, margin, padding, `float: left`); `nextgen_basic_thumbnails.css` has no rule for `.ngg-widget` or `.ngg_images`, and no NextGEN script touches either class. The new template drops the `ngg-widget` class, so none of those rules apply and nothing had to be neutralised. The lightbox (`nextgen_simple_lightbox_init.js`) binds to every `.ngg-simplelightbox` link wherever it sits, so a link inside a grid cell keeps working. One Sass rule was needed, in `components/_nggallery.scss`: `.ngg_images a.thumbnail` is `display: block` and its `img` is `width: 100%; height: auto`, because the widget's `width`/`height` attributes are only maximum sizes (checked in `dist/assets/css/app.css` after `pnpm dev`). `nggallery/Widget/Display/Gallery.php` is self-contained (it does not use the shared grid partial of Task 1). It also keeps the `title` attribute on the `<img>` that NextGEN's own template prints. Tests: `NggalleryWidgetTemplateTest` has 14 tests, 50 assertions; `composer lint` is clean. Found after deploying (2026-11-06): the first version used `small-up-2` only, and in the narrow sidebar the cells stacked one per row on screens from the medium breakpoint up. Foundation computes a cell's width per breakpoint only for breakpoints that carry a `-up-N` class, and the gutter grows from 20px to 30px at medium, so the width (still using the 20px gutter) plus the larger margins no longer fitted twice into the row. The grid is now `small-up-2 medium-up-2`, verified on the live page (two cells per row, 166px wide). `gallery.php` is not affected because it always lists the small, medium and large classes.
+**Commits**
+
+| Task | Commit                                                                    |
+| ---- | ------------------------------------------------------------------------- |
+| 1    | `61f2c1cb` share the nextgen gallery grid partial                         |
+| 2    | `d21c3ba6` extended album on media objects                                |
+| 3    | `22c48440` gallery with captions, plus fix `5760f63a` (caption decoding)  |
+| 4    | `938c0a53` image browser, plus fix `ddaa20ee` (title decoding)            |
+| 5    | `2633dbc4` carousel on an image strip                                     |
+| 6    | `f1be4bf3` widget template (done in the previous session)                 |
+
+**Verification** (from `themes/hyperpress-foundation/`, in Docker, 2026-11-06): `composer lint` exit 0; `composer test:unit` OK, 64 tests, 269 assertions; `composer test:integration` OK, 548 tests, 1443 assertions, 12 skipped.
+
+**Deviations during execution**
+
+- Task 3: the caption must be decoded with `I18N::ngg_decode_sanitized_html_content()` and then `wp_kses_post()`, as the stock template does. The first attempt skipped the decode and was sent back (`5760f63a`).
+- Task 4: the title needed the same decode (`ddaa20ee`). The two stock image browser templates are byte-identical, so one partial (`template-parts/nextgen/imagebrowser.php`) serves both files. NextGEN's image browser wraps around, so the disabled previous/next buttons are rarely shown.
+- Task 5: design B (page-load navigation, current image, button group, thumbnail strip) instead of Orbit; the gate facts are in the Task 5 paragraph above.
+- Task 6: `small-up-2` alone stacked the cells from the medium breakpoint up; fixed with `small-up-2 medium-up-2` (see the Task 6 paragraph above).
+
+**Parked minors** (not fixed; none affects the output on the sites)
+
+- Task 1: the test trait needs a `require_once` of the stubs in each test class that uses it.
+- Task 2: the counter cast for non-numeric strings is not handled, and no test covers a numeric-string counter.
+- Task 3: a caption of `"0"` is dropped; no test renders the gallery and the caption variant in sequence to check that `$captions` does not leak.
+- Task 4: no test for the description decode; the nesting of the previous/next links is not asserted; the arrow glyphs are not `aria-hidden`; an empty `alttext` gives an empty `h3`.
+- Task 5: the single-class assertion on the current image is only indirect; the direct-child test of the strip is weak; the alt attribute-breaking test is weak; no test with a string `pid`.
+
+**What the owner should check on the live site** (Task 7 Step 3, at 400px, 800px and 1200px)
+
+- A captions gallery: captions line up under the thumbnails.
+- An image browser: previous/next swap the image in place (the AJAX path keeps working) and the buttons work.
+- The carousel: current image, previous/next buttons, thumbnail strip with the current one marked, pagination.
+- An extended album: the media objects stack on small screens.
+
+**Task 6 (widget template), committed in `f1be4bf3`.** Step 1: `static/Widget/display.css` styles only `.ngg-widget` (overflow hidden, padding) and `.ngg-widget img` (border, margin, padding, `float: left`); `nextgen_basic_thumbnails.css` has no rule for `.ngg-widget` or `.ngg_images`, and no NextGEN script touches either class. The new template drops the `ngg-widget` class, so none of those rules apply and nothing had to be neutralised. The lightbox (`nextgen_simple_lightbox_init.js`) binds to every `.ngg-simplelightbox` link wherever it sits, so a link inside a grid cell keeps working. One Sass rule was needed, in `components/_nggallery.scss`: `.ngg_images a.thumbnail` is `display: block` and its `img` is `width: 100%; height: auto`, because the widget's `width`/`height` attributes are only maximum sizes (checked in `dist/assets/css/app.css` after `pnpm dev`). `nggallery/Widget/Display/Gallery.php` is self-contained (it does not use the shared grid partial of Task 1). It also keeps the `title` attribute on the `<img>` that NextGEN's own template prints. Tests: `NggalleryWidgetTemplateTest` has 14 tests, 50 assertions; `composer lint` is clean. Found after deploying (2026-11-06): the first version used `small-up-2` only, and in the narrow sidebar the cells stacked one per row on screens from the medium breakpoint up. Foundation computes a cell's width per breakpoint only for breakpoints that carry a `-up-N` class, and the gutter grows from 20px to 30px at medium, so the width (still using the 20px gutter) plus the larger margins no longer fitted twice into the row. The grid is now `small-up-2 medium-up-2`, verified on the live page (two cells per row, 166px wide). `gallery.php` is not affected because it always lists the small, medium and large classes.
 
 **Task 5 (carousel), fallback design chosen after the gate.** Gate: (a) `$images` is only the current page of the gallery (`images_per_page`, 24 by default), not the whole gallery; `$current` is the image of that page whose slug matches `pid`, else the page's first image. (b) `imageURL` and `url` resolve to the full-size URL (`LegacyImage`). (c) `$prev` and `$next` link to thumbnail pages, not images, and `create_pagination` is buggy: `$prev` is always false, and on pages after the first `$next` is the previous page. Decision: not Orbit. A slideshow would cover only one page of 24, Orbit has no lazy loading of its own and sizes its container by slide height, and its end-of-page navigation would depend on the unreliable `$next`. Orbit becomes viable if `images_per_page` is set to 0 for carousel galleries (the whole gallery on one page). `nggallery/gallery-carousel.php` therefore keeps NextGEN's page-load navigation: the current image large (`img.thumbnail`), previous/next image buttons computed from the order of the page's visible images (a disabled `span` at the page edges), a `grid-x grid-margin-x small-up-4 medium-up-6` thumbnail strip with the current one marked (`is-current`, `aria-current="true"`), then the pagination (`$pagination` does reach the carousel template; the stock one never printed it). `$prev` and `$next` are never printed. The wrapper has no `id` and the buttons avoid the `prev`/`next`/`page-numbers` classes, so NextGEN's AJAX pagination never replaces the markup. One Sass rule for `a.thumbnail.is-current` in `components/_nggallery.scss`. Tests: `NggalleryCarouselTest`, 24 tests, 57 assertions; `composer lint` clean.
