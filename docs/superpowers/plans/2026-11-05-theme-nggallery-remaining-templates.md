@@ -85,10 +85,10 @@ Stock behaviour (4.5.5, 106 lines): the gallery template plus a caption under ea
 
 Stock behaviour (4.5.5, 67 lines each; the two files are described as identical, so diff them first and add a flag to the partial only if they differ): `$image` (`anchor`, `previous_pid`, `previous_image_link`, `next_pid`, `next_image_link`, `number`, `total`, `alttext`, `href_link` = NextGEN-built link around the image, `description`) and `$displayed_gallery->id()`.
 
-- [ ] **Step 1: Write the failing tests.** Cover: the wrapper keeps `class="ngg-imagebrowser"`, `id="ngg-imagebrowser-<anchor>"` and `data-nextgen-gallery-id` (so the AJAX script keeps working); the title as `h3`; the image from `$image->href_link` inside a centred container with `thumbnail` added to the first `<a>`; previous and next as a `button-group` of `a.button.hollow` that keep `class` `ngg-browser-prev` / `ngg-browser-next`, their `id`s (`ngg-prev-<pid>`, `ngg-next-<pid>`) and `href`s; a missing previous or next link renders a `disabled` button without the NextGEN class; the counter ("Image 3 of 12" with translatable text); the description in a `callout`; escaping of `alttext`.
-- [ ] **Step 2: Run, confirm FAIL.**
-- [ ] **Step 3: Write the partial and the two files.** To add `thumbnail` to the link NextGEN built, use `WP_HTML_Tag_Processor` (core since WP 6.2, theme needs 6.9): find the first `a` tag and `add_class( 'thumbnail' )`; print the result through `wp_kses_post()`.
-- [ ] **Step 4: Run tests and lint; tick and commit** (`feat(theme): nextgen image browser on foundation components`).
+- [x] **Step 1: Write the failing tests.** Cover: the wrapper keeps `class="ngg-imagebrowser"`, `id="ngg-imagebrowser-<anchor>"` and `data-nextgen-gallery-id` (so the AJAX script keeps working); the title as `h3`; the image from `$image->href_link` inside a centred container with `thumbnail` added to the first `<a>`; previous and next as a `button-group` of `a.button.hollow` that keep `class` `ngg-browser-prev` / `ngg-browser-next`, their `id`s (`ngg-prev-<pid>`, `ngg-next-<pid>`) and `href`s; a missing previous or next link renders a `disabled` button without the NextGEN class; the counter ("Image 3 of 12" with translatable text); the description in a `callout`; escaping of `alttext`.
+- [x] **Step 2: Run, confirm FAIL.**
+- [x] **Step 3: Write the partial and the two files.** To add `thumbnail` to the link NextGEN built, use `WP_HTML_Tag_Processor` (core since WP 6.2, theme needs 6.9): find the first `a` tag and `add_class( 'thumbnail' )`; print the result through `wp_kses_post()`.
+- [x] **Step 4: Run tests and lint; tick and commit** (`feat(theme): nextgen image browser on foundation components`).
 
 ### Task 5: `gallery-carousel.php` (decision gate, then Orbit or fallback)
 
