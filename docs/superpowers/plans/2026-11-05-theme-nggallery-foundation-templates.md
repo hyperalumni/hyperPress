@@ -1,4 +1,4 @@
-> **STATUS: ✅ COMPLETED** (2026-11-05). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 412 tests, 1125 assertions, 12 skipped); awaiting the owner's visual check (Task 7).
+> **STATUS: ✅ COMPLETED** (2026-11-05). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 412 tests, 1125 assertions, 12 skipped); the owner's visual check (Task 7) was done on 2026-11-05.
 
 # NextGEN Legacy Templates on Foundation 6 Implementation Plan
 
@@ -987,9 +987,9 @@ git commit -m "docs(theme): note that the nextgen gallery template is no longer 
 
 **Files:** none
 
-- [ ] **Step 1:** In the NextGEN display settings for the gallery and album displays you use, set Template to the parent theme's `gallery.php` / `album-compact.php`.
-- [ ] **Step 2:** On a local stack (`docker/hyperalumni` or `docker/hyperonline`), load a gallery page and an album page at 400px, 800px and 1200px. Check: the column counts follow the gallery's "columns" setting; thumbnails show the Foundation border and hover state; the lightbox opens and steps through hidden images; pagination shows Foundation styling and, with NextGEN's AJAX navigation setting on, changes page in place; album cards in a row are equal height; no NextGEN border, float or background shows.
-- [ ] **Step 3:** If album cards are not equal height, try the Equalizer plugin (`data-equalizer` on the grid, `data-equalizer-watch` on each card) and record the result in the outcome notes.
+- [x] **Step 1:** In the NextGEN display settings for the gallery and album displays you use, set Template to the parent theme's `gallery.php` / `album-compact.php`.
+- [x] **Step 2:** On a local stack (`docker/hyperalumni` or `docker/hyperonline`), load a gallery page and an album page at 400px, 800px and 1200px. Check: the column counts follow the gallery's "columns" setting; thumbnails show the Foundation border and hover state; the lightbox opens and steps through hidden images; pagination shows Foundation styling and, with NextGEN's AJAX navigation setting on, changes page in place; album cards in a row are equal height; no NextGEN border, float or background shows.
+- [x] **Step 3:** If album cards are not equal height, try the Equalizer plugin (`data-equalizer` on the grid, `data-equalizer-watch` on each card) and record the result in the outcome notes.
 
 ### Task 8: Parked minors from the task and final reviews
 
@@ -1072,4 +1072,6 @@ The owner's first look at the gallery page showed about 40px more space above th
 
 `gallery.php`'s description callout deliberately still ignores the setting: NextGEN does not pass the album's settings to the thumbnails template, and NextGEN prepends its own plain description in drill-down. The owner decided to leave it.
 
-**Pending:** Task 7 (the owner's visual check in a browser) is not done; its checkboxes stay unticked.
+**Task 7 (owner's visual check, 2026-11-05)**
+
+Done by the owner on the production site, not on a local stack. The album cards in the owner's screenshots are equal height without the Equalizer plugin, so Step 3 needed nothing. The check found the gallery wrapper's extra top margin and the album header ignoring "Display descriptions"; both are recorded above. The production templates were switched with `plugins/bin/nextgen-set-template.php` (albums: 3 rows and 4 fields; then `gallery.php`: 9 saved displays and 3 galleries), and the Photos page now uses `[imagely album="6"]`, which reads the album's saved settings.
