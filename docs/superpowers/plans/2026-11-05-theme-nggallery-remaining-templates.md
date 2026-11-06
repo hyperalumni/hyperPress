@@ -74,10 +74,10 @@ Stock behaviour (4.5.5, 69 lines): `$galleries` with `pagelink`, `title`, `previ
 
 Stock behaviour (4.5.5, 106 lines): the gallery template plus a caption under each thumbnail (`$image->caption`, NextGEN-built); the wrapper is `ngg-galleryoverview ngg-template-caption` with the anchor id.
 
-- [ ] **Step 1: Write the failing tests** (use `$captions = true` through the real file): each visible image is a `figure` with `a.thumbnail > img` and a `figcaption` carrying the caption (sanitised with `wp_kses_post`); no `figcaption` for plain `gallery.php`; the first plan's wrapper, columns, hidden-image and pagination behaviour still hold; `gallery.php` output is unchanged (no `figure`).
-- [ ] **Step 2: Run, confirm FAIL.**
-- [ ] **Step 3: Extend the partial.** When `$captions` is true wrap each cell's content in `<figure>` and add `<figcaption class="text-center">`; otherwise keep the plain markup. Create `nggallery/gallery-caption.php`: docblock, ABSPATH guard, the `ngg-galleryoverview` wrapper with the anchor id, `$captions = true;`, `require` of the partial.
-- [ ] **Step 4: Run both test classes and lint; tick and commit** (`feat(theme): nextgen gallery with captions on the foundation grid`).
+- [x] **Step 1: Write the failing tests** (use `$captions = true` through the real file): each visible image is a `figure` with `a.thumbnail > img` and a `figcaption` carrying the caption (sanitised with `wp_kses_post`); no `figcaption` for plain `gallery.php`; the first plan's wrapper, columns, hidden-image and pagination behaviour still hold; `gallery.php` output is unchanged (no `figure`).
+- [x] **Step 2: Run, confirm FAIL.**
+- [x] **Step 3: Extend the partial.** When `$captions` is true wrap each cell's content in `<figure>` and add `<figcaption class="text-center">`; otherwise keep the plain markup. Create `nggallery/gallery-caption.php`: docblock, ABSPATH guard, the `ngg-galleryoverview` wrapper with the anchor id, `$captions = true;`, `require` of the partial.
+- [x] **Step 4: Run both test classes and lint; tick and commit** (`feat(theme): nextgen gallery with captions on the foundation grid`).
 
 ### Task 4: `imagebrowser.php` and `imagebrowser-caption.php`
 
