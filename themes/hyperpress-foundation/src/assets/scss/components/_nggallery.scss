@@ -5,6 +5,17 @@ div.ngg-galleryoverview {
   margin-bottom: 1rem;
 }
 
+// NextGEN's width/height attributes would otherwise leave a thumbnail at its natural size
+// (Foundation never enlarges images): make it fill its grid cell.
+.ngg-galleryoverview a.thumbnail {
+  display: block;
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
 .gallery-grid {
   margin-bottom: 1rem;
 

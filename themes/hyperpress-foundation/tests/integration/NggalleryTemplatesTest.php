@@ -72,8 +72,8 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 			'four'     => array( 4, 'small-up-2 medium-up-3 large-up-4' ),
 			'one'      => array( 1, 'small-up-1 medium-up-1 large-up-1' ),
 			'two'      => array( 2, 'small-up-2 medium-up-2 large-up-2' ),
-			'zero'     => array( 0, 'small-up-2 medium-up-3 large-up-4' ),
-			'negative' => array( -3, 'small-up-2 medium-up-3 large-up-4' ),
+			'zero'     => array( 0, 'small-up-2 medium-up-3 large-up-4 xxlarge-up-5' ),
+			'negative' => array( -3, 'small-up-2 medium-up-3 large-up-4 xxlarge-up-5' ),
 			'too many' => array( 12, 'small-up-2 medium-up-3 large-up-8' ),
 		);
 	}
@@ -90,6 +90,22 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 		);
 
 		$this->assertStringContainsString( 'grid-x grid-margin-x ' . $expected, $html );
+	}
+
+	/** An explicit column count is the gallery's own choice: only the automatic case gains the xxlarge class. */
+	public function test_gallery_grid_with_explicit_columns_has_no_xxlarge_class(): void {
+		foreach ( array( 4, 12 ) as $columns ) {
+			$html = $this->render(
+				'gallery.php',
+				array(
+					'gallery'    => $this->gallery( array( 'columns' => $columns ) ),
+					'images'     => array( $this->image() ),
+					'pagination' => '',
+				)
+			);
+
+			$this->assertStringNotContainsString( 'xxlarge-up', $html, "columns {$columns}" );
+		}
 	}
 
 	public function test_gallery_renders_a_visible_image_as_a_foundation_thumbnail(): void {
