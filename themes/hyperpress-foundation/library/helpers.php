@@ -82,7 +82,8 @@ function hyperpress_nextgen_pagination( string $html ): string {
 		$attrs = $item[2];
 
 		if ( 'a' === strtolower( $item[1] ) ) {
-			$page = preg_match( '/data-pageid=([\'"])(\d+)\1/i', $attrs, $match ) ? (int) $match[2] : 0;
+			// NextGEN quotes the page links' data-pageid but writes the prev/next arrows' value bare (data-pageid=2).
+			$page = preg_match( '/data-pageid=(?:([\'"])(\d+)\1|(\d+)(?=[\s\/]|$))/i', $attrs, $match ) ? (int) ( $match[3] ?? $match[2] ) : 0;
 			if ( $page > 0 && preg_match( '/class=([\'"])(?:next|prev)\1/i', $attrs ) ) {
 				$label  = $page < $current ? __( 'Previous page', 'hyperpress' ) : __( 'Next page', 'hyperpress' );
 				$attrs .= ' aria-label="' . esc_attr( $label ) . '"';

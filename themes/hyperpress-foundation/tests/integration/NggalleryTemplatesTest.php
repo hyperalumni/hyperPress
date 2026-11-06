@@ -267,6 +267,32 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 		$this->assertLessThan( strrpos( $html, '</div>' ), strpos( $html, 'class="pagination' ) );
 	}
 
+	public function test_gallery_keeps_the_arrow_labels_and_quoted_page_ids_for_real_nextgen_pagination(): void {
+		$pagination = "<div class='ngg-navigation'>"
+			. "<a class='next' href='/photos/2025/nggpage--2' data-pageid=2>&#9668;</a>\n"
+			. "<a class='page-numbers' data-pageid='2' href='/photos/2025/nggpage--2'>2</a>\n"
+			. "<span class='current'>3</span>\n"
+			. "<a class='page-numbers' data-pageid='4' href='/photos/2025/nggpage--4'>4</a>\n"
+			. "<a class='prev' href='/photos/2025/nggpage--4' data-pageid=4>&#9658;</a>"
+			. '</div>';
+
+		$html = $this->render(
+			'gallery.php',
+			array(
+				'gallery'    => $this->gallery(),
+				'images'     => array( $this->image() ),
+				'pagination' => $pagination,
+			)
+		);
+
+		$this->assertMatchesRegularExpression( '/<a [^>]*class=["\']next["\'][^>]*data-pageid=["\']2["\'][^>]*aria-label="Previous page"/', $html );
+		$this->assertMatchesRegularExpression( '/<a [^>]*class=["\']prev["\'][^>]*data-pageid=["\']4["\'][^>]*aria-label="Next page"/', $html );
+		$this->assertStringContainsString( 'data-pageid="2"', $html );
+		$this->assertStringContainsString( 'data-pageid="4"', $html );
+		$this->assertMatchesRegularExpression( '/class=["\']next["\'] href=["\']\/photos\/2025\/nggpage--2["\']/', $html );
+		$this->assertMatchesRegularExpression( '/class=["\']prev["\'] href=["\']\/photos\/2025\/nggpage--4["\']/', $html );
+	}
+
 	public function test_gallery_shows_a_callout_when_it_has_no_images(): void {
 		$html = $this->render( 'gallery.php', array( 'gallery' => $this->gallery(), 'images' => array(), 'pagination' => '' ) );
 
