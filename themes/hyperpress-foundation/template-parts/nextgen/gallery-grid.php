@@ -8,8 +8,8 @@
  * @var array  $images     Image objects (pid, imageURL, thumbnailURL, thumbcode, size, hidden, ...).
  * @var string $pagination NextGEN's pagination HTML.
  * @var bool   $captions   Optional, defaults to false. When true each visible image is a `figure` with a
- *                         `figcaption` (the image's `caption`, run through wp_kses_post()); empty captions
- *                         get no `figcaption`.
+ *                         `figcaption` (the image's `caption`, decoded like the stock template and run
+ *                         through wp_kses_post()); empty captions get no `figcaption`.
  */
 
 // Don't load directly.
@@ -70,7 +70,8 @@ $visible = array_values( array_filter( (array) $images, static fn( $image ) => e
 			</a>
 			<?php if ( $captions ) : ?>
 				<?php if ( ! empty( $image->caption ) ) : ?>
-					<figcaption class="text-center"><?php echo wp_kses_post( $image->caption ); ?></figcaption>
+					<?php // NextGEN stores captions sanitised and entity-encoded; decode as the stock template does. The decode can restore real tags, so wp_kses_post() sanitises the result again. ?>
+					<figcaption class="text-center"><?php echo wp_kses_post( I18N::ngg_decode_sanitized_html_content( $image->caption ) ); ?></figcaption>
 				<?php endif; ?>
 				</figure>
 			<?php endif; ?>

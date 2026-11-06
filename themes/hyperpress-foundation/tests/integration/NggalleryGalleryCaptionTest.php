@@ -80,6 +80,20 @@ final class NggalleryGalleryCaptionTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( '<script>', $html );
 	}
 
+	public function test_a_stored_caption_is_decoded_the_way_the_stock_template_does(): void {
+		$html = $this->render_caption( array( 'images' => array( $this->image( array( 'caption' => 'It&#039;s <strong>great</strong>' ) ) ) ) );
+
+		$this->assertStringContainsString( '<figcaption class="text-center">It\'s <strong>great</strong></figcaption>', $html );
+		$this->assertStringNotContainsString( '&#039;', $html );
+	}
+
+	public function test_an_entity_encoded_script_in_a_caption_is_removed_after_decoding(): void {
+		$html = $this->render_caption( array( 'images' => array( $this->image( array( 'caption' => '&lt;script&gt;alert(1)&lt;/script&gt;ok' ) ) ) ) );
+
+		$this->assertStringNotContainsString( '<script', $html );
+		$this->assertStringContainsString( '<figcaption class="text-center">', $html );
+	}
+
 	public function test_an_empty_or_missing_caption_renders_no_figcaption(): void {
 		$missing = $this->image();
 		unset( $missing->caption );

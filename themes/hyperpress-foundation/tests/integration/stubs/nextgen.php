@@ -18,6 +18,10 @@ namespace Imagely\NGG\Display {
 			public static function ngg_plain_text_alt_title_attributes( $text ) {
 				return wp_strip_all_tags( (string) $text );
 			}
+
+			public static function ngg_decode_sanitized_html_content( $content ) {
+				return htmlspecialchars_decode( wp_kses_post( (string) $content ), ENT_QUOTES );
+			}
 		}
 	}
 
