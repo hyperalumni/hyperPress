@@ -63,10 +63,10 @@ Pure refactor: behaviour and the first plan's tests do not change.
 
 Stock behaviour (4.5.5, 69 lines): `$galleries` with `pagelink`, `title`, `previewurl`, `galdesc`, `counter`; `$pagination`; no JS.
 
-- [ ] **Step 1: Write the failing tests.** Cover: one `div.media-object` per gallery (`media-object-section` with the `<a>` + `<img>` thumbnail, a second section with the title link `h4`, the description through `wp_kses_post` and the photo count as a `label primary`); a stack on small screens (`stack-for-small`); `alt` and `loading="lazy"` on the thumbnail; escaping of the title; a gallery without `previewurl` renders no `<img>`; the pagination goes through `hyperpress_nextgen_pagination()`; nothing renders for empty `$galleries`.
-- [ ] **Step 2: Run, confirm FAIL** (`--filter NggalleryAlbumExtendTest`; the file does not exist yet).
-- [ ] **Step 3: Write `nggallery/album-extend.php`** from the stock template, replacing the `ngg-album*` markup with the media-object markup above. Keep `Router::esc_url()` for NextGEN URLs and the `nggallery` text domain with its `phpcs:ignore`, as in the first plan's `album-compact.php`.
-- [ ] **Step 4: Run tests and lint; tick and commit** (`feat(theme): nextgen extended album on foundation media objects`).
+- [x] **Step 1: Write the failing tests.** Cover: one `div.media-object` per gallery (`media-object-section` with the `<a>` + `<img>` thumbnail, a second section with the title link `h4`, the description through `wp_kses_post` and the photo count as a `label primary`); a stack on small screens (`stack-for-small`); `alt` and `loading="lazy"` on the thumbnail; escaping of the title; a gallery without `previewurl` renders no `<img>`; the pagination goes through `hyperpress_nextgen_pagination()`; nothing renders for empty `$galleries`.
+- [x] **Step 2: Run, confirm FAIL** (`--filter NggalleryAlbumExtendTest`; the file does not exist yet).
+- [x] **Step 3: Write `nggallery/album-extend.php`** from the stock template, replacing the `ngg-album*` markup with the media-object markup above. Keep `Router::esc_url()` for NextGEN URLs and the `nggallery` text domain with its `phpcs:ignore`, as in the first plan's `album-compact.php`.
+- [x] **Step 4: Run tests and lint; tick and commit** (`feat(theme): nextgen extended album on foundation media objects`).
 
 ### Task 3: `gallery-caption.php`
 
