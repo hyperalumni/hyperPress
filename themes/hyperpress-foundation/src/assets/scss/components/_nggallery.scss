@@ -5,6 +5,13 @@ div.ngg-galleryoverview {
   margin-bottom: 1rem;
 }
 
+// NextGEN clips the wrapper (overflow: hidden) to contain floats. The grid has none, and the clipping
+// cuts off the hover shadow of the outer columns (the grid's cells sit flush with the wrapper's edges).
+// Only wrappers that hold our grid are changed.
+div.ngg-galleryoverview:has(> .grid-x) {
+  overflow: visible;
+}
+
 // NextGEN's width/height attributes would otherwise leave a thumbnail at its natural size
 // (Foundation never enlarges images): make it fill its grid cell.
 .ngg-galleryoverview a.thumbnail {
