@@ -24,7 +24,8 @@ final class CdnAssetsTest extends WP_UnitTestCase {
 		$html = $this->front_end_markup();
 
 		preg_match_all( '~<(?:script|link)\b[^>]*cdnjs\.cloudflare\.com[^>]*>~', $html, $tags );
-		$this->assertGreaterThanOrEqual( 3, count( $tags[0] ), 'jQuery, Font Awesome JS and CSS are loaded from the CDN' );
+		$this->assertGreaterThanOrEqual( 2, count( $tags[0] ), 'jQuery and the Font Awesome script are loaded from the CDN' );
+		$this->assertStringNotContainsString( 'font-awesome', implode( ' ', array_filter( $tags[0], static fn( $tag ) => str_contains( $tag, '<link' ) ) ), 'the Font Awesome stylesheet is not enqueued' );
 
 		foreach ( $tags[0] as $tag ) {
 			$this->assertMatchesRegularExpression( '~\sintegrity=[\'"]sha512-[A-Za-z0-9+/=]+[\'"]~', $tag, "no integrity on: $tag" );
@@ -60,7 +61,7 @@ final class CdnAssetsTest extends WP_UnitTestCase {
 		global $jquery_version, $font_awesome_version;
 
 		$this->assertSame( "https://cdnjs.cloudflare.com/ajax/libs/jquery/{$jquery_version}/jquery.min.js", hyperpress_cdn_url( 'jquery', 'jquery.min.js' ) );
-		$this->assertSame( "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/{$font_awesome_version}/css/all.min.css", hyperpress_cdn_url( 'font-awesome', 'css/all.min.css' ) );
+		$this->assertSame( "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/{$font_awesome_version}/js/all.min.js", hyperpress_cdn_url( 'font-awesome', 'js/all.min.js' ) );
 	}
 
 	public function test_every_enqueued_cdn_url_has_a_known_hash(): void {

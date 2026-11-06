@@ -95,8 +95,7 @@ function hyperpress_cdn_integrity(): array {
 		),
 		'font-awesome'   => array(
 			'7.3.1' => array(
-				'js/all.min.js'   => 'sha512-2+f4MxT8KwN4tUzw6/hv9kxKiix603S9kmBcix+0y0dBhd6zdaPOV1Thf1DM886pFZG+cAtmshBi8UBpo6m3JA==',
-				'css/all.min.css' => 'sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg==',
+				'js/all.min.js' => 'sha512-2+f4MxT8KwN4tUzw6/hv9kxKiix603S9kmBcix+0y0dBhd6zdaPOV1Thf1DM886pFZG+cAtmshBi8UBpo6m3JA==',
 			),
 		),
 	);
@@ -187,9 +186,9 @@ function hyperpress_scripts(): void {
 
 	// The official plugin is not active, so add FontAwesome from CDN.
 	if ( ! defined( 'FONT_AWESOME_OFFICIAL_LOADED' ) ) {
-		// Enqueue FontAwesome from CDN.
+		// Font Awesome's script draws the icons as inline SVG and injects the CSS it needs. Its stylesheet is deliberately
+		// not enqueued: it assumes webfont icons and doubles the size of stacked icons when both are active.
 		wp_enqueue_script( 'fontawesome', hyperpress_cdn_url( 'font-awesome', 'js/all.min.js' ), array(), $font_awesome_version, true );
-		wp_enqueue_style( 'fontawesome', hyperpress_cdn_url( 'font-awesome', 'css/all.min.css' ), array(), $font_awesome_version, true ); // needs the 'true' for media, or else the icons load funny
 	}
 
 	// Enqueue the main Stylesheet.
