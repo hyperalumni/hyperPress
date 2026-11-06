@@ -39,7 +39,7 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
   Present: `gallery.php`, `gallery-caption.php`, `album-compact.php`, `album-extend.php`, `imagebrowser.php`,
   `imagebrowser-caption.php`, `gallery-carousel.php` and `Widget/Display/Gallery.php` (overrides NextGEN's random-image
   widget template with no widget setting). Shared markup is in `template-parts/nextgen/`: `gallery-grid.php` (a
-  `$captions` flag adds the figcaptions) and `imagebrowser.php`. Keep NextGEN's JS hooks (ids and classes) in any change.
+  `$captions` flag adds the figcaptions) and `imagebrowser.php`. Keep NextGEN's JS hooks (ids and classes) in any change. `gallery-carousel.php` deliberately has no wrapper `id`, so that NextGEN's AJAX pagination never takes it over.
 
 ## Direction
 

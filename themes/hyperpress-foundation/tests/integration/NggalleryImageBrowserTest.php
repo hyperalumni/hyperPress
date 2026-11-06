@@ -155,6 +155,22 @@ final class NggalleryImageBrowserTest extends WP_UnitTestCase {
 	}
 
 	/** @dataProvider templates */
+	public function test_the_description_is_decoded_like_the_stock_template( string $file ): void {
+		$html = $this->render( $file, $this->vars( array( 'image' => $this->image( array( 'description' => 'It&#039;s <em>x</em>' ) ) ) ) );
+
+		$this->assertMatchesRegularExpression( '/<div class="callout[^"]*">\s*It\'s <em>x<\/em>\s*<\/div>/', $html );
+	}
+
+	/** @dataProvider templates */
+	public function test_an_entity_encoded_script_in_the_description_is_removed( string $file ): void {
+		$html = $this->render( $file, $this->vars( array( 'image' => $this->image( array( 'description' => '&lt;script&gt;alert(1)&lt;/script&gt;Done' ) ) ) ) );
+
+		preg_match( '/<div class="callout[^"]*">(.*?)<\/div>/s', $html, $m );
+		$this->assertStringNotContainsString( '<script', $m[1] );
+		$this->assertStringContainsString( 'Done', $m[1] );
+	}
+
+	/** @dataProvider templates */
 	public function test_an_empty_description_renders_no_callout( string $file ): void {
 		$html = $this->render( $file, $this->vars( array( 'image' => $this->image( array( 'description' => '' ) ) ) ) );
 

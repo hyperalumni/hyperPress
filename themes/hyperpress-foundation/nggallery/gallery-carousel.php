@@ -9,9 +9,13 @@
  *   them wrongly (`$prev` is always false, and on pages after the first `$next` is the previous
  *   page). The buttons are computed from the order of `$images`, the visible images of the current
  *   page only (24 by default), so they stop at the page edges; the pagination moves between pages.
- * - The wrapper has no `id` and my buttons do not use the `prev`, `next` or `page-numbers` classes.
- *   NextGEN's AJAX pagination script finds the gallery by its id, and without one it throws before
- *   preventDefault, so the browser loads the page normally. That is the intended behaviour here.
+ * - The wrapper has no `id` and the template's buttons do not use the `prev`, `next` or `page-numbers`
+ *   classes. This relies on how NextGEN 4.5.5's static/Thumbnails/ajax_pagination.js behaves: it reads
+ *   the `id` of the nearest `.ngg-galleryoverview` ancestor before anything else, so with no id it
+ *   throws before preventDefault() and the browser follows the pagination link normally (with a
+ *   harmless console error on each pagination click). The `ngg-ajax-pagination-none` class would not
+ *   help, because the script looks up the id before it checks that opt-out. Re-check this when a
+ *   future NextGEN version guards the missing id.
  * - The pagination, which the stock template does not print, follows the strip.
  *
  * @var object      $gallery    Gallery data (only checked for being set).

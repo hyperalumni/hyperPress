@@ -40,6 +40,7 @@ use Imagely\NGG\Util\Router;
 		<h3><?php echo wp_kses_post( I18N::ngg_decode_sanitized_html_content( $image->alttext ) ); // The decode can restore real tags, so kses runs after it. ?></h3>
 
 		<div class="text-center">
+			<?php // kses may strip unusual attributes a custom lightbox adds to href_link (class, data-*, rel and href survive); this is accepted. ?>
 			<?php echo wp_kses_post( $image_link->get_updated_html() ); ?>
 		</div>
 

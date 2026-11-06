@@ -126,7 +126,7 @@ final class NggalleryCarouselTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'aria-current', $html );
 	}
 
-	public function test_my_own_buttons_do_not_use_the_classes_nextgens_pagination_script_binds(): void {
+	public function test_the_templates_own_buttons_do_not_use_the_classes_nextgens_pagination_script_binds(): void {
 		$head = $this->head( $this->render( 'gallery-carousel.php', $this->vars() ) );
 
 		$this->assertDoesNotMatchRegularExpression( '/class="[^"]*\b(prev|next|page-numbers)\b/', $head );
