@@ -175,7 +175,7 @@ git commit -m "feat(theme): foundation pagination markup for nextgen galleries" 
 - Create: `tests/integration/stubs/nextgen.php`
 - Create: `tests/integration/NggalleryTemplatesTest.php`
 
-- [ ] **Step 1: Write the NextGEN stubs**
+- [x] **Step 1: Write the NextGEN stubs**
 
 ```php
 <?php
@@ -219,7 +219,7 @@ namespace Imagely\NGG\Display {
 }
 ```
 
-- [ ] **Step 2: Write the test file with the `gallery.php` tests**
+- [x] **Step 2: Write the test file with the `gallery.php` tests**
 
 ```php
 <?php
@@ -435,12 +435,12 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 }
 ```
 
-- [ ] **Step 3: Run the tests and confirm the `gallery.php` ones fail**
+- [x] **Step 3: Run the tests and confirm the `gallery.php` ones fail**
 
 Run: `docker compose run --rm php composer test:integration -- --filter NggalleryTemplatesTest`
 Expected: the `test_gallery_*` tests FAIL (current markup has `ngg-*` classes, `style=`, `<br`, no grid). `test_gallery_renders_nothing_without_a_gallery` may already pass. If the run errors on a missing stub class instead, fix the stub or the `require_once` path before continuing.
 
-- [ ] **Step 4: Check the box and commit the red tests together with Task 2 (do not commit failing tests alone)**
+- [x] **Step 4: Check the box and commit the red tests together with Task 2 (do not commit failing tests alone)**
 
 No commit in this task.
 
@@ -450,7 +450,7 @@ No commit in this task.
 
 - Modify: `nggallery/gallery.php`
 
-- [ ] **Step 1: Replace the file content**
+- [x] **Step 1: Replace the file content**
 
 ```php
 <?php
@@ -530,17 +530,17 @@ use \Imagely\NGG\Util\Router;
 <?php endif; ?>
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `docker compose run --rm php composer test:integration -- --filter NggalleryTemplatesTest`
 Expected: all `test_gallery_*` PASS. If `test_gallery_puts_hidden_images_outside_the_grid_without_an_img` fails on the ordering assertion, check that the hidden block comes after the grid; adjust the assertion's needle, not the markup.
 
-- [ ] **Step 3: Lint**
+- [x] **Step 3: Lint**
 
 Run: `docker compose run --rm php composer lint`
 Expected: 0 violations. Fix any new `phpcs:ignore` needs with a `-- <reason>` note.
 
-- [ ] **Step 4: Tick the Task 1 and Task 2 boxes in this plan and commit**
+- [x] **Step 4: Tick the Task 1 and Task 2 boxes in this plan and commit**
 
 ```sh
 git add themes/hyperpress-foundation/nggallery/gallery.php themes/hyperpress-foundation/tests/integration/stubs/nextgen.php themes/hyperpress-foundation/tests/integration/NggalleryTemplatesTest.php docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md
