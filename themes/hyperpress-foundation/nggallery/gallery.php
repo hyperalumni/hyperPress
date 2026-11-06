@@ -23,7 +23,8 @@ use Imagely\NGG\Util\Router;
 	<?php
 	$columns = max( 0, min( 8, (int) $gallery->columns ) );
 	$up      = $columns > 0 ? array( min( 2, $columns ), min( 3, $columns ), $columns ) : array( 2, 3, 4 );
-	$hidden  = array();
+	$hidden  = array_values( array_filter( (array) $images, static fn( $image ) => ! empty( $image->hidden ) ) );
+	$visible = array_values( array_filter( (array) $images, static fn( $image ) => empty( $image->hidden ) ) );
 	?>
 
 	<div class="ngg-galleryoverview" id="<?php echo esc_attr( $gallery->anchor ); ?>">
@@ -43,15 +44,9 @@ use Imagely\NGG\Util\Router;
 
 		<?php if ( empty( $images ) ) : ?>
 			<div class="callout secondary"><?php esc_html_e( 'There are no photos in this gallery.', 'hyperpress' ); ?></div>
-		<?php else : ?>
+		<?php elseif ( ! empty( $visible ) ) : ?>
 		<div class="grid-x grid-margin-x small-up-<?php echo (int) $up[0]; ?> medium-up-<?php echo (int) $up[1]; ?> large-up-<?php echo (int) $up[2]; ?>">
-			<?php foreach ( $images as $image ) : ?>
-				<?php
-				if ( $image->hidden ) {
-					$hidden[] = $image;
-					continue;
-				}
-				?>
+			<?php foreach ( $visible as $image ) : ?>
 				<?php
 				// NextGEN's thumbcode carries its own class attribute (the lightbox hook), so a second
 				// class attribute would be dropped by the browser: merge the Foundation class instead.

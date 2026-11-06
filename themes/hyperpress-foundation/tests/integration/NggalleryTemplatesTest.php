@@ -239,6 +239,42 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'grid-x', $html );
 	}
 
+	public function test_gallery_with_only_hidden_images_has_no_grid_and_no_callout_but_keeps_the_lightbox_anchors(): void {
+		$html = $this->render(
+			'gallery.php',
+			array(
+				'gallery'    => $this->gallery(),
+				'images'     => array( $this->image( array( 'pid' => 8, 'hidden' => true ) ), $this->image( array( 'pid' => 9, 'hidden' => true ) ) ),
+				'pagination' => '',
+			)
+		);
+
+		$this->assertStringNotContainsString( 'grid-x', $html );
+		$this->assertStringNotContainsString( 'callout secondary', $html );
+		$this->assertStringNotContainsString( '<img', $html );
+		$this->assertMatchesRegularExpression( '/<div hidden>\s*<a [^>]*id="ngg-image-8".*id="ngg-image-9"/s', $html );
+	}
+
+	public function test_gallery_prints_the_description_callout_before_the_slideshow_link(): void {
+		$html = $this->render(
+			'gallery.php',
+			array(
+				'gallery'    => $this->gallery(
+					array(
+						'show_slideshow' => true,
+						'description'    => 'Some notes',
+					)
+				),
+				'images'     => array( $this->image() ),
+				'pagination' => '',
+			)
+		);
+
+		$this->assertNotFalse( strpos( $html, 'gallery-info' ) );
+		$this->assertNotFalse( strpos( $html, 'Show slideshow' ) );
+		$this->assertLessThan( strpos( $html, 'Show slideshow' ), strpos( $html, 'gallery-info' ) );
+	}
+
 	public function test_gallery_shows_its_title_and_description_in_a_callout_above_the_grid(): void {
 		$html = $this->render(
 			'gallery.php',
@@ -383,9 +419,25 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 		$this->assertMatchesRegularExpression( '/<a href="https:\/\/example\.test\/gallery\/match-day">\s*<img /', $html );
 	}
 
-	public function test_album_falls_back_to_the_page_link_when_the_lightbox_data_is_missing(): void {
+	public function test_album_links_to_the_page_when_the_lightbox_option_is_off(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'open_gallery_in_lightbox' => 0 ) ) );
+
+		$this->assertStringNotContainsString( 'data-image-id', $html );
+		$this->assertMatchesRegularExpression( '/<a href="https:\/\/example\.test\/gallery\/match-day">\s*<img /', $html );
+	}
+
+	/** @return array<string,array{string}> */
+	public static function missing_lightbox_data(): array {
+		return array(
+			'fullsized url missing'     => array( 'previewpic_fullsized_url' ),
+			'displayed gallery missing' => array( 'displayed_gallery' ),
+		);
+	}
+
+	/** @dataProvider missing_lightbox_data */
+	public function test_album_falls_back_to_the_page_link_when_the_lightbox_data_is_missing( string $missing ): void {
 		$gallery = $this->album_gallery();
-		unset( $gallery->previewpic_fullsized_url, $gallery->displayed_gallery );
+		unset( $gallery->$missing );
 
 		$html = $this->render(
 			'album-compact.php',
@@ -399,6 +451,43 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 
 		$this->assertStringNotContainsString( 'data-image-id', $html );
 		$this->assertMatchesRegularExpression( '/<a href="https:\/\/example\.test\/gallery\/match-day">\s*<img /', $html );
+	}
+
+	public function test_album_renders_without_notices_when_the_gallery_has_no_previewpic(): void {
+		$gallery = $this->album_gallery();
+		unset( $gallery->previewpic );
+
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'galleries' => array( $gallery ) ) ) );
+
+		$this->assertStringContainsString( 'Match day', $html );
+		$this->assertStringContainsString( 'src="https://example.test/preview.jpg"', $html );
+	}
+
+	public function test_album_renders_without_notices_when_the_gallery_has_no_pagelink(): void {
+		$gallery = $this->album_gallery();
+		unset( $gallery->pagelink );
+
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'galleries' => array( $gallery ) ) ) );
+
+		$this->assertStringContainsString( 'Match day', $html );
+		$this->assertStringContainsString( 'href=""', $html );
+	}
+
+	public function test_album_renders_without_notices_when_pagination_is_not_set(): void {
+		$vars = $this->album_vars();
+		unset( $vars['pagination'] );
+
+		$html = $this->render( 'album-compact.php', $vars );
+
+		$this->assertStringContainsString( 'gallery-grid', $html );
+		$this->assertStringNotContainsString( 'class="pagination', $html );
+	}
+
+	public function test_album_prints_the_gallery_description_in_a_div_not_a_paragraph(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars() );
+
+		$this->assertStringContainsString( '<div>Gallery <em>notes</em></div>', $html );
+		$this->assertStringNotContainsString( '<p>Gallery', $html );
 	}
 
 	public function test_album_placeholder_uses_the_generated_thumbnail_ratio(): void {

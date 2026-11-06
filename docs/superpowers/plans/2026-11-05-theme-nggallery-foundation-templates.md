@@ -1,4 +1,4 @@
-> **STATUS: ✅ COMPLETED** (2026-11-05). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 395 tests, 1086 assertions, 12 skipped); awaiting the owner's visual check (Task 7).
+> **STATUS: ✅ COMPLETED** (2026-11-05). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 406 tests, 1114 assertions, 12 skipped); awaiting the owner's visual check (Task 7).
 
 # NextGEN Legacy Templates on Foundation 6 Implementation Plan
 
@@ -991,6 +991,34 @@ git commit -m "docs(theme): note that the nextgen gallery template is no longer 
 - [ ] **Step 2:** On a local stack (`docker/hyperalumni` or `docker/hyperonline`), load a gallery page and an album page at 400px, 800px and 1200px. Check: the column counts follow the gallery's "columns" setting; thumbnails show the Foundation border and hover state; the lightbox opens and steps through hidden images; pagination shows Foundation styling and, with NextGEN's AJAX navigation setting on, changes page in place; album cards in a row are equal height; no NextGEN border, float or background shows.
 - [ ] **Step 3:** If album cards are not equal height, try the Equalizer plugin (`data-equalizer` on the grid, `data-equalizer-watch` on each card) and record the result in the outcome notes.
 
+### Task 8: Parked minors from the task and final reviews
+
+Small hardening and test items left over from the reviews; none changes the design.
+
+**Files:**
+
+- Modify: `nggallery/gallery.php`, `nggallery/album-compact.php`, `tests/integration/NggalleryTemplatesTest.php`, `tests/integration/NextGenPaginationTest.php`
+
+- [x] **Step 1: Write the failing tests**
+  - `gallery.php`, a gallery whose images are all hidden: no `grid-x` and no `callout secondary`, but the hidden anchors are still printed in `<div hidden>` (the callout stays for a gallery with no images at all).
+  - `gallery.php`, the description callout comes before the slideshow link when both are shown.
+  - `album-compact.php`, `open_gallery_in_lightbox => 0` with a lightbox-capable gallery links to `pagelink` and has no `data-image-id`.
+  - `album-compact.php`, split the lightbox-data-missing test into two cases: only `previewpic_fullsized_url` missing, and only `displayed_gallery` missing; both fall back to the plain link.
+  - `album-compact.php`, a gallery object without `previewpic`, and without `pagelink`, and a template call without `$pagination`, render without notices.
+  - `album-compact.php`, the gallery description is not wrapped in a `<p>` inside the card (it is a `div` in `card-section`).
+  - `hyperpress_nextgen_pagination()`: first page (current 1: a next link, no previous link), last page (current is the last: a previous link, no next link), and multi-digit page numbers (for example current 10 with links to 9 and 11, labelled by page number, not by string comparison).
+- [x] **Step 2: Run, confirm the new tests FAIL** where the templates still have the old behaviour (`--filter NggalleryTemplatesTest`, `--filter NextGenPaginationTest`). The helper tests may already pass; they pin existing behaviour.
+- [x] **Step 3: Fix the templates**
+  - `gallery.php`: split `$images` into visible and hidden first; print the grid only when there are visible images, the `callout secondary` only when `$images` is empty, and the hidden block as today.
+  - `album-compact.php`: the gallery description in `card-section` as a `div`; `$gallery->previewpic ?? ''`, `$gallery->pagelink ?? ''` and `$pagination ?? ''` (no behaviour change when the properties exist).
+- [x] **Step 4: Run the tests and lint** (`--filter NggalleryTemplatesTest`, `--filter NextGenPaginationTest`, then `composer lint`: 0 violations; then the full integration and unit suites once).
+- [x] **Step 5: Tick this task's boxes, update the outcome notes (remove the fixed parked minors, record the `@dataProvider` annotation as deliberately kept to match the other tests) and the banner's test counts, run `pnpm exec oxfmt --check` on the plan, and commit**
+
+```sh
+git add themes/hyperpress-foundation/nggallery/gallery.php themes/hyperpress-foundation/nggallery/album-compact.php themes/hyperpress-foundation/tests/integration/NggalleryTemplatesTest.php themes/hyperpress-foundation/tests/integration/NextGenPaginationTest.php docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md
+git commit -m "fix(theme): harden the nextgen templates and fill test gaps" -- themes/hyperpress-foundation/nggallery/gallery.php themes/hyperpress-foundation/nggallery/album-compact.php themes/hyperpress-foundation/tests/integration/NggalleryTemplatesTest.php themes/hyperpress-foundation/tests/integration/NextGenPaginationTest.php docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md
+```
+
 ## Known follow-ups
 
 - [ ] Responsive image files: NextGEN legacy templates expose only `thumbnailURL` and `imageURL`; a real `srcset` needs dynamic thumbnail sizes (`LegacyImage.php:525` builds them via `$storage->get_image_url()` with size parameters). Decide whether to call that from a theme helper or the `hyperpress-media` plugin.
@@ -1014,7 +1042,7 @@ Executed 2026-11-05 on branch `feat/nggallery-foundation-templates`.
 
 - `composer lint`: 0 violations.
 - `composer test:unit`: OK (64 tests, 269 assertions).
-- `composer test:integration`: OK, but incomplete, skipped, or risky tests: 395 tests, 1086 assertions, 12 skipped (the pre-existing skips; counts after the final-review fix wave, 393 and 1075 before it).
+- `composer test:integration`: OK, but incomplete, skipped, or risky tests: 406 tests, 1114 assertions, 12 skipped (the pre-existing skips; counts after Task 8, 395 and 1086 after the final-review fix wave).
 - `oxfmt --check` on the spec and this plan: all matched files use the correct format. `pnpm fmt:check` over the repo flags only `docs/superpowers/plans/2026-11-01-plugins-link-shortcode.md` and `docs/superpowers/specs/2026-11-01-plugins-link-shortcode-design.md`, which this branch did not change.
 
 **Deviations during execution**
@@ -1028,12 +1056,10 @@ Executed 2026-11-05 on branch `feat/nggallery-foundation-templates`.
 
 **Parked minors**
 
-- A gallery whose images are all hidden renders an empty `grid-x` with no callout.
-- `$gallery->previewpic`, `pagelink` and `$pagination` are read unguarded in `album-compact.php`, as in stock NextGEN.
-- There is no explicit test for `open_gallery_in_lightbox = 0`.
+All the parked minors from the task and final reviews were fixed in Task 8 (the all-hidden gallery no longer renders an empty grid, the album template guards `previewpic`, `pagelink` and `$pagination`, and the test gaps are filled). The `@dataProvider` annotation is deliberately kept, to match the other tests in the repo.
 
 **Final review**
 
-The whole-branch review found a duplicate-`class` bug in `gallery.php`: the anchor printed `class="thumbnail"` and then NextGEN's `$image->thumbcode`, which carries its own `class` attribute (the default lightbox setting is `class="ngg-simplelightbox" rel="%GALLERY_NAME%"`). Browsers keep the first `class`, so NextGEN's `.ngg-simplelightbox` hook was lost. The test stub used `class="lightbox"` and never exercised a second class. Fixed in the final fix-wave commit: the anchor's opening tag is built as a string and the Foundation class is merged through `WP_HTML_Tag_Processor` (`add_class( 'thumbnail' )`); the regression tests cover a thumbcode with and without a class. The same commit changes the gallery and album description wrappers from `<p>` to `<div>`, because `wp_kses_post` may return block-level tags. The remaining parked minors (the all-hidden empty grid, the unguarded album fields, the missing `open_gallery_in_lightbox = 0` test) were left alone.
+The whole-branch review found a duplicate-`class` bug in `gallery.php`: the anchor printed `class="thumbnail"` and then NextGEN's `$image->thumbcode`, which carries its own `class` attribute (the default lightbox setting is `class="ngg-simplelightbox" rel="%GALLERY_NAME%"`). Browsers keep the first `class`, so NextGEN's `.ngg-simplelightbox` hook was lost. The test stub used `class="lightbox"` and never exercised a second class. Fixed in the final fix-wave commit: the anchor's opening tag is built as a string and the Foundation class is merged through `WP_HTML_Tag_Processor` (`add_class( 'thumbnail' )`); the regression tests cover a thumbcode with and without a class. The same commit changes the gallery and album description wrappers from `<p>` to `<div>`, because `wp_kses_post` may return block-level tags. The remaining parked minors (the all-hidden empty grid, the unguarded album fields, the missing `open_gallery_in_lightbox = 0` test) were fixed afterwards in Task 8.
 
 **Pending:** Task 7 (the owner's visual check in a browser) is not done; its checkboxes stay unticked.

@@ -53,9 +53,9 @@ use Imagely\NGG\Util\Router;
 								data-thumbnail="<?php echo esc_attr( $gallery->previewurl ); ?>"
 								data-title="<?php echo esc_attr( $gallery->previewpic_image->alttext ?? '' ); ?>"
 								data-description="<?php echo esc_attr( stripslashes( $gallery->previewpic_image->description ?? '' ) ); ?>"
-								data-image-id="<?php echo esc_attr( $gallery->previewpic ); ?>">
+								data-image-id="<?php echo esc_attr( $gallery->previewpic ?? '' ); ?>">
 						<?php else : ?>
-							<a href="<?php echo Router::esc_url( $gallery->pagelink ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>">
+							<a href="<?php echo Router::esc_url( $gallery->pagelink ?? '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>">
 						<?php endif; ?>
 							<img src="<?php echo Router::esc_url( $gallery->previewurl ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>" alt="<?php echo esc_attr( $gallery->title ?? '' ); ?>" loading="lazy">
 						</a>
@@ -64,7 +64,7 @@ use Imagely\NGG\Util\Router;
 					<?php endif; ?>
 					<div class="card-section flex-child-auto">
 						<?php if ( ! empty( $gallery->title ) ) : ?>
-							<h4><a href="<?php echo Router::esc_url( $gallery->pagelink ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>"><?php echo esc_html( $gallery->title ); ?></a></h4>
+							<h4><a href="<?php echo Router::esc_url( $gallery->pagelink ?? '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by NextGen's Router::esc_url() ?>"><?php echo esc_html( $gallery->title ); ?></a></h4>
 						<?php endif; ?>
 						<p>
 							<?php if ( ! empty( $gallery->counter ) ) : ?>
@@ -75,7 +75,7 @@ use Imagely\NGG\Util\Router;
 							<?php endif; ?>
 						</p>
 						<?php if ( ! empty( $gallery->galdesc ) ) : ?>
-							<p><?php echo wp_kses_post( $gallery->galdesc ); ?></p>
+							<div><?php echo wp_kses_post( $gallery->galdesc ); ?></div>
 						<?php endif; ?>
 					</div>
 				</div>
@@ -83,7 +83,7 @@ use Imagely\NGG\Util\Router;
 		<?php endforeach; ?>
 	</div>
 
-	<?php echo wp_kses_post( hyperpress_nextgen_pagination( (string) $pagination ) ); ?>
+	<?php echo wp_kses_post( hyperpress_nextgen_pagination( (string) ( $pagination ?? '' ) ) ); ?>
 <?php elseif ( ! empty( $album ) ) : ?>
 	<div class="callout secondary"><?php esc_html_e( 'There are no galleries in this album.', 'hyperpress' ); ?></div>
 <?php endif; ?>
