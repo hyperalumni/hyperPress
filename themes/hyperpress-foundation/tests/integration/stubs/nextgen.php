@@ -37,3 +37,34 @@ namespace Imagely\NGG\Display {
 		}
 	}
 }
+
+namespace Imagely\NGG\DataStorage {
+	if ( ! class_exists( Manager::class, false ) ) {
+		class Manager {
+			public static function get_instance() {
+				return new self();
+			}
+
+			public function get_image_url( $image, $size = 'full', $check_existence = false ) {
+				return 'https://example.test/' . $size . '-' . $image->pid . '.jpg';
+			}
+
+			public function get_cache_busted_image_url( $image, $type = 'thumb' ) {
+				return 'https://example.test/' . $type . '-' . $image->pid . '.jpg?v=1';
+			}
+		}
+	}
+}
+
+namespace Imagely\NGG\DisplayType {
+	if ( ! class_exists( Controller::class, false ) ) {
+		class Controller {
+			/** Raw attribute HTML the stub returns; tests set it. */
+			public static string $effect_code = 'class="ngg-simplelightbox" rel="widget-1"';
+
+			public function get_effect_code( $displayed_gallery ) {
+				return self::$effect_code;
+			}
+		}
+	}
+}
