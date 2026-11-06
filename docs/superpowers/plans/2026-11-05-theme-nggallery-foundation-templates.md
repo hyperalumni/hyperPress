@@ -1,4 +1,4 @@
-> **STATUS: ✅ COMPLETED** (2026-11-05). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 406 tests, 1114 assertions, 12 skipped); awaiting the owner's visual check (Task 7).
+> **STATUS: ✅ COMPLETED** (2026-11-05). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 412 tests, 1125 assertions, 12 skipped); awaiting the owner's visual check (Task 7).
 
 # NextGEN Legacy Templates on Foundation 6 Implementation Plan
 
@@ -1042,7 +1042,7 @@ Executed 2026-11-05 on branch `feat/nggallery-foundation-templates`.
 
 - `composer lint`: 0 violations.
 - `composer test:unit`: OK (64 tests, 269 assertions).
-- `composer test:integration`: OK, but incomplete, skipped, or risky tests: 406 tests, 1114 assertions, 12 skipped (the pre-existing skips; counts after Task 8, 395 and 1086 after the final-review fix wave).
+- `composer test:integration`: OK, but incomplete, skipped, or risky tests: 412 tests, 1125 assertions, 12 skipped (the pre-existing skips; counts after the album-header fix; 406 and 1114 after Task 8, 395 and 1086 after the final-review fix wave).
 - `oxfmt --check` on the spec and this plan: all matched files use the correct format. `pnpm fmt:check` over the repo flags only `docs/superpowers/plans/2026-11-01-plugins-link-shortcode.md` and `docs/superpowers/specs/2026-11-01-plugins-link-shortcode-design.md`, which this branch did not change.
 
 **Deviations during execution**
@@ -1065,5 +1065,11 @@ The whole-branch review found a duplicate-`class` bug in `gallery.php`: the anch
 **Post-merge fix (2026-11-05)**
 
 The owner's first look at the gallery page showed about 40px more space above the callout than on the album page: NextGEN's `nextgen_basic_thumbnails.css` gives `.ngg-galleryoverview` `margin-top: 40px` and `margin-bottom: 50px`, and `gallery.php` keeps that class on its wrapper. `components/_nggallery.scss` now sets `div.ngg-galleryoverview { margin-top: 0; margin-bottom: 1rem; }` (the element selector wins whatever the stylesheet load order).
+
+**Post-merge fix: album header honours Display descriptions (2026-11-05)**
+
+`album-compact.php` printed its header (`album-info` callout with the album name and description) whenever `$album` was set, ignoring NextGEN's "Display descriptions" display setting. It now prints the header only when `! empty( $enable_descriptions ) || ! empty( $original_settings['enable_descriptions'] )`, which mirrors NextGEN 4.5.5's own check (`src/DisplayTypes/Albums/SharedController.php`; drill-down views keep the album's real settings under `original_settings`, and the template guards both variables because either may be unset). The grid, the "no galleries" callout and the gallery cards' own descriptions (`galdesc`) are deliberately not gated. `album_vars()` in the tests now defaults `enable_descriptions` to `1`; new tests cover setting off, setting absent, only `original_settings` on, both off, and the ungated grid, card descriptions and empty callout.
+
+`gallery.php`'s description callout deliberately still ignores the setting: NextGEN does not pass the album's settings to the thumbnails template, and NextGEN prepends its own plain description in drill-down. The owner decided to leave it.
 
 **Pending:** Task 7 (the owner's visual check in a browser) is not done; its checkboxes stay unticked.

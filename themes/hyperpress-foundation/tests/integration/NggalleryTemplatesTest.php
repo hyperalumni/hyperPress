@@ -363,10 +363,11 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 	private function album_vars( array $over = array() ): array {
 		return array_merge(
 			array(
-				'album'            => $this->album(),
-				'galleries'        => array( $this->album_gallery() ),
-				'pagination'       => '',
-				'image_gen_params' => array(
+				'album'               => $this->album(),
+				'galleries'           => array( $this->album_gallery() ),
+				'pagination'          => '',
+				'enable_descriptions' => 1,
+				'image_gen_params'    => array(
 					'width'  => 300,
 					'height' => 200,
 				),
@@ -554,6 +555,49 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( 'callout secondary', $html );
 		$this->assertStringNotContainsString( 'gallery-grid', $html );
+	}
+
+	public function test_album_hides_the_header_when_descriptions_are_disabled(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'enable_descriptions' => 0 ) ) );
+
+		$this->assertStringNotContainsString( 'album-info', $html );
+		$this->assertStringNotContainsString( 'Spring &lt;i&gt;2026&lt;/i&gt;', $html );
+	}
+
+	public function test_album_hides_the_header_when_the_descriptions_setting_is_absent(): void {
+		$vars = $this->album_vars();
+		unset( $vars['enable_descriptions'] );
+
+		$this->assertStringNotContainsString( 'album-info', $this->render( 'album-compact.php', $vars ) );
+	}
+
+	public function test_album_shows_the_header_when_only_the_original_settings_enable_descriptions(): void {
+		$vars = $this->album_vars( array( 'original_settings' => array( 'enable_descriptions' => 1 ) ) );
+		unset( $vars['enable_descriptions'] );
+		$this->assertStringContainsString( 'album-info', $this->render( 'album-compact.php', $vars ) );
+
+		$vars['enable_descriptions'] = 0;
+		$this->assertStringContainsString( 'album-info', $this->render( 'album-compact.php', $vars ) );
+	}
+
+	public function test_album_hides_the_header_when_the_original_settings_disable_descriptions(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'enable_descriptions' => 0, 'original_settings' => array( 'enable_descriptions' => 0 ) ) ) );
+
+		$this->assertStringNotContainsString( 'album-info', $html );
+	}
+
+	public function test_album_grid_and_gallery_descriptions_ignore_the_descriptions_setting(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'enable_descriptions' => 0 ) ) );
+
+		$this->assertStringContainsString( 'gallery-grid', $html );
+		$this->assertStringContainsString( '<div>Gallery <em>notes</em></div>', $html );
+	}
+
+	public function test_album_empty_callout_ignores_the_descriptions_setting(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'enable_descriptions' => 0, 'galleries' => array() ) ) );
+
+		$this->assertStringContainsString( 'callout secondary', $html );
+		$this->assertStringNotContainsString( 'album-info', $html );
 	}
 
 	public function test_album_renders_nothing_without_an_album_or_galleries(): void {

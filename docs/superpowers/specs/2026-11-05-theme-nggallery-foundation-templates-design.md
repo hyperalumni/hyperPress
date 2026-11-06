@@ -51,6 +51,7 @@ The theme overrides two NextGEN Gallery legacy templates in `themes/hyperpress-f
 - `grid-x grid-margin-x small-up-1 medium-up-2 large-up-3 xlarge-up-4`, each item `cell.grid-y > card.flex-child-auto > (a > img | placeholder) + card-section.flex-child-auto`.
 - Removed: `card-image`, `align-bottom`, `align-stretch`, the `small-12 medium-6 ...` widths.
 - `<img>` gets `alt` and `loading="lazy"`; the author lookup is flattened into one block.
+- The album header (`callout primary` with the album name and description) shows only when NextGEN's "Display descriptions" setting (`enable_descriptions`, also read through `original_settings` in drill-down views, as NextGEN does) is on. The gallery cards' own descriptions are not gated by the setting, and neither are the grid or the "no galleries" callout.
 - If equal heights do not hold in the browser, the fallback is Foundation's Equalizer plugin, not custom CSS.
 
 ## Verification

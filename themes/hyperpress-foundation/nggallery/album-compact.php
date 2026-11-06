@@ -8,6 +8,8 @@
  * @var string      $pagination               NextGEN's pagination HTML.
  * @var array       $image_gen_params         Expected preview size (width, height).
  * @var int|bool    $open_gallery_in_lightbox Display setting: open a gallery's preview in the lightbox.
+ * @var int|bool    $enable_descriptions      Display setting: show descriptions (the album header); may be unset.
+ * @var array       $original_settings        The album's own display settings in drill-down views; may be unset.
  */
 
 // Don't load directly.
@@ -15,9 +17,12 @@ defined( 'ABSPATH' ) || exit;
 
 use Imagely\NGG\Util\Router;
 
+// NextGEN's check: the display setting, or the album's own settings kept under original_settings in drill-down views.
+$descriptions_enabled = ! empty( $enable_descriptions ) || ! empty( $original_settings['enable_descriptions'] );
+
 ?>
 
-<?php if ( ! empty( $album ) ) : ?>
+<?php if ( ! empty( $album ) && $descriptions_enabled ) : ?>
 	<div class="album-info callout primary">
 		<?php if ( ! empty( $album->name ) ) : ?>
 			<h5><?php echo esc_html( $album->name ); ?></h5>
