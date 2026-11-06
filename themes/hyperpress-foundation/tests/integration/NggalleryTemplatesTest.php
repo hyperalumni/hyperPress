@@ -1,11 +1,14 @@
 <?php
 namespace HyperPress\ThemeTests\Integration;
 
+use HyperPress\ThemeTests\Integration\Concerns\NggalleryTemplateHelpers;
 use WP_UnitTestCase;
 
-require_once __DIR__ . '/stubs/nextgen.php';
+require_once __DIR__ . '/Concerns/NggalleryTemplateHelpers.php';
 
 final class NggalleryTemplatesTest extends WP_UnitTestCase {
+
+	use NggalleryTemplateHelpers;
 
 	private const RENDERING_HOOK = 'ngg_displayed_gallery_rendering';
 
@@ -24,16 +27,6 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 		$callback   = array( $controller, 'add_description_to_legacy_templates' );
 		add_filter( self::RENDERING_HOOK, $callback, 8, 2 );
 		return $callback;
-	}
-
-	private function render( string $file, array $vars ): string {
-		$path = dirname( __DIR__, 2 ) . '/nggallery/' . $file;
-		ob_start();
-		( static function ( string $template_file, array $template_vars ): void {
-			extract( $template_vars ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
-			include $template_file;
-		} )( $path, $vars );
-		return (string) ob_get_clean();
 	}
 
 	private function gallery( array $over = array() ): object {

@@ -52,10 +52,10 @@ Pure refactor: behaviour and the first plan's tests do not change.
 - Create: `tests/integration/Concerns/NggalleryTemplateHelpers.php`, `template-parts/nextgen/gallery-grid.php`
 - Modify: `tests/integration/NggalleryTemplatesTest.php`, `nggallery/gallery.php`
 
-- [ ] **Step 1: Move `render()` (and the stub `require_once`) from `NggalleryTemplatesTest` into a trait** `HyperPress\ThemeTests\Integration\Concerns\NggalleryTemplateHelpers`; the test class `use`s it. Run `docker compose run --rm php composer test:integration -- --filter NggalleryTemplatesTest`. Expected: PASS, unchanged.
-- [ ] **Step 2: Extract the grid.** Move everything inside `gallery.php`'s wrapper (slideshow link, callout or grid, hidden images, pagination) into `template-parts/nextgen/gallery-grid.php`. The partial reads `$gallery`, `$images`, `$pagination` and an optional `$captions` (default false). `gallery.php` keeps its docblock, the ABSPATH guard and the `ngg-galleryoverview` wrapper, sets `$captions = false;` and does `require __DIR__ . '/../template-parts/nextgen/gallery-grid.php';` (a path relative to the file works in tests and in production regardless of the active theme).
-- [ ] **Step 3: Run the tests and lint.** `--filter NggalleryTemplatesTest` PASS; `composer lint` 0 violations.
-- [ ] **Step 4: Tick this task's boxes and commit** (`refactor(theme): share the nextgen gallery grid partial`).
+- [x] **Step 1: Move `render()` (and the stub `require_once`) from `NggalleryTemplatesTest` into a trait** `HyperPress\ThemeTests\Integration\Concerns\NggalleryTemplateHelpers`; the test class `use`s it. Run `docker compose run --rm php composer test:integration -- --filter NggalleryTemplatesTest`. Expected: PASS, unchanged.
+- [x] **Step 2: Extract the grid.** Move everything inside `gallery.php`'s wrapper (slideshow link, callout or grid, hidden images, pagination) into `template-parts/nextgen/gallery-grid.php`. The partial reads `$gallery`, `$images`, `$pagination` and an optional `$captions` (default false). `gallery.php` keeps its docblock, the ABSPATH guard and the `ngg-galleryoverview` wrapper, sets `$captions = false;` and does `require __DIR__ . '/../template-parts/nextgen/gallery-grid.php';` (a path relative to the file works in tests and in production regardless of the active theme).
+- [x] **Step 3: Run the tests and lint.** `--filter NggalleryTemplatesTest` PASS; `composer lint` 0 violations.
+- [x] **Step 4: Tick this task's boxes and commit** (`refactor(theme): share the nextgen gallery grid partial`).
 
 ### Task 2: `album-extend.php` (media object)
 
