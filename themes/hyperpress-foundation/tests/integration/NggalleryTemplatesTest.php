@@ -457,9 +457,18 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 		$gallery = $this->album_gallery();
 		unset( $gallery->previewpic );
 
-		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'galleries' => array( $gallery ) ) ) );
+		$html = $this->render(
+			'album-compact.php',
+			$this->album_vars(
+				array(
+					'open_gallery_in_lightbox' => 1,
+					'galleries'                => array( $gallery ),
+				)
+			)
+		);
 
 		$this->assertStringContainsString( 'Match day', $html );
+		$this->assertStringContainsString( 'data-image-id=""', $html );
 		$this->assertStringContainsString( 'src="https://example.test/preview.jpg"', $html );
 	}
 
