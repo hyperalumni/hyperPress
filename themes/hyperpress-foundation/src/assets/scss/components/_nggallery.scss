@@ -23,6 +23,11 @@ div.ngg-galleryoverview:has(> .grid-x) {
   }
 }
 
+// The carousel's current thumbnail (nggallery/gallery-carousel.php) gets a primary-colour ring.
+.ngg-galleryoverview a.thumbnail.is-current {
+  box-shadow: 0 0 0 3px $primary-color;
+}
+
 // The random-image widget (nggallery/Widget/Display/Gallery.php): its width/height attributes are
 // maximum sizes, so the image fills its cell as well. Scoped to the widget's .ngg_images section.
 .ngg_images a.thumbnail {
