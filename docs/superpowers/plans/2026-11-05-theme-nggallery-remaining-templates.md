@@ -141,14 +141,14 @@ Executed 2026-11-05 and 2026-11-06 on branch `feat/nggallery-remaining-templates
 
 **Commits**
 
-| Task | Commit                                                                    |
-| ---- | ------------------------------------------------------------------------- |
-| 1    | `61f2c1cb` share the nextgen gallery grid partial                         |
-| 2    | `d21c3ba6` extended album on media objects                                |
-| 3    | `22c48440` gallery with captions, plus fix `5760f63a` (caption decoding)  |
-| 4    | `938c0a53` image browser, plus fix `ddaa20ee` (title decoding)            |
-| 5    | `2633dbc4` carousel on an image strip                                     |
-| 6    | `f1be4bf3` widget template (done in the previous session)                 |
+| Task | Commit                                                                   |
+| ---- | ------------------------------------------------------------------------ |
+| 1    | `61f2c1cb` share the nextgen gallery grid partial                        |
+| 2    | `d21c3ba6` extended album on media objects                               |
+| 3    | `22c48440` gallery with captions, plus fix `5760f63a` (caption decoding) |
+| 4    | `938c0a53` image browser, plus fix `ddaa20ee` (title decoding)           |
+| 5    | `2633dbc4` carousel on an image strip                                    |
+| 6    | `f1be4bf3` widget template (done in the previous session)                |
 
 **Verification** (from `themes/hyperpress-foundation/`, in Docker, 2026-11-06): `composer lint` exit 0; `composer test:unit` OK, 64 tests, 269 assertions; `composer test:integration` OK, 548 tests, 1443 assertions, 12 skipped.
 
