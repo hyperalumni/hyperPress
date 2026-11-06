@@ -1,3 +1,10 @@
+// NextGEN's stylesheet gives the gallery wrapper margin-top: 40px and margin-bottom: 50px.
+// The element selector outranks its single-class rule whatever the load order.
+div.ngg-galleryoverview {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
 .gallery-grid {
   margin-bottom: 1rem;
 

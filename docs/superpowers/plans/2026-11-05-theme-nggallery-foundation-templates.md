@@ -1024,7 +1024,7 @@ git commit -m "fix(theme): harden the nextgen templates and fill test gaps" -- t
 - [ ] Responsive image files: NextGEN legacy templates expose only `thumbnailURL` and `imageURL`; a real `srcset` needs dynamic thumbnail sizes (`LegacyImage.php:525` builds them via `$storage->get_image_url()` with size parameters). Decide whether to call that from a theme helper or the `hyperpress-media` plugin.
 - [ ] `album-extend`, `gallery-caption`, `imagebrowser`, `imagebrowser-caption`, `gallery-carousel` and the random-image widget: see the follow-up plan `2026-11-05-theme-nggallery-remaining-templates.md`. `singlepic` and `imagebrowser-exif` stay un-overridden unless the sites use them.
 - [ ] Modern (non-legacy) NextGEN templates: no documented override path was found in NextGEN 4.5.5; revisit if the "Template" setting stops being practical.
-- [ ] The theme does not enqueue or dequeue NextGEN's stylesheet; if any `ngg-*` styling is wanted later, it belongs in the `hyperpress-media` plugin, not the theme.
+- [ ] The theme does not enqueue or dequeue NextGEN's stylesheet. Where it clashes with the Foundation markup the theme overrides it in `src/assets/scss/components/_nggallery.scss` (see the 2026-11-05 post-merge fix in the outcome notes); a general restyling of NextGEN's own output would still belong in the `hyperpress-media` plugin.
 
 ## Outcome / execution notes
 
@@ -1061,5 +1061,9 @@ All the parked minors from the task and final reviews were fixed in Task 8 (the 
 **Final review**
 
 The whole-branch review found a duplicate-`class` bug in `gallery.php`: the anchor printed `class="thumbnail"` and then NextGEN's `$image->thumbcode`, which carries its own `class` attribute (the default lightbox setting is `class="ngg-simplelightbox" rel="%GALLERY_NAME%"`). Browsers keep the first `class`, so NextGEN's `.ngg-simplelightbox` hook was lost. The test stub used `class="lightbox"` and never exercised a second class. Fixed in the final fix-wave commit: the anchor's opening tag is built as a string and the Foundation class is merged through `WP_HTML_Tag_Processor` (`add_class( 'thumbnail' )`); the regression tests cover a thumbcode with and without a class. The same commit changes the gallery and album description wrappers from `<p>` to `<div>`, because `wp_kses_post` may return block-level tags. The remaining parked minors (the all-hidden empty grid, the unguarded album fields, the missing `open_gallery_in_lightbox = 0` test) were fixed afterwards in Task 8.
+
+**Post-merge fix (2026-11-05)**
+
+The owner's first look at the gallery page showed about 40px more space above the callout than on the album page: NextGEN's `nextgen_basic_thumbnails.css` gives `.ngg-galleryoverview` `margin-top: 40px` and `margin-bottom: 50px`, and `gallery.php` keeps that class on its wrapper. `components/_nggallery.scss` now sets `div.ngg-galleryoverview { margin-top: 0; margin-bottom: 1rem; }` (the element selector wins whatever the stylesheet load order).
 
 **Pending:** Task 7 (the owner's visual check in a browser) is not done; its checkboxes stay unticked.
