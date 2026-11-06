@@ -23,6 +23,7 @@ $descriptions_enabled = ! empty( $enable_descriptions ) || ! empty( $original_se
 ?>
 
 <?php if ( ! empty( $album ) && $descriptions_enabled ) : ?>
+	<?php hyperpress_nextgen_take_over_description( (string) ( $album->albumdesc ?? '' ), 'album-info callout' ); // NextGEN would prepend the same description as a plain paragraph. ?>
 	<div class="album-info callout primary">
 		<?php if ( ! empty( $album->name ) ) : ?>
 			<h5><?php echo esc_html( $album->name ); ?></h5>

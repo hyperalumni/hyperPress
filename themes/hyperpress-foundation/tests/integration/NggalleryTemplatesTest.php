@@ -7,6 +7,25 @@ require_once __DIR__ . '/stubs/nextgen.php';
 
 final class NggalleryTemplatesTest extends WP_UnitTestCase {
 
+	private const RENDERING_HOOK = 'ngg_displayed_gallery_rendering';
+
+	public function tear_down(): void {
+		remove_all_filters( self::RENDERING_HOOK );
+		parent::tear_down();
+	}
+
+	/** Registers a stand-in for NextGEN's description filter and returns its callback. */
+	private function register_nextgen_description_filter(): array {
+		$controller = new class() {
+			public function add_description_to_legacy_templates( $html ) {
+				return $html;
+			}
+		};
+		$callback   = array( $controller, 'add_description_to_legacy_templates' );
+		add_filter( self::RENDERING_HOOK, $callback, 8, 2 );
+		return $callback;
+	}
+
 	private function render( string $file, array $vars ): string {
 		$path = dirname( __DIR__, 2 ) . '/nggallery/' . $file;
 		ob_start();
@@ -320,6 +339,22 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'gallery-info', $title );
 	}
 
+	public function test_gallery_with_a_description_takes_over_nextgens_description_filter(): void {
+		$callback = $this->register_nextgen_description_filter();
+
+		$this->render( 'gallery.php', array( 'gallery' => $this->gallery( array( 'description' => 'Some notes' ) ), 'images' => array( $this->image() ), 'pagination' => '' ) );
+
+		$this->assertFalse( has_filter( self::RENDERING_HOOK, $callback ) );
+	}
+
+	public function test_gallery_without_a_description_leaves_nextgens_description_filter(): void {
+		$callback = $this->register_nextgen_description_filter();
+
+		$this->render( 'gallery.php', array( 'gallery' => $this->gallery( array( 'description' => '' ) ), 'images' => array( $this->image() ), 'pagination' => '' ) );
+
+		$this->assertSame( 8, has_filter( self::RENDERING_HOOK, $callback ) );
+	}
+
 	public function test_gallery_renders_nothing_without_a_gallery(): void {
 		$this->assertSame(
 			'',
@@ -598,6 +633,23 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( 'callout secondary', $html );
 		$this->assertStringNotContainsString( 'album-info', $html );
+	}
+
+	public function test_album_header_takes_over_nextgens_description_filter(): void {
+		$callback = $this->register_nextgen_description_filter();
+
+		$this->render( 'album-compact.php', $this->album_vars() );
+
+		$this->assertFalse( has_filter( self::RENDERING_HOOK, $callback ) );
+	}
+
+	public function test_album_leaves_nextgens_description_filter_when_the_header_is_hidden(): void {
+		$callback = $this->register_nextgen_description_filter();
+
+		$this->render( 'album-compact.php', $this->album_vars( array( 'enable_descriptions' => 0 ) ) );
+		$this->render( 'album-compact.php', $this->album_vars( array( 'album' => null ) ) );
+
+		$this->assertSame( 8, has_filter( self::RENDERING_HOOK, $callback ) );
 	}
 
 	public function test_album_renders_nothing_without_an_album_or_galleries(): void {

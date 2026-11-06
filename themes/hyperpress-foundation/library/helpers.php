@@ -121,3 +121,89 @@ function hyperpress_default_footer_socials(): void {
 		)
 	);
 }
+
+/**
+ * Stops NextGEN from printing its own plain description above a legacy template.
+ *
+ * When a gallery or album is drilled into, NextGEN registers `add_description_to_legacy_templates()`
+ * on `ngg_displayed_gallery_rendering` (priority 8). That filter runs after the template has been
+ * rendered and prepends a bare `<p>` with the description to the template's output. A template that
+ * prints the description in its own callout calls this while it renders, so the description is not
+ * shown twice. The callback is an array callback on a controller object we cannot reach, so it is
+ * found by its method name. Only that method at priority 8 is removed; the breadcrumbs filter
+ * (priority 9) and every other callback stay.
+ *
+ * In a sub-album view NextGEN does not use that filter: `index_action()` prepends the description
+ * to the rendered template directly, so nothing can be unhooked. When `$description` and `$marker`
+ * are both given, a one-time filter at priority 20 (after NextGEN's 8 and 9) removes the `<p>`
+ * paragraphs in front of the template's own callout (the part before the tag that holds `$marker`)
+ * whose text equals `$description` exactly (tags stripped, entities decoded, whitespace collapsed).
+ * The filter removes itself the first time it runs, so it never touches another display.
+ *
+ * @param string $description The description the template prints itself.
+ * @param string $marker      A class fragment of the template's callout, e.g. `album-info callout`.
+ * @return void
+ */
+function hyperpress_nextgen_take_over_description( string $description = '', string $marker = '' ): void {
+	$hook = 'ngg_displayed_gallery_rendering';
+
+	// Read-only look at the global filter table; there is no API to list a hook's callbacks.
+	$wp_filter = $GLOBALS['wp_filter'][ $hook ] ?? null;
+	if ( $wp_filter instanceof WP_Hook && ! empty( $wp_filter->callbacks[8] ) ) {
+		// Iterate over a copy: remove_filter() changes the callbacks array.
+		foreach ( $wp_filter->callbacks[8] as $entry ) {
+			$callback = $entry['function'] ?? null;
+			if ( is_array( $callback ) && 2 === count( $callback ) && 'add_description_to_legacy_templates' === $callback[1] ) {
+				remove_filter( $hook, $callback, 8 );
+			}
+		}
+	}
+
+	$wanted = hyperpress_nextgen_normalize_text( $description );
+	if ( '' === $wanted || '' === $marker ) {
+		return;
+	}
+
+	$cleanup = null;
+	$cleanup = static function ( $html ) use ( &$cleanup, $hook, $wanted, $marker ) {
+		// One-time: never affect another display on the page.
+		remove_filter( $hook, $cleanup, 20 );
+
+		if ( ! is_string( $html ) ) {
+			return $html;
+		}
+
+		$position = strpos( $html, $marker );
+		if ( false === $position ) {
+			return $html;
+		}
+
+		// Cut at the opening tag that holds the marker; only what comes before it is looked at.
+		$cut = strrpos( substr( $html, 0, $position ), '<' );
+		$cut = false === $cut ? $position : $cut;
+
+		$prefix = preg_replace_callback(
+			'~<p\b[^>]*>.*?</p>~is',
+			static fn( array $paragraph ): string => hyperpress_nextgen_normalize_text( $paragraph[0] ) === $wanted ? '' : $paragraph[0],
+			substr( $html, 0, $cut )
+		);
+
+		return ( is_string( $prefix ) ? $prefix : substr( $html, 0, $cut ) ) . substr( $html, $cut );
+	};
+
+	add_filter( $hook, $cleanup, 20 );
+}
+
+/**
+ * Normalises HTML or text for an exact comparison: strips tags, decodes entities, collapses
+ * every whitespace run (including non-breaking spaces) to one space and trims.
+ *
+ * @param string $text HTML or plain text.
+ * @return string
+ */
+function hyperpress_nextgen_normalize_text( string $text ): string {
+	$text = html_entity_decode( wp_strip_all_tags( $text ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	$text = preg_replace( '/[\s\x{00A0}]+/u', ' ', $text );
+
+	return trim( is_string( $text ) ? $text : '' );
+}

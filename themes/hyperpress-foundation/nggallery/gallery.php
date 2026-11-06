@@ -30,6 +30,7 @@ use Imagely\NGG\Util\Router;
 	<div class="ngg-galleryoverview" id="<?php echo esc_attr( $gallery->anchor ); ?>">
 
 		<?php if ( ! empty( $gallery->description ) ) : ?>
+			<?php hyperpress_nextgen_take_over_description( (string) $gallery->description, 'gallery-info callout' ); // NextGEN would prepend the same description as a plain paragraph. ?>
 			<div class="gallery-info callout primary">
 				<?php if ( ! empty( $gallery->title ) ) : ?>
 					<h5><?php echo esc_html( $gallery->title ); ?></h5>
