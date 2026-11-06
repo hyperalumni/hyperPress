@@ -555,7 +555,7 @@ The theme's earlier design (callout header plus a card per gallery, kept in git 
 
 - Modify: `tests/integration/NggalleryTemplatesTest.php`
 
-- [ ] **Step 1: Add helpers and tests to the test class** (before the closing brace)
+- [x] **Step 1: Add helpers and tests to the test class** (before the closing brace)
 
 ```php
 	private function album( array $over = array() ): object {
@@ -730,7 +730,7 @@ The theme's earlier design (callout header plus a card per gallery, kept in git 
 	}
 ```
 
-- [ ] **Step 2: Run the tests and confirm the card-structure test fails**
+- [x] **Step 2: Run the tests and confirm the card-structure test fails**
 
 Run: `docker compose run --rm php composer test:integration -- --filter NggalleryTemplatesTest`
 Expected: the `test_album_*` tests FAIL against the stock-style markup (no cards, `ngg-album-*` classes, no `loading`, and the author label and placeholder are missing). A test that errors on an undefined index in the stock template is also a valid red; do not weaken the test to avoid it.
@@ -741,7 +741,7 @@ Expected: the `test_album_*` tests FAIL against the stock-style markup (no cards
 
 - Modify: `nggallery/album-compact.php`
 
-- [ ] **Step 1: Replace the file content**
+- [x] **Step 1: Replace the file content**
 
 ```php
 <?php
@@ -835,17 +835,17 @@ use \Imagely\NGG\Util\Router;
 <?php endif; ?>
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `docker compose run --rm php composer test:integration -- --filter NggalleryTemplatesTest`
 Expected: all tests PASS.
 
-- [ ] **Step 3: Lint**
+- [x] **Step 3: Lint**
 
 Run: `docker compose run --rm php composer lint`
 Expected: 0 violations. If PHPCS flags the multi-line `<a ...>` echo or the `phpcs:ignore` placement (it fires on the line that holds the echo), move the comment to that line; do not add file-wide excludes.
 
-- [ ] **Step 4: Tick the Task 3 and Task 4 boxes in this plan and commit**
+- [x] **Step 4: Tick the Task 3 and Task 4 boxes in this plan and commit**
 
 ```sh
 git add themes/hyperpress-foundation/nggallery/album-compact.php themes/hyperpress-foundation/tests/integration/NggalleryTemplatesTest.php docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md

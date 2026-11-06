@@ -208,4 +208,175 @@ final class NggalleryTemplatesTest extends WP_UnitTestCase {
 			trim( $this->render( 'gallery.php', array( 'gallery' => null, 'images' => array(), 'pagination' => '' ) ) )
 		);
 	}
+
+	private function album( array $over = array() ): object {
+		return (object) array_merge(
+			array(
+				'name'      => 'Spring <i>2026</i>',
+				'albumdesc' => '<strong>Photos</strong><script>x()</script>',
+			),
+			$over
+		);
+	}
+
+	private function album_gallery( array $over = array() ): object {
+		return (object) array_merge(
+			array(
+				'title'                                => 'Match day',
+				'pagelink'                             => 'https://example.test/gallery/match-day',
+				'previewurl'                           => 'https://example.test/preview.jpg',
+				'previewpic'                           => 77,
+				'previewpic_fullsized_url'             => 'https://example.test/full-77.jpg',
+				'previewpic_fullsized_display_url'     => 'https://example.test/full-77.jpg?v=2',
+				'previewpic_image'                     => (object) array(
+					'alttext'     => 'Cover alt',
+					'description' => 'Cover caption',
+				),
+				'entity_type'                          => 'gallery',
+				'displayed_gallery'                    => (object) array( 'effect_code' => 'class="lightbox" rel="x"' ),
+				'counter'                              => 12,
+				'author'                               => 0,
+				'galdesc'                              => 'Gallery <em>notes</em>',
+			),
+			$over
+		);
+	}
+
+	private function album_vars( array $over = array() ): array {
+		return array_merge(
+			array(
+				'album'            => $this->album(),
+				'galleries'        => array( $this->album_gallery() ),
+				'pagination'       => '',
+				'image_gen_params' => array(
+					'width'  => 300,
+					'height' => 200,
+				),
+			),
+			$over
+		);
+	}
+
+	public function test_album_uses_the_foundation_card_structure(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars() );
+
+		$this->assertStringContainsString( 'grid-x grid-margin-x small-up-1 medium-up-2 large-up-3 xlarge-up-4', $html );
+		$this->assertStringContainsString( '<div class="cell grid-y">', $html );
+		$this->assertStringContainsString( '<div class="card flex-child-auto">', $html );
+		$this->assertStringContainsString( '<div class="card-section flex-child-auto">', $html );
+		foreach ( array( 'card-image', 'align-stretch', 'align-bottom', 'small-12', 'ngg-album', 'class="Thumb"' ) as $legacy ) {
+			$this->assertStringNotContainsString( $legacy, $html );
+		}
+	}
+
+	public function test_album_image_links_to_the_gallery_with_alt_and_lazy_loading(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars() );
+
+		$this->assertMatchesRegularExpression( '/<a href="https:\/\/example\.test\/gallery\/match-day">\s*<img [^>]*src="https:\/\/example\.test\/preview\.jpg"[^>]*alt="Match day"[^>]*loading="lazy"/', $html );
+	}
+
+	public function test_album_opens_the_preview_in_the_lightbox_when_the_option_is_on(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'open_gallery_in_lightbox' => 1 ) ) );
+
+		$this->assertMatchesRegularExpression( '/<a class="lightbox" rel="x"\s+href="https:\/\/example\.test\/full-77\.jpg"/', $html );
+		$this->assertStringContainsString( 'data-src="https://example.test/full-77.jpg?v=2"', $html );
+		$this->assertStringContainsString( 'data-title="Cover alt"', $html );
+		$this->assertStringContainsString( 'data-description="Cover caption"', $html );
+		$this->assertStringContainsString( 'data-image-id="77"', $html );
+		$this->assertStringContainsString( '<a href="https://example.test/gallery/match-day">Match day</a>', $html );
+	}
+
+	public function test_album_links_albums_to_their_page_even_with_the_lightbox_option(): void {
+		$html = $this->render(
+			'album-compact.php',
+			$this->album_vars(
+				array(
+					'open_gallery_in_lightbox' => 1,
+					'galleries'                => array( $this->album_gallery( array( 'entity_type' => 'album' ) ) ),
+				)
+			)
+		);
+
+		$this->assertStringNotContainsString( 'data-image-id', $html );
+		$this->assertMatchesRegularExpression( '/<a href="https:\/\/example\.test\/gallery\/match-day">\s*<img /', $html );
+	}
+
+	public function test_album_falls_back_to_the_page_link_when_the_lightbox_data_is_missing(): void {
+		$gallery = $this->album_gallery();
+		unset( $gallery->previewpic_fullsized_url, $gallery->displayed_gallery );
+
+		$html = $this->render(
+			'album-compact.php',
+			$this->album_vars(
+				array(
+					'open_gallery_in_lightbox' => 1,
+					'galleries'                => array( $gallery ),
+				)
+			)
+		);
+
+		$this->assertStringNotContainsString( 'data-image-id', $html );
+		$this->assertMatchesRegularExpression( '/<a href="https:\/\/example\.test\/gallery\/match-day">\s*<img /', $html );
+	}
+
+	public function test_album_placeholder_uses_the_generated_thumbnail_ratio(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'galleries' => array( $this->album_gallery( array( 'previewurl' => '' ) ) ) ) ) );
+
+		$this->assertStringNotContainsString( '<img', $html );
+		$this->assertStringContainsString( 'style="aspect-ratio:1.5"', $html );
+	}
+
+	public function test_album_placeholder_survives_missing_image_gen_params(): void {
+		$vars = $this->album_vars( array( 'galleries' => array( $this->album_gallery( array( 'previewurl' => '' ) ) ) ) );
+		unset( $vars['image_gen_params'] );
+
+		$this->assertStringContainsString( 'style="aspect-ratio:1"', $this->render( 'album-compact.php', $vars ) );
+	}
+
+	public function test_album_escapes_and_sanitizes_text(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'galleries' => array( $this->album_gallery( array( 'title' => '<script>x()</script>' ) ) ) ) ) );
+
+		$this->assertStringNotContainsString( '<script>', $html );
+		$this->assertStringContainsString( 'Spring &lt;i&gt;2026&lt;/i&gt;', $html );
+		$this->assertStringContainsString( '<strong>Photos</strong>', $html );
+	}
+
+	public function test_album_shows_the_photo_count_and_author_label(): void {
+		$user = self::factory()->user->create( array( 'display_name' => 'Ann Author' ) );
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'galleries' => array( $this->album_gallery( array( 'author' => $user ) ) ) ) ) );
+
+		$this->assertStringContainsString( '<strong>12</strong>', $html );
+		$this->assertStringContainsString( 'Ann Author', $html );
+	}
+
+	public function test_album_omits_the_author_label_for_an_unknown_user(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'galleries' => array( $this->album_gallery( array( 'author' => 999999 ) ) ) ) ) );
+
+		$this->assertStringNotContainsString( 'label warning', $html );
+	}
+
+	public function test_album_prints_the_pagination_after_the_grid(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'pagination' => "<div class='ngg-navigation'><span class='current'>1</span><a class='page-numbers' data-pageid='2' href='?nggpage=2'>2</a></div>" ) ) );
+
+		$this->assertStringContainsString( '<ul class="pagination text-center">', $html );
+		$this->assertGreaterThan( strrpos( $html, 'card-section' ), strpos( $html, 'class="pagination' ) );
+	}
+
+	public function test_album_renders_the_grid_without_an_album_header(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'album' => null ) ) );
+
+		$this->assertStringNotContainsString( 'album-info', $html );
+		$this->assertStringContainsString( 'gallery-grid', $html );
+	}
+
+	public function test_album_shows_a_callout_when_it_has_no_galleries(): void {
+		$html = $this->render( 'album-compact.php', $this->album_vars( array( 'galleries' => array() ) ) );
+
+		$this->assertStringContainsString( 'callout secondary', $html );
+		$this->assertStringNotContainsString( 'gallery-grid', $html );
+	}
+
+	public function test_album_renders_nothing_without_an_album_or_galleries(): void {
+		$this->assertSame( '', trim( $this->render( 'album-compact.php', $this->album_vars( array( 'album' => null, 'galleries' => array() ) ) ) ) );
+	}
 }
