@@ -58,12 +58,33 @@ final class NggalleryImageBrowserTest extends WP_UnitTestCase {
 	}
 
 	/** @dataProvider templates */
-	public function test_the_title_is_an_h3_and_is_escaped( string $file ): void {
+	public function test_the_title_is_an_h3( string $file ): void {
 		$this->assertStringContainsString( '<h3>Goal celebration</h3>', $this->render( $file, $this->vars() ) );
+	}
 
-		$html = $this->render( $file, $this->vars( array( 'image' => $this->image( array( 'alttext' => '<script>x()</script>' ) ) ) ) );
-		$this->assertStringNotContainsString( '<script>', $html );
-		$this->assertStringContainsString( '&lt;script&gt;', $html );
+	/** @dataProvider templates */
+	public function test_the_title_is_decoded_like_the_stock_template( string $file ): void {
+		$html = $this->render( $file, $this->vars( array( 'image' => $this->image( array( 'alttext' => 'It&#039;s a <em>test</em>' ) ) ) ) );
+
+		$this->assertStringContainsString( '<h3>It\'s a <em>test</em></h3>', $html );
+	}
+
+	/** @dataProvider templates */
+	public function test_an_entity_encoded_script_in_the_title_is_removed( string $file ): void {
+		$html = $this->render( $file, $this->vars( array( 'image' => $this->image( array( 'alttext' => '&lt;script&gt;alert(1)&lt;/script&gt;Title' ) ) ) ) );
+
+		preg_match( '/<h3>(.*?)<\/h3>/s', $html, $m );
+		$this->assertStringNotContainsString( '<script', $m[1] );
+		$this->assertStringContainsString( 'Title', $m[1] );
+	}
+
+	/** @dataProvider templates */
+	public function test_a_raw_script_in_the_title_is_stripped( string $file ): void {
+		$html = $this->render( $file, $this->vars( array( 'image' => $this->image( array( 'alttext' => '<script>alert(1)</script>Title' ) ) ) ) );
+
+		preg_match( '/<h3>(.*?)<\/h3>/s', $html, $m );
+		$this->assertStringNotContainsString( '<script', $m[1] );
+		$this->assertStringContainsString( 'Title', $m[1] );
 	}
 
 	/** @dataProvider templates */

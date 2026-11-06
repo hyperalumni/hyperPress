@@ -9,6 +9,9 @@
  * `a.ngg-browser-prev, a.ngg-browser-next` inside that container and swaps in the page it fetches
  * from their `href`. Those classes, ids and attributes must stay.
  *
+ * NextGEN's image browser wraps around (the last image's next is the first), so the previous and
+ * next links are practically always present; the disabled placeholders are only a safety net.
+ *
  * @var object $image             Image data (anchor, previous_pid, previous_image_link, next_pid,
  *                                next_image_link, number, total, alttext, href_link, description).
  * @var object $displayed_gallery Provides id().
@@ -34,7 +37,7 @@ use Imagely\NGG\Util\Router;
 	$has_next     = ! empty( $image->next_image_link );
 	?>
 	<div class="ngg-imagebrowser" id="<?php echo esc_attr( $image->anchor ); ?>" data-nextgen-gallery-id="<?php echo esc_attr( $displayed_gallery->id() ); ?>">
-		<h3><?php echo esc_html( $image->alttext ); ?></h3>
+		<h3><?php echo wp_kses_post( I18N::ngg_decode_sanitized_html_content( $image->alttext ) ); // The decode can restore real tags, so kses runs after it. ?></h3>
 
 		<div class="text-center">
 			<?php echo wp_kses_post( $image_link->get_updated_html() ); ?>
