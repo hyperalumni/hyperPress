@@ -1,3 +1,5 @@
+> **STATUS: ✅ COMPLETED** (2026-11-05). All code tasks done and verified (lint clean; unit 64 tests, 269 assertions; integration 393 tests, 1075 assertions, 12 skipped); awaiting the owner's visual check (Task 7).
+
 # NextGEN Legacy Templates on Foundation 6 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -930,7 +932,7 @@ git commit -m "feat(theme): gallery title and description callout" -- themes/hyp
 
 **Files:** none
 
-- [ ] **Step 1: Run the whole theme checks**
+- [x] **Step 1: Run the whole theme checks**
 
 ```sh
 docker compose run --rm php composer lint
@@ -940,12 +942,12 @@ docker compose run --rm php composer test:integration
 
 Expected: lint 0 violations; unit and integration suites pass (the pre-existing skipped tests stay skipped).
 
-- [ ] **Step 2: Format check on the new Markdown**
+- [x] **Step 2: Format check on the new Markdown**
 
 From the repo root, after the Node setup line: `pnpm exec oxfmt --check docs/superpowers/specs/2026-11-05-theme-nggallery-foundation-templates-design.md docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md`
 Expected: no changes needed; if it reports differences run `pnpm exec oxfmt <files>` and re-check.
 
-- [ ] **Step 3: Tick the boxes** (no separate commit; included in Task 6).
+- [x] **Step 3: Tick the boxes** (no separate commit; included in Task 6).
 
 ### Task 6: Correct the notes that call `gallery.php` empty
 
@@ -954,18 +956,18 @@ Expected: no changes needed; if it reports differences run `pnpm exec oxfmt <fil
 - Modify: `docs/superpowers/audit/2026-10-02-theme-audit.md` (lines 85, 348, 720-732)
 - Modify: this plan (outcome notes, status banner)
 
-- [ ] **Step 1: Re-grep before editing**
+- [x] **Step 1: Re-grep before editing**
 
 Run: `grep -rn -i "gallery.php\|T42" docs/superpowers`
 Expected: the audit lines above, plus any new mentions; update every plan or audit line that still says `gallery.php` is empty.
 
-- [ ] **Step 2: Update the audit notes**
+- [x] **Step 2: Update the audit notes**
 
 Append to the T42 table row (line 85) and to the T42 section (line 720 onward) a short "Resolved" note: `gallery.php` is no longer empty; it renders the gallery as a Foundation XY grid (see `docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md`). Do the same for the sentence on line 348. Keep the original finding text; add, do not rewrite history.
 
-- [ ] **Step 3: Fill in this plan's "Outcome / execution notes" and add the COMPLETED banner at the top**
+- [x] **Step 3: Fill in this plan's "Outcome / execution notes" and add the COMPLETED banner at the top**
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```sh
 git add docs/superpowers/audit/2026-10-02-theme-audit.md docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md
@@ -989,4 +991,37 @@ git commit -m "docs(theme): note that the nextgen gallery template is no longer 
 
 ## Outcome / execution notes
 
-(Filled in on completion.)
+Executed 2026-11-05 on branch `feat/nggallery-foundation-templates`.
+
+**What shipped**
+
+- `8cffc3ac` feat(theme): foundation pagination markup for nextgen galleries (Task 0, `hyperpress_nextgen_pagination()`)
+- `3a8353eb` refactor(theme): nextgen gallery template on the foundation grid (Tasks 1 and 2)
+- `c9c53c41` refactor(theme): nextgen compact album with nested foundation cards (Tasks 3 and 4)
+- `fd6dd989` feat(theme): gallery title and description callout (Task 4b)
+- Tasks 5 and 6 (verification, audit notes, `themes/hyperpress-foundation/AGENTS.md` bullet, this plan) are in the closing docs commit.
+
+**Verification (Task 5, from `themes/hyperpress-foundation/`)**
+
+- `composer lint`: 0 violations.
+- `composer test:unit`: OK (64 tests, 269 assertions).
+- `composer test:integration`: OK, but incomplete, skipped, or risky tests: 393 tests, 1075 assertions, 12 skipped (the pre-existing skips).
+- `oxfmt --check` on the spec and this plan: all matched files use the correct format. `pnpm fmt:check` over the repo flags only `docs/superpowers/plans/2026-11-01-plugins-link-shortcode.md` and `docs/superpowers/specs/2026-11-01-plugins-link-shortcode-design.md`, which this branch did not change.
+
+**Deviations during execution**
+
+- The leading backslash was removed from the `use` lines in the templates and tests (project style).
+- NextGEN's camelCase property names (`thumbnailURL`, `imageURL`, ...) needed `phpcs:ignore` for the snake_case rule.
+- The pagination attribute assertions are tolerant of the quote style, because `wp_kses_post` keeps NextGEN's single quotes.
+- Task 0 added `hyperpress_nextgen_pagination()` to `library/helpers.php` (not in the original task list) to reshape NextGEN's pagination HTML.
+- Task 4b added the gallery title and description callout to `gallery.php`.
+- The `ngg-galleryoverview` wrapper class (and the anchor `id`) was kept on `gallery.php`'s outer wrapper because NextGEN's AJAX pagination script finds the gallery through them.
+
+**Parked minors**
+
+- A gallery whose images are all hidden renders an empty `grid-x` with no callout.
+- The gallery description is wrapped in a `<p>`, so block-level tags that `wp_kses_post` allows nest badly (same in the album header).
+- `$gallery->previewpic`, `pagelink` and `$pagination` are read unguarded in `album-compact.php`, as in stock NextGEN.
+- There is no explicit test for `open_gallery_in_lightbox = 0`.
+
+**Pending:** Task 7 (the owner's visual check in a browser) is not done; its checkboxes stay unticked.

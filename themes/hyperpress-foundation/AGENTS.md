@@ -32,6 +32,10 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
 - `dist/`, `vendor/`, `packaged/` are generated and git-ignored. Never edit them.
 - `.env` exists and is git-ignored. Do not read or print it.
 - Templates are in the repo root plus `template-parts/` and `page-templates/`.
+- `nggallery/` templates are NextGEN legacy overrides, rendered only when a gallery/album/widget display's "Template"
+  setting selects the parent theme. `gallery.php` keeps `class="ngg-galleryoverview"` and the anchor `id` on its outer
+  wrapper because NextGEN's AJAX pagination script finds the gallery through them; NextGEN's pagination HTML is reshaped
+  by `hyperpress_nextgen_pagination()` (`library/helpers.php`).
 
 ## Direction
 

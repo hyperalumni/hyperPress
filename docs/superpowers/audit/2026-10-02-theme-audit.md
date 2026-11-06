@@ -82,7 +82,7 @@ Status as of the last commit on this branch. **Fixed** means the code changed an
 | T39 | low      | searchform.php: whitespace inside the placeholder, duplicate ids                             | **Fixed**                                                                                                                                                                                                            |
 | T40 | info     | Relative `require_once` paths resolve through `include_path` first                           | **Fixed**                                                                                                                                                                                                            |
 | T41 | info     | Dead and unreachable code                                                                    | **Owner**: dead code, waiting for a delete decision                                                                                                                                                                  |
-| T42 | low      | `nggallery/gallery.php` is an empty template that shadows NextGEN's own                      | Decided: keep; it will be expanded (owner)                                                                                                                                                                           |
+| T42 | low      | `nggallery/gallery.php` is an empty template that shadows NextGEN's own                      | Decided: keep; it will be expanded (owner). **Resolved** (2026-11-05): no longer empty, see the nggallery plan                                                                                                       |
 | T43 | info     | Minor hygiene                                                                                | Info, no action (open hygiene: duplicate `role="banner"`, unused WooCommerce supports)                                                                                                                               |
 
 Totals: 37 Fixed, 2 Owner, 2 Info, no action, 0 Open, 1 Accepted, 1 Decided.
@@ -345,7 +345,7 @@ style="aspect-ratio:<?php echo $album_settings['thumbnail_width'] / $album_setti
 - Impact: stored XSS if NextGen does not sanitize at save time and the editor lacks `unfiltered_html` (multisite). `display_name` is filtered by `wp_filter_kses` on save for such users, so the author field is the lowest risk. Needs reading how NextGen stores these fields.
 - Fix: `esc_html()` for names/titles and `wp_kses_post()` for descriptions. `(int)` for counter.
 - Test: render with `title = '<script>x</script>'` and assert the script tag is not in the output.
-- T15/T16 update: `nggallery/album-compact.php` read in full (78 lines); lines confirmed as cited (29, 33, 48, 53, 58, 65, 71). `Router::esc_url()` at 42-43, 53 is NextGen's own helper (false positive). Line 58 `$gallery->counter` is an NGG integer and the `nggallery` text domain is intentional (false positives). `$album->display_type_settings['photocrati-nextgen_basic_compact_album']` (46) is an unguarded array chain, same crash class as T15. Separately `nggallery/gallery.php` is an empty guard-only file, see T42.
+- T15/T16 update: `nggallery/album-compact.php` read in full (78 lines); lines confirmed as cited (29, 33, 48, 53, 58, 65, 71). `Router::esc_url()` at 42-43, 53 is NextGen's own helper (false positive). Line 58 `$gallery->counter` is an NGG integer and the `nggallery` text domain is intentional (false positives). `$album->display_type_settings['photocrati-nextgen_basic_compact_album']` (46) is an unguarded array chain, same crash class as T15. Separately `nggallery/gallery.php` is an empty guard-only file, see T42. **Resolved (2026-11-05):** `gallery.php` is no longer empty; it renders the gallery as a Foundation XY grid (see `docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md`).
 
 ### T17 (low) breadcrumbs/tag.php uses the removed `get_terms( $taxonomy, $args )` signature
 
@@ -732,6 +732,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Impact: NextGEN looks for `nggallery/<template>.php` in the theme before its own view. This file outputs nothing, so a `[nggallery]` basic-thumbnail gallery (if it resolves to this override) renders an empty block. I did not verify which NGG template name maps to `gallery.php`. Also note the planned move of NextGEN code to a plugin (AGENTS.md "Direction").
 - Fix: delete the file (let NextGEN use its default) or implement the template.
 - Test: integration test with NextGEN active: render a gallery and assert that at least one `<img>` is in the output.
+
+- **Resolved (2026-11-05):** `gallery.php` is no longer empty; it renders the gallery as a Foundation XY grid (see `docs/superpowers/plans/2026-11-05-theme-nggallery-foundation-templates.md`). The original finding above is kept as written.
 
 ### T43 (info) Minor hygiene
 
