@@ -77,3 +77,14 @@ function hyperpress_theme_support() {
 	// Add foundation.css as editor style https://codex.wordpress.org/Editor_Style
 	// add_editor_style( 'dist/assets/css/' . hyperpress_asset_path( 'editor.css' ) );
 }
+
+add_filter( 'document_title_separator', 'hyperpress_document_title_separator' );
+
+/**
+ * Separator between the parts of the document title (title-tag support).
+ *
+ * @return string
+ */
+function hyperpress_document_title_separator() {
+	return '|';
+}
