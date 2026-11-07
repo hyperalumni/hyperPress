@@ -10,7 +10,7 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
 
 - Node and pnpm: load them as in the root `../../AGENTS.md` (Environment), then run `pnpm`/`node` commands from this directory (`nvm use` reads this directory's `.nvmrc`).
 - `pnpm start`: gulp dev server with Browsersync (needs `BROWSERSYNC.url` in a local `config.yml`)
-- `pnpm dev` / `pnpm build`: gulp build `--dev` (sourcemaps) / `--production` (minify, optional revisioning)
+- `pnpm dev` / `pnpm build`: gulp build `--dev` (sourcemaps) / `--production` (minify). `REVISIONING: true` in `config-default.yml` (a local `config.yml` replaces that file entirely, so it must set it too) makes both builds write hashed CSS and JS names (`app-<hash>.css`) plus `dist/assets/{css,js}/rev-manifest.json`; the stylesheet and script URLs then change whenever their content changes, so browsers refetch them (the files are served with a 31-day cache). PHP must get every built file name from `hyperpress_asset_path()`; never hard-code a `dist/assets/...` name.
 - `pnpm phpcs` / `pnpm phpcbf`: PHPCS via `codesniffer.ruleset.xml` (WordPress standard, many exclusions)
 - `pnpm package`: build, then write `packaged/hyperPress-<version>-<yyyy-mm-dd>.zip` (`<version>` is the nearest version tag, see Versioning; same-day runs overwrite). Every entry sits in a `hyperPress/` wrapper folder, so the zip is for WordPress admin upload only (it installs to `wp-content/themes/hyperPress/` whatever the zip is called; do not unzip it into `themes/`). Dev files are excluded via `PATHS.package`; a local `config.yml` replaces that list, so keep it in sync
 - `pnpm test:node`: node tests for the packaging helper (`gulp/package-version.mjs`, tests in `tests/node/`)

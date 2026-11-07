@@ -8,7 +8,7 @@ COMPATIBILITY:
   - "last 2 versions"
 
 # Set to true if you want static asset revisioning, helpful for cache busting
-REVISIONING: false
+REVISIONING: true
 
 # Gulp will reference these paths when it copies files
 PATHS:
