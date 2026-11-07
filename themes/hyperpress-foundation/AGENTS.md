@@ -35,7 +35,9 @@ Part of the hyperPress monorepo (`themes/hyperpress-foundation/`); the root `../
 - `nggallery/` templates are NextGEN legacy overrides, rendered only when a gallery/album/widget display's "Template"
   setting selects the parent theme. `gallery.php` keeps `class="ngg-galleryoverview"` and the anchor `id` on its outer
   wrapper because NextGEN's AJAX pagination script finds the gallery through them; NextGEN's pagination HTML is reshaped
-  by `hyperpress_nextgen_pagination()` (`library/helpers.php`).
+  by `hyperpress_nextgen_pagination()` (`library/helpers.php`). The theme relies on Font Awesome's script only (no
+  Font Awesome stylesheet), and `hyperpress-media` removes NextGEN's two icon styles, so NextGEN's per-site setting
+  `disable_fontawesome` is no longer needed when that plugin is active.
   Present: `gallery.php`, `gallery-caption.php`, `album-compact.php`, `album-extend.php`, `imagebrowser.php`,
   `imagebrowser-caption.php`, `gallery-carousel.php` and `Widget/Display/Gallery.php` (overrides NextGEN's random-image
   widget template with no widget setting). Shared markup is in `template-parts/nextgen/`: `gallery-grid.php` (a

@@ -8,6 +8,7 @@ final class Plugin {
 	public static function boot(): void {
 		NextGen\SettingsPage::register();
 		NextGen\MetaBoxes::register();
+		NextGen\IconStyles::register();
 		ImageEditor\AvifViaGd::register();
 
 		// NextGen Gallery is an optional third-party plugin.
