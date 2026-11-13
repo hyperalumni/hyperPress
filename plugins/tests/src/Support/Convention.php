@@ -11,6 +11,7 @@ final class Convention {
 		'hyperpress-competition',
 		'hyperpress-contact',
 		'hyperpress-countdown',
+		'hyperpress-event',
 		'hyperpress-frontpage',
 		'hyperpress-label',
 		'hyperpress-media',
@@ -37,6 +38,7 @@ final class Convention {
 		'hyperpress-contact',
 		'hyperpress-countdown',
 		'hyperpress-frontpage',
+		'hyperpress-event',
 		'hyperpress-newsletter',
 		'hyperpress-sponsor',
 		'hyperpress-label',
@@ -54,6 +56,7 @@ final class Convention {
 		'hyperpress-competition' => array( 'hyperpress-utils', 'hyperpress-season', 'hyperpress-robot', 'hyperpress-countdown', 'meta-box-aio' ),
 		'hyperpress-contact'     => array( 'hyperpress-utils', 'meta-box-aio' ),
 		'hyperpress-countdown'   => array( 'hyperpress-utils', 'meta-box-aio' ),
+		'hyperpress-event'       => array( 'hyperpress-utils', 'hyperpress-countdown', 'hyperpress-shortcode', 'meta-box-aio' ),
 		'hyperpress-frontpage'   => array( 'hyperpress-utils', 'meta-box-aio' ),
 		'hyperpress-newsletter'  => array( 'hyperpress-utils', 'hyperpress-season', 'meta-box-aio' ),
 		'hyperpress-robot'       => array( 'hyperpress-utils', 'hyperpress-season', 'meta-box-aio' ),
@@ -73,6 +76,7 @@ final class Convention {
 		'hyper_award'       => 'hyperpress-award',
 		'hyper_competition' => 'hyperpress-competition',
 		'hyper_countdown'   => 'hyperpress-countdown',
+		'hyper_event'       => 'hyperpress-event',
 		'hyper_newsletter'  => 'hyperpress-newsletter',
 		'hyper_robot'       => 'hyperpress-robot',
 		'hyper_sponsor'     => 'hyperpress-sponsor',
@@ -86,6 +90,7 @@ final class Convention {
 		'hyper_week'             => 'hyperpress-competition',
 		'hyper_competition_type' => 'hyperpress-competition',
 		'hyper_tier'             => 'hyperpress-sponsor',
+		'hyper_event_series'     => 'hyperpress-event',
 	);
 
 	/** Old registered key => new registered key (post types and taxonomies). */
@@ -109,6 +114,7 @@ final class Convention {
 		'hyper_week'             => array( 'hyper_competition' ),
 		'hyper_competition_type' => array( 'hyper_competition' ),
 		'hyper_tier'             => array( 'hyper_sponsor' ),
+		'hyper_event_series'     => array( 'hyper_event' ),
 	);
 
 	public const KEY_MAX_LENGTH          = 20;

@@ -48,17 +48,17 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Produces: `Plugin::POST_TYPE = 'hyper_event'`, `Plugin::SERIES = 'hyper_event_series'`, `Plugin::BASE = 'event'`, `Plugin::boot(): void`, `Plugin::register(): void`; `Slugs::RESERVED = 'series'`, `Slugs::register(): void`; `Rewrite::register(): void`.
 
-- [ ] **Step 1: Write the failing tests** in `RegistrationTest` (set `/%postname%/` permalinks and flush in `set_up`):
+- [x] **Step 1: Write the failing tests** in `RegistrationTest` (set `/%postname%/` permalinks and flush in `set_up`):
   - `test_post_type_uses_singular_base_and_has_no_archive`: rewrite slug `event`, `with_front` false, `has_archive` false, `show_in_rest` true, supports title/editor/excerpt/thumbnail.
   - `test_series_taxonomy_routes_under_event_series`: attached to `hyper_event`, rewrite slug `event/series`, `show_in_nav_menus`, `show_admin_column`, not hierarchical; `get_term_link` of term `bar-crawl` ends `/event/series/bar-crawl/`.
   - `test_event_permalink`: `get_permalink` of slug `bar-crawl-2026` ends `/event/bar-crawl-2026/`.
   - `test_series_is_a_reserved_event_slug`: inserting an event with `post_name` `series` gives a different slug.
   - `test_pages_under_events_still_resolve`: a Page `events` with a child `build-schedule`; after `go_to` each permalink, `is_page()` is true and `is_404()` false.
   - The existing convention tests (`PluginHeadersTest`, `KeyConventionTest`, `RegistrationParityTest`, `TaxonomyAttachmentTest`, `CapabilitiesTest`, `IdentifierConventionTest`) pass with the new plugin.
-- [ ] **Step 2:** Run the filter `RegistrationTest`; expect failures (plugin missing).
-- [ ] **Step 3: Implement.** Main file and autoloader copy `hyperpress-competition.php` with prefix `HyperPress\Event\`, the header's `Requires Plugins` above and `Plugin::boot` on `plugins_loaded`. `Plugin::register()` calls `PostTypeRegistrar::register()` with `slug` `event`, `archive` `false`, plus `TaxonomyRegistrar::register()` for the series (`slug` `event/series`, `object_types` `hyper_event`, `show_admin_column` true) and `TaxonomyAdminFilter::register`; call `Capabilities::ensure` on `init` 20 like Competition. `Slugs` filters `wp_unique_post_slug_is_bad_flat_slug` to reject `series` for `hyper_event`. `Rewrite` flushes once per plugin version using an option (copy `hyperpress-competition/src/Rewrite.php::maybe_flush`).
-- [ ] **Step 4:** Run `RegistrationTest` and the convention tests above; expect PASS. Run `composer lint`; expect 0 violations.
-- [ ] **Step 5: Commit** `feat(event): add event post type and series taxonomy`.
+- [x] **Step 2:** Run the filter `RegistrationTest`; expect failures (plugin missing).
+- [x] **Step 3: Implement.** Main file and autoloader copy `hyperpress-competition.php` with prefix `HyperPress\Event\`, the header's `Requires Plugins` above and `Plugin::boot` on `plugins_loaded`. `Plugin::register()` calls `PostTypeRegistrar::register()` with `slug` `event`, `archive` `false`, plus `TaxonomyRegistrar::register()` for the series (`slug` `event/series`, `object_types` `hyper_event`, `show_admin_column` true) and `TaxonomyAdminFilter::register`; call `Capabilities::ensure` on `init` 20 like Competition. `Slugs` filters `wp_unique_post_slug_is_bad_flat_slug` to reject `series` for `hyper_event`. `Rewrite` flushes once per plugin version using an option (copy `hyperpress-competition/src/Rewrite.php::maybe_flush`).
+- [x] **Step 4:** Run `RegistrationTest` and the convention tests above; expect PASS. Run `composer lint`; expect 0 violations.
+- [x] **Step 5: Commit** `feat(event): add event post type and series taxonomy`.
 
 ## Task 2: Events settings
 
