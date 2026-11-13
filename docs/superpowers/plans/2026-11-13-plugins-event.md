@@ -231,11 +231,11 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Produces: `Menus::register(): void`, `Menus::url( object $item ): object` (filter `wp_setup_nav_menu_item`).
 
-- [ ] **Step 1: Write the failing tests:** `test_series_item_links_to_the_alias` (`type` `taxonomy`, `object` `hyper_event_series` gives `home_url( '/event/<slug>/' )`); `test_other_items_and_invalid_items_are_untouched`; `test_term_link_and_archive_are_unchanged` (`get_term_link` still `/event/series/<slug>/`); `test_series_item_is_current_on_the_archive` (render `wp_nav_menu( array( 'menu' => $id, 'echo' => false ) )` after `go_to` the series archive: the item has `current-menu-item` while its `href` is the alias).
-- [ ] **Step 2:** Run `--filter MenusTest`; expect FAIL.
-- [ ] **Step 3: Implement** the filter; keep `$item->object_id` untouched so WordPress still marks the current item.
-- [ ] **Step 4:** Run the filter; expect PASS. Re-check the current-item test against the theme's walker output with a menu in a registered location if the default walker passes but the theme's does not.
-- [ ] **Step 5: Commit** `feat(event): link series menu items to the alias`.
+- [x] **Step 1: Write the failing tests:** `test_series_item_links_to_the_alias` (`type` `taxonomy`, `object` `hyper_event_series` gives `home_url( '/event/<slug>/' )`); `test_other_items_and_invalid_items_are_untouched`; `test_term_link_and_archive_are_unchanged` (`get_term_link` still `/event/series/<slug>/`); `test_series_item_is_current_on_the_archive` (render `wp_nav_menu( array( 'menu' => $id, 'echo' => false ) )` after `go_to` the series archive: the item has `current-menu-item` while its `href` is the alias).
+- [x] **Step 2:** Run `--filter MenusTest`; expect FAIL.
+- [x] **Step 3: Implement** the filter; keep `$item->object_id` untouched so WordPress still marks the current item.
+- [x] **Step 4:** Run the filter; expect PASS. Re-check the current-item test against the theme's walker output with a menu in a registered location if the default walker passes but the theme's does not.
+- [x] **Step 5: Commit** `feat(event): link series menu items to the alias`.
 
 ## Task 13: Tickets (WooCommerce)
 
