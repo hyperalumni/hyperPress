@@ -106,11 +106,11 @@ final class SingleTest extends WP_UnitTestCase {
 		$event = new WP_Post( (object) array( 'post_type' => Plugin::POST_TYPE ) );
 		$html  = apply_filters( 'default_content', '', $event );
 		$this->assertStringContainsString( '[hyperpress_event_countdown]', $html );
-		$this->assertStringContainsString( '[hyperpress_banner title="Event Info" anchor="info"]', $html );
-		$this->assertStringContainsString( 'grid-x', $html );
-		// The rows sit directly in the content: the theme's full-screen layout centres and pads them.
-		$this->assertMatchesRegularExpression( '#\\]\\s*<div class="grid-x grid-margin-x">.*</div>\\s*\\[hyperpress_event_tickets\\]#s', $html );
-		$this->assertStringNotContainsString( 'class="content"', $html );
+		$this->assertStringContainsString( '[hyperpress_event_info]', $html );
+		$this->assertStringNotContainsString( 'Add the date', $html );
+		$this->assertStringNotContainsString( 'grid-x', $html );
+		$this->assertLessThan( strpos( $html, '[hyperpress_event_tickets]' ), strpos( $html, '[hyperpress_event_info]' ) );
+		$this->assertLessThan( strpos( $html, '[hyperpress_event_info]' ), strpos( $html, '[hyperpress_event_countdown]' ) );
 		$this->assertStringContainsString( '[hyperpress_event_tickets]', $html );
 		$this->assertStringContainsString( '[hyperpress_event_photos]', $html );
 

@@ -111,13 +111,21 @@ Subtitle resolution on an event: the event's `subtitle`, then the settings `fall
 
 - `hyperpress_single_full_screen` returns true for `is_singular( 'hyper_event' )`. The plugin's `content_template` returns its `templates/content.php`, which prints `the_content()` and nothing structural.
 - The page's own banner (top of the page) comes from `hyperpress_banner_content` at priority 10 like other plugin banners, with the event title, the resolved subtitle, and the colour from the resolution below. The page banner shows the event's featured image as the hero under it (the banner's `image` key, set only when the event has a thumbnail; `single.php` has no featured-image part). `HyperPress\Utils\Banner` only reads a theme mod, so the event banner is built by filtering `hyperpress_banner_content` after it (builder confirms).
-- New events open pre-filled (`default_content`, only for `hyper_event`, only when empty) with a scaffold: the countdown, an info section with placeholder rows, `[hyperpress_event_tickets]`, `[hyperpress_event_photos]`. The editor can reorder or delete sections and add `[hyperpress_banner]` sections of their own. Exact scaffold markup is the builder's call, using the theme's current grid classes (the theme is Foundation 6, not the old site's Foundation 5 `row`/`columns`).
+- New events open pre-filled (`default_content`, only for `hyper_event`, only when empty) with a scaffold of shortcodes only: `[hyperpress_event_countdown]`, `[hyperpress_event_info]`, `[hyperpress_event_tickets]`, `[hyperpress_event_photos]` (the editor types nothing twice: the info section reads the event's own fields). The editor can reorder or delete sections and add `[hyperpress_banner]` sections of their own. Exact scaffold markup is the builder's call, using the theme's current grid classes (the theme is Foundation 6, not the old site's Foundation 5 `row`/`columns`).
 
 ### Banner colour
 
 - `hyperpress-shortcode`'s `[hyperpress_banner]` gains a `color` attribute: a hex value validated with `sanitize_hex_color()` (invalid is ignored) rendered as an inline background colour in the way the theme's own banner does (the builder checks `template-parts/banner.php` for how text contrast is handled).
 - When `color` is empty the shortcode applies a generic filter, `hyperpress_banner_shortcode_default_color` ( `string $color`, `array $atts` ), default `''`. `hyperpress-shortcode` knows nothing about events.
 - `hyperpress-event` answers that filter on `hyper_event` posts. Resolution order for any banner in an event: shortcode `color` attribute, the event's `banner_color`, the Events settings `default_banner_color`, the Events hub page's banner colour, the theme's default banner colour. The hub page colour is the post meta `hyperpress_banner_background_color` of the hub page chosen in the Events settings (`Settings::hub_page_id()`: the configured page, else the published Page at `/events/`, else 0 = none), else that of its top-level ancestor, exactly as the theme's page banner resolves it, so an event inherits the colour of its section of the site (the plugin reads the meta itself and calls no theme function). Every level must be a valid hex colour (`sanitize_hex_color`), else it is skipped. The page's top banner uses the same order minus the shortcode; the series archive banner uses the settings default, then the hub page colour.
+
+### Info `[hyperpress_event_info title? subtitle? color? anchor?]`
+
+- Renders its own banner (default title "Event Info", default anchor `info`; same attributes and colour resolution as the siblings) followed by a `div.grid-x.grid-margin-x` row of up to three `div.cell.small-12.medium-4` columns, each a bold label and an escaped value, read from the event's own fields:
+  - Date: the start date in the site's date format and timezone; "start – end" when an explicit end falls on a later day.
+  - Time: the start time in the site's time format; "start – end" when an explicit end falls on the same day. Only an end the editor saved (after the start) counts; the default end of day (`Dates::end()`) is never shown (`Dates::explicit_end()`).
+  - Where: the venue name, with the venue address below it (line breaks kept).
+- A column without data is left out. The whole block, banner included, prints nothing when the event has no start and no venue, and nothing outside an event. It shows for past events too. Events created before the shortcode keep their hand-typed rows until the editor replaces them.
 
 ### Tickets `[hyperpress_event_tickets title? subtitle? color? anchor?]`
 

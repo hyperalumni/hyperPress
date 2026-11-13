@@ -49,6 +49,19 @@ final class Dates {
 	}
 
 	/**
+	 * The saved end when one was set and is after the start, else null. Unlike end(), a missing end is not replaced
+	 * by the end of the start day, so callers can tell whether the editor gave an end.
+	 *
+	 * @param int $post_id Event ID.
+	 */
+	public static function explicit_end( int $post_id ): ?DateTimeImmutable {
+		$start = self::start( $post_id );
+		$end   = self::parse( get_post_meta( $post_id, Fields::END, true ) );
+
+		return null !== $start && null !== $end && $end > $start ? $end : null;
+	}
+
+	/**
 	 * Whether the event has ended: now is strictly after the end. Never true without a start.
 	 *
 	 * @param int $post_id Event ID.

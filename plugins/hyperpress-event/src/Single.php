@@ -58,25 +58,9 @@ final class Single {
 	}
 
 	/**
-	 * The scaffold: countdown, info section with placeholder rows, tickets and photos.
+	 * The scaffold: countdown, info, tickets and photos sections.
 	 */
 	public static function scaffold(): string {
-		$rows = array(
-			__( 'Date', 'hyperpress' )  => __( 'Add the date', 'hyperpress' ),
-			__( 'Time', 'hyperpress' )  => __( 'Add the time', 'hyperpress' ),
-			__( 'Where', 'hyperpress' ) => __( 'Add the location', 'hyperpress' ),
-		);
-		$html = "[hyperpress_event_countdown]\n\n";
-		$html .= "[hyperpress_banner title=\"Event Info\" anchor=\"info\"]\n\n";
-		// Directly in the content: the theme's full-screen layout centres and pads every non-banner block.
-		$html .= '<div class="grid-x grid-margin-x">';
-		foreach ( $rows as $label => $placeholder ) {
-			$html .= '<div class="cell small-12 medium-4"><strong>' . esc_html( $label ) . '</strong><br>' . esc_html( $placeholder ) . '</div>';
-		}
-		$html .= "</div>\n\n";
-		$html .= "[hyperpress_event_tickets]\n\n";
-		$html .= "[hyperpress_event_photos]\n";
-
-		return $html;
+		return "[hyperpress_event_countdown]\n\n[hyperpress_event_info]\n\n[hyperpress_event_tickets]\n\n[hyperpress_event_photos]\n";
 	}
 }
