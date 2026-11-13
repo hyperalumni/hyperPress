@@ -156,11 +156,11 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - Consumes: Task 2 `Settings`, Task 3 `Fields`, Task 6 filter, `HyperPress\Utils\Banner::register( string $post_type, array $args )` (args `type`, `subtitle` callable, `color_mod`, `archive_title`) and its `hyperpress_banner_args` filter; `HyperPress\Shortcode\Shortcodes\Banner::render( array $atts, ?string $content = null ): string`.
 - Produces: `Appearance::color( int $post_id, string $attr = '' ): string` (attribute, then the event's `banner_color`, then `Settings::default_banner_color()`, each valid hex only, else ''); `Appearance::subtitle( int $post_id ): string` (event `subtitle`, then `Settings::fallback_subtitle()`, else ''); `Appearance::register(): void`; `Sections::atts( $atts, string $default_title ): array` (keys `title`, `subtitle`, `color`, `anchor`); `Sections::banner( int $post_id, array $atts ): string` ('' when title and subtitle are both empty).
 
-- [ ] **Step 1: Write the failing tests:** `test_color_resolution_order` (attribute over event over settings over ''; an invalid stored colour is skipped to the next level); `test_subtitle_resolution_order`; `test_default_color_filter_answers_only_for_the_current_event` (in an event context `[hyperpress_banner title="x"]` shows the event colour, on a Page it is unchanged); `test_page_banner_uses_event_title_subtitle_and_colour` (`apply_filters( 'hyperpress_banner_content', … )` on a singular event); `test_section_banner_passes_anchor_and_colour_and_is_empty_without_text`.
-- [ ] **Step 2:** Run `--filter AppearanceTest`; expect FAIL.
-- [ ] **Step 3: Implement.** Register the event's page banner with `Banner::register( 'hyper_event', … )` and adjust per post through `hyperpress_banner_args` (pattern: `hyperpress-season/src/SingularBanner.php::adjust`; read it first). `Sections::banner()` calls the shortcode plugin's `Banner::render()` with the resolved colour.
-- [ ] **Step 4:** Run the filter and lint; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): resolve banner colour and subtitle`.
+- [x] **Step 1: Write the failing tests:** `test_color_resolution_order` (attribute over event over settings over ''; an invalid stored colour is skipped to the next level); `test_subtitle_resolution_order`; `test_default_color_filter_answers_only_for_the_current_event` (in an event context `[hyperpress_banner title="x"]` shows the event colour, on a Page it is unchanged); `test_page_banner_uses_event_title_subtitle_and_colour` (`apply_filters( 'hyperpress_banner_content', … )` on a singular event); `test_section_banner_passes_anchor_and_colour_and_is_empty_without_text`.
+- [x] **Step 2:** Run `--filter AppearanceTest`; expect FAIL.
+- [x] **Step 3: Implement.** Register the event's page banner with `Banner::register( 'hyper_event', … )` and adjust per post through `hyperpress_banner_args` (pattern: `hyperpress-season/src/SingularBanner.php::adjust`; read it first). `Sections::banner()` calls the shortcode plugin's `Banner::render()` with the resolved colour.
+- [x] **Step 4:** Run the filter and lint; expect PASS.
+- [x] **Step 5: Commit** `feat(event): resolve banner colour and subtitle`.
 
 ## Task 8: Single event page
 
