@@ -1,6 +1,6 @@
 # hyperpress-event Implementation Plan
 
-> **STATUS: ✅ COMPLETED** (2026-11-13). Tasks 0 to 19 done and reviewed, including the final whole-branch review and its single fix wave (Task 18), which passed a scoped re-review, and the owner follow-ups of Task 19. Unit (238), integration (1877) and lint suites are green; the automated smoke test on scratch stacks passed 38 checks with 0 failures. Not verified, owner checks in a browser: the NextGEN AJAX pagination click-through, and the breadcrumb layout inside the full-screen page. Run `docker compose --profile local up -d` in each `docker/<site>` directory to pick up the new plugin mount.
+> **STATUS: ✅ COMPLETED** (2026-11-13). Tasks 0 to 20 done and reviewed, including the final whole-branch review and its single fix wave (Task 18), which passed a scoped re-review, the owner follow-ups of Task 19 and the banner colour and full-screen layout fixes of Task 20. Unit (238), integration (1877) and lint suites are green; the automated smoke test on scratch stacks passed 38 checks with 0 failures. Not verified, owner checks in a browser: the NextGEN AJAX pagination click-through, and the breadcrumb, info-row and ticket-row layout inside the full-screen page (Task 20 only compiled the Sass; the owner's browser check is still open). Run `docker compose --profile local up -d` in each `docker/<site>` directory to pick up the new plugin mount.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -370,10 +370,18 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - [x] **Test hygiene:** `PhotosTest::tear_down` unsets `$GLOBALS['post']` again next to `$GLOBALS['current_screen']` (`FieldsTest` never set `post`, so it only needs the screen unset it already has).
 - [x] **Commit** `fix(event): keep the finished countdown at zero and prune past events`.
 
+## Task 20: Event banner colour inheritance and full-screen layout
+
+**Goal:** two defects seen on a real event page (tests first for the colour).
+
+- [x] **Banner colour inherits the Events hub page's colour:** `Appearance::color()` gains a level after the settings default: the hub page's (`Settings::hub_page_id()`) `hyperpress_banner_background_color` post meta, else that of its top-level ancestor, as the theme's page banner does (plugin reads the meta, no theme call; each value must pass `sanitize_hex_color`). Order: shortcode attribute, event, settings default, hub page, theme default. It covers the top banner, `[hyperpress_banner]`, tickets and photos banners. `SeriesArchive::banner` sets the colour through `Appearance::archive_color()` (settings default, then hub page; key left absent when neither is set). Tests: `AppearanceTest` (hub colour used; own wins over ancestor; ancestor when the hub has none; settings default wins; invalid skipped; no/unpublished hub unchanged; page and section banners) and `ListingTest::test_series_banner_gets_the_settings_default_then_the_hub_colour`. Spec and `plugins/AGENTS.md` updated.
+- [x] **Full-screen layout:** theme `_content.scss`: inside `.main-container.full-screen .main-content`, the direct `.breadcrumbs` child gets `xy-grid-container` (centred max-width and the banner's horizontal padding) and the same top margins as `.content`. The scaffold's info rows and the tickets rows are wrapped in `.content` (`SingleTest`, `TicketsTest`). Non-full-screen layouts are untouched. `pnpm build` of the theme compiles. The browser check of the layout is still the owner's.
+- [x] **Commit** `fix(event): inherit the hub page colour and fit the full-screen layout`.
+
 ## Known follow-ups
 
 - A per-event "hide from the front page" switch, a buttons/links repeater, a season link, and an importer for old Page-based events were left out on purpose (spec non-goals).
-- Owner checks that need a browser (see the banner): NextGEN AJAX pagination and the breadcrumb layout in `.full-screen`.
+- Owner checks that need a browser (see the banner): NextGEN AJAX pagination and the breadcrumb, info-row and ticket-row layout in `.full-screen`. The NextGEN photo block output is not wrapped in `.content`; check how it sits.
 - On a NextGEN gallery page 2 (`nggallery/page/2`) the "View more" button is still rendered and links to the same page; consider hiding it when the request is already paged.
 
 ## Spike findings (Task 14)

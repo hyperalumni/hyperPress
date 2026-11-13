@@ -52,7 +52,7 @@ final class SeriesArchive {
 	}
 
 	/**
-	 * Banner of a series archive: the term name and the fallback subtitle.
+	 * Banner of a series archive: the term name, the fallback subtitle and the colour (settings default, then the hub page's).
 	 *
 	 * @param mixed $banner Banner so far.
 	 * @return mixed
@@ -71,6 +71,12 @@ final class SeriesArchive {
 		}
 		if ( empty( $banner['title'] ) ) {
 			$banner['title'] = $term->name;
+		}
+		if ( empty( $banner['backgroundColor'] ) ) {
+			$color = Appearance::archive_color();
+			if ( '' !== $color ) {
+				$banner['backgroundColor'] = $color;
+			}
 		}
 		if ( empty( $banner['subtitle'] ) ) {
 			$subtitle = Settings::fallback_subtitle();

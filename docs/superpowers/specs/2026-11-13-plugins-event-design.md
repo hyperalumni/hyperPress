@@ -85,7 +85,7 @@ Meta Box fields (registered like Competition's `MetaBoxes`), all `hyperpress_eve
 
 An "Events" page under the shared hyperPress AdminMenu, registered like Competition's (`ArchiveBannerSettings::page()` may be reused for the subtitle field, with the meaning "fallback subtitle"; the builder decides whether that helper fits or whether a plain field is simpler), with:
 
-- `default_banner_color` (hex): the fallback colour for all event banners.
+- `default_banner_color` (hex): the default colour for event banners that set no colour of their own; when empty, the Events hub page's banner colour applies (see Banner colour).
 - `fallback_subtitle` (text): the banner subtitle for event pages whose own `subtitle` is empty, and for the series archive banner.
 - `hub_page` (page select): the Events hub page. Used for the breadcrumb root "Events" on events and series. Empty means the crumb is omitted.
 - `frontpage` (checkbox "Show on the front page", default on while there is no saved row; once a row is saved a missing key means off, as Competition's setting behaves) and `frontpage_lead_days` (0 to 365, default 21 (my call: shorter than competitions' 60)).
@@ -105,6 +105,7 @@ Subtitle resolution on an event: the event's `subtitle`, then the settings `fall
 
 - `single.php` gains `$full_screen = (bool) apply_filters( 'hyperpress_single_full_screen', false );`. When true: `.main-container` gets the class `full-screen` (as in `page-templates/page-full-screen.php`) and `get_sidebar()` is skipped. Breadcrumbs, `post-navigation` and comments are unchanged. The theme names no plugin; the filter and its meaning are documented in the theme's `AGENTS.md` beside `content_template` and `hyperpress_posts_template`, and covered by a theme integration test (filter off: unchanged markup and the sidebar; filter on: class present and no sidebar).
 - Breadcrumbs sit inside the `full-screen` container on events. The builder checks the result in the browser and adds minimal theme CSS only if they look wrong.
+- Layout fix (Task 20): `.main-container.full-screen` strips all padding, so the theme gives the direct `.breadcrumbs` child of `.main-content` the banner's centred max-width and padding (`xy-grid-container`), and the event scaffold and the tickets rows sit in a `.content` wrapper, the element the full-screen layout centres and pads.
 
 ### Event single
 
@@ -116,7 +117,7 @@ Subtitle resolution on an event: the event's `subtitle`, then the settings `fall
 
 - `hyperpress-shortcode`'s `[hyperpress_banner]` gains a `color` attribute: a hex value validated with `sanitize_hex_color()` (invalid is ignored) rendered as an inline background colour in the way the theme's own banner does (the builder checks `template-parts/banner.php` for how text contrast is handled).
 - When `color` is empty the shortcode applies a generic filter, `hyperpress_banner_shortcode_default_color` ( `string $color`, `array $atts` ), default `''`. `hyperpress-shortcode` knows nothing about events.
-- `hyperpress-event` answers that filter on `hyper_event` posts. Resolution order for any banner in an event: shortcode `color` attribute, the event's `banner_color`, the Events settings `default_banner_color`, the theme's default banner colour. The page's top banner uses the same order minus the shortcode.
+- `hyperpress-event` answers that filter on `hyper_event` posts. Resolution order for any banner in an event: shortcode `color` attribute, the event's `banner_color`, the Events settings `default_banner_color`, the Events hub page's banner colour, the theme's default banner colour. The hub page colour is the post meta `hyperpress_banner_background_color` of the hub page chosen in the Events settings (`Settings::hub_page_id()`, 0 = none), else that of its top-level ancestor, exactly as the theme's page banner resolves it, so an event inherits the colour of its section of the site (the plugin reads the meta itself and calls no theme function). Every level must be a valid hex colour (`sanitize_hex_color`), else it is skipped. The page's top banner uses the same order minus the shortcode; the series archive banner uses the settings default, then the hub page colour.
 
 ### Tickets `[hyperpress_event_tickets title? subtitle? color? anchor?]`
 

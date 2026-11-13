@@ -68,11 +68,12 @@ final class Single {
 		);
 		$html = "[hyperpress_event_countdown]\n\n";
 		$html .= "[hyperpress_banner title=\"Event Info\" anchor=\"info\"]\n\n";
-		$html .= '<div class="grid-x grid-margin-x">';
+		// The theme's full-screen layout strips all padding and centres what sits in a `content` wrapper.
+		$html .= '<div class="content"><div class="grid-x grid-margin-x">';
 		foreach ( $rows as $label => $placeholder ) {
 			$html .= '<div class="cell small-12 medium-4"><strong>' . esc_html( $label ) . '</strong><br>' . esc_html( $placeholder ) . '</div>';
 		}
-		$html .= "</div>\n\n";
+		$html .= "</div></div>\n\n";
 		$html .= "[hyperpress_event_tickets]\n\n";
 		$html .= "[hyperpress_event_photos]\n";
 

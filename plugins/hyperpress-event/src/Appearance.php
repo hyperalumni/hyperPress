@@ -10,6 +10,9 @@ use HyperPress\Utils\Banner;
  */
 final class Appearance {
 
+	/** Post meta the theme's page banner reads its colour from. */
+	private const PAGE_BANNER_COLOR = 'hyperpress_banner_background_color';
+
 	public static function register(): void {
 		add_action( 'init', array( self::class, 'register_banner' ) );
 		add_filter( 'hyperpress_banner_args', array( self::class, 'adjust' ), 10, 3 );
@@ -30,7 +33,8 @@ final class Appearance {
 	}
 
 	/**
-	 * The colour of an event: the attribute, then the event's own, then the settings default; valid hex only, else ''.
+	 * The colour of an event: the attribute, then the event's own, then the settings default, then the Events hub
+	 * page's banner colour; valid hex only, else '' (the theme's default banner colour then applies).
 	 *
 	 * @param int    $post_id Event ID.
 	 * @param string $attr    Colour given by the caller (for example a shortcode attribute).
@@ -40,9 +44,45 @@ final class Appearance {
 			$attr,
 			get_post_meta( $post_id, Fields::BANNER_COLOR, true ),
 			Settings::default_banner_color(),
+			self::hub_color(),
 		);
 		foreach ( $candidates as $candidate ) {
 			$color = is_string( $candidate ) ? sanitize_hex_color( trim( $candidate ) ) : null;
+			if ( is_string( $color ) && '' !== $color ) {
+				return $color;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * The banner colour of the series archive: the settings default, then the hub page's; '' when neither is set.
+	 */
+	public static function archive_color(): string {
+		$default = Settings::default_banner_color();
+
+		return '' !== $default ? $default : self::hub_color();
+	}
+
+	/**
+	 * The banner colour of the Events hub page, as the theme's page banner resolves it: the page's own colour, else
+	 * that of its top-level ancestor. Read from post meta, since a plugin must not call theme functions. '' when no
+	 * hub page is set or neither has a valid hex colour.
+	 */
+	private static function hub_color(): string {
+		$hub = Settings::hub_page_id();
+		if ( $hub <= 0 ) {
+			return '';
+		}
+		$ids = array( $hub );
+		$top = array_reverse( get_post_ancestors( $hub ) );
+		if ( array() !== $top ) {
+			$ids[] = (int) $top[0];
+		}
+		foreach ( $ids as $id ) {
+			$value = get_post_meta( $id, self::PAGE_BANNER_COLOR, true );
+			$color = is_string( $value ) ? sanitize_hex_color( trim( $value ) ) : null;
 			if ( is_string( $color ) && '' !== $color ) {
 				return $color;
 			}

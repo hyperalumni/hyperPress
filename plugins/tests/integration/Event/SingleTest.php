@@ -108,6 +108,8 @@ final class SingleTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '[hyperpress_event_countdown]', $html );
 		$this->assertStringContainsString( '[hyperpress_banner title="Event Info" anchor="info"]', $html );
 		$this->assertStringContainsString( 'grid-x', $html );
+		// The info rows sit in the wrapper the full-screen layout centres and pads.
+		$this->assertMatchesRegularExpression( '#\\]\\s*<div class="content"><div class="grid-x grid-margin-x">.*</div></div>\\s*\\[hyperpress_event_tickets\\]#s', $html );
 		$this->assertStringContainsString( '[hyperpress_event_tickets]', $html );
 		$this->assertStringContainsString( '[hyperpress_event_photos]', $html );
 

@@ -310,4 +310,30 @@ final class ListingTest extends WP_UnitTestCase {
 		$this->assertSame( 'Summer Camps', $banner['title'] );
 		$this->assertSame( 'Team HYPER event', $banner['subtitle'] );
 	}
+
+	public function test_series_banner_gets_the_settings_default_then_the_hub_colour(): void {
+		$this->event( 'One', '2027-07-01 10:00', array(), 'camp' );
+		$hub = self::factory()->post->create( array( 'post_type' => 'page' ) );
+		update_post_meta( $hub, 'hyperpress_banner_background_color', '#00aa00' );
+		update_option( Settings::OPTION, array( Settings::HUB_PAGE => $hub ) );
+
+		$this->go_to( '/?' . Plugin::SERIES . '=camp' );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+		$this->assertSame( '#00aa00', $banner['backgroundColor'] );
+
+		update_option(
+			Settings::OPTION,
+			array(
+				Settings::HUB_PAGE             => $hub,
+				Settings::DEFAULT_BANNER_COLOR => '#111111',
+			)
+		);
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+		$this->assertSame( '#111111', $banner['backgroundColor'] );
+
+		// No colour anywhere: the key stays absent so the theme default applies.
+		update_option( Settings::OPTION, array() );
+		$banner = apply_filters( 'hyperpress_banner_content', array() );
+		$this->assertArrayNotHasKey( 'backgroundColor', $banner );
+	}
 }

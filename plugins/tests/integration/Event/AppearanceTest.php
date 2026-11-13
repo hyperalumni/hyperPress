@@ -48,6 +48,86 @@ final class AppearanceTest extends WP_UnitTestCase {
 		$this->assertSame( '', Appearance::color( $id, 'blue' ) );
 	}
 
+	private function page( array $args = array(), string $color = '' ): int {
+		$id = self::factory()->post->create( array_merge( array( 'post_type' => 'page' ), $args ) );
+		if ( '' !== $color ) {
+			update_post_meta( $id, 'hyperpress_banner_background_color', $color );
+		}
+
+		return $id;
+	}
+
+	private function set_hub( int $page_id, array $extra = array() ): void {
+		update_option( Settings::OPTION, array_merge( array( Settings::HUB_PAGE => $page_id ), $extra ) );
+	}
+
+	public function test_hub_page_colour_is_used_when_nothing_else_is_set(): void {
+		$id = $this->event();
+		$this->set_hub( $this->page( array(), '#00aa00' ) );
+
+		$this->assertSame( '#00aa00', Appearance::color( $id ) );
+		// Event override and shortcode attribute still win.
+		update_post_meta( $id, Fields::BANNER_COLOR, '#222222' );
+		$this->assertSame( '#222222', Appearance::color( $id ) );
+		$this->assertSame( '#333333', Appearance::color( $id, '#333333' ) );
+	}
+
+	public function test_own_hub_colour_wins_over_the_top_level_ancestor(): void {
+		$top = $this->page( array(), '#0000aa' );
+		$mid = $this->page( array( 'post_parent' => $top ) );
+		$hub = $this->page( array( 'post_parent' => $mid ), '#00aa00' );
+		$this->set_hub( $hub );
+
+		$this->assertSame( '#00aa00', Appearance::color( $this->event() ) );
+	}
+
+	public function test_top_level_ancestor_colour_is_used_when_the_hub_has_none(): void {
+		$top = $this->page( array(), '#0000aa' );
+		$mid = $this->page( array( 'post_parent' => $top ), '#aa0000' );
+		$hub = $this->page( array( 'post_parent' => $mid ) );
+		$this->set_hub( $hub );
+
+		$this->assertSame( '#0000aa', Appearance::color( $this->event() ) );
+	}
+
+	public function test_settings_default_wins_over_the_hub_colour(): void {
+		$this->set_hub( $this->page( array(), '#00aa00' ), array( Settings::DEFAULT_BANNER_COLOR => '#111111' ) );
+
+		$this->assertSame( '#111111', Appearance::color( $this->event() ) );
+	}
+
+	public function test_invalid_hub_colours_are_skipped(): void {
+		$top = $this->page( array(), '#0000aa' );
+		$hub = $this->page( array( 'post_parent' => $top ), 'green' );
+		$this->set_hub( $hub );
+		$this->assertSame( '#0000aa', Appearance::color( $this->event() ) );
+
+		update_post_meta( $top, 'hyperpress_banner_background_color', 'blue' );
+		$this->assertSame( '', Appearance::color( $this->event() ) );
+	}
+
+	public function test_no_hub_page_leaves_the_colour_unchanged(): void {
+		$this->page( array(), '#00aa00' );
+		$this->assertSame( '', Appearance::color( $this->event() ) );
+
+		// A hub that is not a published page is ignored too.
+		$this->set_hub( $this->page( array( 'post_status' => 'draft' ), '#00aa00' ) );
+		$this->assertSame( '', Appearance::color( $this->event() ) );
+	}
+
+	public function test_page_and_section_banners_inherit_the_hub_colour(): void {
+		$id = $this->event();
+		$this->set_hub( $this->page( array(), '#00aa00' ) );
+
+		$this->go_to( get_permalink( $id ) );
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
+		$this->assertSame( '#00aa00', $banner['backgroundColor'] );
+
+		$GLOBALS['post'] = get_post( $id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$this->assertStringContainsString( 'background-color: #00aa00', do_shortcode( '[hyperpress_banner title="x"]' ) );
+		$this->assertStringContainsString( 'background-color: #00aa00', Sections::banner( $id, Sections::atts( array( 'title' => 'T' ), 'D' ) ) );
+	}
+
 	public function test_subtitle_resolution_order(): void {
 		$id = $this->event();
 		$this->assertSame( '', Appearance::subtitle( $id ) );

@@ -132,7 +132,7 @@ final class Fields {
 				array(
 					'id'   => Settings::DEFAULT_BANNER_COLOR,
 					'name' => __( 'Default banner colour', 'hyperpress' ),
-					'desc' => __( 'Used for events that do not set their own banner colour.', 'hyperpress' ),
+					'desc' => __( 'Used for events that do not set their own banner colour. When empty, the Events page\'s banner colour applies.', 'hyperpress' ),
 					'type' => 'color',
 				),
 				array(

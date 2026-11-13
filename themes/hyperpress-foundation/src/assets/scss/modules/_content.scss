@@ -24,6 +24,21 @@
       @include xy-cell(12, $output: (base size));
       width: 100%;
 
+      // Full-screen strips the container padding, so give the breadcrumbs the same centred max-width and
+      // horizontal padding as the banner's .grid-container (the margin-bottom of .breadcrumbs is kept).
+      > .breadcrumbs {
+        @include xy-grid-container;
+        margin-top: 1rem;
+
+        @include breakpoint(large) {
+          margin-top: 1.25rem;
+        }
+
+        @include breakpoint(xlarge) {
+          margin-top: 1.5rem;
+        }
+      }
+
       .content {
         @include xy-cell(12);
         max-width: 100rem;
