@@ -261,10 +261,10 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Files:**
 - Modify: this plan (a "Spike findings" section appended below Task 16)
 
-- [ ] **Step 1:** On a local stack with NextGEN (install it in the stack with `docker compose --profile local run --rm wpcli wp plugin install nextgen-gallery --activate` if missing, then create two galleries with images), try: `[ngg src="galleries" ids="1,2" display="basic_compact_album"]` and `basic_extended_album`; a single `[ngg src="galleries" ids="1" display="basic_thumbnail" images_per_page="6"]`.
-- [ ] **Step 2:** Record in the plan: (a) whether several gallery IDs make an album view without an album object, and the exact working shortcode; (b) what "View more" can target for one gallery (in place, a gallery URL, or a lightbox) and the exact markup or link; (c) behaviour with the theme's `nggallery/` overrides and AJAX pagination (keep NextGEN's ids and classes); (d) the NextGEN detection class and the gallery table columns used for options (`ngg_gallery.gid`, `title`).
-- [ ] **Step 3:** If (a) fails, record the fallback (the plugin renders its own album markup from the theme's `template-parts/nextgen/`), and adjust Task 15's interfaces accordingly.
-- [ ] **Step 4: Commit** `docs(plans): record the nextgen spike findings`.
+- [x] **Step 1:** On a local stack with NextGEN (install it in the stack with `docker compose --profile local run --rm wpcli wp plugin install nextgen-gallery --activate` if missing, then create two galleries with images), try: `[ngg src="galleries" ids="1,2" display="basic_compact_album"]` and `basic_extended_album`; a single `[ngg src="galleries" ids="1" display="basic_thumbnail" images_per_page="6"]`.
+- [x] **Step 2:** Record in the plan: (a) whether several gallery IDs make an album view without an album object, and the exact working shortcode; (b) what "View more" can target for one gallery (in place, a gallery URL, or a lightbox) and the exact markup or link; (c) behaviour with the theme's `nggallery/` overrides and AJAX pagination (keep NextGEN's ids and classes); (d) the NextGEN detection class and the gallery table columns used for options (`ngg_gallery.gid`, `title`).
+- [x] **Step 3:** If (a) fails, record the fallback (the plugin renders its own album markup from the theme's `template-parts/nextgen/`), and adjust Task 15's interfaces accordingly.
+- [x] **Step 4: Commit** `docs(plans): record the nextgen spike findings`.
 
 ## Task 15: Photos (NextGEN)
 
@@ -300,3 +300,73 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 ## Known follow-ups
 
 - A per-event "hide from the front page" switch, a buttons/links repeater, a season link, and an importer for old Page-based events were left out on purpose (spec non-goals).
+
+## Spike findings (Task 14)
+
+Run on a scratch Compose project (`hyperspike`, WordPress on port 6080, removed afterwards with `down -v`), NextGEN Gallery 4.5.6 from wordpress.org, two generated galleries (gid 1 "Spike Gallery one", gid 2 "Spike Gallery two", 9 PNG images each), the Foundation theme active and, for comparison, the default block theme. Pretty permalinks (`/%postname%/`). Verdict: **approach A (delegate to NextGEN's shortcodes) works for both parts; approach B is not needed.** Details and traps below. The AJAX pagination was checked as markup and enqueued assets only (no browser was available), see (c).
+
+### (a) Several galleries as an album, no album object
+
+Works, with `source="albums"` plus `gallery_ids` (NextGEN routes `gallery_ids` into `entity_ids` for an albums source, `DisplayedGallery/Renderer.php`):
+
+```
+[ngg source="albums" gallery_ids="1,2" display="basic_compact_album"]
+[ngg source="albums" gallery_ids="1,2" display="basic_extended_album"]
+```
+
+Rendered (compact): `<div class="ngg-albumoverview default-view">` holding one `<div class="ngg-album-compact">` per gallery, each with the preview thumbnail (`/nextgen-image/<pid>/240x160x100/crop/<hash>`), the gallery title and `<strong>9</strong>&nbsp;Photos`. The tile link is `{permalink}nggallery/album/{gallery-slug}`. Following it re-renders the same post with that gallery (all its images as thumbnails; 9 of 9 in the spike) in place of the album, so the "linking into each" requirement is met by NextGEN itself, on the event page, with no extra markup. Extended renders `<div class="ngg-album">` tiles with the title and photo count.
+
+Traps (all reproduced):
+
+- `src="albums"` does not work with `gallery_ids`: NextGEN reads `source` (the `src` alias is only copied after the `gallery_ids` branch has run), so the source stays `galleries` and an album display type then renders one **empty** tile per image (18 empty `ngg-album-compact` boxes for two galleries of 9). Always write `source="albums"`.
+- `[ngg src="galleries" ids="1,2" display="basic_compact_album"]` (the form in the brief) has the same empty-tile result. `[ngg src="albums" ids="0" display="basic_compact_album"]` ("all galleries") also gave 18 empty tiles; `source="albums" ids="0"` was not tried, and the plugin needs explicit ids anyway.
+- The drill-down is only allowed for galleries that the shortcode itself lists (NextGEN's own guard against showing arbitrary galleries), which fits: the album lists exactly the selected galleries.
+- Unknown (deleted) gallery ids are skipped silently by the album (`gallery_ids="1,99"` renders one tile). A single `ids="99"` grid prints `<p>no images were found</p>`, so `Galleries::existing()` must still drop deleted ids before the state is chosen.
+
+### (b) One gallery as a short grid, and what "View more" can target
+
+Shortcode:
+
+```
+[ngg source="galleries" ids="1" display="basic_thumbnail" images_per_page="6"]
+```
+
+It renders exactly 6 thumbnails and NextGEN's own pagination (`<div class='ngg-navigation'>`, or with the theme template Foundation's `<nav aria-label="Pagination"><ul class="pagination">`) with a link `{permalink}nggallery/page/2` (`data-pageid='2'`), which shows images 7 to 9 in place. NextGEN's `images_per_page="0"` renders all images with no pagination (9 of 9, verified).
+
+"View more" options that were tested:
+
+1. **NextGEN page 2 of the same shortcode (chosen).** Link to `trailingslashit( get_permalink() ) . 'nggallery/page/2'`, followed by the block's `#anchor`. It works with no extra code, keeps NextGEN's pagination and its AJAX handler, and scales to galleries of any size (every further page is reachable from the pagination NextGEN prints). The same recipe with `add_query_arg( 'nggpage', 2, get_permalink() )` also works but **only use it when `get_option( 'permalink_structure' )` is empty**: on a pretty-permalink site `?nggpage=2` stays in the query string and NextGEN then builds its prev/next links as `.../nggallery/page/1?nggpage=2`, where the query value still wins, so "page 1" would show page 2.
+2. A link to a separate full-gallery URL: not available. NextGEN has no public URL for a gallery without a page or an album shortcode that lists it (`nggallery/album/{slug}` works only on a page whose shortcode lists the gallery, and the Media > Photos pages are the site's own pages). Do not build on it.
+3. A lightbox of all images: only the 6 rendered images exist in the DOM (hidden anchors for the rest would have to be added by our own markup), so this needs approach B for that part. Not worth it.
+4. Rendering everything (`images_per_page="0"`) behind our own query argument: works (9 of 9) but a gallery of hundreds of photos becomes one huge page. Keep as a fallback only.
+
+Show the button only when the gallery has more than `$limit` images: `SELECT COUNT(*) FROM {$wpdb->prefix}ngg_pictures WHERE galleryid = %d AND exclude = 0`.
+
+### (c) Theme `nggallery/` overrides and AJAX pagination
+
+- The shortcode parameter `template` selects a legacy template by file name from the parent theme's `nggallery/` folder: `template="gallery.php"` (single grid), `template="album-compact.php"`, `template="album-extend.php"`. With those the theme markup is rendered: gallery `<div class="ngg-galleryoverview" id="ngg-gallery-<hash>-<id>">` with `grid-x` cells (each `id="ngg-image-N"`, `class="ngg-simplelightbox thumbnail"`) and Foundation pagination; albums as `gallery-grid` cards with the "9 Photos" label and the same `nggallery/album/{slug}` links. The drill-down view uses the theme grid too. `hyperpress_nextgen_pagination()` keeps `page-numbers`, `prev`/`next` and `data-pageid`.
+- **Trap: a `template` that does not exist prints the literal text `[Not a valid template]`** (verified with `template="nope.php"`). Without a `template` argument NextGEN renders its own default templates (`<!-- default-view.php -->`, `ngg-gallery-thumbnail-box`, `ngg-navigation`), which works on any site. So the plugin must add the `template` argument only when the file exists in the parent theme (`is_readable( get_template_directory() . '/nggallery/gallery.php' )`), never unconditionally. A filter `hyperpress_event_nextgen_template` (file name in, file name or empty out) lets a site override.
+- Wrapper ids and classes: the plugin does not touch NextGEN's output, so `ngg-galleryoverview` and the `ngg-gallery-<hash>-<id>` anchor stay intact. The AJAX script (`nextgen-basic-thumbnails-ajax-pagination-js`) and its styles load, and the gallery wrapper nested inside our `<section>` is untouched. A real click-through of the AJAX pagination was not run.
+- **Must call `do_shortcode()`, not print the shortcode text.** The shortcode is generated by our own shortcode callback, and WordPress does not parse shortcodes in a callback's return value: a returned `[ngg ...]` string is printed raw (verified). `do_shortcode( '[ngg ...]' )` inside our callback works in `the_content` (NextGEN swaps the shortcode for a placeholder and fills it at the end of the filter chain), outside it (`apply_filters( 'the_content', ... )`), and with `source="albums"`. NextGEN's scripts and stylesheets are enqueued at render time even though the shortcode is not in the post content (checked: `ngg_common`, lightbox context, album/thumbnail scripts, `nextgen_basic_thumbnails_style`, `nextgen_pagination_style`, `nextgen_basic_album_style` all present). Keep `PhotosBlock` free of `wpautop`/`wptexturize` on the generated string.
+- Quotes: build the shortcode with plain ASCII double quotes and do not run the generated string through `wptexturize` (a shortcode with entity-encoded quotes inside another shortcode's attribute came out mangled in the spike; hard-coded strings in the callback worked).
+
+### (d) Detection and the gallery table
+
+- Detection: `class_exists( 'Imagely\NGG\DataMappers\Album' )` (the check `hyperpress-media` uses) is true with NextGEN 4.5.6; `Imagely\NGG\DataMappers\Gallery` and `Imagely\NGG\Display\DisplayManager` exist too; `shortcode_exists( 'ngg' )` is true as well. Use the `Album` class check for consistency, behind `Integrations::nextgen()` with a filter like the WooCommerce one.
+- Table `{$wpdb->prefix}ngg_gallery` (`wp_ngg_gallery`): columns `gid` bigint PK, `name`, `slug`, `path`, `title`, `galdesc`, `pageid`, `previewpic`, `author`, `extras_post_id`, `date_created`, `date_modified`, `display_type`, ... Options list: `SELECT gid, title, name FROM {$wpdb->prefix}ngg_gallery ORDER BY title` (use `name` when `title` is empty); existence check: `SELECT gid FROM {$wpdb->prefix}ngg_gallery WHERE gid IN (...)` with placeholders. Images are in `{$wpdb->prefix}ngg_pictures` (`galleryid`, `exclude`).
+
+### Recommendation for Task 15 (interfaces adjusted)
+
+No approach B. Changes to the Task 15 interfaces:
+
+- `NextGenShortcodes::single( int $id, int $limit = 6 ): string` returns the shortcode text `[ngg source="galleries" ids="{id}" display="basic_thumbnail" images_per_page="{limit}"{ template="gallery.php"}]`.
+- `NextGenShortcodes::album( array $ids ): string` returns `[ngg source="albums" gallery_ids="{1,2}" display="basic_compact_album"{ template="album-compact.php"}]` (compact is the album type; extended is an option via a filter, same shape).
+- New: `NextGenShortcodes::template( string $file ): string` (the ` template="…"` fragment, empty unless the parent theme has `nggallery/{file}`; filter above), and `NextGenShortcodes::more_url( string $permalink, int $page = 2 ): string` (pretty permalinks: `trailingslashit( $permalink ) . 'nggallery/page/' . $page`; plain: `add_query_arg( 'nggpage', $page, $permalink )`).
+- New: `Galleries::image_count( int $id ): int` (non-excluded images); `Galleries::options()` falls back to `name` for an empty `title`.
+- `PhotosBlock::html()` runs `do_shortcode()` on the string from `single()`/`album()` and wraps it in its own banner section. For one gallery it appends the "View more" button (`more_url( get_permalink(), 2 ) . '#' . $anchor`) only when `image_count( $id ) > $limit`; several galleries need no button (the album tiles are the links).
+- Tests keep faking the shortcode with `pre_do_shortcode_tag` and assert the exact strings above plus the `[Not a valid template]` guard (template fragment absent when the theme file is missing).
+
+### Side notes
+
+- `docker/compose.main.yaml` has no mount for `plugins/hyperpress-event` yet, so the plugin was not activated in the spike and the Task 16 manual check needs the mount added (and `hyperpress-media` needs `meta-box-aio` and `safe-svg`, which a fresh stack lacks).
+- The hyperalumni, hyperonline and uikit volumes were not touched; the scratch project and its volumes are gone (`docker volume ls` shows only the existing site volumes).
