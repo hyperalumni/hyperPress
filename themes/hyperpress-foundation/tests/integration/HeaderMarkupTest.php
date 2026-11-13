@@ -22,6 +22,7 @@ final class HeaderMarkupTest extends WP_UnitTestCase {
 		$html = $this->render_header();
 
 		$this->assertMatchesRegularExpression( '/title-bar-left">\s*<button[^>]*class="menu-icon"/', $html );
+		$this->assertStringContainsString( 'data-hide-for="large"', $html );
 		$this->assertStringNotContainsString( 'title-bar-right', $html );
 	}
 
@@ -33,6 +34,7 @@ final class HeaderMarkupTest extends WP_UnitTestCase {
 		$this->assertMatchesRegularExpression( '/title-bar-left">\s*<span class="site-mobile-logo/', $html );
 		$this->assertMatchesRegularExpression( '/title-bar-right">\s*<button[^>]*class="menu-icon"/', $html );
 		$this->assertStringContainsString( 'data-responsive-toggle="mobile-menu"', $html );
+		$this->assertStringContainsString( 'data-hide-for="large"', $html );
 		$this->assertStringContainsString( 'class="mobile-menu vertical menu"', $html );
 	}
 

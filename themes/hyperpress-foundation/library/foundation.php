@@ -216,7 +216,7 @@ function hyperpress_mobile_toggle_attributes(): void {
  */
 function hyperpress_title_bar_responsive_toggle() {
 	if ( in_array( hyperpress_mobile_menu_layout(), array( 'topbar', 'drilldown' ), true ) ) {
-		echo 'data-responsive-toggle="mobile-menu"';
+		echo 'data-responsive-toggle="mobile-menu" data-hide-for="large"';
 	}
 }
 

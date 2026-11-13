@@ -98,7 +98,7 @@ final class MobileMenuLayoutTest extends WP_UnitTestCase {
 		hyperpress_mobile_menu_id();
 		$id = ob_get_clean();
 
-		$this->assertSame( 'data-responsive-toggle="mobile-menu"', $toggle );
+		$this->assertSame( 'data-responsive-toggle="mobile-menu" data-hide-for="large"', $toggle );
 		$this->assertSame( 'mobile-menu', $id );
 	}
 

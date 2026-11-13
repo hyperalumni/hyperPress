@@ -57,7 +57,7 @@ body.mobile-drilldown {
 
   // Rows and panels run edge to edge on phones.
   .site-navigation {
-    @include breakpoint(small only) {
+    @include breakpoint(medium down) {
       padding-right: 0;
       padding-left: 0;
     }
