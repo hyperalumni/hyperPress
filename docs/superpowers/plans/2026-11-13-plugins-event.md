@@ -135,16 +135,16 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 
 **Files:**
 - Modify: `plugins/hyperpress-shortcode/src/Shortcodes/Banner.php`
-- Test: `plugins/tests/integration/Shortcode/BannerColorTest.php` (place beside the plugin's other tests)
+- Test: `plugins/tests/integration/Shortcodes/BannerColorTest.php` (place beside the plugin's other tests)
 
 **Interfaces:**
 - Produces: attribute `color` on `[hyperpress_banner]`; filter `hyperpress_banner_shortcode_default_color` ( `string $color`, `array $atts` ): string.
 
-- [ ] **Step 1: Write the failing tests:** `test_color_attribute_sets_the_inline_background` (`color="#F15623"` gives `style="background-color: #F15623"` on the `<header>`); `test_invalid_colors_are_dropped` (`red`, `#fff;background:url(x)`, `"><script>` produce no `style=` at all); `test_filter_supplies_the_default_when_the_attribute_is_empty`; `test_attribute_wins_over_the_filter`; `test_non_hex_filter_result_is_ignored`; `test_markup_unchanged_without_a_color` (exact previous string) and `test_empty_without_title_and_subtitle`.
-- [ ] **Step 2:** Run `--filter BannerColorTest`; expect FAIL.
-- [ ] **Step 3: Implement** the attribute with `sanitize_hex_color()`; when empty, run the filter and sanitise its result; add `style="background-color: <hex>"` to the `<header>` using the same format as `themes/hyperpress-foundation/template-parts/banner.php`.
-- [ ] **Step 4:** Run the filter and lint; expect PASS.
-- [ ] **Step 5: Commit** `feat(shortcode): add color attribute to the banner shortcode`.
+- [x] **Step 1: Write the failing tests:** `test_color_attribute_sets_the_inline_background` (`color="#F15623"` gives `style="background-color: #F15623"` on the `<header>`); `test_invalid_colors_are_dropped` (`red`, `#fff;background:url(x)`, `"><script>` produce no `style=` at all); `test_filter_supplies_the_default_when_the_attribute_is_empty`; `test_attribute_wins_over_the_filter`; `test_non_hex_filter_result_is_ignored`; `test_markup_unchanged_without_a_color` (exact previous string) and `test_empty_without_title_and_subtitle`.
+- [x] **Step 2:** Run `--filter BannerColorTest`; expect FAIL.
+- [x] **Step 3: Implement** the attribute with `sanitize_hex_color()`; when empty, run the filter and sanitise its result; add `style="background-color: <hex>"` to the `<header>` using the same format as `themes/hyperpress-foundation/template-parts/banner.php`.
+- [x] **Step 4:** Run the filter and lint; expect PASS.
+- [x] **Step 5: Commit** `feat(shortcode): add color attribute to the banner shortcode`.
 
 ## Task 7: Banner colour and subtitle resolution
 

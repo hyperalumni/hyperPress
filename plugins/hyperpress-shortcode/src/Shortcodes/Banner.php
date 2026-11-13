@@ -16,6 +16,7 @@ final class Banner {
 				'anchor'   => '',
 				'title'    => '',
 				'subtitle' => '',
+				'color'    => '',
 			),
 			$atts
 		);
@@ -24,7 +25,19 @@ final class Banner {
 		$title    = $atts['title'];
 		$subtitle = $atts['subtitle'];
 		if ( ! empty( $title ) || ! empty( $subtitle ) ) {
-			$output = '<header role="banner" class="banner">';
+			$color = sanitize_hex_color( (string) $atts['color'] );
+			if ( empty( $color ) ) {
+				/**
+				 * Filters the banner colour used when the shortcode has no valid `color` attribute.
+				 *
+				 * @param string $color Hex colour, empty by default.
+				 * @param array  $atts  The shortcode attributes.
+				 */
+				$color = sanitize_hex_color( (string) apply_filters( 'hyperpress_banner_shortcode_default_color', '', $atts ) );
+			}
+
+			$style  = empty( $color ) ? '' : ' style="background-color: ' . esc_attr( $color ) . '"';
+			$output = '<header role="banner" class="banner"' . $style . '>';
 			if ( ! empty( $anchor ) ) {
 				$output .= '<span class="anchor" id="' . esc_attr( $anchor ) . '"></span>';
 			}
