@@ -30,3 +30,29 @@ body.admin-bar {
     }
   }
 }
+
+// The admin-bar stays at full width above 782px, and plugin items can push its right group onto a second row
+// over the header; show icons only until the desktop menu takes over at large.
+@include breakpoint(783) {
+  @include breakpoint(medium down) {
+    #wpadminbar .ab-top-menu > li > .ab-item .ab-label,
+    #wpadminbar #wp-admin-bar-my-account .display-name {
+      display: none;
+    }
+  }
+}
+
+// Icons alone still wrap with several plugin items up to about 856px, so keep only the essentials there.
+@media screen and (min-width: 783px) and (max-width: 856px) {
+  #wpadminbar
+    #wp-admin-bar-root-default
+    > li:not(
+      #wp-admin-bar-wp-logo,
+      #wp-admin-bar-site-name,
+      #wp-admin-bar-new-content,
+      #wp-admin-bar-edit
+    ),
+  #wpadminbar #wp-admin-bar-top-secondary > li:not(#wp-admin-bar-my-account) {
+    display: none;
+  }
+}

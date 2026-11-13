@@ -1,3 +1,5 @@
+> **STATUS: ✅ COMPLETED** (2026-11-13). Code in `236196e8`, admin-bar fix after it; drawer checked in a browser at 700, 800, 900 and 1000px, desktop menu at 1024px.
+
 # Foundation theme: nav drawer up to the large breakpoint
 
 **Goal:** the Foundation theme switches between the desktop menu and the mobile drawer at `large` (1024px) instead of `medium` (640px). Every width below 1024px uses the drawer. The owner approved the change.
@@ -30,10 +32,10 @@ Files (all under `themes/hyperpress-foundation/`):
 ## Outcome
 
 - Compiled CSS (`dist/assets/css/app-*.css`): `.mobile-menu, .site-title-bar` are hidden from `min-width: 64em`, `.desktop-menu` / `.site-navigation .top-bar-left` are hidden below `max-width: 63.99875em`, and the edge-to-edge drilldown rule applies below `63.99875em`.
-- Other rules checked and left alone: `_wp-admin.scss` (`breakpoint(783)` is the WP admin bar height switch, not the menu switch), the `offcanvas` layout (its trigger sits in `.site-title-bar`, now hidden from 1024px by CSS; no ResponsiveToggle attribute is printed for it), `$table-stack-breakpoint`.
+- Other rules checked and left alone: the existing `_wp-admin.scss` rules (`breakpoint(783)` is the WP admin bar height switch, not the menu switch; the admin-bar wrap fix added afterwards is in the follow-ups), the `offcanvas` layout (its trigger sits in `.site-title-bar`, now hidden from 1024px by CSS; no ResponsiveToggle attribute is printed for it), `$table-stack-breakpoint`.
 - Verification: `nx build @hyper/press-foundation`, `nx run-many -t lint-js`, `oxfmt --check` on the theme and this plan, theme `composer test:integration` (559 tests, 12 skipped) and `composer lint` in Docker.
 
 ## Known follow-ups
 
-- Browser checks at 700, 900, 1000 and 1024px, with the admin bar on and off (drawer opens, hamburger visible below 1024px, desktop menu from 1024px, no overlap with the admin bar, drilldown rows edge to edge on tablet widths), are manual and still to be done by the owner.
-- The code changes are not committed yet; the owner commits them when satisfied.
+- Done: the owner checked the drawer at 700, 800, 900 and 1000px and the desktop menu at 1024px in a browser.
+- Owner report after the drawer moved to large: between 783px and 1023px the WP admin bar (full width above its own 782px collapse) wraps its right group onto a second row over the header when plugins add items. `src/assets/scss/global/_wp-admin.scss` now hides the admin-bar item labels and the "Howdy" name in that range (`breakpoint(783)` with `breakpoint(medium down)`, compiled `min-width:48.9375em` and `max-width:63.99875em`). Icons alone still wrapped below about 856px, and WordPress's own 782px collapse is hard-coded in core's admin-bar CSS, so a second rule (`min-width: 783px` to `max-width: 856px`, 856px measured on the owner's site with its plugin items) keeps only the WP logo, site name, New, Edit and the account menu. The owner checked it in a browser and the admin bar stays on one row.
