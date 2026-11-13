@@ -273,29 +273,33 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - Test: `plugins/tests/integration/Event/PhotosTest.php`
 
 **Interfaces:**
-- Produces (adjust names and shortcode strings to the Task 14 findings): `Galleries::options(): array<int,string>` (id to title from `{$wpdb->prefix}ngg_gallery`), `Galleries::existing( array $ids ): array<int>`; `NextGenShortcodes::single( int $id, int $limit = 6 ): string`, `NextGenShortcodes::album( array $ids ): string`; `PhotosBlock::html( array $gallery_ids, bool $over, string $banner ): string`; `Photos::SHORTCODE = 'hyperpress_event_photos'`, `Photos::register(): void`, `Photos::shortcode( $atts ): string`.
+- Produces (final, from the Task 14 findings; see "Spike findings (Task 14)" at the end of this plan for the exact shortcode strings and traps): `Galleries::options(): array<int,string>` (id to title from `{$wpdb->prefix}ngg_gallery`, `name` when `title` is empty), `Galleries::existing( array $ids ): array<int>`, `Galleries::image_count( int $id ): int` (non-excluded rows of `{$wpdb->prefix}ngg_pictures`); `NextGenShortcodes::single( int $id, int $limit = 6 ): string` (`[ngg source="galleries" ids="{id}" display="basic_thumbnail" images_per_page="{limit}"…]`), `NextGenShortcodes::album( array $ids ): string` (`[ngg source="albums" gallery_ids="1,2" display="basic_compact_album"…]`, never `src=`), `NextGenShortcodes::template( string $file ): string` (the ` template="…"` fragment, empty unless the parent theme has `nggallery/{file}`, filter `hyperpress_event_nextgen_template`), `NextGenShortcodes::more_url( string $permalink, int $page = 2 ): string` (pretty permalinks: `trailingslashit( $permalink ) . 'nggallery/page/' . $page`; plain: `add_query_arg( 'nggpage', $page, $permalink )`); `PhotosBlock::html( array $gallery_ids, bool $over, string $banner, string $permalink, string $anchor ): string` (pure: the caller passes the permalink and anchor); `Photos::SHORTCODE = 'hyperpress_event_photos'`, `Photos::register(): void`, `Photos::shortcode( $atts ): string` (reads the current post: `get_permalink()` for the permalink, the `anchor` attribute with default `photos` for the anchor, and passes both to `PhotosBlock::html()`).
+- "View more" is deliberately shown only for a single selected gallery with more than the limit (6) non-excluded images; several galleries never get one (the album tiles are the links).
 
 - [ ] **Step 1: Write the failing tests** (a temporary `ngg_gallery` table is created in the test; `pre_do_shortcode_tag` fakes the `ngg` shortcode):
   - `test_options_and_existing`: options from the table, `existing` drops IDs that are not in it.
-  - `test_one_gallery_uses_the_single_display_with_a_limit_and_a_view_more_link`; `test_several_galleries_use_the_album_display`.
+  - `test_one_gallery_uses_the_single_display_with_a_limit_and_a_view_more_link` (more than 6 images in the fake table); `test_no_view_more_at_or_below_the_limit` (exactly 6 and fewer images); `test_several_galleries_use_the_album_display`.
+  - `test_more_url_uses_the_nggallery_page_path_with_pretty_permalinks` and `test_more_url_uses_the_nggpage_query_argument_with_plain_permalinks` (toggle the `permalink_structure` option); `test_view_more_link_is_the_current_post_permalink_plus_page_2_and_the_anchor` (the test sets the current post, since `Photos::shortcode()` reads it).
+  - `test_template_argument_is_added_only_when_the_parent_theme_has_the_file` (absent otherwise, so NextGEN never prints `[Not a valid template]`) and `test_album_shortcode_uses_source_albums_and_gallery_ids` (never `src=`).
   - `test_no_gallery_and_event_not_over_prints_check_back_after_the_event`; `test_no_gallery_and_event_over_prints_nothing`; `test_selected_gallery_shows_whatever_the_date`.
   - `test_deleted_gallery_ids_fall_back_to_the_no_gallery_state` (Review Focus 5).
   - `test_empty_when_nextgen_inactive` and `test_empty_outside_an_event_without_notices` (Review Focus 3); `test_prints_its_own_banner_with_default_title_photos`.
 - [ ] **Step 2:** Run `--filter PhotosTest`; expect FAIL.
-- [ ] **Step 3: Implement** per the spike. Keep NextGEN's wrapper ids and classes untouched (theme `AGENTS.md`). Replace the `Galleries::options()` guard in `Fields` with the real call.
+- [ ] **Step 3: Implement** per "Spike findings (Task 14)" (shortcode strings, `do_shortcode()` inside the callback, the `template` guard, the `more_url()` recipe). Keep NextGEN's wrapper ids and classes untouched (theme `AGENTS.md`). Replace the `Galleries::options()` guard in `Fields` with the real call.
 - [ ] **Step 4:** Run the filter and lint; expect PASS.
 - [ ] **Step 5: Commit** `feat(event): add the event photos block`.
 
 ## Task 16: Docs, full verification and manual check
 
 **Files:**
-- Modify: `plugins/AGENTS.md` (new plugin entry: keys, URLs, shortcodes, filters, Woo/NextGEN switches), `docs/superpowers/specs/2026-11-02-plugins-frontpage-countdown-selection-design.md` and its plan `docs/superpowers/plans/2026-11-02-plugins-frontpage-countdown-selection.md` (note that `hyperpress-event` now hooks the filter), this plan (banner and status)
+- Modify: `docker/compose.main.yaml` (mount `hyperpress-event`), `plugins/AGENTS.md` (new plugin entry: keys, URLs, shortcodes, filters, Woo/NextGEN switches), `docs/superpowers/specs/2026-11-02-plugins-frontpage-countdown-selection-design.md` and its plan `docs/superpowers/plans/2026-11-02-plugins-frontpage-countdown-selection.md` (note that `hyperpress-event` now hooks the filter), this plan (banner and status)
 
 - [ ] **Step 1:** Update the files above. Grep `docs/superpowers/plans/` for `frontpage_countdown_candidates`, `hyperpress_banner` and `content_template` and update any other plan that mentions a changed file.
 - [ ] **Step 2:** Run the whole plugin suites (`composer lint`, `test:unit`, `test:integration`) and the theme suites; all green. Run `pnpm fmt:check` (load Node first: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"`); fix with `pnpm fmt`.
-- [ ] **Step 3: Manual check** on the hyperalumni stack (WooCommerce and NextGEN) and the hyperonline stack (neither): activate `hyperpress-event`; create series "Bar Crawl" and two events; check `/event/bar-crawl-2026/` full-screen layout with breadcrumbs and no sidebar (add minimal theme CSS only if the breadcrumbs look wrong), `/event/bar-crawl/` redirect, `/event/series/bar-crawl/`, the Events page with `[hyperpress_event_list]`, `/events/` subpages unchanged, the series menu box, the front page countdown, a ticket purchase to checkout, a sold-out product, photos with one and several galleries; confirm hyperonline shows no ticket or gallery fields.
-- [ ] **Step 4:** Add the `> **STATUS: ✅ COMPLETED**` banner to this plan.
-- [ ] **Step 5: Commit** `docs(event): document the event plugin` with the changed docs paths.
+- [ ] **Step 3: Mount the plugin in the local stacks.** `docker/compose.main.yaml` mounts each plugin individually (one line per plugin under the `wordpress` service, alphabetical) and has no line for `plugins/hyperpress-event`. Add `      - ../../plugins/hyperpress-event/:/var/www/html/wp-content/plugins/hyperpress-event` between the `hyperpress-countdown` and `hyperpress-example` lines. The `wpcli` service reuses the `wordpress` mounts through `volumes_from`, so it needs no separate line (check that no other file duplicates the plugin list). Tell the owner that his running hyperalumni, hyperonline and uikit stacks need `docker compose --profile local up -d` (run in each `docker/<site>` directory) to pick the new mount up. On a fresh stack the NextGEN check also needs `meta-box-aio` and `safe-svg` active for `hyperpress-media`.
+- [ ] **Step 4: Manual check** on the hyperalumni stack (WooCommerce and NextGEN) and the hyperonline stack (neither): activate `hyperpress-event`; create series "Bar Crawl" and two events; check `/event/bar-crawl-2026/` full-screen layout with breadcrumbs and no sidebar (add minimal theme CSS only if the breadcrumbs look wrong), `/event/bar-crawl/` redirect, `/event/series/bar-crawl/`, the Events page with `[hyperpress_event_list]`, `/events/` subpages unchanged, the series menu box, the front page countdown, a ticket purchase to checkout, a sold-out product, photos with one and several galleries; for a one-gallery event with more than 6 images, click NextGEN's pagination and confirm the page updates in place without a reload and without breaking the wrapper ids (`ngg-galleryoverview` and the `ngg-gallery-…` anchor), then use "View more"; confirm hyperonline shows no ticket or gallery fields.
+- [ ] **Step 5:** Add the `> **STATUS: ✅ COMPLETED**` banner to this plan.
+- [ ] **Step 6: Commit** `docs(event): document the event plugin` with the changed docs paths.
 
 ## Known follow-ups
 
@@ -357,13 +361,13 @@ Show the button only when the gallery has more than `$limit` images: `SELECT COU
 
 ### Recommendation for Task 15 (interfaces adjusted)
 
-No approach B. Changes to the Task 15 interfaces:
+No approach B. Changes to the Task 15 interfaces (now folded into Task 15 itself):
 
 - `NextGenShortcodes::single( int $id, int $limit = 6 ): string` returns the shortcode text `[ngg source="galleries" ids="{id}" display="basic_thumbnail" images_per_page="{limit}"{ template="gallery.php"}]`.
 - `NextGenShortcodes::album( array $ids ): string` returns `[ngg source="albums" gallery_ids="{1,2}" display="basic_compact_album"{ template="album-compact.php"}]` (compact is the album type; extended is an option via a filter, same shape).
 - New: `NextGenShortcodes::template( string $file ): string` (the ` template="…"` fragment, empty unless the parent theme has `nggallery/{file}`; filter above), and `NextGenShortcodes::more_url( string $permalink, int $page = 2 ): string` (pretty permalinks: `trailingslashit( $permalink ) . 'nggallery/page/' . $page`; plain: `add_query_arg( 'nggpage', $page, $permalink )`).
 - New: `Galleries::image_count( int $id ): int` (non-excluded images); `Galleries::options()` falls back to `name` for an empty `title`.
-- `PhotosBlock::html()` runs `do_shortcode()` on the string from `single()`/`album()` and wraps it in its own banner section. For one gallery it appends the "View more" button (`more_url( get_permalink(), 2 ) . '#' . $anchor`) only when `image_count( $id ) > $limit`; several galleries need no button (the album tiles are the links).
+- `PhotosBlock::html( $gallery_ids, $over, $banner, $permalink, $anchor )` runs `do_shortcode()` on the string from `single()`/`album()` and wraps it in its own banner section. For one gallery it appends the "View more" button (`more_url( $permalink, 2 ) . '#' . $anchor`) only when `image_count( $id ) > $limit`; several galleries need no button (the album tiles are the links).
 - Tests keep faking the shortcode with `pre_do_shortcode_tag` and assert the exact strings above plus the `[Not a valid template]` guard (template fragment absent when the theme file is missing).
 
 ### Side notes
