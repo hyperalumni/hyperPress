@@ -19,7 +19,7 @@ catalog:
   oxfmt: 0.78.0
   oxlint: 1.93.0
   oxlint-tsgolint: 7.0.2007
-  sass: 1.107.1
+  sass: &sassVersion 1.108.2
   stylelint: 17.16.0
   stylelint-config-standard-scss: 17.0.0
   typescript: 7.0.2
@@ -63,7 +63,7 @@ catalogs:
     motion-ui: 2.0.8
     panini: 1.7.2
     rimraf: 6.1.4
-    sass-embedded: 1.107.1
+    sass-embedded: *sassVersion
     style-sherpa: 1.0.2
     vinyl-named: 1.1.0
     webpack: 5.112.2
