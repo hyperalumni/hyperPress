@@ -24,13 +24,19 @@
       @include xy-cell(12, $output: (base size));
       width: 100%;
 
-      // A single post in the full-screen layout (pages using it are left as they are): the breadcrumbs and every
-      // block of the entry content except the banners get the banner's .grid-container width and padding, so
-      // they line up with the banner titles; banners stay full-bleed.
+      // A single post in the full-screen layout (pages using it are left as they are). Full-screen strips the
+      // container padding, so every direct child of .main-content (breadcrumbs, post navigation, comments and
+      // whatever the before/after-main hooks print; not the entry content itself, and not an <article>, whose
+      // entry content is handled below) and every block of the entry content except banners and floats/full-bleed
+      // blocks get the banner's .grid-container width and padding. They line up with the banner titles; banners
+      // stay full-bleed.
       .single & {
-        > .breadcrumbs {
+        > *:not(.entry-content, article) {
           @include xy-grid-container;
           width: 100%;
+        }
+
+        > .breadcrumbs {
           margin-top: 1rem;
 
           @include breakpoint(large) {
@@ -42,16 +48,17 @@
           }
         }
 
-        .entry-content > *:not(.banner) {
+        // :where() keeps the exclusions out of the specificity, so the grid-row rule below still wins.
+        .entry-content > *:not(:where(.banner, .alignleft, .alignright, .alignfull, .wp-caption)) {
           @include xy-grid-container;
-          box-sizing: border-box;
           width: 100%;
         }
 
-        // Vertical rhythm around the section banners: the block right after a banner and the last block of the
-        // content get padding (not margin, so nothing collapses); blocks that follow each other get none, and the
-        // first child of the content (no banner before it) is not touched. Longhands only, so the horizontal
-        // padding above stays.
+        // Vertical rhythm around the section banners: the block right after a banner, the block right before the
+        // next banner and the last block of the content get padding (not margin, so nothing collapses); blocks
+        // that follow each other get none, and the first child of the content (no banner before it) is not
+        // touched. Longhands only, so the horizontal padding above stays. A block between two banners gets both
+        // sides, once each; the last child has no next sibling, so the last two rules never meet.
         .entry-content > .banner + *:not(.banner) {
           padding-top: 1.5rem;
 
@@ -68,9 +75,18 @@
           }
         }
 
-        // The cells of a grid row already carry the gutter as margin, so the row itself takes no padding.
-        // `:not(.banner)` only matches the specificity of the rule above, which this one follows.
-        .entry-content > .grid-margin-x:not(.banner) {
+        // Separate rule: a browser without :has() drops only this one.
+        .entry-content > *:not(.banner):has(+ .banner) {
+          padding-bottom: 1.5rem;
+
+          @include breakpoint(large) {
+            padding-bottom: 2rem;
+          }
+        }
+
+        // The cells of a grid row already carry the gutter as margin, so the row itself takes no padding. This
+        // rule (6 classes) is more specific than the one above (5), so it wins whatever the source order.
+        .entry-content > .grid-margin-x {
           padding-right: 0;
           padding-left: 0;
         }

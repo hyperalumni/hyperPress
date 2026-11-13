@@ -40,14 +40,17 @@ final class Appearance {
 	 * @param string $attr    Colour given by the caller (for example a shortcode attribute).
 	 */
 	public static function color( int $post_id, string $attr = '' ): string {
-		$candidates = array(
-			$attr,
-			get_post_meta( $post_id, Fields::BANNER_COLOR, true ),
-			Settings::default_banner_color(),
-			self::hub_color(),
+		// Lazy: each level is read only when the ones before it gave nothing, so the hub page lookup (get_post,
+		// ancestors, meta) runs last.
+		$levels = array(
+			static fn(): mixed => $attr,
+			static fn(): mixed => get_post_meta( $post_id, Fields::BANNER_COLOR, true ),
+			static fn(): mixed => Settings::default_banner_color(),
+			static fn(): mixed => self::hub_color(),
 		);
-		foreach ( $candidates as $candidate ) {
-			$color = is_string( $candidate ) ? sanitize_hex_color( trim( $candidate ) ) : null;
+		foreach ( $levels as $level ) {
+			$candidate = $level();
+			$color     = is_string( $candidate ) ? sanitize_hex_color( trim( $candidate ) ) : null;
 			if ( is_string( $color ) && '' !== $color ) {
 				return $color;
 			}

@@ -53,7 +53,10 @@ final class PhotosTest extends WP_UnitTestCase {
 			@rmdir( $this->theme_dir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Test cleanup.
 			$this->theme_dir = '';
 		}
-		unset( $GLOBALS['post'], $GLOBALS['current_screen'] );
+		unset( $GLOBALS['post'], $GLOBALS['current_screen'], $_GET['nggpage'] );
+		$_SERVER['REQUEST_URI'] = '/';
+		wp_dequeue_style( Photos::STYLE );
+		wp_deregister_style( Photos::STYLE );
 		parent::tear_down();
 	}
 
@@ -141,13 +144,101 @@ final class PhotosTest extends WP_UnitTestCase {
 
 		$html = Photos::shortcode( array() );
 
-		$this->assertSame( array( '[ngg source="galleries" ids="1" display="basic_thumbnail" images_per_page="6"]' ), $this->calls );
+		$this->assertSame( array( '[ngg source="galleries" ids="1" display="basic_thumbnail" images_per_page="5"]' ), $this->calls );
 		$this->assertStringContainsString( 'fake-ngg', $html );
 		$this->assertStringContainsString( 'nggallery/page/2#photos', $html );
 	}
 
+	public function test_the_teaser_limit_is_five(): void {
+		$this->assertSame( 5, PhotosBlock::LIMIT );
+	}
+
+	public function test_current_page_reads_the_path_segment_and_the_query_argument(): void {
+		$_SERVER['REQUEST_URI'] = '/event/bar-crawl-2025/';
+		$this->assertSame( 1, Photos::current_page() );
+
+		$_SERVER['REQUEST_URI'] = '/event/bar-crawl-2025/nggallery/page/2';
+		$this->assertSame( 2, Photos::current_page() );
+		$_SERVER['REQUEST_URI'] = '/event/bar-crawl-2025/nggallery/page/3/?x=1#photos';
+		$this->assertSame( 3, Photos::current_page() );
+
+		$_SERVER['REQUEST_URI'] = '/?p=5';
+		$_GET['nggpage']        = '4';
+		$this->assertSame( 4, Photos::current_page() );
+		$_GET['nggpage'] = 'abc';
+		$this->assertSame( 1, Photos::current_page() );
+		$_GET['nggpage'] = '0';
+		$this->assertSame( 1, Photos::current_page() );
+	}
+
+	public function test_current_page_matches_what_more_url_builds(): void {
+		$permalink = 'https://example.org/event/bar-crawl-2025/';
+
+		add_filter( 'pre_option_permalink_structure', static fn() => '/%postname%/', 99 );
+		$_SERVER['REQUEST_URI'] = (string) wp_parse_url( NextGenShortcodes::more_url( $permalink, 2 ), PHP_URL_PATH );
+		$this->assertSame( 2, Photos::current_page() );
+		remove_all_filters( 'pre_option_permalink_structure', 99 );
+
+		add_filter( 'pre_option_permalink_structure', '__return_empty_string', 99 );
+		$url                    = NextGenShortcodes::more_url( 'https://example.org/?p=5', 2 );
+		$_SERVER['REQUEST_URI'] = (string) wp_parse_url( $url, PHP_URL_PATH ) . '?' . wp_parse_url( $url, PHP_URL_QUERY );
+		parse_str( (string) wp_parse_url( $url, PHP_URL_QUERY ), $_GET );
+		$this->assertSame( 2, Photos::current_page() );
+	}
+
+	public function test_teaser_wrapper_and_style_only_on_the_first_page(): void {
+		$this->gallery( 1, 'Alpha', '', 7 );
+		$id = $this->event( array( 1 ) );
+		$this->go_to( get_permalink( $id ) );
+
+		$this->assertFalse( wp_style_is( Photos::STYLE, 'enqueued' ) );
+		$html = Photos::shortcode( array() );
+
+		$this->assertStringContainsString( '<div class="hyperpress-event-photos hyperpress-event-photos--teaser">', $html );
+		$this->assertStringContainsString( 'fake-ngg', $html );
+		$this->assertStringContainsString( 'hyperpress-event-photos-more', $html );
+		$this->assertTrue( wp_style_is( Photos::STYLE, 'enqueued' ) );
+		$css = implode( '', (array) wp_styles()->get_data( Photos::STYLE, 'after' ) );
+		$this->assertStringContainsString( '.hyperpress-event-photos--teaser .ngg-navigation', $css );
+		$this->assertStringContainsString( '.hyperpress-event-photos--teaser .pagination', $css );
+		$this->assertStringContainsString( 'display: none', $css );
+
+		wp_dequeue_style( Photos::STYLE );
+		wp_deregister_style( Photos::STYLE );
+		$_SERVER['REQUEST_URI'] = '/event/bar-crawl-2025/nggallery/page/2';
+		$page2                  = Photos::shortcode( array() );
+
+		$this->assertStringContainsString( '<div class="hyperpress-event-photos">', $page2 );
+		$this->assertStringNotContainsString( '--teaser', $page2 );
+		$this->assertStringContainsString( 'fake-ngg', $page2 );
+		$this->assertFalse( wp_style_is( Photos::STYLE, 'enqueued' ) );
+	}
+
+	public function test_no_style_without_the_photos_block(): void {
+		$id = $this->event();
+		$this->go_to( get_permalink( $id ) );
+
+		// The "check back" state prints no gallery, so no wrapper and no style.
+		$html = Photos::shortcode( array() );
+
+		$this->assertStringNotContainsString( 'hyperpress-event-photos--teaser', $html );
+
+		$this->assertFalse( wp_style_is( Photos::STYLE, 'enqueued' ) );
+	}
+
+	public function test_a_small_gallery_has_no_view_more_and_keeps_the_gallery_output(): void {
+		$this->gallery( 1, 'Alpha', '', 5 );
+		$id = $this->event( array( 1 ) );
+		$this->go_to( get_permalink( $id ) );
+
+		$html = Photos::shortcode( array() );
+
+		$this->assertStringContainsString( 'fake-ngg', $html );
+		$this->assertStringNotContainsString( 'hyperpress-event-photos-more', $html );
+	}
+
 	public function test_no_view_more_at_or_below_the_limit(): void {
-		$this->gallery( 1, 'Alpha', '', 6 );
+		$this->gallery( 1, 'Alpha', '', 5 );
 		$this->gallery( 2, 'Beta', '', 3 );
 		$exact = $this->event( array( 1 ) );
 		$few   = $this->event( array( 2 ) );
@@ -159,7 +250,7 @@ final class PhotosTest extends WP_UnitTestCase {
 	}
 
 	public function test_excluded_pictures_do_not_trigger_view_more(): void {
-		$this->gallery( 1, 'Alpha', '', 6, 5 );
+		$this->gallery( 1, 'Alpha', '', 5, 5 );
 		$id = $this->event( array( 1 ) );
 		$this->go_to( get_permalink( $id ) );
 
@@ -229,7 +320,7 @@ final class PhotosTest extends WP_UnitTestCase {
 		$this->theme_with_template( 'gallery.php' );
 
 		$this->assertSame( ' template="gallery.php"', NextGenShortcodes::template( 'gallery.php' ) );
-		$this->assertSame( '[ngg source="galleries" ids="1" display="basic_thumbnail" images_per_page="6" template="gallery.php"]', NextGenShortcodes::single( 1 ) );
+		$this->assertSame( '[ngg source="galleries" ids="1" display="basic_thumbnail" images_per_page="5" template="gallery.php"]', NextGenShortcodes::single( 1 ) );
 		$this->assertSame( '', NextGenShortcodes::template( 'album-compact.php' ) );
 	}
 
@@ -306,7 +397,7 @@ final class PhotosTest extends WP_UnitTestCase {
 
 		Photos::shortcode( array() );
 
-		$this->assertSame( array( '[ngg source="galleries" ids="1" display="basic_thumbnail" images_per_page="6"]' ), $this->calls );
+		$this->assertSame( array( '[ngg source="galleries" ids="1" display="basic_thumbnail" images_per_page="5"]' ), $this->calls );
 	}
 
 	public function test_empty_when_nextgen_inactive(): void {

@@ -17,6 +17,7 @@ final class InfoTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		unset( $GLOBALS['post'] );
+		delete_option( 'timezone_string' );
 		parent::tear_down();
 	}
 
@@ -111,10 +112,9 @@ final class InfoTest extends WP_UnitTestCase {
 	public function test_prints_nothing_outside_an_event(): void {
 		$this->assertSame( '', Info::shortcode( array() ) );
 
-		$post = $this->event( array( Fields::START => '2030-03-10 09:00' ), 'post' );
+		$this->event( array( Fields::START => '2030-03-10 09:00' ), 'post' );
 		$this->assertSame( '', Info::shortcode( array() ) );
 		$this->assertSame( '', do_shortcode( '[hyperpress_event_info]' ) );
-		unset( $post );
 
 		$GLOBALS['post'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$this->assertSame( '', Info::shortcode( '' ) );

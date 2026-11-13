@@ -105,12 +105,12 @@ Subtitle resolution on an event: the event's `subtitle`, then the settings `fall
 
 - `single.php` gains `$full_screen = (bool) apply_filters( 'hyperpress_single_full_screen', false );`. When true: `.main-container` gets the class `full-screen` (as in `page-templates/page-full-screen.php`) and `get_sidebar()` is skipped. Breadcrumbs, `post-navigation` and comments are unchanged. The theme names no plugin; the filter and its meaning are documented in the theme's `AGENTS.md` beside `content_template` and `hyperpress_posts_template`, and covered by a theme integration test (filter off: unchanged markup and the sidebar; filter on: class present and no sidebar).
 - Breadcrumbs sit inside the `full-screen` container on events. The builder checks the result in the browser and adds minimal theme CSS only if they look wrong.
-- Layout fix (Task 20): `.main-container.full-screen` strips all padding, so on a single post (`.single`, pages using the layout are unchanged) the theme gives the direct `.breadcrumbs` child of `.main-content` and every direct child of `.entry-content` except banners the banner's centred max-width and padding (`xy-grid-container`, full width); a `.grid-margin-x` row takes no padding of its own because its cells carry the gutter. Banners stay full-bleed. The plugin's markup needs no wrapper.
+- Layout fix (Task 20): `.main-container.full-screen` strips all padding, so on a single post (`.single`, pages using the layout are unchanged) the theme gives every direct child of `.main-content` other than the entry content and an `<article>` (breadcrumbs, post navigation, comments, what the before/after-main hooks print) and every direct child of `.entry-content` except banners and floats/full-bleed blocks (`.alignleft`, `.alignright`, `.alignfull`, `.wp-caption`) the banner's centred max-width and padding (`xy-grid-container`, full width); a `.grid-margin-x` row takes no padding of its own because its cells carry the gutter. Banners stay full-bleed. The plugin's markup needs no wrapper.
 
 ### Event single
 
 - `hyperpress_single_full_screen` returns true for `is_singular( 'hyper_event' )`. The plugin's `content_template` returns its `templates/content.php`, which prints `the_content()` and nothing structural.
-- The page's own banner (top of the page) comes from `hyperpress_banner_content` at priority 10 like other plugin banners, with the event title, the resolved subtitle, and the colour from the resolution below. The page banner shows the event's featured image as the hero under it (the banner's `image` key, set only when the event has a thumbnail; `single.php` has no featured-image part). `HyperPress\Utils\Banner` only reads a theme mod, so the event banner is built by filtering `hyperpress_banner_content` after it (builder confirms).
+- The page's own banner (top of the page) carries the event title, the resolved subtitle and the colour from the resolution below. `HyperPress\Utils\Banner` only reads a theme mod for the colour and runs at `hyperpress_banner_content` priority 10 (registering the type), so the per-event values are set one step later, on `hyperpress_banner_args`, the filter it applies after assembling the banner (see the `Appearance::adjust()` docblock; filtering `hyperpress_banner_content` itself would run before `Banner::apply()` overwrites the colour). The page banner shows the event's featured image as the hero under it (the banner's `image` key, set only when the event has a thumbnail; `single.php` has no featured-image part).
 - New events open pre-filled (`default_content`, only for `hyper_event`, only when empty) with a scaffold of shortcodes only: `[hyperpress_event_countdown]`, `[hyperpress_event_info]`, `[hyperpress_event_tickets]`, `[hyperpress_event_photos]` (the editor types nothing twice: the info section reads the event's own fields). The editor can reorder or delete sections and add `[hyperpress_banner]` sections of their own. Exact scaffold markup is the builder's call, using the theme's current grid classes (the theme is Foundation 6, not the old site's Foundation 5 `row`/`columns`).
 
 ### Banner colour
@@ -125,7 +125,7 @@ Subtitle resolution on an event: the event's `subtitle`, then the settings `fall
   - Date: the start date in the site's date format and timezone; "start – end" when an explicit end falls on a later day.
   - Time: the start time in the site's time format; "start – end" when an explicit end falls on the same day. Only an end the editor saved (after the start) counts; the default end of day (`Dates::end()`) is never shown (`Dates::explicit_end()`).
   - Where: the venue name, with the venue address below it (line breaks kept).
-- A column without data is left out. The whole block, banner included, prints nothing when the event has no start and no venue, and nothing outside an event. It shows for past events too. Events created before the shortcode keep their hand-typed rows until the editor replaces them.
+- A multi-day event's Time column shows only the start time. A column without data is left out. The whole block, banner included, prints nothing when the event has no start and no venue, and nothing outside an event. It shows for past events too. Events created before the shortcode keep their hand-typed rows until the editor replaces them.
 
 ### Tickets `[hyperpress_event_tickets title? subtitle? color? anchor?]`
 
@@ -136,8 +136,10 @@ Subtitle resolution on an event: the event's `subtitle`, then the settings `fall
 
 ### Photos `[hyperpress_event_photos title? subtitle? color? anchor?]`
 
+- On NextGEN's first page (the event page) the output sits in `div.hyperpress-event-photos.hyperpress-event-photos--teaser` and NextGEN's page numbers are hidden by a small inline style (`wp_add_inline_style`, enqueued only when the block renders; selectors `.ngg-navigation`, `.pagination` and the `nav` around it); "View more" leads to page 2 (`nggallery/page/2`, or `nggpage` on plain permalinks), where the wrapper has no `--teaser` class and the page numbers show. `Photos::current_page()` reads both forms. NextGEN's own wrapper ids and classes are never touched.
+
 - Renders its own banner (default title "Photos") and then:
-  - One gallery selected: NextGEN's gallery display limited to a handful of images (about 6), with a "View more" button that leads to the full gallery.
+  - One gallery selected: NextGEN's gallery display limited to one row of images (5, `PhotosBlock::LIMIT`, the width of the theme's five-column grid at the widest breakpoint), with a "View more" button that leads to the full gallery.
   - Several galleries selected: NextGEN's album-style display of those galleries, linking into each.
   - No gallery selected and the event not over: a "Check back after the event" message.
   - No gallery selected and the event over: the whole block is omitted.

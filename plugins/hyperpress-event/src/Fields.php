@@ -145,7 +145,7 @@ final class Fields {
 				array(
 					'id'          => Settings::HUB_PAGE,
 					'name'        => __( 'Events page', 'hyperpress' ),
-					'desc'        => __( 'The page that lists events. Defaults to the page at /events/.', 'hyperpress' ),
+					'desc'        => __( 'The page that lists events. When none is chosen, the page at /events/ is used (it cannot be turned off).', 'hyperpress' ),
 					'type'        => 'post',
 					'post_type'   => 'page',
 					'field_type'  => 'select_advanced',

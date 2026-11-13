@@ -10,6 +10,7 @@ final class Photos {
 
 	public const SHORTCODE      = 'hyperpress_event_photos';
 	public const DEFAULT_ANCHOR = 'photos';
+	public const STYLE          = PhotosBlock::STYLE;
 
 	public static function register(): void {
 		add_shortcode( self::SHORTCODE, array( self::class, 'shortcode' ) );
@@ -51,7 +52,24 @@ final class Photos {
 			$over,
 			Sections::banner( $post->ID, $atts ),
 			(string) get_permalink( $post ),
-			$atts['anchor']
+			$atts['anchor'],
+			self::current_page() <= 1
 		);
+	}
+
+	/**
+	 * The NextGEN page of the request: the `nggallery/page/N` path segment (pretty permalinks) or the `nggpage`
+	 * query argument (plain), the two forms NextGenShortcodes::more_url() builds; 1 otherwise.
+	 */
+	public static function current_page(): int {
+		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$path = (string) wp_parse_url( $uri, PHP_URL_PATH );
+		if ( 1 === preg_match( '#/nggallery/page/(\d+)(?:/|$)#', $path, $match ) && (int) $match[1] > 0 ) {
+			return (int) $match[1];
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public read-only pagination argument, like NextGEN's own.
+		$arg = isset( $_GET['nggpage'] ) && is_scalar( $_GET['nggpage'] ) ? absint( wp_unslash( $_GET['nggpage'] ) ) : 0;
+
+		return max( 1, $arg );
 	}
 }

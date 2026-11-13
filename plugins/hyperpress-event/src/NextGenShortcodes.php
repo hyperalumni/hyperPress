@@ -17,7 +17,7 @@ final class NextGenShortcodes {
 	 * @param int $id    Gallery ID.
 	 * @param int $limit Images on the first page.
 	 */
-	public static function single( int $id, int $limit = 6 ): string {
+	public static function single( int $id, int $limit = PhotosBlock::LIMIT ): string {
 		return '[ngg source="galleries" ids="' . $id . '" display="basic_thumbnail" images_per_page="' . $limit . '"' . self::template( self::SINGLE_TEMPLATE ) . ']';
 	}
 
