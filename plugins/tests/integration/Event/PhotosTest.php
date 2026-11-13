@@ -53,7 +53,7 @@ final class PhotosTest extends WP_UnitTestCase {
 			@rmdir( $this->theme_dir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Test cleanup.
 			$this->theme_dir = '';
 		}
-		unset( $GLOBALS['current_screen'] );
+		unset( $GLOBALS['post'], $GLOBALS['current_screen'] );
 		parent::tear_down();
 	}
 

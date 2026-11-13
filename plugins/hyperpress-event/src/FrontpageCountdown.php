@@ -8,7 +8,7 @@ use DateInterval;
 /**
  * Offers events to the front page countdown (see hyperpress-frontpage's Countdowns for the candidate format).
  *
- * An event is a candidate from `Settings::frontpage_lead_days()` days before it starts until it ends.
+ * An event is a candidate from `Settings::frontpage_lead_days()` days before it starts until it ends; an event that is over is no longer offered.
  */
 final class FrontpageCountdown {
 
@@ -49,7 +49,7 @@ final class FrontpageCountdown {
 			$id    = (int) $id;
 			$start = Dates::start( $id );
 			$end   = Dates::end( $id );
-			if ( null === $start || null === $end ) {
+			if ( null === $start || null === $end || Dates::is_over( $id ) ) {
 				continue;
 			}
 

@@ -33,8 +33,8 @@ final class Countdown {
 	}
 
 	/**
-	 * The countdown markup, or '' unless the event is readable, has a start and is not over: a past event never
-	 * counts down.
+	 * The countdown markup, or '' unless the event is readable and has a start. Once the event is over the
+	 * countdown stays on the event's page, held at zero whatever the Events setting says.
 	 *
 	 * @param int $id Event post ID.
 	 */
@@ -44,7 +44,7 @@ final class Countdown {
 		}
 
 		$start = Dates::start( $id );
-		if ( null === $start || Dates::is_over( $id ) ) {
+		if ( null === $start ) {
 			return '';
 		}
 
@@ -55,7 +55,7 @@ final class Countdown {
 			array(
 				'name'      => trim( wp_specialchars_decode( wp_strip_all_tags( get_the_title( $id ) ), ENT_QUOTES ) ),
 				'location'  => is_string( $venue ) ? $venue : '',
-				'past_zero' => Settings::past_zero(),
+				'past_zero' => ! Dates::is_over( $id ) && Settings::past_zero(),
 				'slug'      => 'event-' . $id,
 				'show_date' => true,
 			)

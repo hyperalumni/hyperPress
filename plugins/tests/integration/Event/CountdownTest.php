@@ -109,21 +109,26 @@ final class CountdownTest extends WP_UnitTestCase {
 		add_filter( 'hyperpress_event_now', static fn(): DateTimeImmutable => new DateTimeImmutable( $now, wp_timezone() ) );
 	}
 
-	public function test_a_past_event_renders_no_countdown(): void {
+	public function test_a_past_event_keeps_its_countdown_held_at_zero(): void {
 		$id = $this->event();
+		update_option( Settings::OPTION, array( Settings::COUNTDOWN_PAST_ZERO => '1' ) );
 		$this->clock( '2030-03-11 08:00' );
 
-		$this->assertSame( '', Countdown::render( $id ) );
-		$this->assertSame( '', Countdown::shortcode( array( 'id' => (string) $id ) ) );
+		$this->assertStringContainsString( 'Spring Open', Countdown::render( $id ) );
+		$this->assertStringContainsString( '"count_past_zero": false,', $this->inline_js(), 'Held at zero even when the setting is on' );
+
+		$this->assertStringContainsString( 'Spring Open', Countdown::shortcode( array( 'id' => (string) $id ) ) );
 		$this->go_to( get_permalink( $id ) );
-		$this->assertSame( '', Countdown::shortcode( array() ) );
+		$this->assertStringContainsString( 'Spring Open', Countdown::shortcode( array() ) );
 	}
 
-	public function test_an_event_between_start_and_end_still_renders(): void {
+	public function test_an_event_between_start_and_end_follows_the_setting(): void {
 		$id = $this->event();
 		update_post_meta( $id, Fields::END, '2030-03-10 17:00' );
+		update_option( Settings::OPTION, array( Settings::COUNTDOWN_PAST_ZERO => '1' ) );
 		$this->clock( '2030-03-10 12:00' );
 
 		$this->assertStringContainsString( 'Spring Open', Countdown::render( $id ) );
+		$this->assertStringContainsString( '"count_past_zero": true,', $this->inline_js() );
 	}
 }

@@ -1,5 +1,7 @@
 # hyperpress-event Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-11-13). Tasks 0 to 19 done and reviewed, including the final whole-branch review and its single fix wave (Task 18), which passed a scoped re-review, and the owner follow-ups of Task 19. Unit (238), integration (1877) and lint suites are green; the automated smoke test on scratch stacks passed 38 checks with 0 failures. Not verified, owner checks in a browser: the NextGEN AJAX pagination click-through, and the breadcrumb layout inside the full-screen page. Run `docker compose --profile local up -d` in each `docker/<site>` directory to pick up the new plugin mount.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add the `hyperpress-event` plugin: an Event post type at `/event/<slug>/` with series, evergreen alias, countdowns on the front page, full-screen banner-section pages, WooCommerce e-tickets and NextGEN photos.
@@ -17,7 +19,7 @@
 - Keys: post type `hyper_event`, taxonomy `hyper_event_series`; other identifiers `hyperpress_event_*` (must match `/^hyperpress_[a-z0-9_]+$/`).
 - URLs: CPT base `event` (`has_archive` false), series `event/series/<term>/`, alias `/event/<series-slug>/` (302). `series` is a reserved event slug. Nothing under `/events/` is touched.
 - The theme names no plugin. `hyperpress-event` must not hard-require WooCommerce, NextGEN or `hyperpress-frontpage`; integrations check at runtime. Header `Requires Plugins: hyperpress-utils, hyperpress-countdown, hyperpress-shortcode, meta-box-aio`.
-- The front page shows exactly one countdown; never a past event's. No section banner is printed when its section has nothing to show.
+- The front page shows exactly one countdown; never a past event's (a past event's own page keeps its countdown, held at zero). No section banner is printed when its section has nothing to show.
 - Commit with explicit paths: `git add <paths> docs/superpowers/plans/2026-11-13-plugins-event.md` then `git commit -m "type(scope): lowercase summary" -- <paths>`. Never `git add -A`. Tick the task's boxes in the same commit.
 - Commands (from the repo root): plugin tests `cd plugins && docker compose run --rm php composer test:integration -- --filter <Name>`, lint `composer lint` the same way (run `composer install` first on a new checkout); theme tests from `themes/hyperpress-foundation` the same way. Time control in tests: filter `hyperpress_event_now`.
 
@@ -327,9 +329,9 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - [x] **Step 1:** Update the files above. Grep `docs/superpowers/plans/` for `frontpage_countdown_candidates`, `hyperpress_banner` and `content_template` and update any other plan that mentions a changed file.
 - [x] **Step 2:** Run the whole plugin suites (`composer lint`, `test:unit`, `test:integration`) and the theme suites; all green. Run `pnpm fmt:check` (load Node first: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"`); fix with `pnpm fmt`.
 - [x] **Step 3: Mount the plugin in the local stacks.** `docker/compose.main.yaml` mounts each plugin individually (one line per plugin under the `wordpress` service, alphabetical) and has no line for `plugins/hyperpress-event`. Add `      - ../../plugins/hyperpress-event/:/var/www/html/wp-content/plugins/hyperpress-event` between the `hyperpress-countdown` and `hyperpress-example` lines. The `wpcli` service reuses the `wordpress` mounts through `volumes_from`, so it needs no separate line (check that no other file duplicates the plugin list). Tell the owner that his running hyperalumni, hyperonline and uikit stacks need `docker compose --profile local up -d` (run in each `docker/<site>` directory) to pick the new mount up. On a fresh stack the NextGEN check also needs `meta-box-aio` and `safe-svg` active for `hyperpress-media`.
-- [ ] **Step 4: Manual check** on the hyperalumni stack (WooCommerce and NextGEN) and the hyperonline stack (neither): activate `hyperpress-event`; create series "Bar Crawl" and two events; check `/event/bar-crawl-2026/` full-screen layout with breadcrumbs and no sidebar (add minimal theme CSS only if the breadcrumbs look wrong), `/event/bar-crawl/` redirect, `/event/series/bar-crawl/`, the Events page with `[hyperpress_event_list]`, `/events/` subpages unchanged, the series menu box, the front page countdown, a ticket purchase to checkout, a sold-out product, photos with one and several galleries; for a one-gallery event with more than 6 images, click NextGEN's pagination and confirm the page updates in place without a reload and without breaking the wrapper ids (`ngg-galleryoverview` and the `ngg-gallery-…` anchor), then use "View more"; confirm hyperonline shows no ticket or gallery fields.
-- [ ] **Step 5:** Add the `> **STATUS: ✅ COMPLETED**` banner to this plan.
-- [ ] **Step 6: Commit** `docs(event): document the event plugin` with the changed docs paths.
+- [x] **Step 4: Manual check** on the hyperalumni stack (WooCommerce and NextGEN) and the hyperonline stack (neither): activate `hyperpress-event`; create series "Bar Crawl" and two events; check `/event/bar-crawl-2026/` full-screen layout with breadcrumbs and no sidebar (add minimal theme CSS only if the breadcrumbs look wrong), `/event/bar-crawl/` redirect, `/event/series/bar-crawl/`, the Events page with `[hyperpress_event_list]`, `/events/` subpages unchanged, the series menu box, the front page countdown, a ticket purchase to checkout, a sold-out product, photos with one and several galleries; for a one-gallery event with more than 6 images, click NextGEN's pagination and confirm the page updates in place without a reload and without breaking the wrapper ids (`ngg-galleryoverview` and the `ngg-gallery-…` anchor), then use "View more"; confirm hyperonline shows no ticket or gallery fields.
+- [x] **Step 5:** Add the `> **STATUS: ✅ COMPLETED**` banner to this plan.
+- [x] **Step 6: Commit** `docs(event): document the event plugin` with the changed docs paths.
 
 ## Task 17: Fix the defects found by the smoke test
 
@@ -355,13 +357,24 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - [x] **I1:** the plugin content template applies only to the singular event being viewed, not to events listed in a loop (`Single::content_template`).
 - [x] **I2:** deactivation unregisters the types, flushes the rules and clears the rewrite-version option (`Plugin::deactivate`, `register_deactivation_hook`).
 - [x] **I3:** the series edit screen warns when an event has the same slug (`Slugs::conflict_notice`).
-- [x] **I4:** `Countdown::render()` returns nothing for an event that is over.
+- [x] **I4 (reversed by the owner in Task 19):** `Countdown::render()` returned nothing for an event that is over; Task 19 keeps the countdown on the event's page, held at zero.
 - [x] **M1-M8:** rewrite flush keyed on version plus `RULES_REVISION`; meta/post cache priming in `Listing` and `Alias`; gallery options built only in the admin; `checkout_redirect` takes mixed; WooCommerce notices above the ticket rows; plain permalinks keep the series archive link in menus; `plugins/AGENTS.md` settings sentence corrected; truthful phpcs comment in `templates/series.php`; stale `MenusTest` request fixed; `show` normalised with `strtolower( trim() )`.
 - [x] **Commit** `fix(event): address the final review findings`.
+
+## Task 19: Owner follow-ups after the final review
+
+**Goal:** three small changes after the final review (tests first).
+
+- [x] **Past event keeps its countdown, at zero (reverses I4):** `Countdown::render()` no longer returns `''` for an event that is over. When `Dates::is_over()` it passes `past_zero => false` whatever the Events setting says (between start and end the setting still applies). The front page never offers a past event. `plugins/AGENTS.md` and the spec are updated; `CountdownTest` replaces the I4 tests.
+- [x] **M9:** `FrontpageCountdown::candidates` skips events that are over, so past events do not stay candidates forever (behaviour otherwise unchanged: the window already closed at the end). `test_a_past_event_is_not_offered_but_a_running_one_is`.
+- [x] **Test hygiene:** `PhotosTest::tear_down` unsets `$GLOBALS['post']` again next to `$GLOBALS['current_screen']` (`FieldsTest` never set `post`, so it only needs the screen unset it already has).
+- [x] **Commit** `fix(event): keep the finished countdown at zero and prune past events`.
 
 ## Known follow-ups
 
 - A per-event "hide from the front page" switch, a buttons/links repeater, a season link, and an importer for old Page-based events were left out on purpose (spec non-goals).
+- Owner checks that need a browser (see the banner): NextGEN AJAX pagination and the breadcrumb layout in `.full-screen`.
+- On a NextGEN gallery page 2 (`nggallery/page/2`) the "View more" button is still rendered and links to the same page; consider hiding it when the request is already paged.
 
 ## Spike findings (Task 14)
 

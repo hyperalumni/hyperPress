@@ -19,6 +19,7 @@ final class FrontpageCountdownTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
+		remove_all_filters( 'hyperpress_event_now' );
 		delete_option( Settings::OPTION );
 		update_option( 'timezone_string', '' );
 		$GLOBALS['wp_scripts'] = null;
@@ -72,6 +73,7 @@ final class FrontpageCountdownTest extends WP_UnitTestCase {
 		update_option( 'timezone_string', 'America/New_York' );
 		update_option( Settings::OPTION, array( Settings::FRONTPAGE => '1', Settings::FRONTPAGE_LEAD_DAYS => '3' ) );
 		$this->event( '2026-11-02 09:00' );
+		add_filter( 'hyperpress_event_now', fn(): DateTimeImmutable => $this->moment( '2026-10-01 08:00' ) );
 
 		$this->assertSame( '2026-10-30 09:00', $this->candidates()[0]['show_from']->format( 'Y-m-d H:i' ) );
 	}
@@ -113,5 +115,16 @@ final class FrontpageCountdownTest extends WP_UnitTestCase {
 		$picked = Countdowns::pick( $list, $this->moment( '2030-03-01 00:00:00' ) );
 
 		$this->assertSame( "event-$id", $picked['id'] );
+	}
+
+	public function test_a_past_event_is_not_offered_but_a_running_one_is(): void {
+		$past    = $this->event( '2030-03-01 09:00', '2030-03-02 17:00' );
+		$running = $this->event( '2030-03-10 09:00', '2030-03-12 17:00' );
+		add_filter( 'hyperpress_event_now', fn(): DateTimeImmutable => $this->moment( '2030-03-11 08:00' ) );
+
+		$ids = array_column( $this->candidates(), 'id' );
+
+		$this->assertSame( array( "event-$running" ), $ids );
+		$this->assertNotContains( "event-$past", $ids );
 	}
 }

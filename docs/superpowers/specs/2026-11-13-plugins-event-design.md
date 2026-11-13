@@ -27,7 +27,7 @@ The `/events/` Page stays exactly as it is: the hub of the events section (intro
 - No season link, schedule days repeater, RSVP/ticketing outside WooCommerce, calendar feed or map in this version.
 - No structured buttons/links repeater: the Facebook/Partiful/"Event Info" buttons stay hand-written in the content.
 - The theme must not name the plugin. Plugins stay independent: `hyperpress-event` must not hard-require WooCommerce, NextGEN or `hyperpress-frontpage`.
-- Must never print two front-page countdowns, never show a past event's countdown, and never leave an empty banner behind a section that has nothing to show.
+- Must never print two front-page countdowns, never offer a past event on the front page, and never leave an empty banner behind a section that has nothing to show.
 
 ## Approaches
 
@@ -95,8 +95,8 @@ Subtitle resolution on an event: the event's `subtitle`, then the settings `fall
 
 ## Countdown and front page
 
-- `[hyperpress_event_countdown id?]` (id optional, defaults to the current event) renders through `HyperPress\Countdown\Renderer::render()`; there is no second rendering path. Arguments: heading = event title, location = venue name, `past_zero` from the setting (also between start and end), slug `event-<ID>`, show date on. Renders nothing when the event has no start or is already over (a past event's page shows no countdown).
-- Front page: a `FrontpageCountdown` class (as in Competition) appends one candidate per published `hyper_event` with a start: `id` `event-<ID>`, `start` = the event start, `show_from` = start minus `frontpage_lead_days` (site timezone), `show_until` = the event's end (hard), `fallback_after` absent, `priority` 10, `render` = the shortcode path above. Private and start-less events are not offered. The filter does nothing when the setting is off or `hyperpress-frontpage` is inactive.
+- `[hyperpress_event_countdown id?]` (id optional, defaults to the current event) renders through `HyperPress\Countdown\Renderer::render()`; there is no second rendering path. Arguments: heading = event title, location = venue name, `past_zero` from the setting between start and end (and before the start), slug `event-<ID>`, show date on. Renders nothing when the event has no start. The shortcode shows the countdown on the event's own page, held at zero (`past_zero` false whatever the setting) once the event is over, so it never counts up for months.
+- Front page: a `FrontpageCountdown` class (as in Competition) appends one candidate per published `hyper_event` with a start: `id` `event-<ID>`, `start` = the event start, `show_from` = start minus `frontpage_lead_days` (site timezone), `show_until` = the event's end (hard), `fallback_after` absent, `priority` 10, `render` = the shortcode path above. Private, start-less and past (over) events are not offered. The filter does nothing when the setting is off or `hyperpress-frontpage` is inactive.
 - This fulfils the follow-up named in the 2026-11-02 front-page countdown spec ("the `hyperpress-event` plugin can be added later by hooking the same filter"); update that spec's notes in the same change.
 
 ## Page layout
