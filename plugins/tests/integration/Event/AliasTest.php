@@ -197,10 +197,30 @@ final class AliasTest extends WP_UnitTestCase {
 		$this->assertSame( array(), $this->redirects );
 	}
 
-	public function test_register_hooks_at_priority_5(): void {
-		remove_action( 'template_redirect', array( Alias::class, 'maybe_redirect' ), 5 );
+	public function test_register_hooks_at_priority_0(): void {
+		remove_action( 'template_redirect', array( Alias::class, 'maybe_redirect' ), 0 );
 		Alias::register();
 
-		$this->assertSame( 5, has_action( 'template_redirect', array( Alias::class, 'maybe_redirect' ) ) );
+		$this->assertSame( 0, has_action( 'template_redirect', array( Alias::class, 'maybe_redirect' ) ) );
+	}
+
+	public function test_alias_redirects_before_a_priority_1_callback_runs(): void {
+		$this->event( 'bar-crawl-2026', '2026-10-01 20:00' );
+		remove_all_actions( 'template_redirect' );
+		$seen_at_probe = null;
+		add_action(
+			'template_redirect',
+			function () use ( &$seen_at_probe ): void {
+				$seen_at_probe = count( $this->redirects );
+			},
+			1
+		);
+		Alias::register();
+		$this->go_to( '/event/bar-crawl/' );
+
+		do_action( 'template_redirect' );
+
+		$this->assertSame( 1, $seen_at_probe, 'Alias did not redirect before the priority 1 callback ran' );
+		$this->assertCount( 1, $this->redirects );
 	}
 }

@@ -52,7 +52,7 @@ The `/events/` Page stays exactly as it is: the hub of the events section (intro
 
 ### Evergreen alias `/event/<series-slug>/`
 
-- Handled on `template_redirect` at a priority before `redirect_canonical` (priority 10), only when the request is a 404 for post type `hyper_event`, with `name` equal to the slug of an existing `hyper_event_series` term. Core's own 404 guess (a prefix match on the slug) would otherwise pick an arbitrary `bar-crawl-YYYY`, so ours must run first and be deterministic.
+- Handled on `template_redirect` at a priority before `redirect_canonical` (priority 10), only when the request is a 404 for post type `hyper_event`, with `name` equal to the slug of an existing `hyper_event_series` term. Core's own 404 guess (a prefix match on the slug) would otherwise pick an arbitrary `bar-crawl-YYYY`, so ours must run first and be deterministic. The implementation uses priority 0: NextGEN Gallery's router calls `redirect_canonical()` itself at priority 1, so any later priority is bypassed when NextGEN is active.
 - Target: among published events in the series, the one with the nearest upcoming end (an event is upcoming while now is before its end), otherwise the one with the latest start. Ties: lowest post ID. No published events: no redirect, normal 404.
 - Response: a temporary (302) redirect to the event permalink, because the target changes over time.
 - A real event whose slug equals a series slug wins (the alias only runs on a 404). The series edit screen shows a notice when an event with the same slug exists.

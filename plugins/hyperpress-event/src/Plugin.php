@@ -38,8 +38,10 @@ final class Plugin {
 	}
 
 	public static function register(): void {
-		PostTypeRegistrar::register( self::definition() );
+		// The series first: its permastruct sits earlier in the rewrite rules, so `event/series/<term>/` matches before
+		// the post type's attachment rule `event/[^/]+/([^/]+)/?$` (which would 404 it).
 		TaxonomyRegistrar::register( self::series_definition() );
+		PostTypeRegistrar::register( self::definition() );
 		TaxonomyAdminFilter::register( self::SERIES, static fn(): string => __( 'All series', 'hyperpress' ) );
 	}
 

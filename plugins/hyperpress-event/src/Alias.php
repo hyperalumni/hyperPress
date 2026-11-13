@@ -12,8 +12,9 @@ use WP_Term;
 final class Alias {
 
 	public static function register(): void {
-		// Priority 5: before redirect_canonical (10) makes core's arbitrary slug-prefix guess for the 404.
-		add_action( 'template_redirect', array( self::class, 'maybe_redirect' ), 5 );
+		// Priority 0: before redirect_canonical makes core's arbitrary slug-prefix guess for the 404. Other plugins call it
+		// early (NextGEN Gallery's Router does at priority 1), so 5 was too late.
+		add_action( 'template_redirect', array( self::class, 'maybe_redirect' ), 0 );
 	}
 
 	/**

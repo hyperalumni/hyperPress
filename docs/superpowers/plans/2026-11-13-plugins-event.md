@@ -219,7 +219,7 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 
 **Interfaces:**
 
-- Produces: `Alias::target( WP_Term $series, ?DateTimeImmutable $now = null ): ?int` (post ID), `Alias::register(): void`, `Alias::maybe_redirect(): void` (on `template_redirect` priority 5).
+- Produces: `Alias::target( WP_Term $series, ?DateTimeImmutable $now = null ): ?int` (post ID), `Alias::register(): void`, `Alias::maybe_redirect(): void` (on `template_redirect` priority 0).
 
 - [x] **Step 1: Write the failing tests** (capture redirects with the `wp_redirect` filter returning false, which makes `wp_safe_redirect()` return false so no `exit`): `test_nearest_upcoming_wins`; `test_latest_past_when_none_upcoming`; `test_tie_goes_to_the_lowest_id`; `test_unpublished_events_are_ignored`; `test_series_without_published_events_stays_a_404`; `test_runs_before_the_core_guess` (events `bar-crawl-2025` past with the lower ID and `bar-crawl-2026` upcoming: the redirect goes to 2026); `test_a_real_event_with_the_series_slug_is_served_directly`; `test_unrelated_404_is_untouched` (`/event/nothing/`) and `test_mixed_case_alias_redirects` (`/event/Bar-Crawl/`, Review Focus 4); `test_status_is_302`.
 - [x] **Step 2:** Run `--filter AliasTest`; expect FAIL.
@@ -330,6 +330,23 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - [ ] **Step 4: Manual check** on the hyperalumni stack (WooCommerce and NextGEN) and the hyperonline stack (neither): activate `hyperpress-event`; create series "Bar Crawl" and two events; check `/event/bar-crawl-2026/` full-screen layout with breadcrumbs and no sidebar (add minimal theme CSS only if the breadcrumbs look wrong), `/event/bar-crawl/` redirect, `/event/series/bar-crawl/`, the Events page with `[hyperpress_event_list]`, `/events/` subpages unchanged, the series menu box, the front page countdown, a ticket purchase to checkout, a sold-out product, photos with one and several galleries; for a one-gallery event with more than 6 images, click NextGEN's pagination and confirm the page updates in place without a reload and without breaking the wrapper ids (`ngg-galleryoverview` and the `ngg-gallery-…` anchor), then use "View more"; confirm hyperonline shows no ticket or gallery fields.
 - [ ] **Step 5:** Add the `> **STATUS: ✅ COMPLETED**` banner to this plan.
 - [ ] **Step 6: Commit** `docs(event): document the event plugin` with the changed docs paths.
+
+## Task 17: Fix the defects found by the smoke test
+
+**Goal:** the smoke test on a scratch stack (`.superpowers/sdd/2026-11-13-plugins-event/task-16b-report.md`) found two real defects that the unit and integration suites missed.
+
+1. The evergreen alias `/event/bar-crawl/` answered a 301 to `/event/bar-crawl-2025/` when NextGEN Gallery was active: its `Router::restore_request_uri` runs on `template_redirect` priority 1 and calls `redirect_canonical()` (core's 404 prefix guess) before `Alias::maybe_redirect` (priority 5). Fix: hook the alias at priority 0.
+2. The series archive `/event/series/<term>/` was unreachable: the post type's attachment rule `event/[^/]+/([^/]+)/?$` was registered before the taxonomy's rules and matched first (404, then core's guess 301). Fix: register the taxonomy before the post type in `Plugin::register()`. The earlier tests only checked that the rules exist, not which one matches first.
+
+**Files:**
+
+- Modify: `plugins/hyperpress-event/src/Plugin.php`, `plugins/hyperpress-event/src/Alias.php`, `plugins/tests/integration/Event/AliasTest.php`, `plugins/AGENTS.md`, the spec's alias section, this plan (Task 6/alias priority text)
+- Create: `plugins/tests/integration/Event/SeriesRoutingTest.php`
+
+- [x] **Step 1:** Write `SeriesRoutingTest` (pretty permalinks, `go_to( home_url( ... ) )`: series archive and `/page/2/` resolve as `is_tax()` with `RequestTerm`, no attachment var; a single event still resolves) and the alias tests (priority 0; the alias redirect is issued before a priority 1 callback runs). Run; expect FAIL.
+- [x] **Step 2:** Register the taxonomy before the post type; hook `Alias::maybe_redirect` at priority 0; update the docs that state priority 5.
+- [x] **Step 3:** Run the new tests, then `test:unit`, `test:integration` and `lint`; all green.
+- [x] **Step 4: Commit** `fix(event): run the alias before nextgen and put the series rules first`.
 
 ## Known follow-ups
 
