@@ -186,11 +186,11 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Produces: `Listing::ids( string $series = '', string $show = 'all', int $limit = 0, ?DateTimeImmutable $now = null ): array<int>` (upcoming means not yet over, soonest start first, then past, newest start first; events without a start last); `Listing::html( array $ids ): string`; `ListShortcode::SHORTCODE = 'hyperpress_event_list'` (attributes `series`, `show`, `limit`); `SeriesArchive::register(): void`.
 
-- [ ] **Step 1: Write the failing tests:** `test_order_is_upcoming_then_past`; `test_show_upcoming_past_all_and_unknown_means_all`; `test_series_filter_and_unknown_series_is_empty`; `test_limit_applies_after_ordering_and_negative_means_none`; `test_drafts_private_and_trashed_are_excluded`; `test_shortcode_markup_has_title_link_date_venue_and_thumbnail_when_present`; `test_shortcode_is_empty_without_events`; `test_series_archive_uses_the_plugin_template_and_order` (main query on `is_tax( 'hyper_event_series' )` is ordered by `post__in` from `Listing::ids`, and page 2 of a paginated archive holds the next ids); `test_series_banner_uses_the_term_name_and_fallback_subtitle` (the theme's priority 80 and 90 fallbacks do not replace it).
-- [ ] **Step 2:** Run `--filter ListingTest`; expect FAIL.
-- [ ] **Step 3: Implement.** `SeriesArchive` hooks `pre_get_posts` (series main query: `post__in` = `Listing::ids( slug )`, or `array( 0 )` when empty, `orderby` `post__in`), `hyperpress_posts_template` and `hyperpress_banner_content` at priority 10. Pattern: `hyperpress-competition/src/Listing.php` and `Competitions.php`.
-- [ ] **Step 4:** Run the filter and lint; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): add event list shortcode and series archive`.
+- [x] **Step 1: Write the failing tests:** `test_order_is_upcoming_then_past`; `test_show_upcoming_past_all_and_unknown_means_all`; `test_series_filter_and_unknown_series_is_empty`; `test_limit_applies_after_ordering_and_negative_means_none`; `test_drafts_private_and_trashed_are_excluded`; `test_shortcode_markup_has_title_link_date_venue_and_thumbnail_when_present`; `test_shortcode_is_empty_without_events`; `test_series_archive_uses_the_plugin_template_and_order` (main query on `is_tax( 'hyper_event_series' )` is ordered by `post__in` from `Listing::ids`, and page 2 of a paginated archive holds the next ids); `test_series_banner_uses_the_term_name_and_fallback_subtitle` (the theme's priority 80 and 90 fallbacks do not replace it).
+- [x] **Step 2:** Run `--filter ListingTest`; expect FAIL.
+- [x] **Step 3: Implement.** `SeriesArchive` hooks `pre_get_posts` (series main query: `post__in` = `Listing::ids( slug )`, or `array( 0 )` when empty, `orderby` `post__in`), `hyperpress_posts_template` and `hyperpress_banner_content` at priority 10. Pattern: `hyperpress-competition/src/Listing.php` and `Competitions.php`.
+- [x] **Step 4:** Run the filter and lint; expect PASS.
+- [x] **Step 5: Commit** `feat(event): add event list shortcode and series archive`.
 
 ## Task 10: Evergreen alias redirect
 

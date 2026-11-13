@@ -27,6 +27,8 @@ final class Plugin {
 		FrontpageCountdown::register();
 		Appearance::register();
 		Single::register();
+		ListShortcode::register();
+		SeriesArchive::register();
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 	}
 
