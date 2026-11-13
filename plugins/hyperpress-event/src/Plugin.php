@@ -21,6 +21,8 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'ensure_capabilities' ), 20 );
 		Slugs::register();
 		Rewrite::register();
+		SettingsPage::register();
+		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 	}
 
 	public static function register(): void {

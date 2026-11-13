@@ -69,17 +69,17 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Produces: `Settings::OPTION = 'hyperpress_event'`; constants `DEFAULT_BANNER_COLOR`, `FALLBACK_SUBTITLE`, `HUB_PAGE`, `FRONTPAGE`, `FRONTPAGE_LEAD_DAYS`, `COUNTDOWN_PAST_ZERO` (values `hyperpress_event_default_banner_color`, `hyperpress_event_fallback_subtitle`, `hyperpress_event_hub_page`, `hyperpress_event_frontpage`, `hyperpress_event_frontpage_lead_days`, `hyperpress_event_countdown_past_zero`); `Settings::default_banner_color(): string` (hex or ''), `fallback_subtitle(): string`, `hub_page_id(): int` (0 unless a published Page), `frontpage_enabled(): bool`, `frontpage_lead_days(): int` (0 to 365, default 21), `past_zero(): bool`, `Settings::default_option( mixed $value, string $option, mixed $default ): mixed`; `SettingsPage::ID = 'hyperpress_event'`, `SettingsPage::register(): void`.
 
-- [ ] **Step 1: Write the failing tests** (`SettingsTest`):
+- [x] **Step 1: Write the failing tests** (`SettingsTest`):
   - `test_defaults_without_saved_row`: frontpage on, lead days 21, past zero off, colour '' , subtitle '', hub 0.
   - `test_saved_row_without_checkbox_key_means_off`: `update_option( OPTION, array() )` makes `frontpage_enabled()` false.
   - `test_lead_days_range`: `'30'` gives 30, `'0'` gives 0, `'366'`, `'-1'`, `'abc'` give 21.
   - `test_color_accepts_hex_only`: `#F15623` kept, `red` gives ''.
   - `test_hub_page_must_be_a_published_page`: draft page, trashed page, a post ID and a missing ID all give 0.
   - `test_settings_page_is_under_the_hyperpress_menu`: `apply_filters( 'mb_settings_pages', array() )` contains id `hyperpress_event` with `parent` `AdminMenu::SLUG`.
-- [ ] **Step 2:** Run `--filter SettingsTest`; expect FAIL.
-- [ ] **Step 3: Implement** following `hyperpress-competition/src/Settings.php` and `SettingsPage.php` (default-option filter on `default_option_hyperpress_event`, accessor sanitising). `SettingsPage::pages()` adds the page with `ArchiveBannerSettings::page( ID, OPTION, __( 'Events', 'hyperpress' ) )`. The meta box with the six fields on that page is registered in Task 3's `Fields` class (id `hyperpress_event_settings_box`, `settings_pages` `SettingsPage::ID`; a colour field, text field, `post` field restricted to `page`, two checkboxes, one number field 0 to 365).
-- [ ] **Step 4:** Run `SettingsTest` and `IdentifierConventionTest`; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): add events settings`.
+- [x] **Step 2:** Run `--filter SettingsTest`; expect FAIL.
+- [x] **Step 3: Implement** following `hyperpress-competition/src/Settings.php` and `SettingsPage.php` (default-option filter on `default_option_hyperpress_event`, accessor sanitising). `SettingsPage::pages()` adds the page with `ArchiveBannerSettings::page( ID, OPTION, __( 'Events', 'hyperpress' ) )`. The meta box with the six fields on that page is registered in Task 3's `Fields` class (id `hyperpress_event_settings_box`, `settings_pages` `SettingsPage::ID`; a colour field, text field, `post` field restricted to `page`, two checkboxes, one number field 0 to 365).
+- [x] **Step 4:** Run `SettingsTest` and `IdentifierConventionTest`; expect PASS.
+- [x] **Step 5: Commit** `feat(event): add events settings`.
 
 ## Task 3: Event fields, integrations switch and dates
 
