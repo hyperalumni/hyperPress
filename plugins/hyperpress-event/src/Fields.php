@@ -104,7 +104,7 @@ final class Fields {
 				'desc'        => __( 'NextGEN galleries shown on this event.', 'hyperpress' ),
 				'type'        => 'select_advanced',
 				'multiple'    => true,
-				'options'     => self::gallery_options(),
+				'options'     => Galleries::options(),
 				'placeholder' => __( 'Select galleries', 'hyperpress' ),
 			);
 		}
@@ -175,20 +175,5 @@ final class Fields {
 				),
 			),
 		);
-	}
-
-	/**
-	 * Gallery choices (ID => title) from Galleries::options(), or none until that class exists.
-	 *
-	 * @return array<int|string,string>
-	 */
-	private static function gallery_options(): array {
-		$galleries = __NAMESPACE__ . '\\Galleries';
-		if ( ! class_exists( $galleries ) || ! method_exists( $galleries, 'options' ) ) {
-			return array();
-		}
-		$options = $galleries::options();
-
-		return is_array( $options ) ? $options : array();
 	}
 }

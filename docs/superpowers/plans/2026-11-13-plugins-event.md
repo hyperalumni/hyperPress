@@ -276,7 +276,7 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - Produces (final, from the Task 14 findings; see "Spike findings (Task 14)" at the end of this plan for the exact shortcode strings and traps): `Galleries::options(): array<int,string>` (id to title from `{$wpdb->prefix}ngg_gallery`, `name` when `title` is empty), `Galleries::existing( array $ids ): array<int>`, `Galleries::image_count( int $id ): int` (non-excluded rows of `{$wpdb->prefix}ngg_pictures`); `NextGenShortcodes::single( int $id, int $limit = 6 ): string` (`[ngg source="galleries" ids="{id}" display="basic_thumbnail" images_per_page="{limit}"…]`), `NextGenShortcodes::album( array $ids ): string` (`[ngg source="albums" gallery_ids="1,2" display="basic_compact_album"…]`, never `src=`), `NextGenShortcodes::template( string $file ): string` (the ` template="…"` fragment, empty unless the parent theme has `nggallery/{file}`, filter `hyperpress_event_nextgen_template`), `NextGenShortcodes::more_url( string $permalink, int $page = 2 ): string` (pretty permalinks: `trailingslashit( $permalink ) . 'nggallery/page/' . $page`; plain: `add_query_arg( 'nggpage', $page, $permalink )`); `PhotosBlock::html( array $gallery_ids, bool $over, string $banner, string $permalink, string $anchor ): string` (pure: the caller passes the permalink and anchor); `Photos::SHORTCODE = 'hyperpress_event_photos'`, `Photos::register(): void`, `Photos::shortcode( $atts ): string` (reads the current post: `get_permalink()` for the permalink, the `anchor` attribute with default `photos` for the anchor, and passes both to `PhotosBlock::html()`).
 - "View more" is deliberately shown only for a single selected gallery with more than the limit (6) non-excluded images; several galleries never get one (the album tiles are the links).
 
-- [ ] **Step 1: Write the failing tests** (a temporary `ngg_gallery` table is created in the test; `pre_do_shortcode_tag` fakes the `ngg` shortcode):
+- [x] **Step 1: Write the failing tests** (a temporary `ngg_gallery` table is created in the test; `pre_do_shortcode_tag` fakes the `ngg` shortcode):
   - `test_options_and_existing`: options from the table, `existing` drops IDs that are not in it.
   - `test_one_gallery_uses_the_single_display_with_a_limit_and_a_view_more_link` (more than 6 images in the fake table); `test_no_view_more_at_or_below_the_limit` (exactly 6 and fewer images); `test_several_galleries_use_the_album_display`.
   - `test_more_url_uses_the_nggallery_page_path_with_pretty_permalinks` and `test_more_url_uses_the_nggpage_query_argument_with_plain_permalinks` (toggle the `permalink_structure` option); `test_view_more_link_is_the_current_post_permalink_plus_page_2_and_the_anchor` (the test sets the current post, since `Photos::shortcode()` reads it).
@@ -284,10 +284,10 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
   - `test_no_gallery_and_event_not_over_prints_check_back_after_the_event`; `test_no_gallery_and_event_over_prints_nothing`; `test_selected_gallery_shows_whatever_the_date`.
   - `test_deleted_gallery_ids_fall_back_to_the_no_gallery_state` (Review Focus 5).
   - `test_empty_when_nextgen_inactive` and `test_empty_outside_an_event_without_notices` (Review Focus 3); `test_prints_its_own_banner_with_default_title_photos`.
-- [ ] **Step 2:** Run `--filter PhotosTest`; expect FAIL.
-- [ ] **Step 3: Implement** per "Spike findings (Task 14)" (shortcode strings, `do_shortcode()` inside the callback, the `template` guard, the `more_url()` recipe). Keep NextGEN's wrapper ids and classes untouched (theme `AGENTS.md`). Replace the `Galleries::options()` guard in `Fields` with the real call.
-- [ ] **Step 4:** Run the filter and lint; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): add the event photos block`.
+- [x] **Step 2:** Run `--filter PhotosTest`; expect FAIL.
+- [x] **Step 3: Implement** per "Spike findings (Task 14)" (shortcode strings, `do_shortcode()` inside the callback, the `template` guard, the `more_url()` recipe). Keep NextGEN's wrapper ids and classes untouched (theme `AGENTS.md`). Replace the `Galleries::options()` guard in `Fields` with the real call.
+- [x] **Step 4:** Run the filter and lint; expect PASS.
+- [x] **Step 5: Commit** `feat(event): add the event photos block`.
 
 ## Task 16: Docs, full verification and manual check
 
