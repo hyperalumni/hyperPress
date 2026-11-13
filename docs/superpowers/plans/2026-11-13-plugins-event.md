@@ -108,13 +108,13 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - Consumes: `Dates`, `Settings`, `Fields`; `HyperPress\Countdown\Renderer::render( DateTimeImmutable $when, array $args ): string` (args `name`, `location`, `past_zero`, `slug`, `show_date`).
 - Produces: `Countdown::SHORTCODE = 'hyperpress_event_countdown'`, `Countdown::register(): void`, `Countdown::shortcode( $atts ): string`, `Countdown::render( int $id ): string`; `FrontpageCountdown::register(): void`, `FrontpageCountdown::candidates( array $candidates ): array` (filter `hyperpress_frontpage_countdown_candidates`).
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - `CountdownTest`: `test_explicit_id_renders_through_the_shared_renderer` (output has the event title, venue name and a `data-date` attribute; the element id starts `event-<id>`); `test_no_id_uses_the_current_event`; `test_past_zero_follows_the_setting`; `test_empty_without_a_start`; `test_empty_for_a_draft_or_other_post_type`; `test_empty_outside_an_event_without_notices` (a Page as the current post, Review Focus 3).
   - `FrontpageCountdownTest`: `test_candidate_shape_and_window` (id `event-<ID>`, `start` the event start, `show_from` = start minus 21 days, `show_until` = the event end, no `fallback_after`, priority 10, `render` returns the countdown HTML); `test_lead_days_keep_wall_clock_across_dst` (start `2026-11-02 09:00` New York, lead 3: `show_from` is `2026-10-30 09:00`); `test_skipped_when_setting_off_no_start_draft_or_private`; `test_end_of_day_window_when_no_end`; `test_earliest_start_wins_against_a_competition_candidate` (pass an event candidate and a synthetic one to `HyperPress\Frontpage\Countdowns::pick`).
-- [ ] **Step 2:** Run both filters; expect FAIL.
-- [ ] **Step 3: Implement** after `hyperpress-competition/src/Countdown.php` and `FrontpageCountdown.php` (read both). Use `Settings::frontpage_lead_days()` with a `DateInterval` subtraction on the tz-aware start; query published `hyper_event` posts only.
-- [ ] **Step 4:** Run the filters and lint; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): add event countdown and front page candidates`.
+- [x] **Step 2:** Run both filters; expect FAIL.
+- [x] **Step 3: Implement** after `hyperpress-competition/src/Countdown.php` and `FrontpageCountdown.php` (read both). Use `Settings::frontpage_lead_days()` with a `DateInterval` subtraction on the tz-aware start; query published `hyper_event` posts only.
+- [x] **Step 4:** Run the filters and lint; expect PASS.
+- [x] **Step 5: Commit** `feat(event): add event countdown and front page candidates`.
 
 ## Task 5: Theme full-screen filter
 
