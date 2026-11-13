@@ -1,10 +1,13 @@
 <?php
+namespace HyperPress\Tests\Integration\Event;
+
 use HyperPress\Event\Fields;
 use HyperPress\Event\Plugin;
 use HyperPress\Event\Settings;
 use HyperPress\Event\SettingsPage;
+use WP_UnitTestCase;
 
-class Event_FieldsTest extends WP_UnitTestCase {
+final class FieldsTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		remove_all_filters( 'hyperpress_event_woocommerce_active' );

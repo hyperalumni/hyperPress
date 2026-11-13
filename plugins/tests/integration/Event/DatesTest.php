@@ -1,8 +1,12 @@
 <?php
+namespace HyperPress\Tests\Integration\Event;
+
+use DateTimeImmutable;
 use HyperPress\Event\Dates;
 use HyperPress\Event\Fields;
+use WP_UnitTestCase;
 
-class Event_DatesTest extends WP_UnitTestCase {
+final class DatesTest extends WP_UnitTestCase {
 
 	private int $post_id;
 
