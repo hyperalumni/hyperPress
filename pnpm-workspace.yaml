@@ -30,7 +30,7 @@ catalog:
 catalogs:
   # Foundation theme (gulp/webpack legacy stack); removable as one block
   foundation:
-    '@babel/core': 8.1.0
+    '@babel/core': 8.1.2
     '@babel/preset-env': 8.0.7
     ansi-colors: 4.1.3
     babel-loader: 10.1.1
