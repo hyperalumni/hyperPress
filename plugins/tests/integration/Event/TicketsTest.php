@@ -259,7 +259,7 @@ final class TicketsTest extends WP_UnitTestCase {
 	public function test_no_notice_markup_without_woocommerce_notices(): void {
 		$html = TicketsBlock::html( array( $this->ticket( 5 ) ), $this->event() );
 
-		$this->assertStringStartsWith( '<div class="hyperpress-event-tickets content"><div class="hyperpress-event-ticket">', $html );
+		$this->assertStringStartsWith( '<div class="hyperpress-event-tickets"><div class="hyperpress-event-ticket">', $html );
 	}
 
 	public function test_woocommerce_notices_are_printed_above_the_rows(): void {

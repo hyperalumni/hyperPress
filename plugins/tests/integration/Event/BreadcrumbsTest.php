@@ -111,6 +111,23 @@ final class BreadcrumbsTest extends WP_UnitTestCase {
 		$this->assertSame( array( 'Camp', 'Spring Open' ), $this->titles( Breadcrumbs::filter( array() ) ) );
 	}
 
+	public function test_hub_crumb_uses_the_events_page_without_a_setting(): void {
+		$events = self::factory()->post->create(
+			array(
+				'post_type'  => 'page',
+				'post_name'  => 'events',
+				'post_title' => 'Events',
+			)
+		);
+		$id     = $this->event();
+		$this->go_to( get_permalink( $id ) );
+
+		$items = Breadcrumbs::filter( array() );
+
+		$this->assertSame( array( 'Events', 'Spring Open' ), $this->titles( $items ) );
+		$this->assertSame( get_permalink( $events ), $items[0]['url'] );
+	}
+
 	public function test_event_without_a_series_skips_that_crumb(): void {
 		$this->hub();
 		$id = $this->event();

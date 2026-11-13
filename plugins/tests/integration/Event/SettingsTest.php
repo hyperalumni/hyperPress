@@ -71,6 +71,40 @@ final class SettingsTest extends WP_UnitTestCase {
 		}
 	}
 
+	private function events_page( array $args = array() ): int {
+		return self::factory()->post->create( array_merge( array( 'post_type' => 'page', 'post_name' => 'events' ), $args ) );
+	}
+
+	public function test_hub_page_falls_back_to_the_events_page(): void {
+		$events = $this->events_page();
+		$this->assertSame( $events, Settings::hub_page_id() );
+
+		// An invalid configured page falls back too.
+		$draft = self::factory()->post->create( array( 'post_type' => 'page', 'post_status' => 'draft' ) );
+		update_option( Settings::OPTION, array( Settings::HUB_PAGE => $draft ) );
+		$this->assertSame( $events, Settings::hub_page_id() );
+		update_option( Settings::OPTION, array( Settings::HUB_PAGE => 999999 ) );
+		$this->assertSame( $events, Settings::hub_page_id() );
+	}
+
+	public function test_configured_hub_page_wins_over_the_events_page(): void {
+		$this->events_page();
+		$chosen = self::factory()->post->create( array( 'post_type' => 'page' ) );
+		update_option( Settings::OPTION, array( Settings::HUB_PAGE => $chosen ) );
+
+		$this->assertSame( $chosen, Settings::hub_page_id() );
+	}
+
+	public function test_a_draft_events_page_is_ignored(): void {
+		$this->events_page( array( 'post_status' => 'draft' ) );
+		$this->assertSame( 0, Settings::hub_page_id() );
+	}
+
+	public function test_an_events_post_of_another_type_is_not_a_hub(): void {
+		self::factory()->post->create( array( 'post_type' => 'post', 'post_name' => 'events' ) );
+		$this->assertSame( 0, Settings::hub_page_id() );
+	}
+
 	public function test_settings_page_is_under_the_hyperpress_menu(): void {
 		$pages = array_values(
 			array_filter(

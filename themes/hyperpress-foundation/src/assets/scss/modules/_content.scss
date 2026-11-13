@@ -24,18 +24,35 @@
       @include xy-cell(12, $output: (base size));
       width: 100%;
 
-      // Full-screen strips the container padding, so give the breadcrumbs the same centred max-width and
-      // horizontal padding as the banner's .grid-container (the margin-bottom of .breadcrumbs is kept).
-      > .breadcrumbs {
-        @include xy-grid-container;
-        margin-top: 1rem;
+      // A single post in the full-screen layout (pages using it are left as they are): the breadcrumbs and every
+      // block of the entry content except the banners get the banner's .grid-container width and padding, so
+      // they line up with the banner titles; banners stay full-bleed.
+      .single & {
+        > .breadcrumbs {
+          @include xy-grid-container;
+          width: 100%;
+          margin-top: 1rem;
 
-        @include breakpoint(large) {
-          margin-top: 1.25rem;
+          @include breakpoint(large) {
+            margin-top: 1.25rem;
+          }
+
+          @include breakpoint(xlarge) {
+            margin-top: 1.5rem;
+          }
         }
 
-        @include breakpoint(xlarge) {
-          margin-top: 1.5rem;
+        .entry-content > *:not(.banner) {
+          @include xy-grid-container;
+          box-sizing: border-box;
+          width: 100%;
+        }
+
+        // The cells of a grid row already carry the gutter as margin, so the row itself takes no padding.
+        // `:not(.banner)` only matches the specificity of the rule above, which this one follows.
+        .entry-content > .grid-margin-x:not(.banner) {
+          padding-right: 0;
+          padding-left: 0;
         }
       }
 

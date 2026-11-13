@@ -67,17 +67,27 @@ final class Settings {
 	}
 
 	/**
-	 * The hub page ID: 0 unless the saved ID is a published Page.
+	 * The hub page ID: the configured page when it is a published Page, else the published Page at the path
+	 * `events` (the conventional hub), else 0.
 	 */
 	public static function hub_page_id(): int {
 		$value = self::value( self::HUB_PAGE );
 		$id    = is_int( $value ) ? $value : ( is_string( $value ) && 1 === preg_match( '/^\d+$/', trim( $value ) ) ? (int) trim( $value ) : 0 );
-		if ( $id <= 0 ) {
-			return 0;
+		if ( $id > 0 && self::is_published_page( get_post( $id ) ) ) {
+			return $id;
 		}
-		$page = get_post( $id );
+		$fallback = get_page_by_path( 'events' );
 
-		return $page instanceof \WP_Post && 'page' === $page->post_type && 'publish' === $page->post_status ? $id : 0;
+		return self::is_published_page( $fallback ) && $fallback instanceof \WP_Post ? $fallback->ID : 0;
+	}
+
+	/**
+	 * Whether a value is a published Page.
+	 *
+	 * @param mixed $page Candidate post.
+	 */
+	private static function is_published_page( mixed $page ): bool {
+		return $page instanceof \WP_Post && 'page' === $page->post_type && 'publish' === $page->post_status;
 	}
 
 	/**

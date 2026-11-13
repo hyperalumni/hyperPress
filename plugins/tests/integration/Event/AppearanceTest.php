@@ -90,6 +90,20 @@ final class AppearanceTest extends WP_UnitTestCase {
 		$this->assertSame( '#0000aa', Appearance::color( $this->event() ) );
 	}
 
+	public function test_colour_is_inherited_from_the_events_page_without_a_setting(): void {
+		// The page at the path `events` is top-level, so it is its own top-level ancestor.
+		$events = $this->page( array( 'post_name' => 'events' ) );
+		$this->assertSame( '', Appearance::color( $this->event() ) );
+
+		update_post_meta( $events, 'hyperpress_banner_background_color', '#00aa00' );
+		$this->assertSame( '#00aa00', Appearance::color( $this->event() ) );
+
+		// A configured hub wins over the /events/ page, and its own ancestor is used when it has no colour.
+		$top = $this->page( array(), '#aa0000' );
+		$this->set_hub( $this->page( array( 'post_parent' => $top ) ) );
+		$this->assertSame( '#aa0000', Appearance::color( $this->event() ) );
+	}
+
 	public function test_settings_default_wins_over_the_hub_colour(): void {
 		$this->set_hub( $this->page( array(), '#00aa00' ), array( Settings::DEFAULT_BANNER_COLOR => '#111111' ) );
 

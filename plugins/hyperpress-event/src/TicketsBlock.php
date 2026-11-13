@@ -24,7 +24,7 @@ final class TicketsBlock {
 			$rows .= self::row( $ticket, $event_id );
 		}
 
-		return self::notices() . '<div class="hyperpress-event-tickets content">' . $rows . '</div>';
+		return self::notices() . '<div class="hyperpress-event-tickets">' . $rows . '</div>';
 	}
 
 	/**
