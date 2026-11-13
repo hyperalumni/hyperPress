@@ -110,7 +110,7 @@ Subtitle resolution on an event: the event's `subtitle`, then the settings `fall
 ### Event single
 
 - `hyperpress_single_full_screen` returns true for `is_singular( 'hyper_event' )`. The plugin's `content_template` returns its `templates/content.php`, which prints `the_content()` and nothing structural.
-- The page's own banner (top of the page) comes from `hyperpress_banner_content` at priority 10 like other plugin banners, with the event title, the resolved subtitle, and the colour from the resolution below. `HyperPress\Utils\Banner` only reads a theme mod, so the event banner is built by filtering `hyperpress_banner_content` after it (builder confirms).
+- The page's own banner (top of the page) comes from `hyperpress_banner_content` at priority 10 like other plugin banners, with the event title, the resolved subtitle, and the colour from the resolution below. The page banner shows the event's featured image as the hero under it (the banner's `image` key, set only when the event has a thumbnail; `single.php` has no featured-image part). `HyperPress\Utils\Banner` only reads a theme mod, so the event banner is built by filtering `hyperpress_banner_content` after it (builder confirms).
 - New events open pre-filled (`default_content`, only for `hyper_event`, only when empty) with a scaffold: the countdown, an info section with placeholder rows, `[hyperpress_event_tickets]`, `[hyperpress_event_photos]`. The editor can reorder or delete sections and add `[hyperpress_banner]` sections of their own. Exact scaffold markup is the builder's call, using the theme's current grid classes (the theme is Foundation 6, not the old site's Foundation 5 `row`/`columns`).
 
 ### Banner colour

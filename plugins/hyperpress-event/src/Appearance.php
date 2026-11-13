@@ -106,7 +106,7 @@ final class Appearance {
 	}
 
 	/**
-	 * Per-event title and colour of the page banner. Hooked on `hyperpress_banner_args` because Utils\Banner has
+	 * Per-event title, colour and featured image (hero) of the page banner. Hooked on `hyperpress_banner_args` because Utils\Banner has
 	 * already assembled the banner there (its colour comes from a theme mod only), as the Season plugin's
 	 * SingularBanner does; `hyperpress_banner_content` would run before Banner::apply() overwrites the colour.
 	 *
@@ -127,6 +127,11 @@ final class Appearance {
 		$color = self::color( $id );
 		if ( '' !== $color ) {
 			$banner['backgroundColor'] = $color;
+		}
+		// The theme renders the hero right under the banner header; single.php has no featured-image part of its own.
+		$thumbnail = (int) get_post_thumbnail_id( $id );
+		if ( $thumbnail > 0 ) {
+			$banner['image'] = $thumbnail;
 		}
 
 		return $banner;

@@ -167,6 +167,26 @@ final class AppearanceTest extends WP_UnitTestCase {
 		$this->assertSame( '#654321', $banner['backgroundColor'] );
 	}
 
+	public function test_page_banner_shows_the_featured_image_as_the_hero(): void {
+		$id    = $this->event();
+		$thumb = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg' );
+		set_post_thumbnail( $id, $thumb );
+		$this->go_to( get_permalink( $id ) );
+
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
+
+		$this->assertSame( $thumb, $banner['image'] );
+	}
+
+	public function test_page_banner_has_no_image_key_without_a_featured_image(): void {
+		$id = $this->event();
+		$this->go_to( get_permalink( $id ) );
+
+		$banner = apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) );
+
+		$this->assertArrayNotHasKey( 'image', $banner );
+	}
+
 	public function test_section_banner_passes_anchor_and_colour_and_is_empty_without_text(): void {
 		$id    = $this->event( array( Fields::BANNER_COLOR => '#00ff00' ) );
 		$atts  = Sections::atts( array( 'anchor' => 'gallery' ), 'Gallery' );

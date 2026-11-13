@@ -320,6 +320,7 @@ final class ListingTest extends WP_UnitTestCase {
 		$this->go_to( '/?' . Plugin::SERIES . '=camp' );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
 		$this->assertSame( '#00aa00', $banner['backgroundColor'] );
+		$this->assertArrayNotHasKey( 'image', $banner );
 
 		update_option(
 			Settings::OPTION,
