@@ -3,6 +3,7 @@ namespace HyperPress\Tests\Integration\Event;
 
 use HyperPress\Event\Menus;
 use HyperPress\Event\Plugin;
+use HyperPress\Utils\RequestTerm;
 use stdClass;
 use WP_UnitTestCase;
 
@@ -26,6 +27,11 @@ final class MenusTest extends WP_UnitTestCase {
 				'slug'     => $slug,
 			)
 		);
+	}
+
+	public function tear_down(): void {
+		remove_all_filters( 'pre_option_permalink_structure' );
+		parent::tear_down();
 	}
 
 	public function test_registered_at_priority_10(): void {
@@ -107,8 +113,9 @@ final class MenusTest extends WP_UnitTestCase {
 			)
 		);
 
-		$this->go_to( '/?taxonomy=' . Plugin::SERIES . '&term=camp' );
+		$this->go_to( '/?' . Plugin::SERIES . '=camp' );
 		$this->assertTrue( is_tax( Plugin::SERIES ) );
+		$this->assertSame( $term, RequestTerm::get( Plugin::SERIES )?->term_id );
 
 		$html = wp_nav_menu(
 			array(
@@ -120,5 +127,24 @@ final class MenusTest extends WP_UnitTestCase {
 		$this->assertMatchesRegularExpression( '/<li[^>]*class="[^"]*\bcurrent-menu-item\b[^"]*"/', $html );
 		$this->assertStringContainsString( 'href="' . home_url( user_trailingslashit( 'event/camp' ) ) . '"', $html );
 		$this->assertStringNotContainsString( 'event/series/camp', $html );
+	}
+
+	public function test_plain_permalinks_keep_the_term_archive_link(): void {
+		$term = $this->series();
+		// Plain permalinks 404 the alias path, so the item keeps the archive link.
+		add_filter( 'pre_option_permalink_structure', static fn(): string => '', 99 );
+		$this->assertSame( '', get_option( 'permalink_structure' ) );
+
+		$original = (string) get_term_link( $term, Plugin::SERIES );
+		$item     = $this->item(
+			array(
+				'type'      => 'taxonomy',
+				'object'    => Plugin::SERIES,
+				'object_id' => $term,
+				'url'       => $original,
+			)
+		);
+
+		$this->assertSame( $original, Menus::url( $item )->url );
 	}
 }

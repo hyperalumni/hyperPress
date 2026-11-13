@@ -7,6 +7,7 @@ use HyperPress\Event\Galleries;
 use HyperPress\Event\NextGenShortcodes;
 use HyperPress\Event\Photos;
 use HyperPress\Event\PhotosBlock;
+use HyperPress\Event\Plugin;
 use WP_UnitTestCase;
 
 final class PhotosTest extends WP_UnitTestCase {
@@ -52,7 +53,7 @@ final class PhotosTest extends WP_UnitTestCase {
 			@rmdir( $this->theme_dir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Test cleanup.
 			$this->theme_dir = '';
 		}
-		unset( $GLOBALS['post'] );
+		unset( $GLOBALS['current_screen'] );
 		parent::tear_down();
 	}
 
@@ -349,6 +350,7 @@ final class PhotosTest extends WP_UnitTestCase {
 	public function test_the_galleries_field_lists_the_nextgen_galleries(): void {
 		$this->gallery( 1, 'Alpha' );
 
+		set_current_screen( 'edit-' . Plugin::POST_TYPE );
 		$boxes = Fields::boxes( array() );
 		$ids   = array();
 		foreach ( $boxes[0]['fields'] as $field ) {

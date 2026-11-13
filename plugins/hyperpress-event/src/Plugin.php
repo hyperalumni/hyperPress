@@ -55,6 +55,18 @@ final class Plugin {
 		flush_rewrite_rules();
 	}
 
+	/**
+	 * Removes the event routes: the types are unregistered first, since a plain flush would rebuild the rules with
+	 * them (they are still registered in this request), and the rewrite-version option is cleared so a later
+	 * activation flushes again.
+	 */
+	public static function deactivate(): void {
+		unregister_post_type( self::POST_TYPE );
+		unregister_taxonomy( self::SERIES );
+		flush_rewrite_rules();
+		Rewrite::forget();
+	}
+
 	public static function definition(): array {
 		return array(
 			'key'           => self::POST_TYPE,

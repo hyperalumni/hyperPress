@@ -33,7 +33,8 @@ final class Countdown {
 	}
 
 	/**
-	 * The countdown markup, or '' unless the event is readable and has a start.
+	 * The countdown markup, or '' unless the event is readable, has a start and is not over: a past event never
+	 * counts down.
 	 *
 	 * @param int $id Event post ID.
 	 */
@@ -43,7 +44,7 @@ final class Countdown {
 		}
 
 		$start = Dates::start( $id );
-		if ( null === $start ) {
+		if ( null === $start || Dates::is_over( $id ) ) {
 			return '';
 		}
 

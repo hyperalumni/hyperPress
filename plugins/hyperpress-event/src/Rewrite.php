@@ -6,11 +6,17 @@ defined( 'ABSPATH' ) || exit;
 use HyperPress\Utils\Version;
 
 /**
- * Flushes the rewrite rules once per plugin version, so the event and series routes exist after an update.
+ * Flushes the rewrite rules once per plugin version and rules revision, so the event and series routes exist after an
+ * update.
  */
 final class Rewrite {
 
 	private const VERSION_OPTION = 'hyperpress_event_rewrite_version';
+
+	/**
+	 * Bump when the routes or the registration order change without a plugin version change.
+	 */
+	private const RULES_REVISION = 2;
 
 	public static function register(): void {
 		// After the post type and taxonomy register (priority 10) and the rules are built.
@@ -18,7 +24,7 @@ final class Rewrite {
 	}
 
 	public static function maybe_flush(): void {
-		$version = Version::of( dirname( __DIR__ ) . '/hyperpress-event.php' );
+		$version = Version::of( dirname( __DIR__ ) . '/hyperpress-event.php' ) . '+' . self::RULES_REVISION;
 
 		if ( get_option( self::VERSION_OPTION ) === $version ) {
 			return;
@@ -27,5 +33,12 @@ final class Rewrite {
 		// Store first: flush_rewrite_rules() must never run twice for one change.
 		update_option( self::VERSION_OPTION, $version );
 		flush_rewrite_rules( false );
+	}
+
+	/**
+	 * Forgets the stored version (on deactivation), so the next activation flushes again.
+	 */
+	public static function forget(): void {
+		delete_option( self::VERSION_OPTION );
 	}
 }

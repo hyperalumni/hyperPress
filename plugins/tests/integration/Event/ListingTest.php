@@ -104,6 +104,35 @@ final class ListingTest extends WP_UnitTestCase {
 		$this->assertSame( $all, Listing::ids( '', 'sometimes' ) );
 	}
 
+	public function test_show_is_trimmed_and_case_insensitive(): void {
+		$e = $this->fixture();
+
+		$this->assertSame( array( $e['soon'], $e['later'] ), Listing::ids( '', ' Upcoming ' ) );
+		$html = do_shortcode( '[hyperpress_event_list show=" Past "]' );
+		$this->assertStringContainsString( 'event-list', $html );
+		$this->assertSame( array( $e['past_new'], $e['past_old'] ), Listing::ids( '', "PAST\n" ) );
+	}
+
+	public function test_ids_reads_the_meta_of_all_events_in_one_query(): void {
+		$this->fixture();
+		wp_cache_flush();
+		global $wpdb;
+		$meta_reads = 0;
+		$count      = static function ( $query ) use ( &$meta_reads, $wpdb ) {
+			if ( false !== strpos( (string) $query, 'FROM ' . $wpdb->postmeta ) ) {
+				++$meta_reads;
+			}
+
+			return $query;
+		};
+		add_filter( 'query', $count );
+
+		Listing::ids();
+
+		remove_filter( 'query', $count );
+		$this->assertLessThanOrEqual( 1, $meta_reads );
+	}
+
 	public function test_now_argument_overrides_the_clock(): void {
 		$e = $this->fixture();
 

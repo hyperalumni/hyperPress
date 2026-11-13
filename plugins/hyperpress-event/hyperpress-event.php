@@ -38,3 +38,4 @@ spl_autoload_register(
 // Boot after every plugin's main file is loaded, so Utils is always available.
 add_action( 'plugins_loaded', array( \HyperPress\Event\Plugin::class, 'boot' ) );
 register_activation_hook( __FILE__, array( \HyperPress\Event\Plugin::class, 'activate' ) );
+register_deactivation_hook( __FILE__, array( \HyperPress\Event\Plugin::class, 'deactivate' ) );

@@ -24,7 +24,19 @@ final class TicketsBlock {
 			$rows .= self::row( $ticket, $event_id );
 		}
 
-		return '<div class="hyperpress-event-tickets">' . $rows . '</div>';
+		return self::notices() . '<div class="hyperpress-event-tickets">' . $rows . '</div>';
+	}
+
+	/**
+	 * WooCommerce's pending notices (a failed add-to-cart explains itself here), or '' without WooCommerce.
+	 */
+	private static function notices(): string {
+		if ( ! function_exists( 'wc_print_notices' ) ) {
+			return '';
+		}
+		$html = wc_print_notices( true );
+
+		return is_string( $html ) ? $html : '';
 	}
 
 	private static function row( Ticket $ticket, int $event_id ): string {

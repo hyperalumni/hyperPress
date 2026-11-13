@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Menu items for an event series link to the evergreen alias (`/event/<series-slug>/`), which redirects to the current
  * event, instead of the series archive. Only the url changes: `object_id` stays the term so WordPress still marks the
- * item current on the series archive. get_term_link(), the archive and direct visits are untouched.
+ * item current on the series archive. With plain permalinks the item keeps its archive link. get_term_link(), the archive and direct visits are untouched.
  */
 final class Menus {
 
@@ -16,6 +16,11 @@ final class Menus {
 
 	public static function url( object $item ): object {
 		if ( ! empty( $item->_invalid ) || ( $item->type ?? '' ) !== 'taxonomy' || ( $item->object ?? '' ) !== Plugin::SERIES ) {
+			return $item;
+		}
+
+		// Plain permalinks have no /event/<slug>/ route: the alias would 404, so keep the archive link.
+		if ( '' === (string) get_option( 'permalink_structure' ) ) {
 			return $item;
 		}
 

@@ -71,6 +71,10 @@ final class Alias {
 			)
 		);
 
+		$ids = array_map( 'intval', $ids );
+		update_meta_cache( 'post', $ids );
+		_prime_post_caches( $ids, false, false );
+
 		$upcoming = null;
 		$upcoming_end = null;
 		$past     = null;

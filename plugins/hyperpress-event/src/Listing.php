@@ -51,13 +51,18 @@ final class Listing {
 			);
 		}
 
+		$ids = array_map( 'intval', ( new WP_Query( $args ) )->posts );
+		// One query each for the meta and the posts instead of one per event (Dates and the titles read them below).
+		update_meta_cache( 'post', $ids );
+		_prime_post_caches( $ids, false, false );
+
 		$now    ??= Dates::now();
 		$groups = array(
 			self::UPCOMING => array(),
 			self::PAST     => array(),
 			self::UNDATED  => array(),
 		);
-		foreach ( array_map( 'intval', ( new WP_Query( $args ) )->posts ) as $id ) {
+		foreach ( $ids as $id ) {
 			$start = Dates::start( $id );
 			$end   = Dates::end( $id );
 			if ( null === $start || null === $end ) {
@@ -73,7 +78,7 @@ final class Listing {
 		$past     = self::order( $groups[ self::PAST ], false );
 		$undated  = self::order( $groups[ self::UNDATED ], true );
 
-		switch ( $show ) {
+		switch ( strtolower( trim( $show ) ) ) {
 			case 'upcoming':
 				$ids = $upcoming;
 				break;

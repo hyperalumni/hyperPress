@@ -348,6 +348,17 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - [x] **Step 3:** Run the new tests, then `test:unit`, `test:integration` and `lint`; all green.
 - [x] **Step 4: Commit** `fix(event): run the alias before nextgen and put the series rules first`.
 
+## Task 18: Final review fixes
+
+**Goal:** the final whole-branch review's findings, fixed in one commit (tests first).
+
+- [x] **I1:** the plugin content template applies only to the singular event being viewed, not to events listed in a loop (`Single::content_template`).
+- [x] **I2:** deactivation unregisters the types, flushes the rules and clears the rewrite-version option (`Plugin::deactivate`, `register_deactivation_hook`).
+- [x] **I3:** the series edit screen warns when an event has the same slug (`Slugs::conflict_notice`).
+- [x] **I4:** `Countdown::render()` returns nothing for an event that is over.
+- [x] **M1-M8:** rewrite flush keyed on version plus `RULES_REVISION`; meta/post cache priming in `Listing` and `Alias`; gallery options built only in the admin; `checkout_redirect` takes mixed; WooCommerce notices above the ticket rows; plain permalinks keep the series archive link in menus; `plugins/AGENTS.md` settings sentence corrected; truthful phpcs comment in `templates/series.php`; stale `MenusTest` request fixed; `show` normalised with `strtolower( trim() )`.
+- [x] **Commit** `fix(event): address the final review findings`.
+
 ## Known follow-ups
 
 - A per-event "hide from the front page" switch, a buttons/links repeater, a season link, and an importer for old Page-based events were left out on purpose (spec non-goals).

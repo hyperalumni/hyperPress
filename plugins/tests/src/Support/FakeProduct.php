@@ -18,6 +18,11 @@ namespace HyperPress\Tests\Support {
 
 		public static string $checkout_url = 'https://example.org/checkout/';
 
+		/**
+		 * What the wc_print_notices() stand-in (wc_print_notices.php, loaded on demand) prints.
+		 */
+		public static string $notices = '';
+
 		public function __construct(
 			public int $id,
 			public string $name = 'Ticket',
@@ -34,6 +39,7 @@ namespace HyperPress\Tests\Support {
 		public static function reset(): void {
 			self::$products     = array();
 			self::$checkout_url = 'https://example.org/checkout/';
+			self::$notices      = '';
 		}
 
 		public function get_id(): int {

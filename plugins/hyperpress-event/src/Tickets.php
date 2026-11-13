@@ -51,9 +51,10 @@ final class Tickets {
 	/**
 	 * Sends a buy from the ticket rows straight to the checkout.
 	 *
-	 * @param string $url The redirect WooCommerce would use.
+	 * @param mixed $url The redirect WooCommerce would use (it passes false when there is none); returned unchanged
+	 *                   without the marker.
 	 */
-	public static function checkout_redirect( string $url ): string {
+	public static function checkout_redirect( mixed $url ): mixed {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public GET add-to-cart flow, like WooCommerce's own; nothing is changed here, only the redirect target.
 		if ( isset( $_GET[ self::MARKER ] ) && function_exists( 'wc_get_checkout_url' ) ) {
 			return wc_get_checkout_url();

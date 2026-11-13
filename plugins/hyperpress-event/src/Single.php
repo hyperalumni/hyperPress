@@ -26,12 +26,14 @@ final class Single {
 	}
 
 	/**
-	 * Supplies the content template path for an event; passes any other value through.
+	 * Supplies the content template path for the singular event being viewed; passes any other value through, so an
+	 * event listed in a loop (search results) keeps the theme's own template.
 	 *
 	 * @param mixed $template Template path chosen so far.
 	 */
 	public static function content_template( mixed $template ): mixed {
-		if ( Plugin::POST_TYPE === get_post_type() ) {
+		// Only the event being viewed: the theme applies this filter to every post of a loop (search results, lists).
+		if ( is_singular( Plugin::POST_TYPE ) && get_the_ID() === get_queried_object_id() ) {
 			$path = dirname( __DIR__ ) . '/templates/content.php';
 			if ( is_readable( $path ) ) {
 				return $path;

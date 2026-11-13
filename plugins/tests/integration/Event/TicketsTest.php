@@ -246,4 +246,29 @@ final class TicketsTest extends WP_UnitTestCase {
 	public function test_checkout_redirect_without_the_marker_returns_the_input(): void {
 		$this->assertSame( 'https://example.org/cart/', Tickets::checkout_redirect( 'https://example.org/cart/' ) );
 	}
+
+	public function test_checkout_redirect_passes_non_strings_through(): void {
+		$this->assertFalse( Tickets::checkout_redirect( false ) );
+		$this->assertNull( Tickets::checkout_redirect( null ) );
+
+		$_GET['hyperpress_event_buy'] = '1';
+		FakeProduct::$checkout_url    = 'https://example.org/checkout/';
+		$this->assertSame( 'https://example.org/checkout/', Tickets::checkout_redirect( false ) );
+	}
+
+	public function test_no_notice_markup_without_woocommerce_notices(): void {
+		$html = TicketsBlock::html( array( $this->ticket( 5 ) ), $this->event() );
+
+		$this->assertStringStartsWith( '<div class="hyperpress-event-tickets"><div class="hyperpress-event-ticket">', $html );
+	}
+
+	public function test_woocommerce_notices_are_printed_above_the_rows(): void {
+		require_once dirname( __DIR__, 2 ) . '/src/Support/wc_print_notices.php';
+		FakeProduct::$notices = '<div class="woocommerce-error">FAKE-NOTICE</div>';
+
+		$html = TicketsBlock::html( array( $this->ticket( 5 ) ), $this->event() );
+
+		$this->assertStringContainsString( 'FAKE-NOTICE', $html );
+		$this->assertLessThan( strpos( $html, 'hyperpress-event-ticket-name' ), strpos( $html, 'FAKE-NOTICE' ) );
+	}
 }

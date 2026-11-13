@@ -97,6 +97,29 @@ final class AliasTest extends WP_UnitTestCase {
 		$this->assertSame( $latest, Alias::target( $this->series() ) );
 	}
 
+	public function test_target_reads_the_meta_of_all_events_in_one_query(): void {
+		$this->event( 'a', '2026-07-01 10:00' );
+		$this->event( 'b', '2026-08-01 10:00' );
+		$this->event( 'c', '2026-09-01 10:00' );
+		$term = $this->series();
+		wp_cache_flush();
+		global $wpdb;
+		$meta_reads = 0;
+		$count      = static function ( $query ) use ( &$meta_reads, $wpdb ) {
+			if ( false !== strpos( (string) $query, 'FROM ' . $wpdb->postmeta ) ) {
+				++$meta_reads;
+			}
+
+			return $query;
+		};
+		add_filter( 'query', $count );
+
+		Alias::target( $term );
+
+		remove_filter( 'query', $count );
+		$this->assertLessThanOrEqual( 1, $meta_reads );
+	}
+
 	public function test_tie_goes_to_the_lowest_id(): void {
 		$first = $this->event( 'bar-crawl-a', '2026-10-01 20:00' );
 		$this->event( 'bar-crawl-b', '2026-10-01 20:00' );

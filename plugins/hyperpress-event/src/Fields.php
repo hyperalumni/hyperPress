@@ -104,7 +104,8 @@ final class Fields {
 				'desc'        => __( 'NextGEN galleries shown on this event.', 'hyperpress' ),
 				'type'        => 'select_advanced',
 				'multiple'    => true,
-				'options'     => Galleries::options(),
+				// The list is only needed to edit an event, and costs a query.
+				'options'     => is_admin() ? Galleries::options() : array(),
 				'placeholder' => __( 'Select galleries', 'hyperpress' ),
 			);
 		}

@@ -1,6 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration\Event;
 
+use DateTimeImmutable;
 use HyperPress\Countdown\Assets;
 use HyperPress\Event\Countdown;
 use HyperPress\Event\Fields;
@@ -17,6 +18,7 @@ final class CountdownTest extends WP_UnitTestCase {
 	}
 
 	public function tear_down(): void {
+		remove_all_filters( 'hyperpress_event_now' );
 		delete_option( Settings::OPTION );
 		unset( $GLOBALS['post'] );
 		$GLOBALS['wp_scripts'] = null;
@@ -101,5 +103,27 @@ final class CountdownTest extends WP_UnitTestCase {
 
 		$this->assertSame( '', Countdown::shortcode( '' ) );
 		$this->assertSame( '', Countdown::shortcode( array( 'id' => 'abc' ) ) );
+	}
+
+	private function clock( string $now ): void {
+		add_filter( 'hyperpress_event_now', static fn(): DateTimeImmutable => new DateTimeImmutable( $now, wp_timezone() ) );
+	}
+
+	public function test_a_past_event_renders_no_countdown(): void {
+		$id = $this->event();
+		$this->clock( '2030-03-11 08:00' );
+
+		$this->assertSame( '', Countdown::render( $id ) );
+		$this->assertSame( '', Countdown::shortcode( array( 'id' => (string) $id ) ) );
+		$this->go_to( get_permalink( $id ) );
+		$this->assertSame( '', Countdown::shortcode( array() ) );
+	}
+
+	public function test_an_event_between_start_and_end_still_renders(): void {
+		$id = $this->event();
+		update_post_meta( $id, Fields::END, '2030-03-10 17:00' );
+		$this->clock( '2030-03-10 12:00' );
+
+		$this->assertStringContainsString( 'Spring Open', Countdown::render( $id ) );
 	}
 }

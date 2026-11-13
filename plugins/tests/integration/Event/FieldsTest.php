@@ -12,6 +12,7 @@ final class FieldsTest extends WP_UnitTestCase {
 	public function tear_down(): void {
 		remove_all_filters( 'hyperpress_event_woocommerce_active' );
 		remove_all_filters( 'hyperpress_event_nextgen_active' );
+		unset( $GLOBALS['current_screen'] );
 		parent::tear_down();
 	}
 
@@ -74,6 +75,7 @@ final class FieldsTest extends WP_UnitTestCase {
 
 	public function test_galleries_present_when_nextgen_is_active(): void {
 		add_filter( 'hyperpress_event_nextgen_active', '__return_true' );
+		set_current_screen( 'edit-' . Plugin::POST_TYPE );
 		$fields = $this->fields( $this->boxes()['hyperpress_event_box'] );
 
 		$this->assertArrayHasKey( Fields::GALLERIES, $fields );
@@ -81,6 +83,16 @@ final class FieldsTest extends WP_UnitTestCase {
 		$this->assertTrue( $fields[ Fields::GALLERIES ]['multiple'] );
 		$this->assertIsArray( $fields[ Fields::GALLERIES ]['options'] );
 		$this->assertArrayNotHasKey( Fields::PRODUCTS, $fields );
+	}
+
+	public function test_gallery_options_are_only_built_in_the_admin(): void {
+		add_filter( 'hyperpress_event_nextgen_active', '__return_true' );
+		$this->assertFalse( is_admin() );
+
+		$fields = $this->fields( $this->boxes()['hyperpress_event_box'] );
+
+		$this->assertArrayHasKey( Fields::GALLERIES, $fields );
+		$this->assertSame( array(), $fields[ Fields::GALLERIES ]['options'] );
 	}
 
 	public function test_every_field_id_follows_the_identifier_convention(): void {
