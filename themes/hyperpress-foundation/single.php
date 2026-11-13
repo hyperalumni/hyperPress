@@ -8,10 +8,12 @@
 
 // Don't load directly.
 defined( 'ABSPATH' ) || exit;
-get_header(); ?>
+get_header();
+$full_screen = (bool) apply_filters( 'hyperpress_single_full_screen', false );
+?>
 <?php get_template_part( 'template-parts/banner' ); ?>
 <?php do_action( 'hyperpress_before_content' ); ?>
-	<div class="main-container">
+	<div class="main-container<?php echo $full_screen ? ' full-screen' : ''; ?>">
 		<div class="main-grid">
 			<main class="main-content">
 				<?php do_action( 'hyperpress_before_main' ); ?>
@@ -38,7 +40,11 @@ the_post();
 				<?php endwhile; ?>
 				<?php do_action( 'hyperpress_after_main' ); ?>
 			</main>
-			<?php get_sidebar(); ?>
+			<?php
+			if ( ! $full_screen ) {
+				get_sidebar();
+			}
+			?>
 		</div>
 	</div>
 <?php do_action( 'hyperpress_after_content' ); ?>

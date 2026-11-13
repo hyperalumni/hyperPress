@@ -125,11 +125,11 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Produces: filter `hyperpress_single_full_screen` (`bool`, default `false`) applied in `single.php`.
 
-- [ ] **Step 1: Write the failing tests** that render `single.php` for a post into an output buffer: `test_default_single_is_unchanged` (container class is exactly `main-container`, the sidebar from `get_sidebar()` present); `test_filter_true_adds_full_screen_and_drops_the_sidebar`; `test_filter_true_keeps_breadcrumbs_and_hooks` (breadcrumb markup present; `hyperpress_before_main` and `hyperpress_after_main` fire).
-- [ ] **Step 2:** Run `--filter SingleFullScreenTest` in the theme; expect FAIL.
-- [ ] **Step 3: Implement** `$full_screen = (bool) apply_filters( 'hyperpress_single_full_screen', false );`, add the class `full-screen` to `.main-container` when true and call `get_sidebar()` only when false. Document the filter beside `content_template` in the theme `AGENTS.md`.
-- [ ] **Step 4:** Run the theme integration suite and `composer lint`; expect PASS.
-- [ ] **Step 5: Commit** `feat(theme): add hyperpress_single_full_screen filter`.
+- [x] **Step 1: Write the failing tests** that render `single.php` for a post into an output buffer: `test_default_single_is_unchanged` (container class is exactly `main-container`, the sidebar from `get_sidebar()` present); `test_filter_true_adds_full_screen_and_drops_the_sidebar`; `test_filter_true_keeps_breadcrumbs_and_hooks` (breadcrumb markup present; `hyperpress_before_main` and `hyperpress_after_main` fire).
+- [x] **Step 2:** Run `--filter SingleFullScreenTest` in the theme; expect FAIL.
+- [x] **Step 3: Implement** `$full_screen = (bool) apply_filters( 'hyperpress_single_full_screen', false );`, add the class `full-screen` to `.main-container` when true and call `get_sidebar()` only when false. Document the filter beside `content_template` in the theme `AGENTS.md`.
+- [x] **Step 4:** Run the theme integration suite and `composer lint`; expect PASS.
+- [x] **Step 5: Commit** `feat(theme): add hyperpress_single_full_screen filter`.
 
 ## Task 6: Banner shortcode colour
 
