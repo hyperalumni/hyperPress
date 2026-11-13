@@ -216,11 +216,11 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Produces: `Breadcrumbs::register(): void`, `Breadcrumbs::filter( array $items ): array` (filter `hyperpress_breadcrumbs_content`, priority 10; crumb shape in the theme `AGENTS.md`).
 
-- [ ] **Step 1: Write the failing tests:** `test_single_event_crumbs` (Events linking to the hub page, then the series linking to its archive, then the title with no url); `test_hub_crumb_omitted_without_a_hub_page`; `test_event_without_a_series_skips_that_crumb`; `test_series_archive_crumbs` (Events, then the series name); `test_other_contexts_untouched`.
-- [ ] **Step 2:** Run `--filter BreadcrumbsTest`; expect FAIL.
-- [ ] **Step 3: Implement** after `hyperpress-competition/src/TaxonomyBreadcrumbs.php::filter` (read it for the context detection and crumb keys). Do not use `Utils\Breadcrumbs::register`: its first crumb links to `get_post_type_archive_link()` (events have no archive, so "Events" would have no link and the hub page from the settings cannot be injected), and it only handles `is_singular` and `is_post_type_archive`, not the series (taxonomy) archive. It skips the season crumb when a post has no season, so that is not the reason.
-- [ ] **Step 4:** Run the filter and lint; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): add event breadcrumbs`.
+- [x] **Step 1: Write the failing tests:** `test_single_event_crumbs` (Events linking to the hub page, then the series linking to its archive, then the title with no url); `test_hub_crumb_omitted_without_a_hub_page`; `test_event_without_a_series_skips_that_crumb`; `test_series_archive_crumbs` (Events, then the series name); `test_other_contexts_untouched`.
+- [x] **Step 2:** Run `--filter BreadcrumbsTest`; expect FAIL.
+- [x] **Step 3: Implement** after `hyperpress-competition/src/TaxonomyBreadcrumbs.php::filter` (read it for the context detection and crumb keys). Do not use `Utils\Breadcrumbs::register`: its first crumb links to `get_post_type_archive_link()` (events have no archive, so "Events" would have no link and the hub page from the settings cannot be injected), and it only handles `is_singular` and `is_post_type_archive`, not the series (taxonomy) archive. It skips the season crumb when a post has no season, so that is not the reason.
+- [x] **Step 4:** Run the filter and lint; expect PASS.
+- [x] **Step 5: Commit** `feat(event): add event breadcrumbs`.
 
 ## Task 12: Series menu items link to the alias
 
