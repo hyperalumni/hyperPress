@@ -341,8 +341,8 @@ catalogs:
       specifier: 7.0.0
       version: 7.0.0
     what-input:
-      specifier: 6.0.1
-      version: 6.0.1
+      specifier: 6.0.2
+      version: 6.0.2
     yargs:
       specifier: 18.2.0
       version: 18.2.0
@@ -420,7 +420,7 @@ importers:
     dependencies:
       foundation-sites:
         specifier: catalog:foundation
-        version: 6.9.0(jquery@4.0.0)(motion-ui@2.0.8)(what-input@6.0.1)
+        version: 6.9.0(jquery@4.0.0)(motion-ui@2.0.8)(what-input@6.0.2)
       jquery:
         specifier: catalog:foundation
         version: 4.0.0
@@ -429,7 +429,7 @@ importers:
         version: 2.0.8(jquery@4.0.0)
       what-input:
         specifier: catalog:foundation
-        version: 6.0.1
+        version: 6.0.2
     devDependencies:
       '@babel/core':
         specifier: catalog:foundation
@@ -6834,8 +6834,8 @@ packages:
       webpack-cli:
         optional: true
 
-  what-input@6.0.1:
-    resolution: {integrity: sha512-9AE9mIMxsTSQB5EFMFz136Egi/FTL1yIMvS/wnNHWTfHBJMEH3E8lS/9q2Ppmg2VogUSd8bwwqJ337aa7wLMhw==}
+  what-input@6.0.2:
+    resolution: {integrity: sha512-cN96RKfOIMvq234gTHWWTlGcxuliuWMYrlxIAKkmLH4o579YdAFhe8XEqhjaqP0E38wBHMLLpZjvNeh/dhhmTA==}
     engines: {node: '>=20'}
 
   whatwg-mimetype@3.0.0:
@@ -10667,11 +10667,11 @@ snapshots:
 
   fork-stream@0.0.4: {}
 
-  foundation-sites@6.9.0(jquery@4.0.0)(motion-ui@2.0.8)(what-input@6.0.1):
+  foundation-sites@6.9.0(jquery@4.0.0)(motion-ui@2.0.8)(what-input@6.0.2):
     dependencies:
       jquery: 4.0.0
       motion-ui: 2.0.8(jquery@4.0.0)
-      what-input: 6.0.1
+      what-input: 6.0.2
 
   fraction.js@5.3.4: {}
 
@@ -13700,7 +13700,7 @@ snapshots:
       - svgo
       - uglify-js
 
-  what-input@6.0.1: {}
+  what-input@6.0.2: {}
 
   whatwg-mimetype@3.0.0: {}
 

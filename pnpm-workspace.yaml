@@ -68,7 +68,7 @@ catalogs:
     vinyl-named: 1.1.0
     webpack: 5.112.2
     webpack-stream: 7.0.0
-    what-input: 6.0.1
+    what-input: 6.0.2
     yargs: 18.2.0
 
 supportedArchitectures:
