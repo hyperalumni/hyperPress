@@ -3,6 +3,7 @@ namespace HyperPress\Event;
 
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
+use HyperPress\Utils\RequestTerm;
 use WP_Query;
 
 /**
@@ -23,11 +24,14 @@ final class SeriesArchive {
 	 * @param WP_Query $query The query.
 	 */
 	public static function order_query( WP_Query $query ): void {
-		if ( is_admin() || ! $query->is_main_query() || $query->is_feed() || ! $query->is_tax( Plugin::SERIES ) ) {
+		if ( is_admin() || ! $query->is_main_query() || $query->is_feed() || ! $query->is_tax() ) {
 			return;
 		}
-		$term = $query->get_queried_object();
-		$ids  = $term instanceof \WP_Term ? Listing::ids( $term->slug ) : array();
+		$term = RequestTerm::get( Plugin::SERIES );
+		if ( null === $term ) {
+			return;
+		}
+		$ids = Listing::ids( $term->slug );
 
 		$query->set( 'post__in', array() === $ids ? array( 0 ) : $ids );
 		$query->set( 'orderby', 'post__in' );
@@ -40,7 +44,7 @@ final class SeriesArchive {
 	 * @return mixed
 	 */
 	public static function posts_template( mixed $template ): mixed {
-		if ( is_admin() || is_feed() || ! is_main_query() || ! is_tax( Plugin::SERIES ) ) {
+		if ( is_admin() || is_feed() || ! is_main_query() || ! is_tax() || null === RequestTerm::get( Plugin::SERIES ) ) {
 			return $template;
 		}
 
@@ -54,11 +58,11 @@ final class SeriesArchive {
 	 * @return mixed
 	 */
 	public static function banner( $banner ) {
-		if ( ! is_array( $banner ) || ! is_tax( Plugin::SERIES ) ) {
+		if ( ! is_array( $banner ) || ! is_tax() ) {
 			return $banner;
 		}
-		$term = get_queried_object();
-		if ( ! $term instanceof \WP_Term ) {
+		$term = RequestTerm::get( Plugin::SERIES );
+		if ( null === $term ) {
 			return $banner;
 		}
 

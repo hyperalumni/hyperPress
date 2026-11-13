@@ -3,6 +3,8 @@ namespace HyperPress\Event;
 
 defined( 'ABSPATH' ) || exit;
 
+use HyperPress\Utils\RequestTerm;
+
 /**
  * Breadcrumb trails for a single event and for the series archive.
  *
@@ -18,7 +20,7 @@ final class Breadcrumbs {
 
 	public static function filter( $items ) {
 		if ( is_singular( Plugin::POST_TYPE ) ) {
-			$post = get_queried_object();
+			$post = get_post( get_queried_object_id() );
 			if ( ! $post instanceof \WP_Post ) {
 				return $items;
 			}
@@ -45,9 +47,9 @@ final class Breadcrumbs {
 			return $items;
 		}
 
-		if ( is_tax( Plugin::SERIES ) ) {
-			$term = get_queried_object();
-			if ( ! $term instanceof \WP_Term ) {
+		if ( is_tax() ) {
+			$term = RequestTerm::get( Plugin::SERIES );
+			if ( null === $term ) {
 				return $items;
 			}
 

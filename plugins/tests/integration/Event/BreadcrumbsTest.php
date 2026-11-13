@@ -128,7 +128,7 @@ final class BreadcrumbsTest extends WP_UnitTestCase {
 				'slug'     => 'camp',
 			)
 		);
-		$this->go_to( '/?taxonomy=' . Plugin::SERIES . '&term=camp' );
+		$this->go_to( '/?' . Plugin::SERIES . '=camp' );
 		$this->assertTrue( is_tax( Plugin::SERIES ) );
 
 		$items = Breadcrumbs::filter( array( array( 'title' => 'Home' ) ) );

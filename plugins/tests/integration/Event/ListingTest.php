@@ -188,7 +188,7 @@ final class ListingTest extends WP_UnitTestCase {
 		$fourth = $this->event( 'Fourth', '2027-02-01 10:00', array(), 'camp' );
 		$second = $this->event( 'Second', '2027-08-01 10:00', array(), 'camp' );
 
-		$this->go_to( '/?taxonomy=' . Plugin::SERIES . '&term=camp' );
+		$this->go_to( '/?' . Plugin::SERIES . '=camp' );
 		global $wp_query;
 		$this->assertTrue( is_tax( Plugin::SERIES ) );
 		$this->assertSame( array( $first, $second, $third, $fourth ), $wp_query->get( 'post__in' ) );
@@ -196,14 +196,37 @@ final class ListingTest extends WP_UnitTestCase {
 		$this->assertSame( array( $first, $second ), wp_list_pluck( $wp_query->posts, 'ID' ) );
 		$this->assertStringEndsWith( 'templates/series.php', (string) apply_filters( 'hyperpress_posts_template', '' ) );
 
-		$this->go_to( '/?taxonomy=' . Plugin::SERIES . '&term=camp&paged=2' );
+		$this->go_to( '/?' . Plugin::SERIES . '=camp&paged=2' );
 		global $wp_query;
 		$this->assertSame( array( $third, $fourth ), wp_list_pluck( $wp_query->posts, 'ID' ) );
 	}
 
+	public function test_series_archive_still_applies_when_the_request_carries_another_taxonomy(): void {
+		$id = $this->event( 'In Series', '2027-07-01 10:00', array(), 'camp' );
+		self::factory()->category->create( array( 'slug' => 'news' ) );
+
+		$this->go_to( '/?category_name=news&' . Plugin::SERIES . '=camp' );
+		global $wp_query;
+
+		$this->assertSame( array( $id ), $wp_query->get( 'post__in' ) );
+		$this->assertStringEndsWith( 'templates/series.php', (string) apply_filters( 'hyperpress_posts_template', '' ) );
+	}
+
+	public function test_another_taxonomy_archive_is_not_a_series_archive(): void {
+		$this->event( 'In Series', '2027-07-01 10:00', array(), 'camp' );
+		self::factory()->category->create( array( 'slug' => 'news' ) );
+
+		$this->go_to( '/?category_name=news' );
+		global $wp_query;
+
+		$this->assertSame( array(), (array) $wp_query->get( 'post__in' ) );
+		$this->assertSame( 'kept', apply_filters( 'hyperpress_posts_template', 'kept' ) );
+		$this->assertSame( array( 'title' => '' ), apply_filters( 'hyperpress_banner_content', array( 'title' => '' ) ) );
+	}
+
 	public function test_series_archive_template_prints_the_events(): void {
 		$this->event( 'In Series', '2027-07-01 10:00', array(), 'camp' );
-		$this->go_to( '/?taxonomy=' . Plugin::SERIES . '&term=camp' );
+		$this->go_to( '/?' . Plugin::SERIES . '=camp' );
 
 		ob_start();
 		include (string) apply_filters( 'hyperpress_posts_template', '' );
@@ -219,7 +242,7 @@ final class ListingTest extends WP_UnitTestCase {
 
 	public function test_empty_series_archive_queries_nothing(): void {
 		$this->event( 'Draft', '2027-07-01 10:00', array( 'post_status' => 'draft' ), 'camp' );
-		$this->go_to( '/?taxonomy=' . Plugin::SERIES . '&term=camp' );
+		$this->go_to( '/?' . Plugin::SERIES . '=camp' );
 		global $wp_query;
 
 		$this->assertSame( array( 0 ), $wp_query->get( 'post__in' ) );
@@ -251,7 +274,7 @@ final class ListingTest extends WP_UnitTestCase {
 		$this->added[] = array( 'hyperpress_banner_content', $specific, 80 );
 		$this->added[] = array( 'hyperpress_banner_content', $generic, 90 );
 
-		$this->go_to( '/?taxonomy=' . Plugin::SERIES . '&term=camp' );
+		$this->go_to( '/?' . Plugin::SERIES . '=camp' );
 		$banner = apply_filters( 'hyperpress_banner_content', array() );
 
 		$this->assertSame( 'event', $banner['type'] );
