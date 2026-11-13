@@ -90,13 +90,13 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Produces: `Integrations::woocommerce(): bool` and `Integrations::nextgen(): bool` (`class_exists( 'WooCommerce' )`, `class_exists( 'Imagely\NGG\DataMappers\Album' )`, each overridable by filters `hyperpress_event_woocommerce_active` and `hyperpress_event_nextgen_active`); `Fields::START`, `END`, `VENUE_NAME`, `VENUE_ADDRESS`, `SUBTITLE`, `BANNER_COLOR`, `PRODUCTS`, `GALLERIES` (all `hyperpress_event_<name>`), `Fields::register(): void` (hooks `rwmb_meta_boxes`; box id `hyperpress_event_box`, plus the settings box from Task 2); `Dates::now(): DateTimeImmutable` (filter `hyperpress_event_now`), `Dates::start( int $post_id ): ?DateTimeImmutable`, `Dates::end( int $post_id ): ?DateTimeImmutable` (null without a start), `Dates::is_over( int $post_id ): bool`.
 
-- [ ] **Step 1: Write the failing tests.**
+- [x] **Step 1: Write the failing tests.**
   - `DatesTest`: `test_start_is_parsed_in_the_site_timezone` (timezone `America/New_York`, `2026-11-28 14:00`); `test_end_defaults_to_the_end_of_the_start_day` (`2026-11-28 23:59:59`); `test_end_not_after_start_is_ignored` (end earlier than, and equal to, start both give the end of day; Review Focus 1); `test_no_start_gives_null_end_and_never_over`; `test_malformed_start_is_null` (`garbage`, `2026-02-30 10:00`); `test_is_over_is_strict` (at the end instant false, one second later true); `test_now_filter`.
   - `FieldsTest`: the box has the six common fields; `products` absent and `galleries` absent by default; present when the `hyperpress_event_woocommerce_active` / `hyperpress_event_nextgen_active` filters return true; every field id passes `IdentifierConventionTest`'s pattern.
-- [ ] **Step 2:** Run both filters; expect FAIL.
-- [ ] **Step 3: Implement.** `Fields` mirrors `hyperpress-competition/src/MetaBoxes.php` (a `datetime` field with `save_format` `Y-m-d H:i`, a `color` field for the override, `post` field with `post_type` `product` multiple `select_advanced` for products, a `select_advanced` with `multiple` for galleries whose options come from `Galleries::options()` (Task 15; until then an empty array via `class_exists` guard)). `Dates` parses with `DateTimeImmutable::createFromFormat( '!Y-m-d H:i', …, wp_timezone() )` and rejects values with parse errors.
-- [ ] **Step 4:** Run the filters and `composer lint`; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): add event fields and date helpers`.
+- [x] **Step 2:** Run both filters; expect FAIL.
+- [x] **Step 3: Implement.** `Fields` mirrors `hyperpress-competition/src/MetaBoxes.php` (a `datetime` field with `save_format` `Y-m-d H:i`, a `color` field for the override, `post` field with `post_type` `product` multiple `select_advanced` for products, a `select_advanced` with `multiple` for galleries whose options come from `Galleries::options()` (Task 15; until then an empty array via `class_exists` guard)). `Dates` parses with `DateTimeImmutable::createFromFormat( '!Y-m-d H:i', …, wp_timezone() )` and rejects values with parse errors.
+- [x] **Step 4:** Run the filters and `composer lint`; expect PASS.
+- [x] **Step 5: Commit** `feat(event): add event fields and date helpers`.
 
 ## Task 4: Countdown shortcode and front page candidate
 

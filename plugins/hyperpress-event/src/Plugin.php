@@ -22,6 +22,7 @@ final class Plugin {
 		Slugs::register();
 		Rewrite::register();
 		SettingsPage::register();
+		Fields::register();
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 	}
 
