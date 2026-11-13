@@ -6,7 +6,7 @@
 
 **Goal:** The front page shows exactly one countdown, chosen from candidates offered by plugins through one filter: the selected one-off countdowns and, automatically, competitions.
 
-**Architecture:** `hyperpress-frontpage` owns a candidate filter, a pure `pick()` and a theme-facing HTML filter. `hyperpress-countdown` exposes a `Window` helper for a countdown's dates. `hyperpress-competition` offers a candidate per competition. The theme only prints what the HTML filter returns. A later `hyperpress-event` plugin just hooks the candidate filter.
+**Architecture:** `hyperpress-frontpage` owns a candidate filter, a pure `pick()` and a theme-facing HTML filter. `hyperpress-countdown` exposes a `Window` helper for a countdown's dates. `hyperpress-competition` offers a candidate per competition. The theme only prints what the HTML filter returns. The `hyperpress-event` plugin (added later) just hooks the candidate filter.
 
 **Tech Stack:** PHP 8.3, WordPress 6.9, Meta Box, PHPUnit unit and integration tests in Docker (`plugins/` and `themes/hyperpress-foundation/`).
 
@@ -152,5 +152,5 @@
 
 ## Known follow-ups
 
-- The future `hyperpress-event` plugin hooks `hyperpress_frontpage_countdown_candidates` (and may add `fallback_after` or a priority); no change to the theme or `hyperpress-frontpage`.
+- Resolved (2026-11-13): `hyperpress-event` hooks `hyperpress_frontpage_countdown_candidates` (window from the lead time before the start until the event ends, no `fallback_after`), with no change to the theme or `hyperpress-frontpage`; see `docs/superpowers/specs/2026-11-13-plugins-event-design.md`.
 - An admin list column or notice flagging finished countdowns without a Hide After.

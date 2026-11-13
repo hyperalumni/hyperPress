@@ -4,7 +4,7 @@
 
 The front page must show exactly one countdown at a time. Today that comes from the hide-before and hide-after dates on each `hyper_countdown` post: the owner arranges the dates so only one window is open, and the theme prints every selected countdown through `[hyperpress_countdown]`.
 
-Competitions already render a countdown from their own schedule (`[hyperpress_competition_countdown]`), but the front page cannot show them. The owner does not want to duplicate a competition as a countdown post. An events plugin (`hyperpress-event`, pages for events such as Healthy Kids Day or KidsFest, which are hand-built WordPress pages today) is planned later and must be able to join the front page the way competitions do, with no change to the theme or to `hyperpress-frontpage`.
+Competitions already render a countdown from their own schedule (`[hyperpress_competition_countdown]`), but the front page cannot show them. The owner does not want to duplicate a competition as a countdown post. An events plugin (`hyperpress-event`, pages for events such as Healthy Kids Day or KidsFest, which are hand-built WordPress pages today) was planned later and must be able to join the front page the way competitions do, with no change to the theme or to `hyperpress-frontpage`.
 
 So: the front page asks every source for its candidate countdowns, drops those whose window is closed and shows the one that starts soonest.
 
@@ -80,3 +80,7 @@ Theme extension point: `front-page.php` replaces the loop over countdown IDs wit
 ## Left to the builder
 
 Class names and file layout beyond those given, how the competition candidates are queried (it may limit the query to recent seasons if that is simple), the settings field labels, and wording of the AGENTS entries.
+
+## Follow-up resolved
+
+`hyperpress-event` now hooks `hyperpress_frontpage_countdown_candidates` with no change to the theme or `hyperpress-frontpage` (see `2026-11-13-plugins-event-design.md`).
