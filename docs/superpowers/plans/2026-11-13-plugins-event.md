@@ -171,11 +171,11 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Consumes: Task 5 filter. Produces: `Single::register(): void`.
 
-- [ ] **Step 1: Write the failing tests:** `test_full_screen_only_on_a_singular_event` (true for a singular event, false for a post, a Page and the series archive); `test_content_template_only_for_events` (returns the plugin's `templates/content.php`, passes other values through); `test_template_prints_the_content_with_shortcodes_run`; `test_new_event_gets_the_scaffold` (`default_content` for `hyper_event` with empty content contains `[hyperpress_event_countdown]`, `[hyperpress_event_tickets]` and `[hyperpress_event_photos]`; unchanged for other post types and for non-empty content); `test_theme_renders_the_event_full_screen` (rendering the theme's `single.php` gives `main-container full-screen`, breadcrumbs, no sidebar).
-- [ ] **Step 2:** Run `--filter SingleTest`; expect FAIL.
-- [ ] **Step 3: Implement** the three hooks (`hyperpress_single_full_screen`, `content_template`, `default_content`). The scaffold (countdown, info section with placeholder rows, tickets, photos) uses the theme's Foundation 6 grid classes.
-- [ ] **Step 4:** Run the filter, the theme suite and lint; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): add the full-screen single event page`.
+- [x] **Step 1: Write the failing tests:** `test_full_screen_only_on_a_singular_event` (true for a singular event, false for a post, a Page and the series archive); `test_content_template_only_for_events` (returns the plugin's `templates/content.php`, passes other values through); `test_template_prints_the_content_with_shortcodes_run`; `test_new_event_gets_the_scaffold` (`default_content` for `hyper_event` with empty content contains `[hyperpress_event_countdown]`, `[hyperpress_event_tickets]` and `[hyperpress_event_photos]`; unchanged for other post types and for non-empty content); `test_theme_renders_the_event_full_screen` (rendering the theme's `single.php` gives `main-container full-screen`, breadcrumbs, no sidebar).
+- [x] **Step 2:** Run `--filter SingleTest`; expect FAIL.
+- [x] **Step 3: Implement** the three hooks (`hyperpress_single_full_screen`, `content_template`, `default_content`). The scaffold (countdown, info section with placeholder rows, tickets, photos) uses the theme's Foundation 6 grid classes.
+- [x] **Step 4:** Run the filter, the theme suite and lint; expect PASS.
+- [x] **Step 5: Commit** `feat(event): add the full-screen single event page`.
 
 ## Task 9: Listing, `[hyperpress_event_list]` and the series archive
 
