@@ -246,15 +246,15 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Produces: `Ticket` (final, readonly): `int $id`, `string $name`, `string $price_html`, `bool $in_stock`, `bool $simple`, `string $url`, `int $max` (0 means unlimited); `WooTickets::load( array $ids ): array<Ticket>`; `TicketsBlock::html( array $tickets, int $event_id ): string`; `Tickets::SHORTCODE = 'hyperpress_event_tickets'`, `Tickets::register(): void`, `Tickets::shortcode( $atts ): string`, `Tickets::checkout_redirect( string $url ): string` (filter `woocommerce_add_to_cart_redirect`, marker request key `hyperpress_event_buy`).
 
-- [ ] **Step 1: Write the failing tests:**
+- [x] **Step 1: Write the failing tests:**
   - `load`: `test_published_simple_in_stock_product_becomes_a_ticket`; `test_out_of_stock_product_stays_with_in_stock_false`; `test_missing_unpublished_trashed_and_non_product_ids_are_skipped` (Review Focus 5); `test_non_simple_product_is_flagged_and_links_to_its_page`; `test_selection_order_kept_and_duplicates_dropped`.
   - `html`: `test_row_has_name_price_quantity_and_buy_form` (quantity `name="quantity" type="number" min="1" value="1"`, hidden `add-to-cart` and `hyperpress_event_buy`, form action the event permalink, method get); `test_limited_stock_sets_max` and `test_unlimited_has_no_max` (Review Focus 2); `test_sold_out_row_has_text_and_no_button`; `test_non_simple_row_is_a_link_without_a_form`.
   - `shortcode`: `test_empty_when_woocommerce_inactive`, `test_empty_without_products`, `test_empty_when_no_product_remains`, `test_empty_when_the_event_is_over`, `test_empty_outside_an_event_without_notices` (Review Focus 3); `test_prints_its_own_banner_with_default_title_tickets_and_custom_attributes`.
   - `checkout_redirect`: with the marker returns the checkout URL, without it returns the input.
-- [ ] **Step 2:** Run `--filter TicketsTest`; expect FAIL.
-- [ ] **Step 3: Implement.** The shortcode uses `Integrations::woocommerce()` (so tests switch it with the filter), `Fields::PRODUCTS`, `Dates::is_over()` and `Sections::banner()`.
-- [ ] **Step 4:** Run the filter and lint; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): add the e-ticket block`.
+- [x] **Step 2:** Run `--filter TicketsTest`; expect FAIL.
+- [x] **Step 3: Implement.** The shortcode uses `Integrations::woocommerce()` (so tests switch it with the filter), `Fields::PRODUCTS`, `Dates::is_over()` and `Sections::banner()`.
+- [x] **Step 4:** Run the filter and lint; expect PASS.
+- [x] **Step 5: Commit** `feat(event): add the e-ticket block`.
 
 ## Task 14: NextGEN spike (findings only)
 

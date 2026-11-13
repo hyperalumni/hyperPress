@@ -32,6 +32,7 @@ final class Plugin {
 		Alias::register();
 		Breadcrumbs::register();
 		Menus::register();
+		Tickets::register();
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 	}
 
