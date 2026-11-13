@@ -201,11 +201,11 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 **Interfaces:**
 - Produces: `Alias::target( WP_Term $series, ?DateTimeImmutable $now = null ): ?int` (post ID), `Alias::register(): void`, `Alias::maybe_redirect(): void` (on `template_redirect` priority 5).
 
-- [ ] **Step 1: Write the failing tests** (capture redirects with the `wp_redirect` filter returning false, which makes `wp_safe_redirect()` return false so no `exit`): `test_nearest_upcoming_wins`; `test_latest_past_when_none_upcoming`; `test_tie_goes_to_the_lowest_id`; `test_unpublished_events_are_ignored`; `test_series_without_published_events_stays_a_404`; `test_runs_before_the_core_guess` (events `bar-crawl-2025` past with the lower ID and `bar-crawl-2026` upcoming: the redirect goes to 2026); `test_a_real_event_with_the_series_slug_is_served_directly`; `test_unrelated_404_is_untouched` (`/event/nothing/`) and `test_mixed_case_alias_redirects` (`/event/Bar-Crawl/`, Review Focus 4); `test_status_is_302`.
-- [ ] **Step 2:** Run `--filter AliasTest`; expect FAIL.
-- [ ] **Step 3: Implement.** Act only when `is_404()`, `get_query_var( 'post_type' )` is `hyper_event` and `get_term_by( 'slug', sanitize_title( get_query_var( 'name' ) ), SERIES )` exists; choose with `Dates::end()` against `Dates::now()`; redirect with `wp_safe_redirect( get_permalink( $id ), 302 )` and `exit` only when it returns true.
-- [ ] **Step 4:** Run the filter and lint; expect PASS.
-- [ ] **Step 5: Commit** `feat(event): redirect the series alias to the current event`.
+- [x] **Step 1: Write the failing tests** (capture redirects with the `wp_redirect` filter returning false, which makes `wp_safe_redirect()` return false so no `exit`): `test_nearest_upcoming_wins`; `test_latest_past_when_none_upcoming`; `test_tie_goes_to_the_lowest_id`; `test_unpublished_events_are_ignored`; `test_series_without_published_events_stays_a_404`; `test_runs_before_the_core_guess` (events `bar-crawl-2025` past with the lower ID and `bar-crawl-2026` upcoming: the redirect goes to 2026); `test_a_real_event_with_the_series_slug_is_served_directly`; `test_unrelated_404_is_untouched` (`/event/nothing/`) and `test_mixed_case_alias_redirects` (`/event/Bar-Crawl/`, Review Focus 4); `test_status_is_302`.
+- [x] **Step 2:** Run `--filter AliasTest`; expect FAIL.
+- [x] **Step 3: Implement.** Act only when `is_404()`, `get_query_var( 'post_type' )` is `hyper_event` and `get_term_by( 'slug', sanitize_title( get_query_var( 'name' ) ), SERIES )` exists; choose with `Dates::end()` against `Dates::now()`; redirect with `wp_safe_redirect( get_permalink( $id ), 302 )` and `exit` only when it returns true.
+- [x] **Step 4:** Run the filter and lint; expect PASS.
+- [x] **Step 5: Commit** `feat(event): redirect the series alias to the current event`.
 
 ## Task 11: Breadcrumbs
 
