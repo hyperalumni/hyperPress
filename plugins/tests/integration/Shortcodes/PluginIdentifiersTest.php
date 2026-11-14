@@ -15,6 +15,7 @@ final class PluginIdentifiersTest extends WP_UnitTestCase {
 			'hyperpress_emphasis'               => array( 'hyperpress_emphasis' ),
 			'hyperpress_date_distance'          => array( 'hyperpress_date_distance' ),
 			'hyperpress_raw'                    => array( 'hyperpress_raw' ),
+			'hyperpress_noautop'                => array( 'hyperpress_noautop' ),
 			'hyperpress_time_restrict'          => array( 'hyperpress_time_restrict' ),
 			'hyperpress_time_restrict_repeat'   => array( 'hyperpress_time_restrict_repeat' ),
 			'hyperpress_time_restrict_repeat_1' => array( 'hyperpress_time_restrict_repeat_1' ),
@@ -33,7 +34,7 @@ final class PluginIdentifiersTest extends WP_UnitTestCase {
 	public function test_the_classes_live_in_the_singular_namespace(): void {
 		$this->assertTrue( class_exists( '\HyperPress\Shortcode\Plugin' ) );
 		$this->assertFalse( class_exists( '\HyperPress\Shortcodes\Plugin' ) );
-		foreach ( array( 'Banner', 'DateDistance', 'TimeRestrict', 'Raw', 'Emphasis' ) as $class_name ) {
+		foreach ( array( 'Banner', 'DateDistance', 'TimeRestrict', 'Raw', 'NoAutop', 'Emphasis' ) as $class_name ) {
 			$this->assertTrue( class_exists( '\HyperPress\Shortcode\Shortcodes\\' . $class_name ), $class_name );
 		}
 	}

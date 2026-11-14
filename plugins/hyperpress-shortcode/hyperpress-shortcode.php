@@ -5,7 +5,7 @@
  * @wordpress-plugin
  * Plugin Name:         hyperPress Shortcode
  * Plugin URI:          https://hyperalumni.org
- * Description:         Content shortcodes for hyperPress: time restricted content, date distance, raw output, emphasis and banners
+ * Description:         Content shortcodes for hyperPress: time restricted content, date distance, raw output, unautop'd output, emphasis and banners
  * Version:             2026.0.0
  * Requires at least:   6.9
  * Requires PHP:        8.3

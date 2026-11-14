@@ -15,6 +15,7 @@ final class Plugin {
 		Shortcodes\TimeRestrict::register();
 		Shortcodes\DateDistance::register();
 		Shortcodes\Raw::register();
+		Shortcodes\NoAutop::register();
 		Shortcodes\Emphasis::register();
 		Shortcodes\Anchor::register();
 		Shortcodes\Banner::register();
