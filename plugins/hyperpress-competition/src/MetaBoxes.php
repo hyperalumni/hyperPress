@@ -118,7 +118,7 @@ final class MetaBoxes {
 					'name'              => 'Location',
 					'type'              => 'osm',
 					'address_field'     => 'hyperpress_competition_venue_address',
-					'sanitize_callback' => array( self::class, 'map_location' ),
+					'sanitize_callback' => array( \HyperPress\Utils\VenueMap::class, 'sanitize' ),
 				),
 				array(
 					'type'              => 'wysiwyg',
@@ -265,19 +265,5 @@ final class MetaBoxes {
 		$id = is_scalar( $value ) ? absint( $value ) : 0;
 
 		return ( $id > 0 && 'hyper_robot' === get_post_type( $id ) ) ? $id : 0;
-	}
-
-	/**
-	 * Sanitizer for the venue map: keeps a 'lat,lng' or 'lat,lng,zoom' string, clears anything else.
-	 *
-	 * @param mixed $value Submitted value.
-	 */
-	public static function map_location( $value ): string {
-		if ( ! is_string( $value ) ) {
-			return '';
-		}
-		$value = trim( $value );
-
-		return 1 === preg_match( '/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?(,\s*\d+)?$/', $value ) ? $value : '';
 	}
 }

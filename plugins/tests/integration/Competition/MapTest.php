@@ -127,14 +127,6 @@ final class MapTest extends WP_UnitTestCase {
 		$this->assertSame( array(), RWMB_OSM_Field::$calls );
 	}
 
-	public function test_parse_clamps_zoom_and_defaults_it(): void {
-		$this->assertSame( 15, Map::parse( '1,2' )['zoom'] );
-		$this->assertSame( 19, Map::parse( '1,2,99' )['zoom'] );
-		$this->assertSame( 0, Map::parse( '1,2,-4' )['zoom'] );
-		$this->assertNull( Map::parse( 'garbage' ) );
-		$this->assertNull( Map::parse( array() ) );
-	}
-
 	public function test_hook_is_registered(): void {
 		Map::register();
 

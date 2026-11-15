@@ -1,6 +1,7 @@
 <?php
 namespace HyperPress\Tests\Integration;
 
+use HyperPress\Utils\VenueMap;
 use WP_Customize_Manager;
 use WP_UnitTestCase;
 
@@ -38,5 +39,9 @@ final class CompetitionMapFieldTest extends WP_UnitTestCase {
 		$this->assertSame( 'hyperpress_competition_venue_address', $field['address_field'] );
 		$this->assertArrayNotHasKey( 'api_key', $field );
 		$this->assertArrayNotHasKey( 'std', $field );
+	}
+
+	public function test_venue_map_field_sanitizes_through_the_shared_venue_map(): void {
+		$this->assertSame( array( VenueMap::class, 'sanitize' ), $this->map_field()['sanitize_callback'] );
 	}
 }

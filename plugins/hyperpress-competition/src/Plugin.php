@@ -50,7 +50,7 @@ final class Plugin {
 		Competitions::register();
 		Content::register();
 		Map::register();
-		AdminAssets::register();
+		\HyperPress\Utils\VenueMap::register_admin_fix( self::POST_TYPE );
 	}
 
 	/**

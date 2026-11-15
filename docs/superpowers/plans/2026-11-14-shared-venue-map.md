@@ -68,15 +68,15 @@
 - Consumes: `VenueMap::for_post`, `VenueMap::sanitize`, `VenueMap::register_admin_fix` from Task 1.
 - Produces: `Map::register(): void` and `Map::render(): void` keep their signatures and output.
 
-- [ ] **Step 1: Adjust the tests first.** `Competition/MapTest`: drop `test_parse_clamps_zoom_and_defaults_it` (covered by `VenueMapTest`) and keep every other test unchanged (render, unusable locations, lists and other posts, hook registered). `Competition/BootTest`: add an assertion that `has_action( 'admin_enqueue_scripts' )` has a callback at priority 20 after boot (or assert via `VenueMap`'s behaviour on a competition edit screen if simpler). `CompetitionSettingsTest::test_map_field_keeps_only_lat_lng_zoom` stays as it is (the field's callback is now `VenueMap::sanitize`); add `$this->assertSame( array( VenueMap::class, 'sanitize' ), $field['sanitize_callback'] )` in a field test if one reads the field arrays. Run: the unchanged render tests must still pass, the changed ones fail until Step 2.
+- [x] **Step 1: Adjust the tests first.** `Competition/MapTest`: drop `test_parse_clamps_zoom_and_defaults_it` (covered by `VenueMapTest`) and keep every other test unchanged (render, unusable locations, lists and other posts, hook registered). `Competition/BootTest`: add an assertion that `has_action( 'admin_enqueue_scripts' )` has a callback at priority 20 after boot (or assert via `VenueMap`'s behaviour on a competition edit screen if simpler). `CompetitionSettingsTest::test_map_field_keeps_only_lat_lng_zoom` stays as it is (the field's callback is now `VenueMap::sanitize`); add `$this->assertSame( array( VenueMap::class, 'sanitize' ), $field['sanitize_callback'] )` in a field test if one reads the field arrays. Run: the unchanged render tests must still pass, the changed ones fail until Step 2.
 
-- [ ] **Step 2: Implement.** `Map::render()` keeps its guards (`is_singular( Plugin::POST_TYPE )`, queried object ID) and echoes `VenueMap::for_post( $post_id, 'hyperpress_competition_venue_name', 'hyperpress_competition_venue_address', 'hyperpress_competition_venue_map' )` (markup is escaped inside `VenueMap`; keep a `phpcs:ignore` for the echo). Delete `AdminAssets.php` and its test; replace the sanitize callback with `array( \HyperPress\Utils\VenueMap::class, 'sanitize' )` and delete `MetaBoxes::map_location`.
+- [x] **Step 2: Implement.** `Map::render()` keeps its guards (`is_singular( Plugin::POST_TYPE )`, queried object ID) and echoes `VenueMap::for_post( $post_id, 'hyperpress_competition_venue_name', 'hyperpress_competition_venue_address', 'hyperpress_competition_venue_map' )` (markup is escaped inside `VenueMap`; keep a `phpcs:ignore` for the echo). Delete `AdminAssets.php` and its test; replace the sanitize callback with `array( \HyperPress\Utils\VenueMap::class, 'sanitize' )` and delete `MetaBoxes::map_location`.
 
-- [ ] **Step 3: Verify.** Targeted `/Competition|CompetitionMapField|CompetitionSettings/`, then `composer lint`, `composer test:unit`, `composer test:integration`. The competition output must be byte-identical (the existing render assertions prove it).
+- [x] **Step 3: Verify.** Targeted `/Competition|CompetitionMapField|CompetitionSettings/`, then `composer lint`, `composer test:unit`, `composer test:integration`. The competition output must be byte-identical (the existing render assertions prove it).
 
-- [ ] **Step 4: Document.** Dated note in `docs/superpowers/plans/2026-10-18-competition-templates.md` (the map now delegates to `VenueMap`; `AdminAssets` and `map_location` moved to utils).
+- [x] **Step 4: Document.** Dated note in `docs/superpowers/plans/2026-10-18-competition-templates.md` (the map now delegates to `VenueMap`; `AdminAssets` and `map_location` moved to utils).
 
-- [ ] **Step 5: Commit.** `refactor(competition): use the shared venue map`.
+- [x] **Step 5: Commit.** `refactor(competition): use the shared venue map`.
 
 ### Task 3: Event uses `VenueMap`
 

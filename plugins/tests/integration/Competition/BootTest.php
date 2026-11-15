@@ -23,6 +23,17 @@ final class BootTest extends WP_UnitTestCase {
 		$this->assertNotFalse( has_action( 'hyperpress_after_banner', array( Map::class, 'render' ) ) );
 	}
 
+	public function test_the_admin_autocomplete_fix_is_registered(): void {
+		$found = false;
+		foreach ( $GLOBALS['wp_filter']['admin_enqueue_scripts']->callbacks[20] ?? array() as $callback ) {
+			if ( $callback['function'] instanceof \Closure ) {
+				$found = true;
+			}
+		}
+
+		$this->assertTrue( $found, 'a priority-20 admin_enqueue_scripts closure (VenueMap::register_admin_fix) is registered' );
+	}
+
 	public function test_the_header_requires_the_countdown_plugin(): void {
 		$headers = get_file_data(
 			dirname( __DIR__, 3 ) . '/hyperpress-competition/hyperpress-competition.php',
