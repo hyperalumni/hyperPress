@@ -6,39 +6,32 @@ use RWMB_OSM_Field;
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 /**
- * A full-width, non-interactive OpenStreetMap of the venue under the banner on the single event page.
+ * A full-width, non-interactive OpenStreetMap of the venue for the Event Info section of the single event page.
  */
 final class Map {
 
 	private const DEFAULT_ZOOM = 15;
 	private const MAX_ZOOM     = 19;
 
-	public static function register(): void {
-		add_action( 'hyperpress_after_banner', array( self::class, 'render' ) );
-	}
-
 	/**
-	 * Echoes the map of the queried event, or nothing when it has no address or a valid location.
+	 * The map markup of an event, or '' when RWMB_OSM_Field is missing, the address is empty or the pin is not valid.
+	 *
+	 * @param int $post_id Event ID.
 	 */
-	public static function render(): void {
-		if ( ! is_singular( Plugin::POST_TYPE ) || ! class_exists( 'RWMB_OSM_Field' ) ) {
-			return;
-		}
-
-		$post_id = get_queried_object_id();
-		if ( $post_id <= 0 ) {
-			return;
+	public static function html( int $post_id ): string {
+		if ( $post_id <= 0 || ! class_exists( 'RWMB_OSM_Field' ) ) {
+			return '';
 		}
 
 		$address = \HyperPress\Utils\Meta::get( Fields::VENUE_ADDRESS, $post_id );
 		if ( ! is_scalar( $address ) || '' === trim( (string) $address ) ) {
-			return;
+			return '';
 		}
 
 		// The stored text, not rwmb_meta(): for an osm field Meta Box returns the rendered map HTML.
 		$map = self::parse( get_post_meta( $post_id, Fields::VENUE_MAP, true ) );
 		if ( null === $map ) {
-			return;
+			return '';
 		}
 
 		$venue = \HyperPress\Utils\Meta::get( Fields::VENUE_NAME, $post_id );
@@ -66,8 +59,8 @@ final class Map {
 			)
 		);
 
-		printf(
-			'<div class="hyperpress-map" role="img" aria-label="%s" style="pointer-events:none;">%s</div>',
+		return sprintf(
+			'<div class="hyperpress-map alignfull" role="img" aria-label="%s" style="pointer-events:none;padding-top:0;margin-bottom:1.5rem;">%s</div>',
 			esc_attr( $label ),
 			$inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by Meta Box.
 		);

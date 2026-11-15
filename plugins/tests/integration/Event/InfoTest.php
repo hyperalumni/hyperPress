@@ -5,18 +5,20 @@ use HyperPress\Event\Dates;
 use HyperPress\Event\Fields;
 use HyperPress\Event\Info;
 use HyperPress\Event\Plugin;
+use RWMB_OSM_Field;
 use WP_UnitTestCase;
 
 final class InfoTest extends WP_UnitTestCase {
 
 	public function set_up(): void {
 		parent::set_up();
+		RWMB_OSM_Field::$calls = array();
 		update_option( 'date_format', 'j F Y' );
 		update_option( 'time_format', 'H:i' );
 	}
 
 	public function tear_down(): void {
-		unset( $GLOBALS['post'] );
+		unset( $GLOBALS['post'], $GLOBALS['hyperpress_test_rwmb_posts'] );
 		delete_option( 'timezone_string' );
 		parent::tear_down();
 	}
@@ -32,6 +34,60 @@ final class InfoTest extends WP_UnitTestCase {
 		$this->go_to( get_permalink( $id ) );
 
 		return $id;
+	}
+
+	/**
+	 * Like event(), and mirrors the address and pin into the Meta Box stub, which Map reads through rwmb_meta().
+	 *
+	 * @param array<string,string> $meta Meta to save, by key.
+	 */
+	private function event_with_map_meta( array $meta ): int {
+		$id = $this->event( $meta );
+		$GLOBALS['hyperpress_test_rwmb_posts'][ $id ] = array_intersect_key( $meta, array_flip( array( Fields::VENUE_NAME, Fields::VENUE_ADDRESS, Fields::VENUE_MAP ) ) );
+
+		return $id;
+	}
+
+	public function test_map_follows_the_banner_and_precedes_the_columns(): void {
+		$this->event_with_map_meta(
+			array(
+				Fields::START         => '2030-03-10 09:00',
+				Fields::VENUE_ADDRESS => '1 Main St',
+				Fields::VENUE_MAP     => '42.1,-71.2,15',
+			)
+		);
+
+		$html = Info::shortcode( array() );
+
+		$banner = strpos( $html, 'Event Info' );
+		$map    = strpos( $html, 'class="hyperpress-map alignfull"' );
+		$row    = strpos( $html, '<div class="grid-x grid-margin-x">' );
+		$this->assertNotFalse( $banner );
+		$this->assertNotFalse( $map );
+		$this->assertNotFalse( $row );
+		$this->assertLessThan( $map, $banner );
+		$this->assertLessThan( $row, $map );
+		$this->assertCount( 1, RWMB_OSM_Field::$calls );
+	}
+
+	public function test_no_map_without_a_pin(): void {
+		$this->event_with_map_meta( array( Fields::START => '2030-03-10 09:00', Fields::VENUE_ADDRESS => '1 Main St' ) );
+
+		$html = Info::shortcode( array() );
+
+		$this->assertStringContainsString( '<strong>Where</strong>', $html );
+		$this->assertStringNotContainsString( 'hyperpress-map', $html );
+		$this->assertSame( array(), RWMB_OSM_Field::$calls );
+	}
+
+	public function test_no_map_without_an_address(): void {
+		$this->event_with_map_meta( array( Fields::VENUE_NAME => 'City Hall', Fields::VENUE_MAP => '42.1,-71.2,15' ) );
+
+		$html = Info::shortcode( array() );
+
+		$this->assertStringContainsString( '<strong>Where</strong><br>City Hall</div>', $html );
+		$this->assertStringNotContainsString( 'hyperpress-map', $html );
+		$this->assertSame( array(), RWMB_OSM_Field::$calls );
 	}
 
 	public function test_same_day_event_shows_the_date_and_a_time_range(): void {

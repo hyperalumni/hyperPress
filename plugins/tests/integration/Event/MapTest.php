@@ -28,7 +28,6 @@ final class MapTest extends WP_UnitTestCase {
 
 	public function tear_down(): void {
 		unset( $GLOBALS['hyperpress_test_rwmb_posts'] );
-		remove_action( 'hyperpress_after_banner', array( Map::class, 'render' ) );
 		if ( $this->registered_post_type ) {
 			unregister_post_type( Plugin::POST_TYPE );
 			$this->registered_post_type = false;
@@ -47,10 +46,8 @@ final class MapTest extends WP_UnitTestCase {
 		return $id;
 	}
 
-	private function output(): string {
-		ob_start();
-		Map::render();
-		return (string) ob_get_clean();
+	private function output( int $id ): string {
+		return Map::html( $id );
 	}
 
 	public function test_renders_the_events_location_full_width(): void {
@@ -61,9 +58,7 @@ final class MapTest extends WP_UnitTestCase {
 				Fields::VENUE_MAP     => '42.1,-71.2,15',
 			)
 		);
-		$this->go_to( get_permalink( $id ) );
-
-		$html = $this->output();
+		$html = $this->output( $id );
 
 		$this->assertCount( 1, RWMB_OSM_Field::$calls );
 		list( $location, $args ) = RWMB_OSM_Field::$calls[0];
@@ -72,7 +67,10 @@ final class MapTest extends WP_UnitTestCase {
 		$this->assertSame( '100%', $args['width'] );
 		$this->assertTrue( $args['marker'] );
 		$this->assertFalse( $args['js_options']['dragging'] );
-		$this->assertStringContainsString( 'class="hyperpress-map"', $html );
+		$this->assertStringContainsString(
+			'<div class="hyperpress-map alignfull" role="img" aria-label="Map of Big Arena" style="pointer-events:none;padding-top:0;margin-bottom:1.5rem;">',
+			$html
+		);
 		$this->assertStringContainsString( 'role="img"', $html );
 		$this->assertStringContainsString( 'Big Arena', $html );
 		$this->assertStringContainsString( 'pointer-events:none;', $html );
@@ -85,9 +83,7 @@ final class MapTest extends WP_UnitTestCase {
 				Fields::VENUE_MAP     => '42.1,-71.2,15',
 			)
 		);
-		$this->go_to( get_permalink( $id ) );
-
-		$this->assertStringContainsString( 'aria-label="Map of the venue"', $this->output() );
+		$this->assertStringContainsString( 'aria-label="Map of the venue"', $this->output( $id ) );
 	}
 
 	/** @return array<string,array{0:string,1:string}> */
@@ -110,27 +106,18 @@ final class MapTest extends WP_UnitTestCase {
 				Fields::VENUE_MAP     => $map,
 			)
 		);
-		$this->go_to( get_permalink( $id ) );
-
-		$this->assertSame( '', $this->output() );
+		$this->assertSame( '', $this->output( $id ) );
 		$this->assertSame( array(), RWMB_OSM_Field::$calls );
 	}
 
-	public function test_nothing_on_lists_and_other_posts(): void {
-		$meta = array(
-			Fields::VENUE_ADDRESS => '1 Main St',
-			Fields::VENUE_MAP     => '42.1,-71.2,15',
-		);
-		$this->event( $meta );
-
-		$this->go_to( home_url( '/' ) );
-		$this->assertSame( '', $this->output() );
-
+	public function test_nothing_for_a_post_without_a_map(): void {
+		// An ordinary post holds the raw meta but has no Meta Box fields, so rwmb_meta() returns nothing for it.
 		$post = self::factory()->post->create( array( 'post_status' => 'publish' ) );
-		$GLOBALS['hyperpress_test_rwmb_posts'][ $post ] = $meta;
-		update_post_meta( $post, Fields::VENUE_MAP, $meta[ Fields::VENUE_MAP ] );
-		$this->go_to( get_permalink( $post ) );
-		$this->assertSame( '', $this->output() );
+		update_post_meta( $post, Fields::VENUE_ADDRESS, '1 Main St' );
+		update_post_meta( $post, Fields::VENUE_MAP, '42.1,-71.2,15' );
+		$this->assertSame( '', $this->output( $post ) );
+
+		$this->assertSame( '', $this->output( $this->event( array() ) ) );
 
 		$this->assertSame( array(), RWMB_OSM_Field::$calls );
 	}
@@ -143,16 +130,10 @@ final class MapTest extends WP_UnitTestCase {
 		$this->assertNull( Map::parse( array() ) );
 	}
 
-	public function test_hook_is_registered(): void {
-		Map::register();
-
-		$this->assertNotFalse( has_action( 'hyperpress_after_banner', array( Map::class, 'render' ) ) );
-	}
-
-	public function test_boot_registers_the_hook_and_admin_assets(): void {
+	public function test_boot_registers_admin_assets_and_no_banner_hook(): void {
 		Plugin::boot();
 
-		$this->assertNotFalse( has_action( 'hyperpress_after_banner', array( Map::class, 'render' ) ) );
 		$this->assertNotFalse( has_action( 'admin_enqueue_scripts', array( AdminAssets::class, 'enqueue' ) ) );
+		$this->assertFalse( has_action( 'hyperpress_after_banner', array( Map::class, 'render' ) ) );
 	}
 }

@@ -47,8 +47,9 @@ final class Info {
 			$atts['anchor'] = self::DEFAULT_ANCHOR;
 		}
 
-		// A `.grid-margin-x` row directly in the content: the theme's full-screen layout centres and pads it.
-		return Sections::banner( $post->ID, $atts ) . '<div class="grid-x grid-margin-x">' . $html . '</div>';
+		// The map sits between the banner and a `.grid-margin-x` row directly in the content: the theme's full-screen
+		// layout centres and pads the row.
+		return Sections::banner( $post->ID, $atts ) . Map::html( $post->ID ) . '<div class="grid-x grid-margin-x">' . $html . '</div>';
 	}
 
 	/**
