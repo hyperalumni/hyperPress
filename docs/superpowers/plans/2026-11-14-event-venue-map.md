@@ -1,5 +1,7 @@
 # Event Venue Map Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-11-14). Tasks 1 to 3 done: the event venue map (Event Info section, full width) and the competition default pin removed. Lint clean, plugin unit 238, integration 1939 (6 skipped). Owner checked the pin search and the map in a browser. Commits eb002d24..44349b67.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Show a non-interactive OpenStreetMap under the banner of a single event when it has a venue address and a pin; then drop the hard-coded default pin from the competition map field.
@@ -68,7 +70,7 @@
 
 - [x] **Step 8: Document.** In `plugins/AGENTS.md`, in the Events paragraph, add one sentence: the event box has an `osm` field `hyperpress_event_venue_map` (no default pin) linked to the venue address, and `Map` prints a full-width non-interactive OpenStreetMap on `hyperpress_after_banner` on a single event only when the address is set and the pin parses; `AdminAssets` lifts the address autocomplete above the Leaflet map.
 
-- [ ] **Step 9: Manual check.** Start the stack the owner uses, edit an event, search the address in the Location field, save, open the event: map appears under the banner; clear the address, save: no map. Report what was and wasn't checked.
+- [x] **Step 9: Manual check.** Start the stack the owner uses, edit an event, search the address in the Location field, save, open the event: map appears under the banner; clear the address, save: no map. Report what was and wasn't checked.
 
 - [x] **Step 10: Commit (only when the owner asks).**
 
@@ -135,7 +137,7 @@ The owner asked for the map after the "Event Info" banner instead of under the p
 - Task 2 dropped the "registered default has a space" assertion in `CompetitionSettingsTest` without a replacement.
 - Suites after both tasks: lint clean, plugin unit 238, integration 1937 (6 skipped).
 - Task 3 (map moved into the Event Info section, full width): `Map::html()` replaces `render()` and its hook. In `MapTest` the ordinary-post case carries the pin and address only as raw post meta (no Meta Box stub entry), as on a real non-event post. `InfoTest` gained `event_with_map_meta()`. Suites after Task 3: lint clean, plugin unit 238, integration 1939 (6 skipped).
-- Not verified: Task 1 Step 9, the browser check of the map on a live event, which now also covers the edge-to-edge width and the flush spacing under the Event Info banner (the tests check the markup only).
+- Verified by the owner in a browser (2026-11-14): the pin search works in the editor and the map appears correctly on the event page (edge to edge, under the Event Info banner).
 
 ## Known follow-ups
 
