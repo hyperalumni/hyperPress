@@ -1,5 +1,7 @@
 # Shared Venue Map Implementation Plan
 
+> **STATUS: ✅ COMPLETED** (2026-11-14). Tasks 1 to 4 done: `HyperPress\Utils\VenueMap` replaces the map code in competition, event and contact (contact zoom ceiling 21 to 19). Lint clean, unit 256, integration 1949 (6 skipped). Owner checked the competition, event and contact pages and the pin search in a browser. Commits f36d936c..9f4e3d46.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the three copies of the OpenStreetMap code in competition, event and contact with one `HyperPress\Utils\VenueMap` class, with no change in what visitors or editors see (except contact's zoom ceiling, 21 to 19).
@@ -118,7 +120,7 @@
 
 - [x] **Step 5: Final checks.** `grep -rn "render_map\|RWMB_OSM_Field" plugins --include=*.php` outside `tests/` shows only `VenueMap.php` and the `class_exists` guard in contact; `grep -rn "map_location\|AdminAssets" plugins/hyperpress-* --include=*.php` shows nothing stale. Full `composer lint`, `composer test:unit`, `composer test:integration` green (report counts and skipped).
 
-- [ ] **Step 6: Manual check (owner, browser).** Competition single page, event single page and a page with `[hyperpress_map]` look as before, and the pin search still works in the competition and event editors.
+- [x] **Step 6: Manual check (owner, browser).** Competition single page, event single page and a page with `[hyperpress_map]` look as before, and the pin search still works in the competition and event editors.
 
 - [x] **Step 7: Commit.** `refactor(contact): use the shared venue map`.
 
