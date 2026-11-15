@@ -40,22 +40,22 @@
 **Interfaces:**
 - Produces (exact signatures): `VenueMap::parse( mixed $value ): ?array` (`array{lat:float,lng:float,zoom:int}|null`); `VenueMap::sanitize( mixed $value ): string`; `VenueMap::render( array $location, string $label, string $height = '300px', string $class = '', string $style = '' ): string`; `VenueMap::for_post( int $post_id, string $name_key, string $address_key, string $map_key, string $class = '', string $style = '' ): string`; `VenueMap::register_admin_fix( string $post_type ): void`; `VenueMap::enqueue_admin_fix( string $hook_suffix, string $post_type ): void`; constants `DEFAULT_ZOOM = 15`, `MAX_ZOOM = 19`.
 
-- [ ] **Step 1: Write the failing tests** (`VenueMapTest`), derived from the existing tests `tests/integration/Competition/MapTest.php`, `tests/integration/Event/MapTest.php` and `tests/integration/Competition/AdminAssetsTest.php`:
+- [x] **Step 1: Write the failing tests** (`VenueMapTest`), derived from the existing tests `tests/integration/Competition/MapTest.php`, `tests/integration/Event/MapTest.php` and `tests/integration/Competition/AdminAssetsTest.php`:
   - `parse`: `'1,2'` zoom 15; `'1,2,99'` zoom 19; `'1,2,-4'` zoom 0; `'1, 2 , 3'` accepted; `'garbage'`, `'91,0'`, `'0,181'`, `'1'`, `'1,2,3,4'`, `''`, `array()` and `null` give null.
   - `sanitize`: keeps `42.1,-71.2,15`, `42.25,-71.0`, `42.25228605221164, -71.00051344845554,15` (space after the comma); returns `''` for `<script>alert(1)</script>`, `42.25;-71.0`, `42.25,-71.0,15,extra`, `array( '42.25,-71.0' )`; trims surrounding whitespace.
   - `render`: with `RWMB_OSM_Field::$calls` cleared, `render( array( 'lat' => 42.1, 'lng' => -71.2, 'zoom' => 15 ), 'L', '250px' )` makes one call with location `42.1,-71.2,15`, `width` `100%`, `height` `250px`, `marker` true and all seven `js_options` false, and returns `<div class="hyperpress-map" role="img" aria-label="L" style="pointer-events:none;"><div class="rwmb-map-canvas-stub"></div></div>`; with `$class` `alignfull` and `$style` `padding-top:0;margin-bottom:1.5rem;` the wrapper opens with `<div class="hyperpress-map alignfull" role="img" aria-label="L" style="pointer-events:none;padding-top:0;margin-bottom:1.5rem;">`; a label containing `"` and `<` is escaped; a coordinate such as `1.00000001` or `1.0E-5` is formatted as a plain decimal (`1`, `0.00001`) and `-0.0` as `0`.
   - `for_post`: event-shaped meta (`$GLOBALS['hyperpress_test_rwmb_posts'][ $id ]` for name and address, `update_post_meta` for the pin; use any post type): renders at `300px` with label "Map of Big Arena"; no venue name gives `aria-label="Map of the venue"`; data provider of unusable inputs (`empty address`, `whitespace address`, `empty map`, `garbage map`, `latitude high` `91,0`, `longitude high` `0,181`) gives `''` with no `render_map` calls; `$post_id` 0 gives `''`; extra class and style are passed through.
   - Admin fix: port competition's `AdminAssetsTest` to `enqueue_admin_fix( $hook, $post_type )` (attaches `.ui-autocomplete.ui-front{z-index:999999}` to `rwmb-osm` on `post.php` and `post-new.php` for the given post type only; nothing on other hooks, other post types or without a screen); `register_admin_fix( 'x' )` leaves `has_action( 'admin_enqueue_scripts' )` registered at priority 20.
 
-- [ ] **Step 2: Run to verify failure.** Targeted filter `/Tests.Integration.Utils.VenueMapTest/` (and the unit file). Expected: errors, `Class HyperPress\Utils\VenueMap not found`.
+- [x] **Step 2: Run to verify failure.** Targeted filter `/Tests.Integration.Utils.VenueMapTest/` (and the unit file). Expected: errors, `Class HyperPress\Utils\VenueMap not found`.
 
-- [ ] **Step 3: Implement `VenueMap`** per the spec's Design section and the signatures above, copying `parse`/`decimal`/the `render_map` arguments from `plugins/hyperpress-competition/src/Map.php` and the admin CSS from `plugins/hyperpress-competition/src/AdminAssets.php`. `render()` composes the location string from `$location` with the shared `decimal()` helper (private).
+- [x] **Step 3: Implement `VenueMap`** per the spec's Design section and the signatures above, copying `parse`/`decimal`/the `render_map` arguments from `plugins/hyperpress-competition/src/Map.php` and the admin CSS from `plugins/hyperpress-competition/src/AdminAssets.php`. `render()` composes the location string from `$location` with the shared `decimal()` helper (private).
 
-- [ ] **Step 4: Run the new tests green, then** `composer lint`, `composer test:unit`, `composer test:integration` (nothing else changes, so all other tests stay green).
+- [x] **Step 4: Run the new tests green, then** `composer lint`, `composer test:unit`, `composer test:integration` (nothing else changes, so all other tests stay green).
 
-- [ ] **Step 5: Document.** Add a bullet to `plugins/AGENTS.md`: `HyperPress\Utils\VenueMap` is the one place for venue-map code (`parse`, `sanitize`, `render`, `for_post`, `register_admin_fix`); competition, event and contact use it.
+- [x] **Step 5: Document.** Add a bullet to `plugins/AGENTS.md`: `HyperPress\Utils\VenueMap` is the one place for venue-map code (`parse`, `sanitize`, `render`, `for_post`, `register_admin_fix`); competition, event and contact use it.
 
-- [ ] **Step 6: Commit.** `feat(utils): add a shared venue map class`.
+- [x] **Step 6: Commit.** `feat(utils): add a shared venue map class`.
 
 ### Task 2: Competition uses `VenueMap`
 
@@ -121,6 +121,10 @@
 - [ ] **Step 6: Manual check (owner, browser).** Competition single page, event single page and a page with `[hyperpress_map]` look as before, and the pin search still works in the competition and event editors.
 
 - [ ] **Step 7: Commit.** `refactor(contact): use the shared venue map`.
+
+## Execution notes
+
+- Task 1: the `$class` parameter of `render` and `for_post` is named `$css_class` (PHPCS flags `$class` as a reserved word); callers pass it positionally, so the signatures above are otherwise exact. `parse` and `sanitize` are tested as unit tests (`tests/unit/Utils/VenueMapTest.php`; the unit bootstrap loads `HyperPress\Utils\VenueMap`), the rest as integration tests (`tests/integration/Utils/VenueMapTest.php`). `register_admin_fix` registers a closure, so its test counts the priority-20 callbacks on `admin_enqueue_scripts` before and after. Suites after Task 1: lint clean, unit 256, integration 1961 (6 skipped).
 
 ## Known follow-ups
 
