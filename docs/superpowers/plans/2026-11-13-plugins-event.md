@@ -408,6 +408,7 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - On a NextGEN gallery page 2 (`nggallery/page/2`) the "View more" button is still rendered and links to the same page; consider hiding it when the request is already paged.
 - 2026-11-14: the event box gained a venue map (`hyperpress_event_venue_map`, an `osm` pin field with no default; `Map` renders it when the address is set and the pin is valid), copied from competition. See `docs/superpowers/plans/2026-11-14-event-venue-map.md`.
 - 2026-11-14: the venue map now sits in the Event Info section: `[hyperpress_event_info]` prints `Map::html()` between its banner and the Date/Time/Where columns, and the `hyperpress_after_banner` hook is no longer used by the event plugin.
+- 2026-11-14: the event plugin's `Map` and `AdminAssets` classes were removed; the map now comes from the shared `HyperPress\Utils\VenueMap` (`for_post`, `sanitize` as the field's `sanitize_callback`, `register_admin_fix`), with the same markup (see `2026-11-14-shared-venue-map.md`).
 
 ## Spike findings (Task 14)
 

@@ -142,3 +142,4 @@ The owner asked for the map after the "Event Info" banner instead of under the p
 ## Known follow-ups
 
 - Share one map class between competition and event in `hyperpress-utils` (not done here to avoid refactoring competition).
+- 2026-11-14: the shared map class is done: `HyperPress\Utils\VenueMap` replaces the event and competition copies (event is moved over in Task 3 of `2026-11-14-shared-venue-map.md`).

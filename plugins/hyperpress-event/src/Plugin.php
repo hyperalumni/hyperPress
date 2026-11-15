@@ -35,7 +35,7 @@ final class Plugin {
 		Tickets::register();
 		Photos::register();
 		Info::register();
-		AdminAssets::register();
+		\HyperPress\Utils\VenueMap::register_admin_fix( self::POST_TYPE );
 		add_filter( 'default_option_' . Settings::OPTION, array( Settings::class, 'default_option' ), 10, 3 );
 	}
 

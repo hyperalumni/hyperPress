@@ -47,9 +47,9 @@ final class Info {
 			$atts['anchor'] = self::DEFAULT_ANCHOR;
 		}
 
-		// The map sits between the banner and a `.grid-margin-x` row directly in the content: the theme's full-screen
+		// The map (VenueMap::for_post) sits between the banner and a `.grid-margin-x` row directly in the content: the theme's full-screen
 		// layout centres and pads the row.
-		return Sections::banner( $post->ID, $atts ) . Map::html( $post->ID ) . '<div class="grid-x grid-margin-x">' . $html . '</div>';
+		return Sections::banner( $post->ID, $atts ) . \HyperPress\Utils\VenueMap::for_post( $post->ID, Fields::VENUE_NAME, Fields::VENUE_ADDRESS, Fields::VENUE_MAP, 'alignfull', 'padding-top:0;margin-bottom:1.5rem;' ) . '<div class="grid-x grid-margin-x">' . $html . '</div>';
 	}
 
 	/**

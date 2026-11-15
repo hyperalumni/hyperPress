@@ -70,6 +70,22 @@ final class InfoTest extends WP_UnitTestCase {
 		$this->assertCount( 1, RWMB_OSM_Field::$calls );
 	}
 
+	public function test_map_wrapper_is_full_width(): void {
+		$this->event_with_map_meta(
+			array(
+				Fields::START         => '2030-03-10 09:00',
+				Fields::VENUE_NAME    => 'Big Arena',
+				Fields::VENUE_ADDRESS => '1 Main St',
+				Fields::VENUE_MAP     => '42.1,-71.2,15',
+			)
+		);
+
+		$this->assertStringContainsString(
+			'<div class="hyperpress-map alignfull" role="img" aria-label="Map of Big Arena" style="pointer-events:none;padding-top:0;margin-bottom:1.5rem;">',
+			Info::shortcode( array() )
+		);
+	}
+
 	public function test_no_map_without_a_pin(): void {
 		$this->event_with_map_meta( array( Fields::START => '2030-03-10 09:00', Fields::VENUE_ADDRESS => '1 Main St' ) );
 

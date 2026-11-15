@@ -76,7 +76,7 @@ final class Fields {
 				'desc'              => __( 'Click the map to place the pin; typing the venue address above also finds it. The map shows on the event page when the address is set.', 'hyperpress' ),
 				'type'              => 'osm',
 				'address_field'     => self::VENUE_ADDRESS,
-				'sanitize_callback' => array( self::class, 'map_location' ),
+				'sanitize_callback' => array( \HyperPress\Utils\VenueMap::class, 'sanitize' ),
 			),
 			array(
 				'id'                => self::SUBTITLE,
@@ -185,19 +185,5 @@ final class Fields {
 				),
 			),
 		);
-	}
-
-	/**
-	 * Keeps only a "lat,lng" or "lat,lng,zoom" location, else an empty string; Map::parse checks the ranges at render time.
-	 *
-	 * @param mixed $value Submitted value.
-	 */
-	public static function map_location( mixed $value ): string {
-		if ( ! is_string( $value ) ) {
-			return '';
-		}
-		$value = trim( $value );
-
-		return 1 === preg_match( '/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?(,\s*\d+)?$/', $value ) ? $value : '';
 	}
 }

@@ -5,6 +5,7 @@ use HyperPress\Event\Fields;
 use HyperPress\Event\Plugin;
 use HyperPress\Event\Settings;
 use HyperPress\Event\SettingsPage;
+use HyperPress\Utils\VenueMap;
 use WP_UnitTestCase;
 
 final class FieldsTest extends WP_UnitTestCase {
@@ -70,13 +71,23 @@ final class FieldsTest extends WP_UnitTestCase {
 		$this->assertArrayNotHasKey( 'std', $field );
 	}
 
-	public function test_map_location_keeps_only_lat_lng_zoom(): void {
-		$this->assertSame( '42.1,-71.2,15', Fields::map_location( '42.1,-71.2,15' ) );
-		$this->assertSame( '42.25,-71.0', Fields::map_location( '42.25,-71.0' ) );
-		$this->assertSame( '', Fields::map_location( '<script>alert(1)</script>' ) );
-		$this->assertSame( '', Fields::map_location( '42.25;-71.0' ) );
-		$this->assertSame( '', Fields::map_location( '42.25,-71.0,15,extra' ) );
-		$this->assertSame( '', Fields::map_location( array( '42.25,-71.0' ) ) );
+	public function test_the_map_field_sanitizes_through_the_shared_venue_map(): void {
+		$fields = $this->fields( $this->boxes()['hyperpress_event_box'] );
+
+		$this->assertSame( array( VenueMap::class, 'sanitize' ), $fields[ Fields::VENUE_MAP ]['sanitize_callback'] );
+	}
+
+	public function test_boot_registers_the_admin_fix(): void {
+		Plugin::boot();
+
+		$found = false;
+		foreach ( $GLOBALS['wp_filter']['admin_enqueue_scripts']->callbacks[20] ?? array() as $callback ) {
+			if ( $callback['function'] instanceof \Closure ) {
+				$found = true;
+			}
+		}
+
+		$this->assertTrue( $found, 'a priority-20 admin_enqueue_scripts closure (VenueMap::register_admin_fix) is registered' );
 	}
 
 	public function test_products_and_galleries_are_absent_by_default(): void {

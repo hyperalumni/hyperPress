@@ -88,15 +88,15 @@
 **Interfaces:**
 - Consumes: `VenueMap::for_post`, `VenueMap::sanitize`, `VenueMap::register_admin_fix`.
 
-- [ ] **Step 1: Adjust the tests first.** Delete `Event/MapTest.php` after moving anything not yet covered by `VenueMapTest` (label fallback and the unusable-locations cases already are); in `InfoTest` keep `test_map_follows_the_banner_and_precedes_the_columns`, `test_no_map_without_a_pin` and `test_no_map_without_an_address` unchanged, and add `test_map_wrapper_is_full_width` asserting the exact opening tag `<div class="hyperpress-map alignfull" role="img" aria-label="Map of Big Arena" style="pointer-events:none;padding-top:0;margin-bottom:1.5rem;">`; in `FieldsTest` replace `test_map_location_keeps_only_lat_lng_zoom` with an assertion that the venue-map field's `sanitize_callback` is `array( VenueMap::class, 'sanitize' )`, and add `test_boot_registers_the_admin_fix` (`has_action( 'admin_enqueue_scripts' )` at priority 20 after `Plugin::boot()`). Run: new assertions fail until Step 2.
+- [x] **Step 1: Adjust the tests first.** Delete `Event/MapTest.php` after moving anything not yet covered by `VenueMapTest` (label fallback and the unusable-locations cases already are); in `InfoTest` keep `test_map_follows_the_banner_and_precedes_the_columns`, `test_no_map_without_a_pin` and `test_no_map_without_an_address` unchanged, and add `test_map_wrapper_is_full_width` asserting the exact opening tag `<div class="hyperpress-map alignfull" role="img" aria-label="Map of Big Arena" style="pointer-events:none;padding-top:0;margin-bottom:1.5rem;">`; in `FieldsTest` replace `test_map_location_keeps_only_lat_lng_zoom` with an assertion that the venue-map field's `sanitize_callback` is `array( VenueMap::class, 'sanitize' )`, and add `test_boot_registers_the_admin_fix` (`has_action( 'admin_enqueue_scripts' )` at priority 20 after `Plugin::boot()`). Run: new assertions fail until Step 2.
 
-- [ ] **Step 2: Implement** as listed under Files, then delete the two classes and `Event/MapTest.php`.
+- [x] **Step 2: Implement** as listed under Files, then delete the two classes and `Event/MapTest.php`.
 
-- [ ] **Step 3: Verify.** Targeted `/Tests.Integration.Event/`, then `composer lint`, `composer test:unit`, `composer test:integration`. The Event Info output must be byte-identical to before this task.
+- [x] **Step 3: Verify.** Targeted `/Tests.Integration.Event/`, then `composer lint`, `composer test:unit`, `composer test:integration`. The Event Info output must be byte-identical to before this task.
 
-- [ ] **Step 4: Document.** Update the map sentence in the Events paragraph of `plugins/AGENTS.md` (the map comes from `VenueMap::for_post`, there is no event `Map` or `AdminAssets` class); dated notes in `docs/superpowers/plans/2026-11-13-plugins-event.md` and `docs/superpowers/plans/2026-11-14-event-venue-map.md` (its "Known follow-ups" shared-class item is now done; point to this plan).
+- [x] **Step 4: Document.** Update the map sentence in the Events paragraph of `plugins/AGENTS.md` (the map comes from `VenueMap::for_post`, there is no event `Map` or `AdminAssets` class); dated notes in `docs/superpowers/plans/2026-11-13-plugins-event.md` and `docs/superpowers/plans/2026-11-14-event-venue-map.md` (its "Known follow-ups" shared-class item is now done; point to this plan).
 
-- [ ] **Step 5: Commit.** `refactor(event): use the shared venue map`.
+- [x] **Step 5: Commit.** `refactor(event): use the shared venue map`.
 
 ### Task 4: Contact uses `VenueMap`
 
