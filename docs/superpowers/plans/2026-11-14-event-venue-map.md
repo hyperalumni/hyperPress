@@ -86,15 +86,15 @@ git commit -m "feat(event): show a venue map on the single event page" -- <same 
 **Interfaces:**
 - Consumes: the `hyperpress_competition_venue_map` field array. Saved values are untouched; new competitions start with no pin.
 
-- [ ] **Step 1: Write the failing test.** In `CompetitionMapFieldTest::test_venue_map_field_is_an_osm_field_without_an_api_key` add `$this->assertArrayNotHasKey( 'std', $field );` (rename the test to `test_venue_map_field_is_an_osm_field_without_an_api_key_or_default_pin`).
+- [x] **Step 1: Write the failing test.** In `CompetitionMapFieldTest::test_venue_map_field_is_an_osm_field_without_an_api_key` add `$this->assertArrayNotHasKey( 'std', $field );` (rename the test to `test_venue_map_field_is_an_osm_field_without_an_api_key_or_default_pin`).
 
-- [ ] **Step 2: Run to verify it fails.** `docker compose run --rm php vendor/bin/phpunit --testsuite integration --bootstrap tests/bootstrap-integration.php --filter CompetitionMapFieldTest`. Expected: FAIL on the `std` assertion.
+- [x] **Step 2: Run to verify it fails.** `docker compose run --rm php vendor/bin/phpunit --testsuite integration --bootstrap tests/bootstrap-integration.php --filter CompetitionMapFieldTest`. Expected: FAIL on the `std` assertion.
 
-- [ ] **Step 3: Remove the `std` line** from the field in `MetaBoxes.php`. In `CompetitionSettingsTest::test_map_field_keeps_only_lat_lng_zoom`, delete the assertion at line 169 (`'the registered default has a space'`); the space-after-comma shape is still accepted by the sanitizer regex, so keep an equivalent assertion without the "registered default" wording only if the owner wants the space case pinned.
+- [x] **Step 3: Remove the `std` line** from the field in `MetaBoxes.php`. In `CompetitionSettingsTest::test_map_field_keeps_only_lat_lng_zoom`, delete the assertion at line 169 (`'the registered default has a space'`); the space-after-comma shape is still accepted by the sanitizer regex, so keep an equivalent assertion without the "registered default" wording only if the owner wants the space case pinned.
 
-- [ ] **Step 4: Verify.** Targeted tests pass; then `composer lint`, `composer test:unit`, `composer test:integration` from `plugins/`. Grep `docs/` and `plugins/` for `42.2522` and update any prose that still describes the default pin (the earlier search found only the three code/test lines above).
+- [x] **Step 4: Verify.** Targeted tests pass; then `composer lint`, `composer test:unit`, `composer test:integration` from `plugins/`. Grep `docs/` and `plugins/` for `42.2522` and update any prose that still describes the default pin (the earlier search found only the three code/test lines above).
 
-- [ ] **Step 5: Commit (only when the owner asks).** `git commit -m "fix(competition): drop the default venue pin" -- plugins/hyperpress-competition/src/MetaBoxes.php plugins/tests/integration/CompetitionMapFieldTest.php plugins/tests/integration/CompetitionSettingsTest.php`
+- [x] **Step 5: Commit (only when the owner asks).** `git commit -m "fix(competition): drop the default venue pin" -- plugins/hyperpress-competition/src/MetaBoxes.php plugins/tests/integration/CompetitionMapFieldTest.php plugins/tests/integration/CompetitionSettingsTest.php`
 
 ## Execution notes
 

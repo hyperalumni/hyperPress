@@ -166,7 +166,6 @@ final class CompetitionSettingsTest extends WP_UnitTestCase {
 
 		$this->assertSame( '42.25228605221164,-71.00051344845554,15', $callback( '42.25228605221164,-71.00051344845554,15' ) );
 		$this->assertSame( '42.25,-71.0', $callback( '42.25,-71.0' ), 'zoom is optional' );
-		$this->assertSame( '42.25228605221164, -71.00051344845554,15', $callback( '42.25228605221164, -71.00051344845554,15' ), 'the registered default has a space' );
 		$this->assertSame( '', $callback( '<script>alert(1)</script>' ) );
 		$this->assertSame( '', $callback( '42.25;-71.0' ) );
 		$this->assertSame( '', $callback( '42.25,-71.0,15,extra' ) );

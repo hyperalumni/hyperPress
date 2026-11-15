@@ -31,11 +31,12 @@ final class CompetitionMapFieldTest extends WP_UnitTestCase {
 		$this->assertNull( $manager->get_section( 'hyperpress_competition' ), 'section is gone' );
 	}
 
-	public function test_venue_map_field_is_an_osm_field_without_an_api_key(): void {
+	public function test_venue_map_field_is_an_osm_field_without_an_api_key_or_default_pin(): void {
 		$field = $this->map_field();
 
 		$this->assertSame( 'osm', $field['type'] );
 		$this->assertSame( 'hyperpress_competition_venue_address', $field['address_field'] );
 		$this->assertArrayNotHasKey( 'api_key', $field );
+		$this->assertArrayNotHasKey( 'std', $field );
 	}
 }

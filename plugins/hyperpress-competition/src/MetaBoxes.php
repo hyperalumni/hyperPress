@@ -117,7 +117,6 @@ final class MetaBoxes {
 					'id'                => 'hyperpress_competition_venue_map',
 					'name'              => 'Location',
 					'type'              => 'osm',
-					'std'               => '42.25228605221164, -71.00051344845554,15',
 					'address_field'     => 'hyperpress_competition_venue_address',
 					'sanitize_callback' => array( self::class, 'map_location' ),
 				),
