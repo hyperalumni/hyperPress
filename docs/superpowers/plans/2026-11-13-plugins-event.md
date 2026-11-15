@@ -406,6 +406,7 @@ Inputs the spec implies but does not spell out; each has a test in the owning ta
 - A per-event "hide from the front page" switch, a buttons/links repeater, a season link, and an importer for old Page-based events were left out on purpose (spec non-goals).
 - Owner checks that need a browser (see the banner): NextGEN AJAX pagination click-through and the full-screen layout (breadcrumbs, post navigation, info and ticket rows, photos teaser) on live pages.
 - On a NextGEN gallery page 2 (`nggallery/page/2`) the "View more" button is still rendered and links to the same page; consider hiding it when the request is already paged.
+- 2026-11-14: the event box gained a venue map (`hyperpress_event_venue_map`, an `osm` pin field with no default; `Map` renders it on `hyperpress_after_banner` when the address is set and the pin is valid), copied from competition. See `docs/superpowers/plans/2026-11-14-event-venue-map.md`.
 
 ## Spike findings (Task 14)
 

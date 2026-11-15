@@ -12,6 +12,7 @@ final class Fields {
 	public const END           = 'hyperpress_event_end';
 	public const VENUE_NAME    = 'hyperpress_event_venue_name';
 	public const VENUE_ADDRESS = 'hyperpress_event_venue_address';
+	public const VENUE_MAP     = 'hyperpress_event_venue_map';
 	public const SUBTITLE      = 'hyperpress_event_subtitle';
 	public const BANNER_COLOR  = 'hyperpress_event_banner_color';
 	public const PRODUCTS      = 'hyperpress_event_products';
@@ -68,6 +69,14 @@ final class Fields {
 				'name'              => __( 'Venue address', 'hyperpress' ),
 				'type'              => 'text',
 				'sanitize_callback' => 'sanitize_text_field',
+			),
+			array(
+				'id'                => self::VENUE_MAP,
+				'name'              => __( 'Location', 'hyperpress' ),
+				'desc'              => __( 'Click the map to place the pin; typing the venue address above also finds it. The map shows on the event page when the address is set.', 'hyperpress' ),
+				'type'              => 'osm',
+				'address_field'     => self::VENUE_ADDRESS,
+				'sanitize_callback' => array( self::class, 'map_location' ),
 			),
 			array(
 				'id'                => self::SUBTITLE,
@@ -176,5 +185,19 @@ final class Fields {
 				),
 			),
 		);
+	}
+
+	/**
+	 * Keeps only a "lat,lng" or "lat,lng,zoom" location, else an empty string; Map::parse checks the ranges at render time.
+	 *
+	 * @param mixed $value Submitted value.
+	 */
+	public static function map_location( mixed $value ): string {
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+		$value = trim( $value );
+
+		return 1 === preg_match( '/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?(,\s*\d+)?$/', $value ) ? $value : '';
 	}
 }

@@ -55,6 +55,30 @@ final class FieldsTest extends WP_UnitTestCase {
 		$this->assertSame( 'color', $fields[ Fields::BANNER_COLOR ]['type'] );
 	}
 
+	public function test_venue_map_field_is_an_osm_field_linked_to_the_address(): void {
+		$box = $this->boxes()['hyperpress_event_box'];
+		$ids = array_column( $box['fields'], 'id' );
+
+		$position = array_search( Fields::VENUE_MAP, $ids, true );
+		$this->assertNotFalse( $position );
+		$this->assertSame( Fields::VENUE_ADDRESS, $ids[ $position - 1 ] );
+
+		$field = $box['fields'][ $position ];
+		$this->assertSame( 'osm', $field['type'] );
+		$this->assertSame( Fields::VENUE_ADDRESS, $field['address_field'] );
+		$this->assertArrayNotHasKey( 'api_key', $field );
+		$this->assertArrayNotHasKey( 'std', $field );
+	}
+
+	public function test_map_location_keeps_only_lat_lng_zoom(): void {
+		$this->assertSame( '42.1,-71.2,15', Fields::map_location( '42.1,-71.2,15' ) );
+		$this->assertSame( '42.25,-71.0', Fields::map_location( '42.25,-71.0' ) );
+		$this->assertSame( '', Fields::map_location( '<script>alert(1)</script>' ) );
+		$this->assertSame( '', Fields::map_location( '42.25;-71.0' ) );
+		$this->assertSame( '', Fields::map_location( '42.25,-71.0,15,extra' ) );
+		$this->assertSame( '', Fields::map_location( array( '42.25,-71.0' ) ) );
+	}
+
 	public function test_products_and_galleries_are_absent_by_default(): void {
 		$fields = $this->fields( $this->boxes()['hyperpress_event_box'] );
 
