@@ -1,12 +1,10 @@
 <?php
 namespace HyperPress\Contact;
 
-use RWMB_OSM_Field;
-
 defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
 
 /**
- * The [hyperpress_map height="250"] shortcode: a static OpenStreetMap map of the saved location, drawn by Meta Box.
+ * The [hyperpress_map height="250"] shortcode: a static OpenStreetMap map of the saved location, drawn by the shared `VenueMap`.
  */
 final class MapShortcode {
 
@@ -32,48 +30,7 @@ final class MapShortcode {
 			return self::notice( __( 'Meta Box is not active.', 'hyperpress' ) );
 		}
 
-		$inner = RWMB_OSM_Field::render_map(
-			self::location( $map ),
-			array(
-				'width'      => '100%',
-				'height'     => $height . 'px',
-				'marker'     => true,
-				'js_options' => array(
-					'dragging'        => false,
-					'zoomControl'     => false,
-					'scrollWheelZoom' => false,
-					'doubleClickZoom' => false,
-					'touchZoom'       => false,
-					'boxZoom'         => false,
-					'keyboard'        => false,
-				),
-			)
-		);
-
-		return sprintf(
-			'<div class="hyperpress-map" role="img" aria-label="%s" style="pointer-events:none;">%s</div>',
-			esc_attr( __( 'Map of our location', 'hyperpress' ) ),
-			$inner // Escaped by Meta Box.
-		);
-	}
-
-	/**
-	 * The "lat,lng,zoom" string Meta Box expects, as plain decimals (no exponent, no locale separators).
-	 *
-	 * @param array{lat:float,lng:float,zoom:int} $map The parsed location.
-	 */
-	private static function location( array $map ): string {
-		return self::decimal( $map['lat'] ) . ',' . self::decimal( $map['lng'] ) . ',' . (int) $map['zoom'];
-	}
-
-	/**
-	 * Up to seven decimal places, trailing zeros removed.
-	 *
-	 * @param float $value A coordinate.
-	 */
-	private static function decimal( float $value ): string {
-		$text = rtrim( rtrim( number_format( $value, 7, '.', '' ), '0' ), '.' );
-		return in_array( $text, array( '', '-0' ), true ) ? '0' : $text;
+		return \HyperPress\Utils\VenueMap::render( $map, __( 'Map of our location', 'hyperpress' ), $height . 'px' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped inside VenueMap.
 	}
 
 	/**

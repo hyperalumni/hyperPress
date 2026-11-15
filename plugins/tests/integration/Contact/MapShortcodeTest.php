@@ -63,7 +63,9 @@ final class MapShortcodeTest extends WP_UnitTestCase {
 			'integers'      => array( '42,-71,10', '42,-71,10' ),
 			'default zoom'  => array( '42.5,-71.25', '42.5,-71.25,15' ),
 			'tiny value'    => array( '0.00001,-0.00002,3', '0.00001,-0.00002,3' ),
-			'zero'          => array( '0,0,21', '0,0,21' ),
+			'zero'          => array( '0,0,19', '0,0,19' ),
+			'clamped to 19' => array( '0,0,21', '0,0,19' ),
+			'clamped 20'    => array( '0,0,20', '0,0,19' ),
 			'many decimals' => array( '42.123456789,-71.1,5', '42.1234568,-71.1,5' ),
 		);
 	}

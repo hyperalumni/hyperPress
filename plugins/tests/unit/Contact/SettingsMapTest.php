@@ -38,10 +38,16 @@ final class SettingsMapTest extends TestCase {
 	public function test_zoom_is_clamped(): void {
 		$high = Settings::parse_map( '1,2,99' );
 		$low  = Settings::parse_map( '1,2,-3' );
+		$top  = Settings::parse_map( '1,2,20' );
+		$edge = Settings::parse_map( '1,2,21' );
 
 		$this->assertNotNull( $high );
 		$this->assertNotNull( $low );
-		$this->assertSame( 21, $high['zoom'] );
+		$this->assertNotNull( $top );
+		$this->assertNotNull( $edge );
+		$this->assertSame( 19, $high['zoom'] );
+		$this->assertSame( 19, $top['zoom'] );
+		$this->assertSame( 19, $edge['zoom'] );
 		$this->assertSame( 0, $low['zoom'] );
 	}
 

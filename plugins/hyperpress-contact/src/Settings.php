@@ -8,13 +8,11 @@ defined( 'ABSPATH' ) || ( defined( 'HYPERPRESS_TESTING' ) || exit );
  */
 final class Settings {
 
-	public const OPTION        = 'hyperpress_contact';
-	public const ADDRESSES     = 'hyperpress_contact_addresses';
-	public const MAP_ADDRESS   = 'hyperpress_contact_map_address';
-	public const MAP           = 'hyperpress_contact_map';
-	public const FIELDS        = array( 'slug', 'heading', 'name', 'extra', 'street', 'city', 'state', 'zip', 'phone' );
-	private const DEFAULT_ZOOM = 15;
-	private const MAX_ZOOM     = 21;
+	public const OPTION      = 'hyperpress_contact';
+	public const ADDRESSES   = 'hyperpress_contact_addresses';
+	public const MAP_ADDRESS = 'hyperpress_contact_map_address';
+	public const MAP         = 'hyperpress_contact_map';
+	public const FIELDS      = array( 'slug', 'heading', 'name', 'extra', 'street', 'city', 'state', 'zip', 'phone' );
 
 	/**
 	 * All saved addresses, each normalized to the nine string keys.
@@ -70,35 +68,12 @@ final class Settings {
 	}
 
 	/**
-	 * Parses "lat,lng[,zoom]". Pure: no WordPress functions.
+	 * Parses "lat,lng[,zoom]" through the shared venue map parser (no WordPress calls).
 	 *
 	 * @param string $value Raw setting value.
 	 * @return array{lat:float,lng:float,zoom:int}|null
 	 */
 	public static function parse_map( string $value ): ?array {
-		$parts = array_map( 'trim', explode( ',', $value ) );
-		if ( count( $parts ) < 2 || count( $parts ) > 3 ) {
-			return null;
-		}
-		foreach ( $parts as $part ) {
-			if ( ! is_numeric( $part ) ) {
-				return null;
-			}
-		}
-
-		$lat = (float) $parts[0];
-		$lng = (float) $parts[1];
-		if ( $lat < -90 || $lat > 90 || $lng < -180 || $lng > 180 ) {
-			return null;
-		}
-
-		$zoom = isset( $parts[2] ) ? (int) $parts[2] : self::DEFAULT_ZOOM;
-		$zoom = max( 0, min( self::MAX_ZOOM, $zoom ) );
-
-		return array(
-			'lat'  => $lat,
-			'lng'  => $lng,
-			'zoom' => $zoom,
-		);
+		return \HyperPress\Utils\VenueMap::parse( $value );
 	}
 }

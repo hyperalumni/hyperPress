@@ -108,23 +108,24 @@
 - Consumes: `VenueMap::parse`, `VenueMap::render`.
 - Produces: `Settings::parse_map( string ): ?array` and `Settings::map(): ?array` keep their signatures; the zoom ceiling is now 19.
 
-- [ ] **Step 1: Adjust the tests first.** Wherever a test asserts that zoom 20 or 21 is kept, change it to expect 19 (`'1,2,21'` gives zoom 19); add `'1,2,20'` gives 19. All other `MapShortcodeTest` and `parse_map` assertions stay unchanged (height clamp, default 250, notices for administrators and visitors, markup with "Map of our location"). If the unit suite cannot load `HyperPress\Utils\VenueMap`, move the pure `parse_map` unit tests to `VenueMapTest` and keep one integration test that `Settings::parse_map` delegates. Run: the zoom assertions fail until Step 2.
+- [x] **Step 1: Adjust the tests first.** Wherever a test asserts that zoom 20 or 21 is kept, change it to expect 19 (`'1,2,21'` gives zoom 19); add `'1,2,20'` gives 19. All other `MapShortcodeTest` and `parse_map` assertions stay unchanged (height clamp, default 250, notices for administrators and visitors, markup with "Map of our location"). If the unit suite cannot load `HyperPress\Utils\VenueMap`, move the pure `parse_map` unit tests to `VenueMapTest` and keep one integration test that `Settings::parse_map` delegates. Run: the zoom assertions fail until Step 2.
 
-- [ ] **Step 2: Implement** as listed under Files.
+- [x] **Step 2: Implement** as listed under Files.
 
-- [ ] **Step 3: Verify.** Targeted `/Contact/`, then `composer lint`, `composer test:unit`, `composer test:integration`. The shortcode output must be byte-identical except zoom clamping.
+- [x] **Step 3: Verify.** Targeted `/Contact/`, then `composer lint`, `composer test:unit`, `composer test:integration`. The shortcode output must be byte-identical except zoom clamping.
 
-- [ ] **Step 4: Document.** Update the contact line in `plugins/AGENTS.md` if it mentions the map (otherwise none); dated note in `docs/superpowers/plans/2026-10-12-hyperpress-contact.md` (map code now in `VenueMap`; zoom ceiling 19; default pin kept).
+- [x] **Step 4: Document.** Update the contact line in `plugins/AGENTS.md` if it mentions the map (otherwise none); dated note in `docs/superpowers/plans/2026-10-12-hyperpress-contact.md` (map code now in `VenueMap`; zoom ceiling 19; default pin kept).
 
-- [ ] **Step 5: Final checks.** `grep -rn "render_map\|RWMB_OSM_Field" plugins --include=*.php` outside `tests/` shows only `VenueMap.php` and the `class_exists` guard in contact; `grep -rn "map_location\|AdminAssets" plugins/hyperpress-* --include=*.php` shows nothing stale. Full `composer lint`, `composer test:unit`, `composer test:integration` green (report counts and skipped).
+- [x] **Step 5: Final checks.** `grep -rn "render_map\|RWMB_OSM_Field" plugins --include=*.php` outside `tests/` shows only `VenueMap.php` and the `class_exists` guard in contact; `grep -rn "map_location\|AdminAssets" plugins/hyperpress-* --include=*.php` shows nothing stale. Full `composer lint`, `composer test:unit`, `composer test:integration` green (report counts and skipped).
 
 - [ ] **Step 6: Manual check (owner, browser).** Competition single page, event single page and a page with `[hyperpress_map]` look as before, and the pin search still works in the competition and event editors.
 
-- [ ] **Step 7: Commit.** `refactor(contact): use the shared venue map`.
+- [x] **Step 7: Commit.** `refactor(contact): use the shared venue map`.
 
 ## Execution notes
 
 - Task 1: the `$class` parameter of `render` and `for_post` is named `$css_class` (PHPCS flags `$class` as a reserved word); callers pass it positionally, so the signatures above are otherwise exact. `parse` and `sanitize` are tested as unit tests (`tests/unit/Utils/VenueMapTest.php`; the unit bootstrap loads `HyperPress\Utils\VenueMap`), the rest as integration tests (`tests/integration/Utils/VenueMapTest.php`). `register_admin_fix` registers a closure, so its test counts the priority-20 callbacks on `admin_enqueue_scripts` before and after. Suites after Task 1: lint clean, unit 256, integration 1961 (6 skipped).
+- Task 4: the contact unit bootstrap autoloads `HyperPress\Utils\VenueMap` (the existing `SettingsMapTest` ran against it unchanged), so the `parse_map` unit tests stayed in `tests/unit/Contact/SettingsMapTest.php` and no move was needed. The zoom assertions now expect 19 (`99`, `21` and `20` all clamp to 19); the old `'0,0,21'` data-set became `'0,0,19'` plus two clamp cases. `Settings`' `DEFAULT_ZOOM` and `MAX_ZOOM` were unreferenced elsewhere and are gone (the other constants were re-aligned for PHPCS). Suites after Task 4: lint clean, unit 256, integration 1949 (6 skipped).
 
 ## Known follow-ups
 
