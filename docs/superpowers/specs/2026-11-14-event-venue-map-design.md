@@ -8,7 +8,7 @@ Show a map on the single event page when the event has a venue address, the way 
 
 ## Goals
 
-- A full-width, non-interactive OpenStreetMap (300px, marker) under the banner on a single `hyper_event` page, only when the event has a venue address and a valid pin.
+- A full-width, non-interactive OpenStreetMap (300px, marker) on a single `hyper_event` page, directly after the "Event Info" banner (inside `[hyperpress_event_info]`, before the Date/Time/Where row), only when the event has a venue address and a valid pin. (Revised 2026-11-14: first built under the page banner on `hyperpress_after_banner`, moved into the Event Info section at the owner's request.)
 - Same look and behaviour as the competition map.
 
 ## Non-goals
@@ -27,7 +27,7 @@ Show a map on the single event page when the event has a venue address, the way 
 ## Design
 
 - `Fields::VENUE_MAP` (`hyperpress_event_venue_map`): a Meta Box `osm` field in the event box after the venue address, `address_field` set to `Fields::VENUE_ADDRESS`, with a sanitizer that keeps only the `lat,lng[,zoom]` shape and returns `''` otherwise (mirrors `HyperPress\Competition\MetaBoxes::map_location`; like competition, range checking is left to `Map::parse` at render time). **No default (`std`) pin**: a default would put a wrong marker on any event that has an address but no real pin. Builder to confirm how the field behaves without `std`.
-- `HyperPress\Event\Map` (`src/Map.php`): hooks `hyperpress_after_banner` (fired by the theme's `template-parts/banner.php`). Renders only on a singular `hyper_event`, when `RWMB_OSM_Field` exists, the address is non-empty and the stored pin parses. Otherwise prints nothing. Reads the stored text with `get_post_meta` (not `rwmb_meta`, which returns rendered HTML for osm fields). `aria-label` is "Map of {venue name}" or "Map of the venue".
+- `HyperPress\Event\Map` (`src/Map.php`): no hook of its own: `Map::html( int $post_id ): string` returns the markup, and `Info::shortcode` places it between its banner and its columns. It returns `''` when `RWMB_OSM_Field` is missing, the address is empty or the stored pin does not parse. The map therefore shows only where the Event Info section shows (an event with an address always has a Where column), and not when an author leaves `[hyperpress_event_info]` out of the content. Reads the stored text with `get_post_meta` (not `rwmb_meta`, which returns rendered HTML for osm fields). `aria-label` is "Map of {venue name}" or "Map of the venue".
 - `HyperPress\Event\AdminAssets`: on the event edit screen, raise `.ui-autocomplete.ui-front` above the Leaflet map (as competition's `AdminAssets` does).
 - Register the new classes in `Plugin.php`; add a line to the Events paragraph of `plugins/AGENTS.md`.
 - Tests: unit tests for pin parsing and the sanitizer; integration test for rendering (valid, no address, bad pin, non-event page).

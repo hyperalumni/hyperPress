@@ -96,6 +96,34 @@ git commit -m "feat(event): show a venue map on the single event page" -- <same 
 
 - [x] **Step 5: Commit (only when the owner asks).** `git commit -m "fix(competition): drop the default venue pin" -- plugins/hyperpress-competition/src/MetaBoxes.php plugins/tests/integration/CompetitionMapFieldTest.php plugins/tests/integration/CompetitionSettingsTest.php`
 
+### Task 3: Move the map into the Event Info section
+
+The owner asked for the map after the "Event Info" banner instead of under the page banner (spec revised 2026-11-14).
+
+**Files:**
+- Modify: `plugins/hyperpress-event/src/Map.php` (replace `register()` and `render()` with `html()`; keep `parse()` and `decimal()`)
+- Modify: `plugins/hyperpress-event/src/Info.php` (`shortcode()`: print the map between the banner and the columns row)
+- Modify: `plugins/hyperpress-event/src/Plugin.php` (`boot()`: remove `Map::register();`)
+- Modify: `plugins/AGENTS.md` (Events paragraph: the map sentence)
+- Test: `plugins/tests/integration/Event/MapTest.php`, `plugins/tests/integration/Event/InfoTest.php`
+
+**Interfaces:**
+- Produces: `Map::html( int $post_id ): string` (`''` when `RWMB_OSM_Field` is missing, the address is empty or whitespace, or the pin does not parse; otherwise the `<div class="hyperpress-map" ...>` markup exactly as `render()` printed it). `Map::parse()` unchanged.
+- Removes: `Map::register()`, `Map::render()`, the `hyperpress_after_banner` hook.
+- Consumes: `Info::shortcode` calls `Map::html( $post->ID )`.
+
+- [ ] **Step 1: Write the failing tests.** In `MapTest.php`: replace the `Map::render()` helper with one that calls `Map::html( $id )`; keep the full-width, label-fallback, unusable-locations (still all six cases) and `parse` tests against `html()`; replace `test_nothing_on_lists_and_other_posts` with `test_nothing_for_a_post_without_a_map` (an ordinary post carrying the same meta, and an event with no meta, both give `''` with no `RWMB_OSM_Field::$calls`); delete `test_hook_is_registered` and the `remove_action` in `tear_down`; change `test_boot_registers_the_hook_and_admin_assets` into `test_boot_registers_admin_assets_and_no_banner_hook` (`has_action( 'admin_enqueue_scripts', array( AdminAssets::class, 'enqueue' ) )` is not false; `has_action( 'hyperpress_after_banner', array( Map::class, 'render' ) )` is false). In `InfoTest.php` add `test_map_follows_the_banner_and_precedes_the_columns` (event with start, address and pin: in `Info::shortcode( array() )` output the position of the banner markup `Event Info` < `class="hyperpress-map"` < `<div class="grid-x grid-margin-x">`; one `RWMB_OSM_Field::$calls` entry), `test_no_map_without_a_pin` (address, no pin: Info still renders, no `hyperpress-map`) and `test_no_map_without_an_address` (venue name and pin but no address: Info renders the Where column, no map). Clear `RWMB_OSM_Field::$calls` in the Info tests' `set_up` if they use it.
+
+- [ ] **Step 2: Run to verify failure.** Targeted run (`--filter '/Tests.Integration.Event.(MapTest|InfoTest)/'`). Expected: errors (`Map::html()` undefined) and failures in the new Info tests.
+
+- [ ] **Step 3: Implement.** `Map::html( int $post_id ): string` is `render()`'s body returning the string instead of printing it, without the `is_singular` and `get_queried_object_id` checks (the caller supplies the post). `Info::shortcode` returns `Sections::banner( ... ) . Map::html( $post->ID ) . '<div class="grid-x grid-margin-x">' . $html . '</div>'`. Remove `Map::register()` and `Map::render()`, and the `Map::register();` line in `Plugin::boot()`.
+
+- [ ] **Step 4: Run the targeted tests, then** `composer lint`, `composer test:unit` and `composer test:integration` from `plugins/`. Expected: all green, same skipped count (6).
+
+- [ ] **Step 5: Document.** In the Events paragraph of `plugins/AGENTS.md`, change the map sentence: `Map::html()` returns a full-width non-interactive OpenStreetMap that `[hyperpress_event_info]` prints right after its banner, only when the address is set and the pin parses (the shortcode must be in the content); no hook. Add a dated line to the event plan's follow-ups (`2026-11-13-plugins-event.md`) saying the map now sits in the Event Info section.
+
+- [ ] **Step 6: Commit (only when the owner asks).** The owner has standing instructions: spec and plan first on their own, then the work with this plan's boxes ticked in the same commit.
+
 ## Execution notes
 
 - 2026-11-14: Task 1's `--filter 'Event\\\\(MapTest|FieldsTest)'` matched nothing; the targeted run used `--filter '/Tests.Integration.Event.(MapTest|FieldsTest)/'`. `Map` and `AdminAssets` copy competition's with only the namespace, the field constants and the `ABSPATH` guard (`|| ( defined( 'HYPERPRESS_TESTING' ) || exit )`, as in `Fields.php`) changed. `test_boot_registers_the_hook_and_admin_assets` calls `Plugin::boot()` itself.
