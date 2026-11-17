@@ -15,7 +15,7 @@ pnpm + Nx monorepo for the hyperPress WordPress sites: the Foundation theme, the
 
 ## Environment
 
-- Node comes from nvm and is not on the default PATH. Load it first in each shell: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"` (root `.nvmrc`, Node 26.12.0).
+- Node comes from nvm and is not on the default PATH. Load it first in each shell: `source ~/.nvm/nvm.sh && nvm use && export PATH="$HOME/.local/share/pnpm/bin:$PATH"` (root `.nvmrc`, Node 26.13.1).
 - pnpm only (enforced by `preinstall`; no npm/yarn). The root `devEngines` pins pnpm 12.22.0. Run `pnpm install` once at the root.
 - PHP runs in Docker only, never on the host. The floor is PHP `>=8.3` everywhere (`composer.json`, plugin headers, PHPCS `testVersion`); the suites pass on 8.3, 8.4 and 8.5. Production stays on 8.3 for now; see the verdict for the 8.4/8.5 recommendation.
 - `.env*` files are git-ignored. Do not read or print them. Commit only the `*.example` templates.
